@@ -12,6 +12,7 @@ AGENTS.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
+docs/48-responsive-crisp-ui-system.md
 ```
 
 画面/UI/世界観を扱う場合は追加で必ず読む。
@@ -22,6 +23,7 @@ docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/48-responsive-crisp-ui-system.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -47,12 +49,29 @@ MVP Phase 1 実装開始可能。
 
 ```text
 soro-ponは横画面固定が正
-All main screens: 844x390 landscape-first
-Web: responsive scale / adaptive layout
+All main screens: 844x390 landscape design reference
+Phone landscape: 100svw x 100svh
+Web: responsive layout / adaptive layout
 Portrait: rotate prompt or limited utility only
 ```
 
 過去の `TOP / Editor / Result / Collection は portrait-first` 方針は使わない。
+844x390は実寸固定キャンバスではなく、デザイン基準として扱う。
+画面全体を `transform: scale()` で引き伸ばさない。
+
+## Crisp Responsive UI
+
+UI実装時は `docs/48-responsive-crisp-ui-system.md` を正とする。
+
+```text
+UI枠/アイコン/線/札枠はSVG優先
+絵/背景/紙質感/インク汚れは高解像度PNG/WebP
+文字は画像に焼き込まずHTML textで描画
+重要UI寸法は整数pxへ丸める
+紙パネルや手描き縁が必要な箇所だけ9-slice
+PCでは中央ゲーム卓 + 外側補助/夜机背景
+必須UIはゲーム卓内に置く
+```
 
 ## Role
 
@@ -82,7 +101,15 @@ score_bonus は Role.kind に入れず ScoreBonus[] で扱う
 special_bonus / ScoreBonus[] をロン候補にしない
 オールマイティを毎回クリック選択式にしない
 コインで強さを買わせない
-全主要画面を844x390 landscape-firstで設計する
+全主要画面を844x390 landscape基準で設計する
+844x390は実寸固定キャンバスとして扱わない
+スマホ横では100svw x 100svhへフィットさせる
+画面全体をtransform scaleで引き伸ばさない
+UI枠/アイコン/線/札枠はSVG優先
+絵/背景/紙質感/インク汚れは高解像度PNG/WebP
+文字は画像に焼き込まない
+重要UI寸法は整数pxへ丸める
+必要箇所だけ9-sliceを使う
 縦画面に本UIを無理に詰めない
 Vamp-pon側は読み取り専用
 世界観を扱う時はVamp-pon shared master indexを読む
