@@ -4,7 +4,7 @@
 
 MVP実装前に全主要画面を生成し、採用デザインを固定する。
 
-画面デザイン生成時は、このファイルと `docs/37-visual-design-direction.md` / `docs/38-screen-generation-plan.md` を必ず参照する。
+画面デザイン生成時は、このファイルと `docs/37-visual-design-direction.md` / `docs/38-screen-generation-plan.md` / `docs/46-landscape-first-web-responsive-policy.md` を必ず参照する。
 
 ## Design Generation Rule
 
@@ -17,22 +17,29 @@ MVP実装前に全主要画面を生成し、採用デザインを固定する�
 - デザイン原則は `docs/06-design-principles.md` を正とする
 - ビジュアル方向性は `docs/37-visual-design-direction.md` を正とする
 - 生成順は `docs/38-screen-generation-plan.md` を正とする
+- 横画面固定方針は `docs/46-landscape-first-web-responsive-policy.md` を正とする
 
 AIは、見た目を作るためにルールを変えてはいけない。
 
 ## Target Device and Orientation
 
 ```text
-TOP / Deck List / Deck Detail / Editor / Result / Collection: portrait-first 390x844
-Match: landscape-first 844x390
-Portrait match: rotate prompt
+All main screens: 844x390 landscape-first
+Web: responsive scale / adaptive layout
+Portrait: rotate prompt or limited utility only
 ```
+
+過去の `TOP / Editor / Result / Collection は portrait-first` 方針は使わない。
 
 ## Visual Direction
 
 ```text
-明るい卓上ボードゲームUI
-麻雀アプリの操作感
+Vamp-pon世界の中で流行っている記憶札遊び
+横長の夜机
+紙札
+黒インク
+ランタン光
+麻雀/ドンジャラの操作感
 カード/デッキビルダーの作りやすさ
 クリアボードの収集感
 ```
@@ -40,29 +47,33 @@ Portrait match: rotate prompt
 見た目の比喩:
 
 ```text
-明るい木のテーブルに、色分けされた牌カードを並べて遊ぶ。
+Vamp-pon世界の夜の机に、記憶札と対局帳を横長に並べて遊ぶ。
 ```
 
 避ける方向:
 
 ```text
-暗いカードゲームUI
+portrait-firstのスマホアプリUI
+明るい汎用ボードゲームUI
 高級麻雀UI
 ソシャゲガチャUI
 幼すぎる知育アプリ
 情報量が多い管理画面
+漫画効果だけのUI
 ```
 
 ## Global Layout Principles
 
+- 横画面で最初に成立させる
 - 1画面1目的
 - 主役を1つに絞る
-- 画面上部は状態
+- 画面左はナビ/状態
 - 画面中央は操作対象
-- 画面下部は主要アクション
-- 重要なボタンは親指で押しやすい位置
+- 画面右は補助/詳細/主要アクション
+- 画面下部は手牌や主要操作
 - 小さい文字を多用しない
 - 画像なしでも破綻させない
+- Webでは縮尺・余白・折りたたみで対応する
 
 ## Common Components
 
@@ -83,13 +94,14 @@ Portrait match: rotate prompt
 
 必須:
 
+- 紙札として見せる
 - 外枠にprimary category color
 - 上部帯にprimary category color
 - 下部に名前
 - 画像があっても名前を消さない
 - 選択状態が分かる
 - 捨てられる/捨てられない状態が分かる
-- オールマイティは金色アクセント
+- オールマイティはランタン光/鈍い金アクセント
 - 3〜4人戦でも自分の手牌が見やすい
 
 表示優先:
@@ -110,12 +122,13 @@ Portrait match: rotate prompt
 - 手牌枚数
 - 捨て牌枚数
 - 現在ターンかどうか
+- Vamp-pon風の札入れ/小アイコン/灯り表現
 
 表示しないもの:
 
 - 相手の手牌画像
 - 長い説明
-- 大きいアバター
+- 大きすぎるアバター
 
 ### Action Button
 
@@ -131,27 +144,21 @@ Portrait match: rotate prompt
 
 ボタンは大きく、押せる状態だけ目立たせる。
 
-## Home Screen
+## TOP Screen
 
 ### Goal
 
 すぐ始める。
 
-### Portrait Layout 390x844
+### Landscape Layout 844x390
 
 ```text
-soro-pon
-短い説明
-
-[まず遊ぶ]
-[デッキ一覧]
-[デッキを作る]
-[JSONを読み込む]
-
-動物スターターカード
+左: title / まず遊ぶ / デッキを作る / JSONを読み込む
+中央: 札箱 / 動物スターター / 最近のデッキ
+右: 対局帳 / 設定 / 簡単な説明
 ```
 
-最初のHomeに入れないもの:
+最初のTOPに入れないもの:
 
 - ニュース
 - ランキング
@@ -165,6 +172,14 @@ soro-pon
 
 作ったデッキを選ぶ。通常版/拡張版を迷わず切り替える。
 
+Landscape layout:
+
+```text
+左: デッキ一覧
+中央: 選択中デッキの詳細
+右: 遊ぶ/編集/複製/Export/Delete
+```
+
 Must Show:
 
 - デッキ名
@@ -174,19 +189,19 @@ Must Show:
 - 警告数
 - 最終更新
 
-Actions:
-
-- 遊ぶ
-- 編集
-- 複製
-- Export
-- Delete
-
 ## Deck Editor Family
 
 Deck Editorはこのゲームの主役級機能。
 
-### Tabs
+Landscape layout:
+
+```text
+左: タブ/カテゴリ/牌一覧
+中央: 編集フォーム
+右: 牌プレビュー/警告/ライブテスト
+```
+
+Tabs:
 
 ```text
 基本情報
@@ -198,17 +213,6 @@ Deck Editorはこのゲームの主役級機能。
 ルール
 バランス
 共有
-```
-
-### Editor Layout
-
-Portrait 390x844では、タブ切替中心。
-
-```text
-Header: deck name / save state / warnings
-Tab row
-Main edit area
-Live preview / action area
 ```
 
 Must:
@@ -237,20 +241,22 @@ Portraitでは対戦UIを無理に詰めず、Rotate Promptを出す。
 1. 自分の手牌
 2. 現在の操作状態
 3. 引く/捨てる/あがる/ロン/パス
-4. 直近の捨て牌
-5. 相手3人の状態
-6. 山/捨て牌
-7. 成立候補役
+4. 全員の捨て牌
+5. 直近の捨て牌
+6. 相手3人の状態
+7. 山/残り枚数
+8. 成立候補役
 
 ### Landscape Layout 844x390
 
 ```text
 ┌──────────────────────────────────────────────┐
-│ Opponent left   Center discard   Opponent top │
+│ 状態/残り枚数   相手A        相手B       設定 │
 │                                              │
-│ Opponent right  Latest discard   Role hint    │
+│ 相手C     全員の捨て牌 / 最新捨て牌      役候補 │
+│                                              │
 ├──────────────────────────────────────────────┤
-│ My hand tiles 8〜9                  Actions   │
+│ 自分の手牌8〜9枚                  Actions     │
 └──────────────────────────────────────────────┘
 ```
 
@@ -287,17 +293,13 @@ Portraitでは対戦UIを無理に詰めず、Rotate Promptを出す。
 
 何の役で何点だったか分かり、もう一局やりたくなる。
 
-表示するもの:
+Landscape layout:
 
-- 勝者 / 流局
-- ツモ/ロン
-- 上がり役
-- 特殊役
-- スコアボーナス
-- オールマイティ使用
-- 合計点
-- 獲得コイン
-- 実績/称号/コレクション進行
+```text
+左: 勝者/順位/合計点
+中央: 上がり役/特殊役/ボーナス/オールマイティ使用
+右: コイン/実績/称号/次アクション
+```
 
 Actions:
 
@@ -313,11 +315,12 @@ Actions:
 
 また遊ぶ理由を作る。
 
-Direction:
+Landscape layout:
 
 ```text
-カービィのエアライドのクリアチェッカー的なマス目
-ただしソシャゲ感は薄く
+左: フィルタ/カテゴリ
+中央: 役コレクション/5x5 Clear Board
+右: 詳細/報酬/次に狙う目標
 ```
 
 Must:
@@ -328,30 +331,13 @@ Must:
 
 ## Visual Tone
 
-- 明るく見やすい
-- カジュアル
-- でも幼すぎない
+- Vamp-pon世界内の遊びに見える
+- 紙/黒インク/ランタン光
+- 暗いが怖すぎない
 - 牌の視認性が最優先
 - 装飾より情報整理
-- 軽いゲーム感は出す
-
-## Color Direction
-
-推奨:
-
-- background: 暖かい白 / 薄いベージュ / 明るい木目
-- tile: 白 / アイボリー
-- primary: 青緑
-- accent: 黄色 / 金
-- danger: 赤
-- category: user-defined category colors
-
-避ける:
-
-- 多色グラデーション
-- 役ごとに派手な色を付けすぎる
-- 背景が暗すぎる
-- 牌と背景のコントラストが弱い
+- 通常画面は静か
+- 見せ場だけ少し派手
 
 ## Generated Design Deliverables
 
@@ -359,7 +345,7 @@ Must:
 
 最低限:
 
-- Component Sheets
+- 横画面Component Sheets
 - TOP
 - Deck List
 - Deck Detail
@@ -371,6 +357,8 @@ Must:
 
 ## Design Review Checklist
 
+- 横画面で成立しているか
+- Vamp-pon世界内の遊びに見えるか
 - 自分の手牌が主役か
 - 8枚/9枚が自然に表示できるか
 - 3人戦/4人戦の相手表示が破綻しないか
