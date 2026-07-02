@@ -25,6 +25,7 @@
 12. `docs/10-screen-design-spec.md`
 13. `docs/11-design-generation-prompt.md`
 14. `docs/12-advanced-rule-modules.md`
+15. `docs/13-deck-variants-and-balance.md`
 
 ## Absolute Rules
 
@@ -41,6 +42,7 @@
 - 拡張ルールは最初から型で考慮してよいが、MVP対局UIには勝手に入れない
 - 2枚役はツモ/ロン可能だが、ポンは作らない
 - ポン、カン、チーを作らない
+- 拡張ルール用デッキは通常デッキからコピーして作る導線にする
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -93,6 +95,8 @@ AIは、見た目や実装都合でルールを変えてはいけない。
 - MVPでは `BASE_DONJARA_RULE` のみ遊べるようにする
 - 拡張ルールを勝手にUIへ出さない
 - experimentalとして明示する
+- 通常版と拡張版はvariantとして分ける
+- ユーザーには通常デッキからコピーして作れる導線を用意する
 
 ## Implementation Priority
 
