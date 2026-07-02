@@ -31,6 +31,25 @@ docs/11-design-generation-prompt.md
 docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
 docs/41-vampon-in-world-game-direction.md
+docs/42-shared-vampon-source-policy.md
+```
+
+## Mandatory Vamp-pon World Read
+
+世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う作業では、必ず先に以下を読む。
+
+```text
+/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-world-bible.md
+/Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
+```
+
+作業対象は `soro-pon`。
+
+```text
+vamp-pon 側は読み取り専用
+vamp-pon 側を変更しない
+Vamp-pon設定をsoro-pon側へ丸コピーしない
+必要な場合は最小限の要約と参照元だけを書く
 ```
 
 ## Must Read
@@ -61,6 +80,7 @@ docs/41-vampon-in-world-game-direction.md
 22. `docs/37-visual-design-direction.md`
 23. `docs/38-screen-generation-plan.md`
 24. `docs/41-vampon-in-world-game-direction.md`
+25. `docs/42-shared-vampon-source-policy.md`
 
 ## Deprecated / History Only
 
@@ -98,6 +118,8 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - soro-ponはVamp-pon世界内で流行っている記憶札遊びとして扱う
 - 単体の漫画風アプリとしてデザインしない
 - 紙/黒インク/小さな灯り/夜の机/記憶を軸にする
+- Vamp-pon側を変更しない。Vamp-pon側は読み取り専用
+- 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う時は必ずVamp-pon shared-world-bibleを読む
 - Deck Editorは主役級機能として扱う
 - カテゴリごとに色を持たせ、牌の外枠/ラベル/チップで見せる
 - 役はテンプレートとビジュアル選択で作れるようにする
