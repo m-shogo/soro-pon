@@ -30,6 +30,7 @@ docs/10-screen-design-spec.md
 docs/11-design-generation-prompt.md
 docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
+docs/41-vampon-in-world-game-direction.md
 ```
 
 ## Must Read
@@ -59,6 +60,7 @@ docs/38-screen-generation-plan.md
 21. `docs/36-doc-consistency-audit.md`
 22. `docs/37-visual-design-direction.md`
 23. `docs/38-screen-generation-plan.md`
+24. `docs/41-vampon-in-world-game-direction.md`
 
 ## Deprecated / History Only
 
@@ -93,8 +95,11 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - オールマイティは基本自動割当。毎回クリック選択式にしない
 - 対戦画面はスマホ横向き前提で設計する
 - 画面デザイン生成が終わるまでMVP本実装に入らない
+- soro-ponはVamp-pon世界内で流行っている記憶札遊びとして扱う
+- 単体の漫画風アプリとしてデザインしない
+- 紙/黒インク/小さな灯り/夜の机/記憶を軸にする
 - Deck Editorは主役級機能として扱う
-- カテゴリごとに色を持たせ、牌の外枠/帯/チップで見せる
+- カテゴリごとに色を持たせ、牌の外枠/ラベル/チップで見せる
 - 役はテンプレートとビジュアル選択で作れるようにする
 - 得点には目安と警告を出す
 - コインで強さを買わせない
@@ -114,10 +119,20 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 ## Design Direction
 
 ```text
-明るい卓上ボードゲームUI
-+ 麻雀アプリの操作感
-+ カード/デッキビルダーの作りやすさ
-+ クリアボードの収集感
+soro-pon = Vamp-pon世界の中で流行っている記憶札遊び
+```
+
+Visual keywords:
+
+```text
+夜の机
+記憶札
+黒インク
+手帳
+小さな灯り
+紙の遊び
+静かな魔法
+手作りの盤面
 ```
 
 Orientation:
@@ -199,12 +214,14 @@ Portrait match: rotate prompt
 
 - 1画面1目的
 - 自分の手牌が主役
+- 捨て牌は全員分見える
+- 山は大きく出さず、残り枚数を小さく表示する
 - 相手3人はミニ表示
 - 牌の一番下に必ず名前
 - 画像がなければ絵文字
 - 絵文字がなければfallbackLabel
 - fallbackLabelがなければ名前
-- 牌の外枠/帯/チップでカテゴリ色を見せる
+- 牌の外枠/ラベル/チップでカテゴリ色を見せる
 - TOP/Editor/Resultは縦対応
 - Matchは横向き前提
 
