@@ -41,6 +41,7 @@
 28. `docs/26-deck-validation-and-balance-rules.md`
 29. `docs/27-cpu-minimum-strategy-and-match-flow.md`
 30. `docs/28-release-safety-checklist.md`
+31. `docs/29-result-progression-collection.md`
 
 ## Absolute Rules
 
@@ -69,12 +70,14 @@
 - カテゴリごとに色を持たせ、牌の外枠/帯/チップで見せる
 - 役はテンプレートとビジュアル選択で作れるようにする
 - 得点には目安と警告を出す
+- コインで強さを買わせない
+- コインは見た目・称号・作成補助・コレクションに使う
 - 画面やボタンを追加する場合は、先に `docs/17-screen-actions-and-requirements.md` に仕様を追記する
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
 - PWAを作らない
-- 実績・ランキング・公開ギャラリーを作らない
+- ランキング・公開ギャラリーを作らない
 
 ## Core Product
 
@@ -181,6 +184,28 @@ Deck Editorはこのゲームの主役級機能。
 - 役作成時にライブテストを出す
 - かんたん/詳細モードを分ける
 
+## Result Progression Policy
+
+リザルト後に継続導線を出す。
+
+固定:
+
+- totalPointsに応じてコインを付与する
+- 1局のコイン上限は500
+- 流局/敗北時も参加報酬を少量付与する
+- 称号を解放する
+- クリアボード型の実績を進める
+- Role Collectionを埋める
+- Result Albumに高得点や初達成を残す
+- コインは強さではなく、見た目・称号・作成補助・コレクションに使う
+
+禁止:
+
+- コインで強い牌を買う
+- コインで高得点役を買う
+- コインで勝率を上げる
+- コインでオールマイティを増やす
+
 ## Validation Policy
 
 固定:
@@ -248,13 +273,15 @@ production buildにlocal fixtureを含めない。
 4. Role evaluation engine
 5. Scoring and MatchResult
 6. Deck validation
-7. 3人戦/4人戦のMatchState
-8. 山生成・配牌
-9. ツモ・捨てる・ターン進行
-10. CPU minimum strategy
-11. JSON import/export
-12. Deck Editor UI
-13. Match UI
+7. Result progression model
+8. 3人戦/4人戦のMatchState
+9. 山生成・配牌
+10. ツモ・捨てる・ターン進行
+11. CPU minimum strategy
+12. JSON import/export
+13. Deck Editor UI
+14. Match UI
+15. Result / Collection UI
 
 ## Commit Policy
 
