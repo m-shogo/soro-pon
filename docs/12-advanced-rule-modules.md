@@ -4,7 +4,7 @@
 
 `soro-pon` は、標準ルールとしてドンジャラ互換の3〜4人用ルールを持つ。
 
-一方で、将来的にはユーザーがより自由な役・手札構造・ポン・リーチなどを設定できる拡張ルールを入れたい。
+一方で、将来的にはユーザーがより自由な役・手札構造・リーチ・得点ボーナスなどを設定できる拡張ルールを入れたい。
 
 このファイルは、拡張ルール案を標準ルールと混同しないためのメモ。
 
@@ -89,38 +89,68 @@ type Role = {
 - 拡張ルールではspan=2〜14を許可する
 - UI上は「この役は何枚で成立するか」を必ず表示する
 
-## Proposed Advanced Rule: Pon on One-away Role
+## Proposed Advanced Rule: 2-card Roles
 
-1枚で役が完成する場合、ポン可能にする。
+2枚役は、成立しやすい小型役として扱う。
+
+重要:
+
+- 2枚役はツモで成立可能
+- 2枚役はロンで成立可能
+- 2枚役のためのポンは作らない
+- 2枚役は「鳴き素材」ではなく「あがり役」
 
 例:
 
 ```text
-10枚役がある
-現在9枚そろっている
-他プレイヤーが最後の1枚を捨てた
-=> ポン可能
+2枚役: 兄弟
+必要牌: A + B
+
+自分がBを引いた
+=> ツモあがり可能
+
+他プレイヤーがBを捨てた
+=> ロンあがり可能
+
+他プレイヤーがBを捨てた
+=> ポンは不可
 ```
 
-このポンは、麻雀のポンと完全同一というより、soro-pon独自の「役完成ポン」。
+### Why no Pon
 
-### Risk
+2枚役でポンを許可すると、反応が多発してテンポが止まりやすい。
 
-- 大型役が強くなりすぎる
-- 捨て牌が常に危険になる
-- 反応待ちUIが増える
-- CPU判断が難しくなる
+また、2枚役は成立しやすいぶん、ポンまで許可すると小型役が強くなりすぎる。
 
-### Implementation Timing
+そのため、2枚役は **ツモ/ロンのあがり判定だけ** にする。
 
-MVPには入れない。  
-ただし、状態設計には以下を考慮する。
+## Proposed Advanced Rule: Discard Win / Ron
+
+他プレイヤーの捨て牌で役が完成する場合、ロン可能にする。
+
+これはポンではない。
+
+```text
+あと1枚で役が完成する
+他プレイヤーがその牌を捨てる
+=> ロン可能
+```
+
+大型役でも2枚役でも、捨て牌であがり条件が完成する場合は `ron` として扱う。
+
+### State Needed
 
 - lastDiscard
 - discardOwnerId
 - reactionCandidates
-- canPonForRole
+- canRon
 - passReaction
+
+### Not Needed
+
+- canPonForRole
+- pon reaction
+- open meld state
 
 ## Proposed Advanced Rule: Duplicate Character Bonus
 
@@ -192,6 +222,7 @@ MVPには入れない。
 
 以下は入れない。
 
+- ポン
 - カン
 - チー
 
@@ -200,6 +231,7 @@ MVPには入れない。
 - ルールが麻雀寄りに複雑化する
 - 初心者に分かりにくい
 - UI/CPUが重くなる
+- 反応待ちでテンポが止まりやすい
 - soro-ponの主役である自作役体験からズレやすい
 
 ## Balance Assessment
@@ -208,17 +240,18 @@ MVPには入れない。
 
 - 大型役を作れる
 - オタク的な「この14枚で神役」ができる
+- 2枚役で小さな関係性を表現できる
+- ロンがあることで捨て牌に緊張感が出る
 - 友達に見せたくなる
 - JSON共有と相性がよい
 - 自作デッキ文化が強くなる
 
 ### 壊れやすい点
 
-- 役が大きすぎると毎回同じ狙いになる
 - 2枚役が強すぎると小役連打になる
 - 14枚役が強すぎるとゲームが長くなる
-- ポン可能条件が多すぎるとテンポが止まる
-- リーチとポンが同時にあると反応UIが重くなる
+- ロン可能条件が多すぎると捨て牌確認が増える
+- リーチとロンが同時にあると反応UIが重くなる
 - CPUが馬鹿に見えやすい
 
 ## Recommendation
@@ -233,6 +266,7 @@ MVPには入れない。
 - role span
 - role grouping strategy
 - reaction window
+- ron-capable state
 - duplicate bonus model
 - reach-capable state
 
@@ -245,6 +279,7 @@ const BASE_DONJARA_RULE = {
   winHandSize: 9,
   roleSpanMin: 3,
   roleSpanMax: 3,
+  allowRon: true,
   allowPon: false,
   allowReach: false,
   allowDuplicateBonus: false,
@@ -262,7 +297,8 @@ const EXTENDED_HAND_RULE = {
   winHandSize: 14,
   roleSpanMin: 2,
   roleSpanMax: 14,
-  allowPon: true,
+  allowRon: true,
+  allowPon: false,
   allowReach: true,
   allowDuplicateBonus: true,
   allowKan: false,
@@ -274,6 +310,9 @@ const EXTENDED_HAND_RULE = {
 
 - ドンジャラ互換ルールを標準にする
 - 拡張ルールはルールモジュールとして持つ
+- 2枚役はツモ/ロン可能
+- 2枚役のポンはなし
+- ポン/カン/チーは作らない
 - 最初の実装では標準ルールだけ遊べるようにする
 - データモデルは拡張に耐えるようにする
 - UIに出すのは、標準ルールが気持ちよく遊べるようになってから
