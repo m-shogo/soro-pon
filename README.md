@@ -106,6 +106,12 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 
 AIは画面やボタンを追加する場合、必ずこのファイルに仕様を追加してから実装します。
 
+## MVP開始前チェック
+
+実装に入る前の残TODO、仮固定案、MVP完了条件、テスト観点は `docs/18-mvp-readiness-checklist.md` にまとめます。
+
+ここに残っている未確定項目を固定してから、MVP実装プロンプトを更新します。
+
 ## デザイン生成方針
 
 最終的には、対戦画面・Editor画面・結果画面などのデザインも、このrepo内の情報をもとに生成します。
@@ -134,6 +140,7 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Wildcard Rules](docs/15-wildcard-rules.md)
 - [Match Layout and Orientation](docs/16-match-layout-orientation.md)
 - [Screen Actions and Requirements](docs/17-screen-actions-and-requirements.md)
+- [MVP Readiness Checklist](docs/18-mvp-readiness-checklist.md)
 
 ## 現時点でやらないこと
 
