@@ -31,6 +31,7 @@
 18. `docs/16-match-layout-orientation.md`
 19. `docs/17-screen-actions-and-requirements.md`
 20. `docs/18-mvp-readiness-checklist.md`
+21. `docs/19-fixed-mvp-decisions.md`
 
 ## Absolute Rules
 
@@ -47,7 +48,9 @@
 - 拡張ルールは最初から型で考慮してよいが、MVP対局UIには勝手に入れない
 - 2枚役はツモ/ロン可能だが、ポンは作らない
 - ポン、カン、チーを作らない
-- 拡張ルール用デッキは通常デッキからコピーして作る導線にする
+- デッキ入口は1つにし、通常版/拡張版は同じDeckProject内のvariantとして扱う
+- 通常版/拡張版が両方ある場合はワンクリックで切り替え可能にする
+- 拡張ルール用デッキは通常版から同じDeckProject内に作成する
 - ロン/ツモ判定は上がり役だけを対象にする
 - 特殊役とスコアボーナスはロン候補にしない
 - 同じキャラボーナスは上がった後の加点として扱う
@@ -59,7 +62,7 @@
 - TOP/Editor/Resultは縦画面にも対応する
 - 縦向きで対戦画面を無理に作らず、横向き案内を出す
 - 画面やボタンを追加する場合は、先に `docs/17-screen-actions-and-requirements.md` に仕様を追記する
-- MVP実装前に `docs/18-mvp-readiness-checklist.md` の未確定項目を確認する
+- MVP実装前に `docs/19-fixed-mvp-decisions.md` を確認する
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -91,6 +94,19 @@ AIは、見た目や実装都合でルールを変えてはいけない。
 - 9枚であがり判定
 - あがり形は3枚セット×3組
 - 役と得点はデッキ定義
+
+## Deck Project Policy
+
+デッキ入口は1つにする。
+
+```text
+DeckProject
+  ├─ tiles: 共通牌セット
+  ├─ variant: 通常版
+  └─ variant: 拡張版
+```
+
+通常版と拡張版が両方ある場合は、Deck Detail / Match Setup / Deck Editorでワンクリック切替できるようにする。
 
 ## Role Taxonomy
 
@@ -141,19 +157,22 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 - ResultからDeck Editorへ戻れるようにする
 - Deck EditorにはBalance Checkを持たせる
 
-## MVP Readiness Policy
+## MVP Fixed Policy
 
-MVP実装前に `docs/18-mvp-readiness-checklist.md` を確認する。
+MVP実装前に `docs/19-fixed-mvp-decisions.md` を確認する。
 
-特に以下をユーザー判断または仮固定する。
+固定済み:
 
-- 標準総牌枚数
-- 1種類あたりの推奨枚数
-- 複数人ロンの扱い
-- 複数win_role成立時の得点方針
-- CPUの最低限ロジック
-- 保存方式
-- 公式サンプルデッキ
+- 標準総牌枚数は81枚
+- 1種類あたり3枚推奨
+- 3人戦/4人戦は同じデッキで対応
+- 複数人ロンは席順優先で1人
+- 複数win_role成立時は最高点1つ
+- CPUは最低限の役寄せ + ランダム
+- MVP初期はlocalStorage
+- 画像はMVP初期ではemoji/fallbackLabel優先
+- 公式/公開サンプルは安全テーマ
+- ローカル検証データはgit管理外
 
 ## Advanced Rule Policy
 
@@ -184,14 +203,15 @@ MVP実装前に `docs/18-mvp-readiness-checklist.md` を確認する。
 
 1. 型定義
 2. Zod schema
-3. 3人戦/4人戦のMatchState
-4. 山生成・配牌
-5. ツモ・捨てる・ターン進行
-6. 役判定
-7. 得点計算
-8. JSON import/export
-9. Editor UI
-10. Match UI
+3. DeckProject / variant model
+4. 3人戦/4人戦のMatchState
+5. 山生成・配牌
+6. ツモ・捨てる・ターン進行
+7. 役判定
+8. 得点計算
+9. JSON import/export
+10. Editor UI
+11. Match UI
 
 ## Design Generation Priority
 
@@ -202,7 +222,7 @@ MVP実装前に `docs/18-mvp-readiness-checklist.md` を確認する。
 3. `docs/10-screen-design-spec.md` で画面要件を確認
 4. `docs/16-match-layout-orientation.md` で対戦画面の向きを確認
 5. `docs/17-screen-actions-and-requirements.md` で必要ボタンと挙動を確認
-6. `docs/18-mvp-readiness-checklist.md` でMVP前提を確認
+6. `docs/19-fixed-mvp-decisions.md` でMVP固定判断を確認
 7. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
 
 デザイン生成時も、ルールを変えない。
