@@ -23,6 +23,7 @@ docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 ```
 
 画面生成・UI実装時の正本。
@@ -39,6 +40,7 @@ docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -111,6 +113,33 @@ PCでは中央ゲーム卓 + 外側補助/夜机背景
 文字入り画像を量産する
 ロン/あがる/捨てるなど必須操作をPC専用外側パネルへ逃がす
 札のaspect-ratioを崩す
+```
+
+## UI Quality Gate
+
+UI実装では `docs/49-ui-quality-gate-and-codex-design-rules.md` を必ず守る。
+
+固定:
+
+```text
+Codexはデザインを発明しない
+採用済みデザインターゲット10枚をUI品質基準にする
+tokens.css以外へ新しい色を勝手に追加しない
+画面ごとの独自ボタン/独自パネルを作らない
+UIはprimitives/components経由で実装する
+Component Galleryを先に作る
+UI変更時は指定サイズでスクリーンショット確認する
+```
+
+禁止:
+
+```text
+白い汎用WebアプリUI
+明るい量産ボードゲームUI
+Material Design風
+Tailwind demo風
+色数が多いカードゲームUI
+角丸/影/余白が画面ごとに違うUI
 ```
 
 ## Adopted Design Target
@@ -192,6 +221,7 @@ Vamp-ponキャラを画像生成・画面デザイン・対戦相手アバター
 29. `docs/46-landscape-first-web-responsive-policy.md`
 30. `docs/47-mvp-implementation-final-gate.md`
 31. `docs/48-responsive-crisp-ui-system.md`
+32. `docs/49-ui-quality-gate-and-codex-design-rules.md`
 
 ## Deprecated / History Only
 
@@ -240,6 +270,13 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - 重要UI寸法は整数pxへ丸める
 - 紙パネルや手描き縁が必要な箇所だけ9-sliceを使う
 - 低解像度PNGを大きく拡大しない
+- Codexはデザインを発明しない
+- 採用済みデザインターゲット10枚をUI品質基準にする
+- tokens.css以外へ新しい色を勝手に追加しない
+- 画面ごとの独自ボタン/独自パネルを作らない
+- UIはprimitives/components経由で実装する
+- Component Galleryを先に作る
+- UI変更時は指定サイズでスクリーンショット確認する
 - TOP/Deck/Editor/Result/Collectionもportrait-firstにしない
 - 縦画面に本UIを無理に詰めず、rotate promptまたは限定utilityにする
 - soro-ponはVamp-pon世界内で流行っている記憶札遊びとして扱う
@@ -307,9 +344,10 @@ Visual keywords:
 12. CPU minimum strategy
 13. localStorage
 14. JSON import/export
-15. Deck Editor UI
-16. Match UI
-17. Result / Collection UI
+15. UI foundation: tokens / primitives / responsive metrics / Component Gallery
+16. Deck Editor UI
+17. Match UI
+18. Result / Collection UI
 
 ## Test Policy
 
