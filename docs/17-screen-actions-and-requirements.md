@@ -6,6 +6,20 @@
 
 AIが実装時に画面を勝手に増やしたり、重要なボタンを抜かしたり、対戦画面に不要な導線を混ぜないようにする。
 
+## Final Gate Alignment
+
+このファイルは `docs/47-mvp-implementation-final-gate.md` と整合する。
+
+固定:
+
+```text
+全主要画面は 844x390 landscape-first
+portrait は rotate prompt または限定utilityのみ
+TOP / Deck / Editor / Result / Collection も横画面を正とする
+```
+
+古い `TOP/Editor/Resultは縦画面にも対応` 方針は使わない。
+
 ## Global Rules
 
 - 1画面1目的
@@ -13,10 +27,11 @@ AIが実装時に画面を勝手に増やしたり、重要なボタンを抜か
 - 危険操作は確認を挟む
 - JSON共有では画像を含めない
 - 既存IP名や既存IP画像を公式UIに出さない
-- 対戦画面は横向き前提
-- TOP/Editor/Resultは縦画面にも対応
+- 全主要画面は横画面前提
 - 役候補・特殊役・ボーナスを混同しない
 - オールマイティ使用は結果で明示する
+- `win_role` だけをロン/ツモ候補にする
+- `special_bonus` と `ScoreBonus[]` は上がった後だけ加点する
 
 ## Screen List
 
@@ -38,8 +53,9 @@ MVP〜初期版で必要な画面。
 13. Match Landscape
 14. Rule Sheet / Role List Modal
 15. Result
-16. Rotate Prompt
-17. Confirm / Error Dialogs
+16. Collection / Clear Board
+17. Rotate Prompt
+18. Confirm / Error Dialogs
 ```
 
 ## 1. TOP
@@ -47,6 +63,12 @@ MVP〜初期版で必要な画面。
 ### Goal
 
 最短で遊ぶ・作る・読み込む入口。
+
+### Orientation
+
+```text
+844x390 landscape-first
+```
 
 ### Primary Buttons
 
@@ -91,6 +113,12 @@ MVP〜初期版で必要な画面。
 
 作成済みデッキ、公式サンプル、最近使ったデッキを管理する。
 
+### Orientation
+
+```text
+844x390 landscape-first
+```
+
 ### Display
 
 各デッキカードに表示する。
@@ -123,43 +151,24 @@ MVP〜初期版で必要な画面。
 
 ### Button Behavior
 
-#### 遊ぶ
-
-- Match Setupへ遷移
-- 致命的なバリデーションエラーがある場合は開始不可
-
-#### 編集
-
-- Deck Editorへ遷移
-
-#### コピー
-
-- 同じルール設定のコピーを作成
-- 名前は `{deckName} copy` または `{deckName} コピー`
-
-#### 拡張版を作成
-
-- 通常版から拡張版variantを作成
-- tilesはコピー
-- rolesはコピーして編集可能
-- ruleConfigを `extended-hand` にする
-- 拡張版はexperimentalラベルを表示
-
-#### JSON書き出し
-
-- 画像情報を除外してexport
-- export前に「画像は共有されません」を表示
-
-#### 削除
-
-- 確認ダイアログ必須
-- 公式サンプルは削除不可または再追加可能にする
+- [遊ぶ]: Match Setupへ遷移。致命的エラーがある場合は開始不可
+- [編集]: Deck Editorへ遷移
+- [コピー]: 同じルール設定のコピーを作成
+- [拡張版を作成]: `extended-hand` variantを同じDeckProjectに追加
+- [JSON書き出し]: 画像情報を除外してexport
+- [削除]: 確認ダイアログ必須
 
 ## 3. Deck Detail
 
 ### Goal
 
 遊ぶ前にデッキの内容を確認する。
+
+### Orientation
+
+```text
+844x390 landscape-first
+```
 
 ### Display
 
@@ -195,10 +204,20 @@ MVP〜初期版で必要な画面。
 
 デッキ全体を編集する親画面。
 
+### Orientation
+
+```text
+844x390 landscape-first
+左: タブ/一覧
+中央: 編集フォーム
+右: 牌プレビュー/警告/ライブテスト
+```
+
 ### Tabs
 
 ```text
 基本情報
+カテゴリ
 牌
 上がり役
 特殊役
@@ -238,7 +257,7 @@ MVP〜初期版で必要な画面。
 - デッキ名必須
 - 牌が1種類以上
 - 総牌枚数が最低必要数以上
-- 3人/4人の設定
+- supportedPlayerCounts が 3/4 のみ
 - 上がり役が1つ以上
 - 画像共有禁止フィールドがない
 
@@ -273,48 +292,16 @@ local image 任意
 [プレビュー]
 ```
 
-### Field Rules
-
-#### name
-
-- 必須
-- 牌の下部に必ず表示される
-
-#### categories
-
-- 複数可
-- 入力補完を出す
-- 既存カテゴリから選べる
-
-#### emoji / fallbackLabel
-
-- 画像がない場合の見た目
-- fallbackLabelは1〜2文字推奨
-
-#### count
-
-- 1以上
-- 0は不可
-
-#### local image
-
-- 共有対象外
-- exportされないことを明記
-
-#### wildcard
-
-- オールマイティ牌にする場合だけ設定
-- デフォルトは `maxUsePerRole = 1`
-- `canTriggerRonWhenDiscarded = false` 推奨
-- `countsForScoreBonus = false` 推奨
-
-### Preview
-
-プレビューは以下を確認できるようにする。
+### Preview Priority
 
 ```text
 image > emoji > fallbackLabel > name
 ```
+
+### Local Image Rule
+
+- 共有対象外
+- exportされないことを明記
 
 ## 6. Win Role Editor
 
@@ -353,18 +340,10 @@ maxWildcardUse
 
 - `kind = win_role`
 - `canTsumo` または `canRon` のどちらかはtrue
-- 標準ルールではspanは3
+- 標準ルールではspanは3〜9
 - 拡張ルールではspanは2〜14
 - 2枚役は低〜中点を推奨
 - 特殊役やボーナスとして扱うものをここに入れすぎない
-
-### Warnings
-
-```text
-2枚の上がり役の点数が高すぎる可能性があります
-ロン可能な上がり役が多すぎます
-最高点役でオールマイティが許可されています
-```
 
 ## 7. Special Bonus Editor
 
@@ -404,19 +383,15 @@ maxWildcardUse
 - ロン候補にしない
 - あがり成立後だけ判定する
 
-### Useful Conditions
-
-```text
-exact_group: 指定3枚
-choose_n_from: 4枚から3枚 / 5枚から3枚
-same_category_count: 特定カテゴリ3枚
-```
-
 ## 8. Score Bonus Editor
 
 ### Goal
 
-同じキャラ/同じ牌/同じカテゴリなどの加点を作る。
+同じ牌/同じ名前/同じカテゴリなどの加点を作る。
+
+### Data Rule
+
+`score_bonus` は `Role.kind` に入れず、`ScoreBonus[]` として扱う。
 
 ### Fields
 
@@ -458,8 +433,9 @@ allowWildcard 非推奨
 
 ```text
 現在のルール: 通常版 / 拡張版
+対応人数: 3人 / 4人
 手牌: 8 -> 9 または 13 -> 14
-role span: 3 または 2〜14
+role span: 3〜9 または 2〜14
 ロン: ON
 ポン: OFF固定
 カン: OFF固定
@@ -480,8 +456,10 @@ role span: 3 または 2〜14
 
 ### Restrictions
 
+- `supportedPlayerCounts` は 3/4 のみ
+- 2人戦は作らない
 - ポン/カン/チーはONにできない
-- MVPでは拡張版の対局UIは出さない
+- MVPでは拡張版の対局UIは後回しでもよい
 - experimentalはラベル表示する
 
 ## 10. Balance Check
@@ -503,6 +481,7 @@ role span: 3 または 2〜14
 最高点役でオールマイティが許可されている
 総牌枚数が少なすぎる
 3人/4人に対して山が足りない
+supportedPlayerCountsが不正
 画像共有禁止フィールドがある
 ```
 
@@ -514,14 +493,6 @@ role span: 3 または 2〜14
 [該当牌を編集]
 [警告を無視して保存]
 [戻る]
-```
-
-### Severity
-
-```text
-Error: 遊べない/保存不可
-Warning: 遊べるがバランス注意
-Info: 改善提案
 ```
 
 ## 11. Import / Export
@@ -559,9 +530,10 @@ Info: 改善提案
 ### Import Validation
 
 - Zod schema validation
-- 画像系フィールドを拒否/除外
+- 画像系フィールドを拒否
 - version確認
 - ruleConfig確認
+- supportedPlayerCounts確認
 - 牌数/役数確認
 - エラーは具体的に出す
 
@@ -570,6 +542,12 @@ Info: 改善提案
 ### Goal
 
 対戦開始前に、使用デッキと人数を確認する。
+
+### Orientation
+
+```text
+844x390 landscape-first
+```
 
 ### Display
 
@@ -600,15 +578,16 @@ CPU人数
 
 - 致命的エラーがない
 - 人数が3または4
+- 人数がsupportedPlayerCountsに含まれている
 - 山枚数が足りる
 - 上がり役がある
-- MVPではbase-donjaraのみ開始可
+- MVPではbase-donjaraを優先する
 
 ## 13. Match Landscape
 
 ### Goal
 
-4人対戦を見やすく遊ぶ。
+3〜4人対戦を見やすく遊ぶ。
 
 ### Orientation
 
@@ -640,45 +619,20 @@ Bottom-right: actions
 
 ### Button States
 
-#### 引く
-
-- 自分のdraw phaseだけ有効
-- 引いた後は無効
-
-#### 捨てる
-
-- discard phaseで牌選択後に有効
-- 牌未選択なら無効
-
-#### あがる
-
-- 自分の手牌でwin_role成立時のみ有効
-- special_bonusやscore_bonusだけでは有効にしない
-
-#### ロン
-
-- 他人の捨て牌でwin_role成立時のみ表示/有効
-- special_bonusやscore_bonusでは表示しない
-- 捨てられたオールマイティでのロンは原則不可
-
-#### パス
-
-- reaction phaseで表示
-
-#### 役表
-
-- Rule Sheet Modalを開く
-
-#### メニュー
-
-- 一時停止/中断/設定を開く
+- [引く]: 自分のdraw phaseだけ有効
+- [捨てる]: discard phaseで牌選択後に有効
+- [あがる]: 自分の手牌でwin_role成立時のみ有効
+- [ロン]: 他人の捨て牌でwin_role成立時のみ表示/有効
+- [パス]: reaction phaseで表示
+- [役表]: Rule Sheet Modalを開く
+- [メニュー]: 一時停止/中断/設定を開く
 
 ### Must Show
 
 ```text
 ・現在の手番
 ・自分の手牌 8〜9枚
-・相手3人の手牌枚数
+・相手2〜3人の手牌枚数
 ・直近の捨て牌
 ・各プレイヤーの捨て牌
 ・山枚数
@@ -710,17 +664,6 @@ Bottom-right: actions
 ルール
 ```
 
-### Buttons
-
-```text
-[閉じる]
-[上がり役]
-[特殊役]
-[ボーナス]
-[オールマイティ]
-[ルール]
-```
-
 ### Display Rules
 
 - 上がり役はツモ/ロン対象であることを表示
@@ -734,17 +677,25 @@ Bottom-right: actions
 
 何で勝って何点だったか分かる。
 
+### Orientation
+
+```text
+844x390 landscape-first
+```
+
 ### Display
 
 ```text
 勝者
-ツモ/ロン
+ツモ/ロン/流局
 放銃者（ロン時）
 上がり役
 特殊役
 スコアボーナス
 オールマイティ使用
 合計点
+獲得コイン
+コレクション進行
 ```
 
 ### Buttons
@@ -754,32 +705,42 @@ Bottom-right: actions
 [デッキを調整]
 [役表を見る]
 [結果をコピー]
+[コレクションを見る]
 [TOPへ]
 ```
 
-### Result Copy
-
-画像なしテキストでコピー。
-
-```text
-soro-ponで勝利！
-上がり役: xxx
-特殊役: yyy
-合計: 00点
-```
-
-公式文言で既存IP名を煽らない。
-
-## 16. Rotate Prompt
+## 16. Collection / Clear Board
 
 ### Goal
 
-縦向きで対戦画面に入った時に、横向きを促す。
+集めた役・ボーナス・実績を確認し、もう一度遊ぶ理由を作る。
+
+### Orientation
+
+```text
+844x390 landscape-first
+```
 
 ### Display
 
 ```text
-対戦画面は横向き推奨です
+Role Collection
+ScoreBonus Collection
+Result Album Top 10
+Clear Board 5x5
+称号/見た目報酬
+```
+
+## 17. Rotate Prompt
+
+### Goal
+
+縦向きで主要画面に入った時に、横向きを促す。
+
+### Display
+
+```text
+そろぽんは横画面で遊びます
 端末を横向きにしてください
 ```
 
@@ -787,12 +748,12 @@ soro-ponで勝利！
 
 ```text
 [対戦準備に戻る]
-[このまま表示を試す] optional
+[TOPへ戻る]
 ```
 
-MVPでは「このまま表示を試す」は不要でもよい。
+MVPでは「このまま表示を試す」は不要。
 
-## 17. Confirm / Error Dialogs
+## 18. Confirm / Error Dialogs
 
 ### Confirm Dialogs
 
@@ -817,6 +778,7 @@ JSONが読み込めない
 山枚数が足りない
 上がり役がない
 3人/4人設定が不正
+2人戦は未対応
 MVPでは拡張ルールを開始できない
 ```
 
@@ -824,37 +786,38 @@ MVPでは拡張ルールを開始できない
 
 ```text
 TOP
- ├─ Deck List
- │   ├─ Deck Detail
- │   │   ├─ Match Setup
- │   │   └─ Deck Editor
- │   ├─ Import / Export
- │   └─ Deck Editor
- ├─ Import
- └─ Match Setup
+  ├─ Deck List
+  │   ├─ Deck Detail
+  │   │   ├─ Match Setup
+  │   │   └─ Deck Editor
+  │   ├─ Import / Export
+  │   └─ Deck Editor
+  ├─ Import
+  └─ Match Setup
 
 Deck Editor
- ├─ Tile Editor
- ├─ Win Role Editor
- ├─ Special Bonus Editor
- ├─ Score Bonus Editor
- ├─ Rule Settings
- ├─ Balance Check
- └─ Import / Export
+  ├─ Tile Editor
+  ├─ Win Role Editor
+  ├─ Special Bonus Editor
+  ├─ Score Bonus Editor
+  ├─ Rule Settings
+  ├─ Balance Check
+  └─ Import / Export
 
 Match Setup
- ├─ Rule Sheet Modal
- └─ Match Landscape
+  ├─ Rule Sheet Modal
+  └─ Match Landscape
 
 Match Landscape
- ├─ Rule Sheet Modal
- ├─ Result
- └─ Rotate Prompt
+  ├─ Rule Sheet Modal
+  ├─ Result
+  └─ Rotate Prompt
 
 Result
- ├─ Match Setup
- ├─ Deck Editor
- └─ TOP
+  ├─ Match Setup
+  ├─ Deck Editor
+  ├─ Collection / Clear Board
+  └─ TOP
 ```
 
 ## Final Notes
@@ -864,3 +827,4 @@ Result
 - 対戦中にEditorやJSON共有を目立たせない
 - Editorではバランス警告を重視する
 - ResultからDeck Editorへ戻れることは重要
+- 横画面固定方針を崩さない
