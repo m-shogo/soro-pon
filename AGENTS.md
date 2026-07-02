@@ -4,50 +4,56 @@
 
 ## Project Status
 
-現在は実装前の設計・資料整理フェーズ。  
-実装または画面デザイン生成を始める前に、必ず `docs/` を読む。
+```text
+MVP実装準備完了。
+```
+
+実装または画面デザイン生成を始める前に、必ず `README.md` とこのファイルを読む。
+
+## Implementation Entry
+
+実装開始時の正本。
+
+```text
+README.md
+AGENTS.md
+CLAUDE.md or CODEX.md
+docs/34-mvp-implementation-prompt.md
+docs/35-mvp-test-cases.md
+```
 
 ## Must Read
 
-実装前に読むこと。
+仕様確認で読むこと。
 
 1. `README.md`
-2. `docs/00-product-brief.md`
-3. `docs/01-scope-and-non-goals.md`
-4. `docs/02-game-rules.md`
-5. `docs/03-data-model.md`
-6. `docs/04-sharing-and-local-images.md`
-7. `docs/05-ip-and-ugc-policy.md`
-8. `docs/06-design-principles.md`
-9. `docs/07-roadmap.md`
-10. `docs/08-fable-implementation-prompt.md`
-11. `docs/09-local-dev-fixtures-policy.md`
-12. `docs/10-screen-design-spec.md`
-13. `docs/11-design-generation-prompt.md`
-14. `docs/12-advanced-rule-modules.md`
-15. `docs/13-deck-variants-and-balance.md`
-16. `docs/14-role-taxonomy-and-scoring.md`
-17. `docs/15-wildcard-rules.md`
-18. `docs/16-match-layout-orientation.md`
-19. `docs/17-screen-actions-and-requirements.md`
-20. `docs/18-mvp-readiness-checklist.md`
-21. `docs/19-fixed-mvp-decisions.md`
-22. `docs/20-extended-role-span-and-db-policy.md`
-23. `docs/21-remaining-spec-gaps-and-next-decisions.md`
-24. `docs/22-wildcard-ux-and-mahjong-feel.md`
-25. `docs/23-deck-editor-ux-and-category-colors.md`
-26. `docs/24-scoring-and-payment.md`
-27. `docs/25-role-evaluation-engine.md`
-28. `docs/26-deck-validation-and-balance-rules.md`
-29. `docs/27-cpu-minimum-strategy-and-match-flow.md`
-30. `docs/28-release-safety-checklist.md`
-31. `docs/29-result-progression-collection.md`
-32. `docs/30-first-run-and-playtest-loop.md`
-33. `docs/31-implementation-stack-decision.md`
-34. `docs/32-zod-schema-spec.md`
-35. `docs/33-official-animal-starter-deck.md`
-36. `docs/34-mvp-implementation-prompt.md`
-37. `docs/35-mvp-test-cases.md`
+2. `AGENTS.md`
+3. `CLAUDE.md` or `CODEX.md`
+4. `docs/03-data-model.md`
+5. `docs/17-screen-actions-and-requirements.md`
+6. `docs/23-deck-editor-ux-and-category-colors.md`
+7. `docs/24-scoring-and-payment.md`
+8. `docs/25-role-evaluation-engine.md`
+9. `docs/26-deck-validation-and-balance-rules.md`
+10. `docs/27-cpu-minimum-strategy-and-match-flow.md`
+11. `docs/28-release-safety-checklist.md`
+12. `docs/29-result-progression-collection.md`
+13. `docs/30-first-run-and-playtest-loop.md`
+14. `docs/31-implementation-stack-decision.md`
+15. `docs/32-zod-schema-spec.md`
+16. `docs/33-official-animal-starter-deck.md`
+17. `docs/34-mvp-implementation-prompt.md`
+18. `docs/35-mvp-test-cases.md`
+19. `docs/36-doc-consistency-audit.md`
+
+## Deprecated / History Only
+
+以下は履歴用。実装の正本として使わない。
+
+```text
+docs/08-fable-implementation-prompt.md
+docs/21-remaining-spec-gaps-and-next-decisions.md
+```
 
 ## Absolute Rules
 
@@ -80,7 +86,9 @@
 - コインは見た目・称号・作成補助・コレクションに使う
 - 実装スタックは TypeScript + React + Vite + Zod + Vitest
 - MVP初期で Next.js / Unity / Godot / Phaser / Supabase / Firebase を使わない
+- MVP初期で Redux / Zustand / TanStack Query / Tailwind を使わない
 - 公式サンプルは `samples/animal-starter.deck.json` を使う
+- local IP fixtureをproduction/publicへ入れない
 - 画面やボタンを追加する場合は、先に `docs/17-screen-actions-and-requirements.md` に仕様を追記する
 - オンライン対戦を作らない
 - ログインを作らない
