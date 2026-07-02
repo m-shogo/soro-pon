@@ -24,6 +24,7 @@
 11. `docs/09-local-dev-fixtures-policy.md`
 12. `docs/10-screen-design-spec.md`
 13. `docs/11-design-generation-prompt.md`
+14. `docs/12-advanced-rule-modules.md`
 
 ## Absolute Rules
 
@@ -37,6 +38,7 @@
 - 2人戦を作らない
 - 最終ルールはドンジャラと同じ構造にする
 - 通常手牌8枚、引いた後9枚、あがり形は3枚セット×3組
+- 拡張ルールは最初から型で考慮してよいが、MVP対局UIには勝手に入れない
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -68,6 +70,25 @@ AIは、見た目や実装都合でルールを変えてはいけない。
 - 9枚であがり判定
 - あがり形は3枚セット×3組
 - 役と得点はデッキ定義
+
+## Advanced Rule Policy
+
+以下の拡張ルール案はある。
+
+- 13枚手牌 + 14枚あがり
+- 2〜14枚役
+- 1枚で役が完成する場合のポン
+- 同じ牌/同じキャラが多いほど得点反映
+- リーチ
+- カンなし
+- チーなし
+
+方針:
+
+- データモデルでは将来拡張に耐えるようにする
+- MVPでは `BASE_DONJARA_RULE` のみ遊べるようにする
+- 拡張ルールを勝手にUIへ出さない
+- experimentalとして明示する
 
 ## Implementation Priority
 
