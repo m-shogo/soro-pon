@@ -31,6 +31,29 @@ docs/shared-vampon-master-index.md
 
 作業対象は `soro-pon`。Vamp-pon 側は読み取り専用として扱う。
 
+## Character Visual Rule
+
+Vamp-ponキャラを画面デザインや画像生成に出す場合は、文章だけで代用しない。
+
+必ずVamp-pon側のキャラ正本を確認し、各キャラの `masterBoardPath` と `spriteSheetPath` の実画像を参照する。
+
+```text
+m-shogo/vamp-pon/data/character-assets/core5-character-master-assets.json
+```
+
+実画像を参照できない場合は、キャラ顔やキャラ立ち絵を生成しない。
+
+その場合は以下だけを使う。
+
+```text
+キャラ名
+シンボル
+札入れ
+灯り
+器物モチーフ
+小さいアイコン枠
+```
+
 ## Why
 
 Vamp-pon側は今後も変わる。
@@ -66,6 +89,7 @@ Vamp-pon本編の重要ネタバレをカード化しない
 Vamp-ponの戦闘バランスをsoro-pon側で変更しない
 Vamp-ponのキャラ設定をsoro-pon側で上書きしない
 Vamp-ponの素材ファイルを無断コピーしない
+実画像なしでVamp-ponキャラの顔や立ち絵をそれっぽく生成しない
 ```
 
 ## soro-pon Design Mapping
@@ -103,6 +127,7 @@ AIに作業させる場合:
 
 ```text
 soro-ponの世界観やカードテーマを作る前に、Vamp-pon repo の docs/shared-vampon-master-index.md を読むこと。
+Vamp-ponキャラを画像生成や画面デザインに出す場合は、data/character-assets/core5-character-master-assets.json を読んで、実画像参照の有無を確認すること。
 ただし、その内容をsoro-pon側に丸ごとコピーしないこと。
 必要な引用/要約は最小限にして、参照元を明記すること。
 ```
@@ -114,3 +139,4 @@ soro-ponの世界観やカードテーマを作る前に、Vamp-pon repo の doc
 - 入口はVamp-pon側の1資料に集約する
 - キャラ/敵/ステージ/アイテム/武器の共有は、その資料を通す
 - soro-ponはVamp-pon世界内の遊びとして、世界観を借りる側にする
+- 実画像なしでVamp-ponキャラをそれっぽく生成しない
