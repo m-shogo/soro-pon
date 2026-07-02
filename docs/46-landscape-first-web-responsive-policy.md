@@ -12,6 +12,8 @@ soro-pon は横画面固定を正とする。
 
 全主要画面は、まず横画面 `844x390` を基準に設計する。
 
+ただし、`844x390` は実寸固定キャンバスではなく、デザイン基準サイズとして扱う。スマホ横では `100svw x 100svh` にフィットさせる。
+
 過去の `portrait-first` 方針は古い。今後の画面生成・実装・レビューでは使わない。
 
 ## Why
@@ -30,35 +32,83 @@ soro-pon は横画面固定を正とする。
 
 縦画面に詰めると、牌名・捨て牌・操作ボタンが読みにくくなる。
 
-## Base Canvas
+## Base Design Reference
 
 ```text
-primary: 844x390 landscape
+primary design reference: 844x390 landscape
 minimum target: iPhone横向き相当
-web: responsive scale / adaptive layout
+actual phone landscape display: 100svw x 100svh
+web: responsive layout / adaptive layout
 ```
+
+`844x390` の画面全体を `transform: scale()` で引き伸ばす実装は禁止する。
+
+理由:
+
+```text
+文字がボケる
+細い線がにじむ
+PNG素材が荒れる
+safe-area対応が難しくなる
+PCで間延びしやすい
+```
+
+詳細は `docs/48-responsive-crisp-ui-system.md` を正とする。
 
 ## Web Responsive Rule
 
-Webでは端末やブラウザサイズに応じてよしなに対応する。
+Webでは端末やブラウザサイズに応じて対応する。
 
 ただし、正本レイアウトは横画面。
 
-### Wide enough
+### Phone Landscape
 
 ```text
-844x390基準の横画面UIを表示
-中央寄せ
-必要なら余白に紙/机/暗い背景を出す
+100svw x 100svhで画面にフィット
+safe-areaを内側で処理
+牌/主要ボタン/文字の可読性を優先
+装飾を必要に応じて減らす
 ```
 
-### Smaller landscape
+### Wide enough / Tablet / PC
 
 ```text
-UIを縮尺する
+中央にプレイ卓を置く
+必須UIはプレイ卓内に置く
+余白に紙/机/暗い背景を出す
+必要なら外側に補助情報を出す
+```
+
+PC外側に置いてよいもの:
+
+```text
+操作説明
+デッキ情報
+役候補の詳細
+ショートカット
+雰囲気装飾
+履歴ログ
+```
+
+PC外側に置かないもの:
+
+```text
+捨てる
+ロン
+あがる
+手牌
+捨て牌
+ターン表示
+```
+
+### Smaller Landscape
+
+```text
+CSS Grid / flex / clamp / responsive metricsで再配置
 牌名と主要ボタンを優先
 装飾を減らす
 右側パネルを折りたたむ
+重要UIは整数pxに丸める
 ```
 
 ### Portrait / too narrow
@@ -128,6 +178,19 @@ Collection: 左にフィルタ、中央にグリッド、右に詳細
 Clear Board: 横長の盤面として見せる
 ```
 
+## Crisp UI Rule
+
+UI実装時は以下を守る。
+
+```text
+UI枠/アイコン/線/札枠はSVG優先
+絵/背景/紙質感/インク汚れは高解像度PNG/WebP
+文字は画像に焼き込まない
+重要UIは整数pxへ丸める
+紙パネルや手描き縁が必要な箇所だけ9-slice
+低解像度PNGを大きく拡大しない
+```
+
 ## Vamp-pon Inheritance Rule
 
 横画面化しても、Vamp-pon踏襲を弱めない。
@@ -166,10 +229,15 @@ portrait mockは作らない
 Vamp-pon visual rulesを先に読む
 ```
 
+画面参照画像はruntime素材として直接使わない。UI枠・アイコン・線・札枠は、可能ならSVG化して実装する。紙質感・背景・インク汚れなどは高解像度PNG/WebPやtexture overlayで扱う。
+
 ## Final Decision
 
 - soro-ponは横画面固定を正とする
-- 画面生成はまず844x390 landscape
-- Webでは横画面UIを基準に responsive scale / adaptive layout でよしなに対応する
+- 画面生成はまず844x390 landscape基準
+- 844x390は実寸固定ではなくデザイン基準
+- スマホ横では100svw x 100svhへフィット
+- 画面全体をtransform scaleで伸ばさない
+- UI実装の鮮明さは `docs/48-responsive-crisp-ui-system.md` を正とする
 - 縦画面は本画面ではなく rotate prompt / 補助表示
 - Vamp-pon踏襲を横画面設計の中で強める
