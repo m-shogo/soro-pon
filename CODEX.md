@@ -11,6 +11,15 @@ docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 ```
 
+世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う場合は、必ず先に以下を読む。
+
+```text
+/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-world-bible.md
+/Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
+```
+
+作業対象は `soro-pon`。`vamp-pon` 側は読み取り専用。`vamp-pon` 側を変更しない。
+
 ## Current Status
 
 ```text
@@ -63,6 +72,8 @@ Tailwind
 ポン/カン/チーなし
 ロン/ツモ判定はwin_roleのみ
 special_bonus/score_bonusはロン候補にしない
+Vamp-pon側は読み取り専用
+世界観を扱う時はVamp-pon shared-world-bibleを読む
 ```
 
 ## First Implementation Target
