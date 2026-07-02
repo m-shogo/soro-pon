@@ -13,6 +13,24 @@ soro-pon repo = 世界観を読む側
 
 `soro-pon` 側にキャラ設定や世界観設定をコピペしない。
 
+## Mandatory Source
+
+今後の第一入口は以下。
+
+```text
+m-shogo/vamp-pon
+docs/shared-vampon-master-index.md
+```
+
+ローカル作業では以下を先に読む。
+
+```text
+/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
+/Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
+```
+
+作業対象は `soro-pon`。Vamp-pon 側は読み取り専用として扱う。
+
 ## Why
 
 Vamp-pon側は今後も変わる。
@@ -25,32 +43,6 @@ Vamp-pon側は今後も変わる。
 ステージやアイテムの意味が変わっても追従できない
 同じ修正を2repoに入れる必要が出る
 AIが古い方を読んで実装する
-```
-
-## Canonical Source
-
-将来的に Vamp-pon repo に以下のような正本を置く。
-
-```text
-docs/shared-world-bible.md
-```
-
-または分割するなら:
-
-```text
-docs/world/shared-world-index.md
-docs/world/characters.md
-docs/world/enemies.md
-docs/world/stages.md
-docs/world/items.md
-docs/world/weapons.md
-docs/world/visual-rules.md
-```
-
-ただし、soro-pon側から見る入口は1つにする。
-
-```text
-Vamp-pon shared world entry = docs/shared-world-bible.md
 ```
 
 ## What soro-pon Can Use
@@ -76,25 +68,6 @@ Vamp-ponのキャラ設定をsoro-pon側で上書きしない
 Vamp-ponの素材ファイルを無断コピーしない
 ```
 
-## Data Sharing Direction
-
-初期はMarkdown参照でよい。
-
-将来、必要ならVamp-pon側で機械可読なJSONも作る。
-
-候補:
-
-```text
-shared-world/entities.json
-shared-world/characters.json
-shared-world/enemies.json
-shared-world/stages.json
-shared-world/items.json
-shared-world/weapons.json
-```
-
-ただしMVPデザイン段階では、まず `shared-world-bible.md` を正本にする。
-
 ## soro-pon Design Mapping
 
 Vamp-pon要素をsoro-pon内では以下のように変換する。
@@ -112,7 +85,7 @@ weapon -> 役名 / 札モチーフ / Result演出
 `soro-pon` 側では、参照元を明記するだけにする。
 
 ```text
-参照元: m-shogo/vamp-pon docs/shared-world-bible.md
+参照元: m-shogo/vamp-pon docs/shared-vampon-master-index.md
 ```
 
 Vamp-pon側に変更が入ったら、soro-pon側は以下だけ確認する。
@@ -129,14 +102,14 @@ Vamp-pon側に変更が入ったら、soro-pon側は以下だけ確認する。
 AIに作業させる場合:
 
 ```text
-soro-ponの世界観やカードテーマを作る前に、Vamp-pon repo の docs/shared-world-bible.md を読むこと。
+soro-ponの世界観やカードテーマを作る前に、Vamp-pon repo の docs/shared-vampon-master-index.md を読むこと。
 ただし、その内容をsoro-pon側に丸ごとコピーしないこと。
 必要な引用/要約は最小限にして、参照元を明記すること。
 ```
 
 ## Final Decision
 
-- 世界観正本はVamp-pon repoへ置く
+- 世界観正本はVamp-pon repoの `docs/shared-vampon-master-index.md`
 - soro-pon側はコピーせず参照する
 - 入口はVamp-pon側の1資料に集約する
 - キャラ/敵/ステージ/アイテム/武器の共有は、その資料を通す
