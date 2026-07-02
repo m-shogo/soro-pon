@@ -3,19 +3,56 @@
   "sourceDesignTarget": "docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/",
   "assetFactory": "tools/asset-factory/soro-pon-ui/",
   "runtimeBasePath": "/assets/ui/soro-pon/v1/",
+  "responsiveCrispUiPolicy": "docs/48-responsive-crisp-ui-system.md",
   "categories": {
     "buttons": [],
     "tiles": [],
     "panels": [],
     "effects": [],
-    "backgrounds": []
+    "backgrounds": [],
+    "textures": [],
+    "icons": [],
+    "svgFrames": []
   },
+  "assetTypes": [
+    "svg-frame",
+    "svg-icon",
+    "nine-slice",
+    "texture",
+    "background",
+    "illustration",
+    "effect"
+  ],
   "rules": {
     "orientation": "landscape-first",
-    "baseCanvas": "844x390",
+    "baseDesignReference": "844x390",
+    "baseCanvas": "844x390 design reference, not fixed runtime canvas",
+    "actualPhoneLandscapeDisplay": "100svw x 100svh",
     "style": "Vamp-pon in-world memory-card game",
     "requiresTransparentPngForParts": true,
+    "preferSvgForFramesIconsLinesAndTileFrames": true,
+    "useRasterForIllustrationBackgroundTextureAndInk": true,
+    "allowNineSliceForPaperPanelsAndHandDrawnEdges": true,
+    "textMustBeHtmlTextNotBakedIntoImages": true,
+    "roundImportantUiMetricsToIntegerPixels": true,
+    "noGlobalTransformScaleForWholeGame": true,
     "noExistingIpAssets": true,
-    "noRawGreenImages": true
+    "noRawGreenImages": true,
+    "noLowResolutionRasterUpscaling": true
+  },
+  "nineSliceExample": {
+    "id": "paper-panel-primary",
+    "src": "/assets/ui/soro-pon/v1/panels/paper-panel-primary.png",
+    "type": "nine-slice",
+    "slice": {
+      "top": 16,
+      "right": 16,
+      "bottom": 16,
+      "left": 16
+    },
+    "minSize": {
+      "width": 72,
+      "height": 48
+    }
   }
 }
