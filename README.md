@@ -26,6 +26,8 @@ docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
 docs/41-vampon-in-world-game-direction.md
 docs/42-shared-vampon-source-policy.md
+docs/45-vampon-reference-gate.md
+docs/46-landscape-first-web-responsive-policy.md
 ```
 
 `.claude/README.md` と `.codex/README.md` は補助メモです。仕様の正本は `README.md` / `AGENTS.md` / `docs/` に集約します。
@@ -81,9 +83,10 @@ docs/shared-vampon-master-index.md
 ```text
 /Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
 /Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
+/Users/m-shogo/Developer/personal/soro-pon/docs/45-vampon-reference-gate.md
 ```
 
-soro-pon側の参照ルールは `docs/42-shared-vampon-source-policy.md` にまとめます。
+soro-pon側の参照ルールは `docs/42-shared-vampon-source-policy.md` / `docs/45-vampon-reference-gate.md` にまとめます。
 
 ## デザイン方針
 
@@ -106,16 +109,29 @@ soro-pon = Vamp-pon世界の中で流行っている記憶札遊び
 勝負どころだけ少し漫画的
 ```
 
-- TOP / Deck / Editor / Result / Collection は 390x844 portrait-first
-- Match は 844x390 landscape-first
-- Portrait match では横向き案内を出す
+## 画面・向き方針
+
+`soro-pon` は **横画面固定を正** とします。
+
+```text
+primary layout: 844x390 landscape
+web: responsive scale / adaptive layout
+portrait: rotate prompt or limited utility only
+```
+
+- 全主要画面はまず 844x390 landscape で設計する
+- TOP / Deck / Editor / Result / Collection も landscape-first にする
+- 過去の portrait-first 方針は使わない
+- Webでは端末幅に応じて縮尺・余白・折りたたみでよしなに対応する
+- 縦画面に対戦UIや編集UIを無理に詰め込まない
+- Portraitでは横向き案内、またはTOP/ヘルプ等の限定表示にする
 - 牌は記憶札として見せる
 - 牌の外枠/ラベル/チップでカテゴリ色を見せる
 - 捨て牌は全員分見える
 - 山は大きく出さず、残り枚数だけ小さく表示する
 - Three.jsは小さな灯り/札の浮き/インク/Result演出の補助に使う
 
-詳細は `docs/37-visual-design-direction.md` / `docs/38-screen-generation-plan.md` / `docs/41-vampon-in-world-game-direction.md` にまとめます。
+詳細は `docs/46-landscape-first-web-responsive-policy.md` を正とします。
 
 ## 実装スタック方針
 
@@ -173,24 +189,17 @@ Next.js / Unity / Godot / Phaser / Supabase / Firebase はMVP初期では使い�
 
 拡張ルール用デッキはゼロから作らせず、通常デッキからコピーして拡張版を作る導線にします。詳細は `docs/13-deck-variants-and-balance.md` と `docs/20-extended-role-span-and-db-policy.md` にまとめます。
 
-## 画面・向き方針
-
-TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応します。
-
-対戦画面は、4人対戦・牌の見やすさ・捨て牌の見やすさを優先して、スマホ横向き前提で設計します。
-
-- 対戦画面: 横向き前提
-- 基準: 844x390
-- 縦向き時: 横向き案内を表示
-- orientation lockには依存しない
-- 麻雀アプリの情報配置を参考にする
-- ただし牌名・画像・カテゴリの見やすさを優先する
-
-詳細は `docs/16-match-layout-orientation.md` にまとめます。
-
 ## Deck Editor 方針
 
 このゲームの主役級機能は、デッキを気持ちよく作れることです。
+
+横画面では以下を基本にします。
+
+```text
+左: タブ / カテゴリ / 一覧
+中央: 編集フォーム
+右: 牌プレビュー / 警告 / ライブテスト
+```
 
 - カテゴリごとに色を指定できる
 - 牌の外枠/帯/チップでカテゴリ色を見せる
@@ -280,6 +289,9 @@ docs/35-mvp-test-cases.md
 - [Stylish Three.js Experiment Plan](docs/40-stylish-threejs-experiment-plan.md)
 - [Vamp-pon In-world Game Direction](docs/41-vampon-in-world-game-direction.md)
 - [Shared Vamp-pon Source Policy](docs/42-shared-vampon-source-policy.md)
+- [Vamp-pon Character Generation Gate](docs/44-vampon-character-generation-gate.md)
+- [Vamp-pon Reference Gate](docs/45-vampon-reference-gate.md)
+- [Landscape-first Web Responsive Policy](docs/46-landscape-first-web-responsive-policy.md)
 
 ## 現時点でやらないこと
 
