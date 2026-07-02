@@ -17,6 +17,7 @@ docs/38-screen-generation-plan.md
 docs/41-vampon-in-world-game-direction.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
 Vamp-pon由来の表現を使う場合は、以下も必ず読む。
@@ -32,6 +33,24 @@ soro-pon の画面デザインを作ってください。
 
 基準サイズ:
 844x390 landscape
+
+採用済み参照画像:
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/01-top.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/02-deck-list.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/03-deck-detail.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/04-match-setup.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/05-deck-editor.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/06-tile-editor.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/07-match-discard-phase.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/08-match-win-or-ron-phase.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/09-result.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
+
+参照画像の使い方:
+- 新規画面は同じ紙UI / 黒インク / ランタン光 / 夜机の言語に合わせる
+- 画面ごとの情報配置は近い参照画像を基準にする
+- 参照画像をruntime素材として直接使わない
+- 既存IP名や既存IP画像を公式UIへ混ぜない
 
 最重要:
 - soro-ponは横画面固定が正

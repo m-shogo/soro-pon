@@ -30,7 +30,28 @@ docs/37-visual-design-direction.md
 docs/41-vampon-in-world-game-direction.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
+
+## Adopted Design Target
+
+画面生成時は、以下の採用画像を参照する。
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/01-top.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/02-deck-list.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/03-deck-detail.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/04-match-setup.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/05-deck-editor.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/06-tile-editor.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/07-match-discard-phase.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/08-match-win-or-ron-phase.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/09-result.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
+```
+
+参照画像は、色・余白・紙UI・黒インク・ランタン光・横画面の情報密度の基準にする。
+画像そのものをruntime素材として直接使うことはしない。
 
 ## Core Orientation Decision
 

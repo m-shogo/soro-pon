@@ -21,6 +21,37 @@ Claude Code / Codex / Cursor に見せるUI品質基準
 画面ごとの差を出さないためのビジュアル基準
 ```
 
+画面デザインを新しく作る時は、このREADMEと下記の採用画像を先に参照する。
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/01-top.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/02-deck-list.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/03-deck-detail.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/04-match-setup.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/05-deck-editor.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/06-tile-editor.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/07-match-discard-phase.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/08-match-win-or-ron-phase.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/09-result.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
+```
+
+## Adopted References
+
+```text
+01-top.png: TOP。入口CTA、最近の記録、夜机の全体トーン。
+02-deck-list.png: Deck List。デッキ一覧、左フィルタ、右詳細プレビュー。
+03-deck-detail.png: Deck Detail。デッキ情報、検証結果、開始/編集導線。
+04-match-setup.png: Match Setup。対局設定、プレイヤー人数、開始前確認。
+05-deck-editor.png: Deck Editor。左ナビ、中央フォーム、右プレビュー/検証。
+06-tile-editor.png: Tile Editor。牌編集フォーム、画像/emoji/カテゴリ色プレビュー。
+07-match-discard-phase.png: Match Discard Phase。全員の捨て牌、自分の手牌、右アクション。
+08-match-win-or-ron-phase.png: Match Win/Ron Phase。あがり/ロン直前の強調演出。
+09-result.png: Result。勝者、役内訳、報酬、次アクション。
+10-collection.png: Collection。収集一覧、フィルタ、右詳細。
+```
+
 ## Naming
 
 採用画像は以下の名前で置く。
