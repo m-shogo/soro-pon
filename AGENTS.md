@@ -27,6 +27,7 @@
 14. `docs/12-advanced-rule-modules.md`
 15. `docs/13-deck-variants-and-balance.md`
 16. `docs/14-role-taxonomy-and-scoring.md`
+17. `docs/15-wildcard-rules.md`
 
 ## Absolute Rules
 
@@ -47,6 +48,10 @@
 - ロン/ツモ判定は上がり役だけを対象にする
 - 特殊役とスコアボーナスはロン候補にしない
 - 同じキャラボーナスは上がった後の加点として扱う
+- オールマイティ牌は入れるが無制限にしない
+- オールマイティは基本1役につき1枚まで
+- 捨てられたオールマイティでロンは原則不可
+- オールマイティはスコアボーナスに原則含めない
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -90,6 +95,19 @@ score_bonus: 上がった後に加点。ツモ/ロン対象外
 ```
 
 AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない。
+
+## Wildcard Policy
+
+オールマイティ牌は入れる。
+
+標準方針:
+
+- 手牌内のオールマイティは代用可
+- 基本は1役につき1枚まで
+- 特殊役の加点にも使える
+- 捨てられたオールマイティでロンは原則不可
+- 同じキャラボーナスなどのスコアボーナスには原則含めない
+- 使用した場合は結果画面で表示する
 
 ## Advanced Rule Policy
 
@@ -174,6 +192,7 @@ dev-fixtures/ip-local/
 - roles
 - points
 - role conditions
+- wildcard rule
 
 共有JSONに入れてはいけない。
 
