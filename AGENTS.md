@@ -34,6 +34,7 @@ docs/41-vampon-in-world-game-direction.md
 docs/42-shared-vampon-source-policy.md
 docs/44-vampon-character-generation-gate.md
 docs/45-vampon-reference-gate.md
+docs/46-landscape-first-web-responsive-policy.md
 ```
 
 ## Mandatory Vamp-pon World Read
@@ -54,6 +55,28 @@ vamp-pon 側を変更しない
 Vamp-pon設定をsoro-pon側へ丸コピーしない
 必要な場合は最小限の要約と参照元だけを書く
 ```
+
+## Landscape-first Gate
+
+`soro-pon` は横画面固定を正とする。
+
+```text
+primary: 844x390 landscape
+web: responsive scale / adaptive layout
+portrait: rotate prompt or limited utility only
+```
+
+以下を必ず守る。
+
+```text
+全主要画面をまず横画面で設計する
+TOP / Deck / Editor / Result / Collection も landscape-first
+過去の portrait-first 方針は使わない
+Webでは縮尺・余白・折りたたみでよしなに対応する
+縦画面に本UIを無理に詰めない
+```
+
+詳細は `docs/46-landscape-first-web-responsive-policy.md` を正とする。
 
 ## Vamp-pon Reference Gate
 
@@ -118,6 +141,7 @@ Vamp-ponキャラを画像生成・画面デザイン・対戦相手アバター
 25. `docs/42-shared-vampon-source-policy.md`
 26. `docs/44-vampon-character-generation-gate.md`
 27. `docs/45-vampon-reference-gate.md`
+28. `docs/46-landscape-first-web-responsive-policy.md`
 
 ## Deprecated / History Only
 
@@ -150,7 +174,11 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - 捨てられたオールマイティでロンは原則不可
 - オールマイティはスコアボーナスに原則含めない
 - オールマイティは基本自動割当。毎回クリック選択式にしない
-- 対戦画面はスマホ横向き前提で設計する
+- soro-ponは横画面固定を正とする
+- 全主要画面をまず844x390 landscapeで設計する
+- TOP/Deck/Editor/Result/Collectionもportrait-firstにしない
+- Webではresponsive scale / adaptive layoutでよしなに対応する
+- 縦画面に本UIを無理に詰めず、rotate promptまたは限定utilityにする
 - 画面デザイン生成が終わるまでMVP本実装に入らない
 - soro-ponはVamp-pon世界内で流行っている記憶札遊びとして扱う
 - 単体の漫画風アプリとしてデザインしない
@@ -196,14 +224,15 @@ Visual keywords:
 紙の遊び
 静かな魔法
 手作りの盤面
+横画面の麻雀/ドンジャラ卓
 ```
 
 Orientation:
 
 ```text
-TOP / Deck / Editor / Result / Collection: 390x844 portrait-first
-Match: 844x390 landscape-first
-Portrait match: rotate prompt
+All main screens: 844x390 landscape-first
+Web: responsive scale / adaptive layout
+Portrait: rotate prompt or limited utility only
 ```
 
 ## Implementation Priority
@@ -276,6 +305,7 @@ Portrait match: rotate prompt
 ## UI Principle
 
 - 1画面1目的
+- 横画面で最初に成立させる
 - 自分の手牌が主役
 - 捨て牌は全員分見える
 - 山は大きく出さず、残り枚数を小さく表示する
@@ -285,8 +315,7 @@ Portrait match: rotate prompt
 - 絵文字がなければfallbackLabel
 - fallbackLabelがなければ名前
 - 牌の外枠/ラベル/チップでカテゴリ色を見せる
-- TOP/Editor/Resultは縦対応
-- Matchは横向き前提
+- 縦画面には本UIを詰め込まない
 
 ## Commit Policy
 
