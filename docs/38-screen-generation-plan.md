@@ -7,12 +7,9 @@ MVP実装前に、全主要画面のデザインを生成し、画面方針を�
 ## Goal
 
 ```text
-全画面のデザイン生成
-↓
+全主要画面を横画面で生成
 レビュー
-↓
 採用デザインをdocsに固定
-↓
 実装開始
 ```
 
@@ -30,11 +27,24 @@ docs/23-deck-editor-ux-and-category-colors.md
 docs/29-result-progression-collection.md
 docs/30-first-run-and-playtest-loop.md
 docs/37-visual-design-direction.md
+docs/41-vampon-in-world-game-direction.md
+docs/45-vampon-reference-gate.md
+docs/46-landscape-first-web-responsive-policy.md
 ```
+
+## Core Orientation Decision
+
+```text
+All main screens: 844x390 landscape-first
+Web: responsive scale / adaptive layout
+Portrait: rotate prompt or limited utility only
+```
+
+過去の `portrait-first 390x844` 方針は使わない。
 
 ## Required Screens
 
-### Portrait-first 390x844
+### Landscape-first 844x390
 
 ```text
 01 TOP
@@ -57,11 +67,6 @@ docs/37-visual-design-direction.md
 18 Rotate Prompt
 19 Confirm Dialog
 20 Error Dialog
-```
-
-### Landscape-first 844x390
-
-```text
 21 Match - Draw Phase
 22 Match - Discard Phase
 23 Match - Ron Reaction
@@ -83,29 +88,16 @@ docs/37-visual-design-direction.md
 
 ## Generation Order
 
-デザイン生成はこの順番にする。
-
 ```text
 1. Visual System / Component Sheets
-2. TOP / Deck List / Deck Detail
+2. TOP / Deck List / Deck Detail / Match Setup
 3. Deck Editor family
 4. Match Landscape family
 5. Result / Collection family
 6. Dialogs / Rotate Prompt
 ```
 
-理由:
-
-```text
-コンポーネントを先に固めると全画面の統一感が出る
-Deck Editorは画面数が多いので早めに確認する
-Matchは横向きで特殊なので単独で固める
-Result/Collectionは継続導線なので最後に磨く
-```
-
 ## Batch 1: Visual System
-
-生成対象:
 
 ```text
 Tile Component Sheet
@@ -119,16 +111,14 @@ Achievement / Clear Board Tile Sheet
 確認ポイント:
 
 ```text
+Vamp-ponの紙/黒インク/ランタン光がある
 牌名が読める
 カテゴリ色が分かる
-オールマイティが分かる
 ボタン状態が分かる
-Clear Boardのマスを埋めたくなる
+横画面UIに流用できる
 ```
 
 ## Batch 2: Entry Screens
-
-生成対象:
 
 ```text
 TOP
@@ -137,18 +127,15 @@ Deck Detail
 Match Setup
 ```
 
-確認ポイント:
+横画面構成:
 
 ```text
-すぐ遊べる
-動物スターターが分かる
-通常版/拡張版の切替が分かる
-3人/4人選択が分かる
+左: 主要アクション
+中央: デッキ/札箱/プレビュー
+右: 最近の記録/設定/補助
 ```
 
 ## Batch 3: Deck Editor Family
-
-生成対象:
 
 ```text
 Deck Editor - Overview
@@ -162,20 +149,15 @@ Balance Check
 Import / Export
 ```
 
-確認ポイント:
+横画面構成:
 
 ```text
-カテゴリ色を作りやすい
-牌を作りやすい
-役をテンプレから作りやすい
-得点目安が分かる
-テスト手札で確認できる
-警告から修正に行ける
+左: タブ/一覧
+中央: 編集フォーム
+右: 牌プレビュー/警告/ライブテスト
 ```
 
 ## Batch 4: Match Landscape Family
-
-生成対象:
 
 ```text
 Match - Draw Phase
@@ -186,19 +168,29 @@ Match - Menu Overlay
 Rule Sheet Modal
 ```
 
+横画面構成:
+
+```text
+中央: 全員の捨て牌
+下: 自分の手牌8〜9枚
+左右/上: 相手3人ミニパネル
+右: アクションボタン
+左または上: 残り枚数/ターン/候補役
+```
+
 確認ポイント:
 
 ```text
 844x390横向きで自分の手牌が読める
 相手3人が邪魔しない
+全員の捨て牌が見える
 直近捨て牌が分かる
 押せるボタンだけ目立つ
 ロン/あがるが気持ちいい
+Vamp-pon世界の夜机/紙札/ランタン光に見える
 ```
 
 ## Batch 5: Result / Collection
-
-生成対象:
 
 ```text
 Result
@@ -207,20 +199,15 @@ Clear Board
 Cosmetic / Title Select minimal
 ```
 
-確認ポイント:
+横画面構成:
 
 ```text
-勝利/流局が分かる
-役内訳が読める
-コイン獲得が気持ちいい
-称号/実績解除が嬉しい
-もう一局/デッキ調整に戻りやすい
-Clear Boardを埋めたくなる
+Result: 左=勝者/点数, 中央=役内訳, 右=報酬/次アクション
+Collection: 左=フィルタ, 中央=グリッド, 右=詳細
+Clear Board: 横長の記憶帳/達成ボード
 ```
 
 ## Batch 6: Utility Screens
-
-生成対象:
 
 ```text
 Rotate Prompt
@@ -231,9 +218,9 @@ Error Dialog
 確認ポイント:
 
 ```text
+横画面固定が分かる
 短く分かる
 操作を邪魔しない
-危険操作は確認できる
 ```
 
 ## Output Format
@@ -242,42 +229,40 @@ Error Dialog
 
 ```text
 画面名
-基準サイズ
+基準サイズ: 844x390 landscape
 目的
 情報優先度
 ワイヤーフレーム
 必要コンポーネント
 主要状態
+Web responsive注意点
 実装注意点
 採用/不採用判断
 ```
 
 ## Design Review Checklist
 
-全画面共通。
-
 ```text
+横画面で成立しているか
+Vamp-pon世界内の遊びに見えるか
 1画面1目的になっているか
 牌名が読めるか
 カテゴリ色が意味を持っているか
 画像なしでも成立するか
-主要CTAが親指で押せるか
+主要CTAが押しやすいか
 説明が長すぎないか
-強さを買うUIに見えないか
-既存IP連想の公式UIになっていないか
 ```
 
 ## Final Gate Before Implementation
 
-実装開始前に以下を満たす。
-
 ```text
-Component Sheetがある
-TOP/Deck/Editor/Match/Result/Collectionの採用案がある
+横画面Component Sheetがある
+TOP/Deck/Editor/Match/Result/Collectionの横画面採用案がある
 Match横向き画面が破綻していない
-Deck Editorが作りやすそうに見える
+Deck Editorが横画面で作りやすそうに見える
 動物スターターで画面例が成立している
 デザインから実装コンポーネント名に落とせる
+Web responsive方針が見える
 ```
 
 ## Final Decision
