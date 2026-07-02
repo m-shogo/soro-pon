@@ -1,0 +1,21 @@
+{
+  "version": "soro-pon-ui-v1",
+  "sourceDesignTarget": "docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/",
+  "assetFactory": "tools/asset-factory/soro-pon-ui/",
+  "runtimeBasePath": "/assets/ui/soro-pon/v1/",
+  "categories": {
+    "buttons": [],
+    "tiles": [],
+    "panels": [],
+    "effects": [],
+    "backgrounds": []
+  },
+  "rules": {
+    "orientation": "landscape-first",
+    "baseCanvas": "844x390",
+    "style": "Vamp-pon in-world memory-card game",
+    "requiresTransparentPngForParts": true,
+    "noExistingIpAssets": true,
+    "noRawGreenImages": true
+  }
+}
