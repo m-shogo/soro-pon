@@ -6,6 +6,7 @@
 
 ```text
 MVP実装準備完了。
+ただし、MVP本実装前に全主要画面のデザイン生成を行う。
 ```
 
 実装または画面デザイン生成を始める前に、必ず `README.md` とこのファイルを読む。
@@ -22,6 +23,15 @@ docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 ```
 
+画面生成時の正本。
+
+```text
+docs/10-screen-design-spec.md
+docs/11-design-generation-prompt.md
+docs/37-visual-design-direction.md
+docs/38-screen-generation-plan.md
+```
+
 ## Must Read
 
 仕様確認で読むこと。
@@ -30,21 +40,25 @@ docs/35-mvp-test-cases.md
 2. `AGENTS.md`
 3. `CLAUDE.md` or `CODEX.md`
 4. `docs/03-data-model.md`
-5. `docs/17-screen-actions-and-requirements.md`
-6. `docs/23-deck-editor-ux-and-category-colors.md`
-7. `docs/24-scoring-and-payment.md`
-8. `docs/25-role-evaluation-engine.md`
-9. `docs/26-deck-validation-and-balance-rules.md`
-10. `docs/27-cpu-minimum-strategy-and-match-flow.md`
-11. `docs/28-release-safety-checklist.md`
-12. `docs/29-result-progression-collection.md`
-13. `docs/30-first-run-and-playtest-loop.md`
-14. `docs/31-implementation-stack-decision.md`
-15. `docs/32-zod-schema-spec.md`
-16. `docs/33-official-animal-starter-deck.md`
-17. `docs/34-mvp-implementation-prompt.md`
-18. `docs/35-mvp-test-cases.md`
-19. `docs/36-doc-consistency-audit.md`
+5. `docs/10-screen-design-spec.md`
+6. `docs/11-design-generation-prompt.md`
+7. `docs/17-screen-actions-and-requirements.md`
+8. `docs/23-deck-editor-ux-and-category-colors.md`
+9. `docs/24-scoring-and-payment.md`
+10. `docs/25-role-evaluation-engine.md`
+11. `docs/26-deck-validation-and-balance-rules.md`
+12. `docs/27-cpu-minimum-strategy-and-match-flow.md`
+13. `docs/28-release-safety-checklist.md`
+14. `docs/29-result-progression-collection.md`
+15. `docs/30-first-run-and-playtest-loop.md`
+16. `docs/31-implementation-stack-decision.md`
+17. `docs/32-zod-schema-spec.md`
+18. `docs/33-official-animal-starter-deck.md`
+19. `docs/34-mvp-implementation-prompt.md`
+20. `docs/35-mvp-test-cases.md`
+21. `docs/36-doc-consistency-audit.md`
+22. `docs/37-visual-design-direction.md`
+23. `docs/38-screen-generation-plan.md`
 
 ## Deprecated / History Only
 
@@ -78,6 +92,7 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - オールマイティはスコアボーナスに原則含めない
 - オールマイティは基本自動割当。毎回クリック選択式にしない
 - 対戦画面はスマホ横向き前提で設計する
+- 画面デザイン生成が終わるまでMVP本実装に入らない
 - Deck Editorは主役級機能として扱う
 - カテゴリごとに色を持たせ、牌の外枠/帯/チップで見せる
 - 役はテンプレートとビジュアル選択で作れるようにする
@@ -96,9 +111,26 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - PWAを作らない
 - ランキング・公開ギャラリーを作らない
 
+## Design Direction
+
+```text
+明るい卓上ボードゲームUI
++ 麻雀アプリの操作感
++ カード/デッキビルダーの作りやすさ
++ クリアボードの収集感
+```
+
+Orientation:
+
+```text
+TOP / Deck / Editor / Result / Collection: 390x844 portrait-first
+Match: 844x390 landscape-first
+Portrait match: rotate prompt
+```
+
 ## Implementation Priority
 
-実装開始時はこの順番。
+本実装開始時はこの順番。
 
 1. Vite + React + TypeScript setup
 2. 型定義
@@ -172,6 +204,7 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - 画像がなければ絵文字
 - 絵文字がなければfallbackLabel
 - fallbackLabelがなければ名前
+- 牌の外枠/帯/チップでカテゴリ色を見せる
 - TOP/Editor/Resultは縦対応
 - Matchは横向き前提
 
