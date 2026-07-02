@@ -52,7 +52,7 @@
       "id": "normal",
       "name": "通常版",
       "label": "通常版",
-      "ruleConfig": { "id": "base-donjara", "name": "ドンジャラ互換", "handSizeNormal": 8, "handSizeAfterDraw": 9, "winHandSize": 9, "roleSpanMin": 3, "roleSpanMax": 9, "allowRon": true, "allowPon": false, "allowReach": false, "allowScoreBonus": true, "allowWildcard": true, "allowKan": false, "allowChi": false },
+      "ruleConfig": { "id": "base-donjara", "name": "ドンジャラ互換", "supportedPlayerCounts": [3, 4], "handSizeNormal": 8, "handSizeAfterDraw": 9, "winHandSize": 9, "roleSpanMin": 3, "roleSpanMax": 9, "allowRon": true, "allowPon": false, "allowReach": false, "allowScoreBonus": true, "allowWildcard": true, "allowKan": false, "allowChi": false },
       "roles": [
         { "id": "win_mammal_6", "name": "どうぶつ王国", "kind": "win_role", "points": 180, "span": 9, "condition": { "type": "same_category_count", "category": "mammal", "count": 6 }, "description": "哺乳類を6枚以上そろえる。", "canTsumo": true, "canRon": true, "allowWildcard": true, "maxWildcardUse": 1, "matchMode": "contains_pattern", "coveragePolicy": "allow_extra_tiles" },
         { "id": "win_sea_5", "name": "海のパレード", "kind": "win_role", "points": 190, "span": 9, "condition": { "type": "same_category_count", "category": "sea", "count": 5 }, "description": "海の生き物を5枚以上そろえる。", "canTsumo": true, "canRon": true, "allowWildcard": true, "maxWildcardUse": 1, "matchMode": "contains_pattern", "coveragePolicy": "allow_extra_tiles" },
@@ -72,7 +72,7 @@
       "name": "拡張版",
       "label": "拡張版",
       "isExperimental": true,
-      "ruleConfig": { "id": "extended-hand", "name": "拡張手札", "handSizeNormal": 13, "handSizeAfterDraw": 14, "winHandSize": 14, "roleSpanMin": 2, "roleSpanMax": 14, "allowRon": true, "allowPon": false, "allowReach": true, "allowScoreBonus": true, "allowWildcard": true, "allowKan": false, "allowChi": false },
+      "ruleConfig": { "id": "extended-hand", "name": "拡張手札", "supportedPlayerCounts": [3, 4], "handSizeNormal": 13, "handSizeAfterDraw": 14, "winHandSize": 14, "roleSpanMin": 2, "roleSpanMax": 14, "allowRon": true, "allowPon": false, "allowReach": true, "allowScoreBonus": true, "allowWildcard": true, "allowKan": false, "allowChi": false },
       "roles": [
         { "id": "ext_span02_lion_star", "name": "2枚役: ライオンと星", "kind": "win_role", "points": 30, "span": 2, "condition": { "type": "exact_group", "tileIds": ["lion", "star"] }, "description": "2枚役テスト。", "canTsumo": true, "canRon": true, "allowWildcard": false, "maxWildcardUse": 0, "matchMode": "contains_pattern", "coveragePolicy": "allow_extra_tiles" },
         { "id": "ext_span03_savanna", "name": "3枚役: サバンナ集合", "kind": "win_role", "points": 70, "span": 3, "condition": { "type": "exact_group", "tileIds": ["lion", "elephant", "giraffe"] }, "description": "3枚役テスト。", "canTsumo": true, "canRon": true, "allowWildcard": true, "maxWildcardUse": 1, "matchMode": "contains_pattern", "coveragePolicy": "allow_extra_tiles" },
