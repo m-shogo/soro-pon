@@ -1,0 +1,571 @@
+{
+  "version": 1,
+  "id": "local-ip-one-piece-deckproject",
+  "name": "ONE PIECE Local Test Deck",
+  "description": "TEMPORARY LOCAL TEST FIXTURE. No images, logos, quotes, or official assets. Delete before public/release use.",
+  "localOnly": true,
+  "mustDeleteBeforePublic": true,
+  "notes": [
+    "This file is intentionally committed as a temporary development fixture at the user's request.",
+    "Do not move this file into src, public, docs, README, official samples, screenshots, or export payloads.",
+    "Use only for local validation of DeckProject, normal/extended variants, roles, bonuses, wildcard, and UI switching."
+  ],
+  "tiles": [
+    {
+      "id": "luffy",
+      "name": "ルフィ",
+      "categories": ["麦わらの一味", "船長", "最悪の世代", "三兄弟", "D", "赤背景"],
+      "emoji": "👒",
+      "fallbackLabel": "ル",
+      "count": 3
+    },
+    {
+      "id": "zoro",
+      "name": "ゾロ",
+      "categories": ["麦わらの一味", "剣士", "最悪の世代", "両翼", "緑背景"],
+      "emoji": "⚔️",
+      "fallbackLabel": "ゾ",
+      "count": 3
+    },
+    {
+      "id": "nami",
+      "name": "ナミ",
+      "categories": ["麦わらの一味", "航海士", "弱小トリオ", "黄背景"],
+      "emoji": "🧭",
+      "fallbackLabel": "ナ",
+      "count": 3
+    },
+    {
+      "id": "usopp",
+      "name": "ウソップ",
+      "categories": ["麦わらの一味", "狙撃手", "弱小トリオ", "緑背景"],
+      "emoji": "🎯",
+      "fallbackLabel": "ウ",
+      "count": 3
+    },
+    {
+      "id": "sanji",
+      "name": "サンジ",
+      "categories": ["麦わらの一味", "料理人", "両翼", "黄背景"],
+      "emoji": "🍳",
+      "fallbackLabel": "サ",
+      "count": 3
+    },
+    {
+      "id": "chopper",
+      "name": "チョッパー",
+      "categories": ["麦わらの一味", "医者", "弱小トリオ", "青背景"],
+      "emoji": "🩺",
+      "fallbackLabel": "チ",
+      "count": 3
+    },
+    {
+      "id": "robin",
+      "name": "ロビン",
+      "categories": ["麦わらの一味", "学者", "青背景"],
+      "emoji": "📚",
+      "fallbackLabel": "ロ",
+      "count": 3
+    },
+    {
+      "id": "franky",
+      "name": "フランキー",
+      "categories": ["麦わらの一味", "船大工", "青背景"],
+      "emoji": "🔧",
+      "fallbackLabel": "フ",
+      "count": 3
+    },
+    {
+      "id": "brook",
+      "name": "ブルック",
+      "categories": ["麦わらの一味", "音楽家", "白背景"],
+      "emoji": "🎻",
+      "fallbackLabel": "ブ",
+      "count": 3
+    },
+    {
+      "id": "jinbe",
+      "name": "ジンベエ",
+      "categories": ["麦わらの一味", "操舵手", "青背景"],
+      "emoji": "🌊",
+      "fallbackLabel": "ジ",
+      "count": 3
+    },
+    {
+      "id": "ace",
+      "name": "エース",
+      "categories": ["三兄弟", "D", "火", "赤背景"],
+      "emoji": "🔥",
+      "fallbackLabel": "エ",
+      "count": 3
+    },
+    {
+      "id": "sabo",
+      "name": "サボ",
+      "categories": ["三兄弟", "革命軍", "火", "青背景"],
+      "emoji": "🎩",
+      "fallbackLabel": "サ",
+      "count": 3
+    },
+    {
+      "id": "law",
+      "name": "ロー",
+      "categories": ["最悪の世代", "船長", "D", "青背景"],
+      "emoji": "💉",
+      "fallbackLabel": "ロ",
+      "count": 3
+    },
+    {
+      "id": "kid",
+      "name": "キッド",
+      "categories": ["最悪の世代", "船長", "赤背景"],
+      "emoji": "🧲",
+      "fallbackLabel": "キ",
+      "count": 3
+    },
+    {
+      "id": "shanks",
+      "name": "シャンクス",
+      "categories": ["四皇", "船長", "赤背景"],
+      "emoji": "🍶",
+      "fallbackLabel": "シ",
+      "count": 3
+    },
+    {
+      "id": "blackbeard",
+      "name": "黒ひげ",
+      "categories": ["四皇", "船長", "D", "黒背景"],
+      "emoji": "🌑",
+      "fallbackLabel": "黒",
+      "count": 3
+    },
+    {
+      "id": "kaido",
+      "name": "カイドウ",
+      "categories": ["四皇", "ワノ国", "青背景"],
+      "emoji": "🐉",
+      "fallbackLabel": "カ",
+      "count": 3
+    },
+    {
+      "id": "bigmom",
+      "name": "ビッグ・マム",
+      "categories": ["四皇", "船長", "黄背景"],
+      "emoji": "🍰",
+      "fallbackLabel": "マ",
+      "count": 3
+    },
+    {
+      "id": "koby",
+      "name": "コビー",
+      "categories": ["海軍", "青背景"],
+      "emoji": "🛡️",
+      "fallbackLabel": "コ",
+      "count": 3
+    },
+    {
+      "id": "smoker",
+      "name": "スモーカー",
+      "categories": ["海軍", "白背景"],
+      "emoji": "💨",
+      "fallbackLabel": "ス",
+      "count": 3
+    },
+    {
+      "id": "garp",
+      "name": "ガープ",
+      "categories": ["海軍", "D", "英雄", "赤背景"],
+      "emoji": "✊",
+      "fallbackLabel": "ガ",
+      "count": 3
+    },
+    {
+      "id": "akainu",
+      "name": "赤犬",
+      "categories": ["海軍", "三大将", "赤背景"],
+      "emoji": "🌋",
+      "fallbackLabel": "赤",
+      "count": 3
+    },
+    {
+      "id": "aokiji",
+      "name": "青雉",
+      "categories": ["海軍", "三大将", "青背景"],
+      "emoji": "🧊",
+      "fallbackLabel": "青",
+      "count": 3
+    },
+    {
+      "id": "kizaru",
+      "name": "黄猿",
+      "categories": ["海軍", "三大将", "黄背景"],
+      "emoji": "✨",
+      "fallbackLabel": "黄",
+      "count": 3
+    },
+    {
+      "id": "yamato",
+      "name": "ヤマト",
+      "categories": ["ワノ国", "青背景"],
+      "emoji": "🐺",
+      "fallbackLabel": "ヤ",
+      "count": 3
+    },
+    {
+      "id": "oden",
+      "name": "おでん",
+      "categories": ["ワノ国", "剣士", "赤背景"],
+      "emoji": "🍢",
+      "fallbackLabel": "お",
+      "count": 3
+    },
+    {
+      "id": "free_flag",
+      "name": "自由の旗",
+      "categories": ["オールマイティ", "特殊牌"],
+      "emoji": "🏴‍☠️",
+      "fallbackLabel": "万",
+      "count": 3,
+      "wildcard": {
+        "kind": "any_tile",
+        "maxUsePerRole": 1,
+        "canCompleteWinRole": true,
+        "canCompleteSpecialBonus": true,
+        "canTriggerRonWhenDiscarded": false,
+        "countsForScoreBonus": false
+      }
+    }
+  ],
+  "activeVariantId": "normal",
+  "variants": [
+    {
+      "id": "normal",
+      "name": "通常版",
+      "label": "通常版",
+      "isExperimental": false,
+      "ruleConfig": {
+        "id": "base-donjara",
+        "name": "ドンジャラ互換",
+        "handSizeNormal": 8,
+        "handSizeAfterDraw": 9,
+        "winHandSize": 9,
+        "roleSpanMin": 3,
+        "roleSpanMax": 9,
+        "allowRon": true,
+        "allowPon": false,
+        "allowReach": false,
+        "allowScoreBonus": true,
+        "allowWildcard": true,
+        "allowKan": false,
+        "allowChi": false
+      },
+      "roles": [
+        {
+          "id": "normal_win_strawhat_6",
+          "name": "麦わらの一味セット",
+          "kind": "win_role",
+          "points": 210,
+          "span": 9,
+          "condition": { "type": "same_category_count", "category": "麦わらの一味", "count": 6 },
+          "description": "9枚の手の中に麦わらの一味カテゴリを6枚以上含む。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_win_marine_6",
+          "name": "海軍セット",
+          "kind": "win_role",
+          "points": 240,
+          "span": 9,
+          "condition": { "type": "same_category_count", "category": "海軍", "count": 6 },
+          "description": "9枚の手の中に海軍カテゴリを6枚以上含む。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_win_four_emperors_4",
+          "name": "四皇セット",
+          "kind": "win_role",
+          "points": 270,
+          "span": 9,
+          "condition": { "type": "same_category_count", "category": "四皇", "count": 4 },
+          "description": "9枚の手の中に四皇カテゴリを4枚以上含む。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_win_worst_generation_4",
+          "name": "最悪の世代セット",
+          "kind": "win_role",
+          "points": 240,
+          "span": 9,
+          "condition": { "type": "same_category_count", "category": "最悪の世代", "count": 4 },
+          "description": "9枚の手の中に最悪の世代カテゴリを4枚以上含む。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_win_red_9",
+          "name": "赤背景大集結",
+          "kind": "win_role",
+          "points": 180,
+          "span": 9,
+          "condition": { "type": "same_category_count", "category": "赤背景", "count": 9 },
+          "description": "9枚すべてを赤背景カテゴリでそろえる。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_bonus_asl",
+          "name": "三兄弟",
+          "kind": "special_bonus",
+          "points": 150,
+          "span": 3,
+          "condition": { "type": "exact_group", "tileIds": ["luffy", "ace", "sabo"] },
+          "description": "ルフィ、エース、サボが手の中に含まれていれば加点。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_bonus_wings",
+          "name": "未来の王と両翼",
+          "kind": "special_bonus",
+          "points": 150,
+          "span": 3,
+          "condition": { "type": "exact_group", "tileIds": ["luffy", "zoro", "sanji"] },
+          "description": "ルフィ、ゾロ、サンジが手の中に含まれていれば加点。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_bonus_admirals",
+          "name": "三大将",
+          "kind": "special_bonus",
+          "points": 120,
+          "span": 3,
+          "condition": { "type": "exact_group", "tileIds": ["akainu", "aokiji", "kizaru"] },
+          "description": "赤犬、青雉、黄猿が手の中に含まれていれば加点。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_bonus_four_emperors_choose3",
+          "name": "四皇から三者",
+          "kind": "special_bonus",
+          "points": 90,
+          "span": 3,
+          "condition": { "type": "choose_n_from", "tileIds": ["shanks", "blackbeard", "kaido", "bigmom"], "choose": 3 },
+          "description": "四皇4種のうち3種が手の中に含まれていれば加点。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "normal_score_duplicate_tile_3",
+          "name": "同じキャラ3枚",
+          "kind": "score_bonus",
+          "points": 30,
+          "span": 3,
+          "condition": { "type": "same_name_count", "name": "ANY", "count": 3 },
+          "description": "同じ牌が3枚ある場合のテスト用加点。実装ではduplicate_tileとして判定する。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": false,
+          "maxWildcardUse": 0
+        }
+      ],
+      "scoreBonuses": [
+        {
+          "id": "normal_score_duplicate_tile_3_bonus",
+          "name": "同じ牌3枚ボーナス",
+          "type": "duplicate_tile",
+          "minCount": 3,
+          "points": 30,
+          "maxPoints": 30,
+          "description": "同じ牌を3枚持っている場合に加点。オールマイティは含めない。",
+          "allowWildcard": false
+        }
+      ]
+    },
+    {
+      "id": "extended",
+      "name": "拡張版",
+      "label": "拡張版",
+      "isExperimental": true,
+      "ruleConfig": {
+        "id": "extended-hand",
+        "name": "拡張手札",
+        "handSizeNormal": 13,
+        "handSizeAfterDraw": 14,
+        "winHandSize": 14,
+        "roleSpanMin": 2,
+        "roleSpanMax": 14,
+        "allowRon": true,
+        "allowPon": false,
+        "allowReach": true,
+        "allowScoreBonus": true,
+        "allowWildcard": true,
+        "allowKan": false,
+        "allowChi": false
+      },
+      "roles": [
+        {
+          "id": "extended_win_luffy_zoro",
+          "name": "船長と副船長",
+          "kind": "win_role",
+          "points": 20,
+          "span": 2,
+          "condition": { "type": "exact_group", "tileIds": ["luffy", "zoro"] },
+          "description": "2枚役。ツモ/ロン可能だがポンはない。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "extended_win_luffy_sanji",
+          "name": "船長と料理人",
+          "kind": "win_role",
+          "points": 20,
+          "span": 2,
+          "condition": { "type": "exact_group", "tileIds": ["luffy", "sanji"] },
+          "description": "2枚役。低点の小型あがり役。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "extended_win_asl",
+          "name": "三兄弟の絆",
+          "kind": "win_role",
+          "points": 60,
+          "span": 3,
+          "condition": { "type": "exact_group", "tileIds": ["luffy", "ace", "sabo"] },
+          "description": "3枚役。通常版では特殊役、拡張版では上がり役としても使う。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "extended_win_three_captains",
+          "name": "三船長",
+          "kind": "win_role",
+          "points": 70,
+          "span": 3,
+          "condition": { "type": "exact_group", "tileIds": ["luffy", "law", "kid"] },
+          "description": "3枚役。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "extended_win_strawhat_10",
+          "name": "麦わら大集結",
+          "kind": "win_role",
+          "points": 160,
+          "span": 10,
+          "condition": { "type": "same_category_count", "category": "麦わらの一味", "count": 10 },
+          "description": "10枚役。拡張版の大型役テスト用。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "extended_win_new_world_14",
+          "name": "新世界大航海",
+          "kind": "win_role",
+          "points": 260,
+          "span": 14,
+          "condition": { "type": "choose_n_from", "tileIds": ["luffy", "zoro", "nami", "sanji", "law", "kid", "shanks", "blackbeard", "kaido", "bigmom", "akainu", "aokiji", "kizaru", "yamato", "oden"], "choose": 14 },
+          "description": "14枚役。ロマン枠の大型役テスト用。",
+          "canTsumo": true,
+          "canRon": true,
+          "allowWildcard": false,
+          "maxWildcardUse": 0
+        },
+        {
+          "id": "extended_bonus_admirals",
+          "name": "三大将加点",
+          "kind": "special_bonus",
+          "points": 60,
+          "span": 3,
+          "condition": { "type": "exact_group", "tileIds": ["akainu", "aokiji", "kizaru"] },
+          "description": "上がった後に加点。ロン候補にはしない。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "extended_bonus_d_will",
+          "name": "Dの意志",
+          "kind": "special_bonus",
+          "points": 50,
+          "span": 3,
+          "condition": { "type": "choose_n_from", "tileIds": ["luffy", "ace", "garp", "law", "blackbeard"], "choose": 3 },
+          "description": "対象5種から3種で加点。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": true,
+          "maxWildcardUse": 1
+        },
+        {
+          "id": "extended_score_duplicate_tile_3",
+          "name": "推し3枚",
+          "kind": "score_bonus",
+          "points": 30,
+          "span": 3,
+          "condition": { "type": "same_name_count", "name": "ANY", "count": 3 },
+          "description": "同じ牌3枚の加点テスト。ロン候補にはしない。",
+          "canTsumo": false,
+          "canRon": false,
+          "allowWildcard": false,
+          "maxWildcardUse": 0
+        }
+      ],
+      "scoreBonuses": [
+        {
+          "id": "extended_score_duplicate_tile_3_bonus",
+          "name": "同じ牌3枚ボーナス",
+          "type": "duplicate_tile",
+          "minCount": 3,
+          "points": 30,
+          "maxPoints": 30,
+          "description": "同じ牌を3枚持っている場合に加点。オールマイティは含めない。",
+          "allowWildcard": false
+        },
+        {
+          "id": "extended_score_duplicate_category_6_bonus",
+          "name": "同カテゴリ6枚ボーナス",
+          "type": "duplicate_category",
+          "minCount": 6,
+          "points": 40,
+          "maxPoints": 40,
+          "description": "同じカテゴリを6枚以上持っている場合の加点テスト。",
+          "allowWildcard": false
+        }
+      ]
+    }
+  ]
+}
