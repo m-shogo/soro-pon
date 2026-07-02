@@ -33,6 +33,7 @@ docs/38-screen-generation-plan.md
 docs/41-vampon-in-world-game-direction.md
 docs/42-shared-vampon-source-policy.md
 docs/44-vampon-character-generation-gate.md
+docs/45-vampon-reference-gate.md
 ```
 
 ## Mandatory Vamp-pon World Read
@@ -42,6 +43,7 @@ docs/44-vampon-character-generation-gate.md
 ```text
 /Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
 /Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
+/Users/m-shogo/Developer/personal/soro-pon/docs/45-vampon-reference-gate.md
 ```
 
 作業対象は `soro-pon`。
@@ -52,6 +54,24 @@ vamp-pon 側を変更しない
 Vamp-pon設定をsoro-pon側へ丸コピーしない
 必要な場合は最小限の要約と参照元だけを書く
 ```
+
+## Vamp-pon Reference Gate
+
+Vamp-pon由来の情報を使う場合は、キャラだけでなく以下すべてで `docs/45-vampon-reference-gate.md` に従う。
+
+```text
+Characters
+Enemies
+Stages
+Items
+Weapons
+Visual Rules
+UI/UX In-world Rules
+Spoiler Boundary
+Derived Game Usage
+```
+
+記憶や雰囲気だけで判断しない。必ずVamp-pon側の master index から読み、必要なリンク先まで確認する。
 
 ## Vamp-pon Character Generation Gate
 
@@ -97,6 +117,7 @@ Vamp-ponキャラを画像生成・画面デザイン・対戦相手アバター
 24. `docs/41-vampon-in-world-game-direction.md`
 25. `docs/42-shared-vampon-source-policy.md`
 26. `docs/44-vampon-character-generation-gate.md`
+27. `docs/45-vampon-reference-gate.md`
 
 ## Deprecated / History Only
 
@@ -136,8 +157,10 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - 紙/黒インク/小さな灯り/夜の机/記憶を軸にする
 - Vamp-pon側を変更しない。Vamp-pon側は読み取り専用
 - 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う時は必ずVamp-pon shared master indexを読む
+- Vamp-pon由来の情報を使う時は `docs/45-vampon-reference-gate.md` を守る
 - Vamp-ponキャラを出す時は `docs/44-vampon-character-generation-gate.md` を守る
 - 実画像参照なしでVamp-ponキャラを汎用AI顔にしない
+- 敵/ステージ/武器/アイテム/Visual Rulesも記憶だけで補完しない
 - Deck Editorは主役級機能として扱う
 - カテゴリごとに色を持たせ、牌の外枠/ラベル/チップで見せる
 - 役はテンプレートとビジュアル選択で作れるようにする
