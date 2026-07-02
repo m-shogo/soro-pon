@@ -10,6 +10,7 @@
 - 画像は共有JSONに含めない
 - ルールエンジンはUIから分離する
 - Zodでimport/export schemaを検証する
+- あがり判定用の役と、加点用の特殊役/ボーナスを分ける
 
 ## Tile
 
@@ -76,7 +77,7 @@ type RuleConfig = {
   allowRon: boolean;
   allowPon: false;
   allowReach: boolean;
-  allowDuplicateBonus: boolean;
+  allowScoreBonus: boolean;
   allowKan: false;
   allowChi: false;
 };
@@ -96,7 +97,7 @@ const BASE_DONJARA_RULE: RuleConfig = {
   allowRon: true,
   allowPon: false,
   allowReach: false,
-  allowDuplicateBonus: false,
+  allowScoreBonus: true,
   allowKan: false,
   allowChi: false,
 };
@@ -116,11 +117,23 @@ const EXTENDED_HAND_RULE: RuleConfig = {
   allowRon: true,
   allowPon: false,
   allowReach: true,
-  allowDuplicateBonus: true,
+  allowScoreBonus: true,
   allowKan: false,
   allowChi: false,
 };
 ```
+
+## RoleKind
+
+役候補爆発を防ぐため、役を分類する。
+
+```ts
+type RoleKind = 'win_role' | 'special_bonus' | 'score_bonus';
+```
+
+- `win_role`: あがり判定に使う。ツモ/ロン対象
+- `special_bonus`: 上がった後に加点。ツモ/ロン対象外
+- `score_bonus`: 上がった後に加点。ツモ/ロン対象外
 
 ## Role
 
@@ -128,36 +141,58 @@ const EXTENDED_HAND_RULE: RuleConfig = {
 type Role = {
   id: string;
   name: string;
+  kind: RoleKind;
   points: number;
   span: number;
   condition: RoleCondition;
   description?: string;
-  duplicateBonus?: DuplicateBonus;
+  canTsumo: boolean;
+  canRon: boolean;
 };
+```
+
+### Required Rules
+
+```text
+kind = win_role:
+  canTsumo can be true
+  canRon can be true
+
+kind = special_bonus:
+  canTsumo must be false
+  canRon must be false
+
+kind = score_bonus:
+  canTsumo must be false
+  canRon must be false
 ```
 
 ### Notes
 
-- 標準ルールでは `span = 3`
-- 拡張ルールでは `span = 2〜14` を許可する予定
-- `span = 2` の役はツモ/ロン可能な小型あがり役
+- 標準ルールでは `win_role.span = 3`
+- 拡張ルールでは `win_role.span = 2〜14` を許可する予定
+- `span = 2` の `win_role` はツモ/ロン可能な小型あがり役
 - `span = 2` の役でもポンは不可
-- `duplicateBonus` は将来拡張用。MVPでは使わない
+- `special_bonus` と `score_bonus` はロン候補にしない
 
-## DuplicateBonus
+## ScoreBonus
 
-同じ牌・同じ名前・同じカテゴリが多いほど点数を加算する将来拡張。
+同じキャラ/同じ牌が多いほど加点する場合は、RoleではなくScoreBonusとして分けてもよい。
 
 ```ts
-type DuplicateBonus = {
-  target: 'same_tile' | 'same_name' | 'same_category';
+type ScoreBonus = {
+  id: string;
+  name: string;
+  type: 'duplicate_tile' | 'duplicate_name' | 'duplicate_category';
   minCount: number;
-  bonusPoints: number;
-  maxBonusPoints?: number;
+  points: number;
+  maxPoints?: number;
+  description?: string;
 };
 ```
 
-MVPでは無効。
+MVPでは `Role.kind = 'score_bonus'` でもよい。  
+将来的に複雑になる場合は `ScoreBonus[]` として分離する。
 
 ## RoleCondition
 
@@ -184,8 +219,18 @@ type RoleCondition =
   | {
       type: 'exact_group';
       tileIds: string[];
+    }
+  | {
+      type: 'choose_n_from';
+      tileIds: string[];
+      choose: number;
     };
 ```
+
+### Notes
+
+- `choose_n_from` は特殊役で使う
+- 例: 4キャラのうち3キャラが含まれていたら加点
 
 ## DeckDefinition / RuleSet
 
@@ -200,6 +245,7 @@ type DeckDefinition = {
   ruleConfig: RuleConfig;
   tiles: Tile[];
   roles: Role[];
+  scoreBonuses?: ScoreBonus[];
 };
 ```
 
@@ -241,6 +287,8 @@ type ReactionState = {
 - reactionはロン用
 - ポンは作らない
 - カンもチーも作らない
+- ロン判定は `win_role` のみ
+- `special_bonus` と `score_bonus` はロン判定に使わない
 
 MVPでは未使用でもよいが、MatchStateに後から追加できる設計にする。
 
@@ -277,15 +325,35 @@ type MatchResult = {
   winnerPlayerId: string;
   winMethod: WinMethod;
   sourcePlayerId?: string; // ronの場合の放銃者
-  roles: Array<{
+  winRoles: Array<{
     roleId: string;
     name: string;
     points: number;
     span: number;
-    bonusPoints?: number;
+  }>;
+  specialBonuses: Array<{
+    roleId: string;
+    name: string;
+    points: number;
+    span: number;
+  }>;
+  scoreBonuses: Array<{
+    bonusId: string;
+    name: string;
+    points: number;
   }>;
   totalPoints: number;
 };
+```
+
+## Scoring Flow
+
+```text
+1. win_role であがり判定
+2. あがり成立
+3. 手の中に special_bonus が含まれているか判定
+4. score_bonus を計算
+5. totalPoints を出す
 ```
 
 ## Shared JSON Rule
@@ -301,10 +369,11 @@ type MatchResult = {
 - fallbackLabel
 - counts
 - roles
+- role kind
 - role span
 - role conditions
 - points
-- duplicate bonus config
+- score bonus config
 
 共有JSONに含めてはいけないもの。
 
@@ -329,5 +398,9 @@ import時はZod schemaで検証する。
 - `allowPon` は常に false
 - `allowKan` は常に false
 - `allowChi` は常に false
+- `special_bonus.canTsumo` は false
+- `special_bonus.canRon` は false
+- `score_bonus.canTsumo` は false
+- `score_bonus.canRon` は false
 - MVPでは `ruleConfig.id = 'base-donjara'` のみ有効
 - 拡張ルールはexperimental扱い
