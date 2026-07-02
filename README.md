@@ -24,6 +24,7 @@ docs/10-screen-design-spec.md
 docs/11-design-generation-prompt.md
 docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
+docs/41-vampon-in-world-game-direction.md
 ```
 
 `.claude/README.md` と `.codex/README.md` は補助メモです。仕様の正本は `README.md` / `AGENTS.md` / `docs/` に集約します。
@@ -66,20 +67,32 @@ docs/38-screen-generation-plan.md
 MVPの見た目は以下で固定します。
 
 ```text
-明るい卓上ボードゲームUI
-+ 麻雀アプリの操作感
-+ カード/デッキビルダーの作りやすさ
-+ クリアボードの収集感
+soro-pon = Vamp-pon世界の中で流行っている記憶札遊び
+```
+
+単体の漫画風アプリではなく、Vamp-pon世界の机の上で遊ばれている小さな牌ゲームとしてデザインします。
+
+```text
+夜の机
+紙札
+黒インク
+小さな灯り
+記憶の欠片
+手帳
+静かな通常画面
+勝負どころだけ少し漫画的
 ```
 
 - TOP / Deck / Editor / Result / Collection は 390x844 portrait-first
 - Match は 844x390 landscape-first
 - Portrait match では横向き案内を出す
-- 牌は角丸カード状
-- 牌の外枠/帯/チップでカテゴリ色を見せる
-- 暗すぎる/幼すぎる/ソシャゲすぎる方向にはしない
+- 牌は記憶札として見せる
+- 牌の外枠/ラベル/チップでカテゴリ色を見せる
+- 捨て牌は全員分見える
+- 山は大きく出さず、残り枚数だけ小さく表示する
+- Three.jsは小さな灯り/札の浮き/インク/Result演出の補助に使う
 
-詳細は `docs/37-visual-design-direction.md` と `docs/38-screen-generation-plan.md` にまとめます。
+詳細は `docs/37-visual-design-direction.md` / `docs/38-screen-generation-plan.md` / `docs/41-vampon-in-world-game-direction.md` にまとめます。
 
 ## 実装スタック方針
 
@@ -240,6 +253,9 @@ docs/35-mvp-test-cases.md
 - [Doc Consistency Audit](docs/36-doc-consistency-audit.md)
 - [Visual Design Direction](docs/37-visual-design-direction.md)
 - [Screen Generation Plan](docs/38-screen-generation-plan.md)
+- [Three.js / WebGL Policy](docs/39-threejs-webgl-policy.md)
+- [Stylish Three.js Experiment Plan](docs/40-stylish-threejs-experiment-plan.md)
+- [Vamp-pon In-world Game Direction](docs/41-vampon-in-world-game-direction.md)
 
 ## 現時点でやらないこと
 
