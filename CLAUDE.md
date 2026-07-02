@@ -13,6 +13,7 @@ docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 ```
 
 画面/UI/世界観を扱う場合は追加で必ず読む。
@@ -24,6 +25,7 @@ docs/38-screen-generation-plan.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -73,6 +75,20 @@ PCでは中央ゲーム卓 + 外側補助/夜机背景
 必須UIはゲーム卓内に置く
 ```
 
+## UI Quality Gate
+
+UI実装時は `docs/49-ui-quality-gate-and-codex-design-rules.md` を正とする。
+
+```text
+Claude Codeはデザインを発明しない
+採用済みデザインターゲット10枚をUI品質基準にする
+tokens.css以外へ新しい色を勝手に追加しない
+画面ごとの独自ボタン/独自パネルを作らない
+UIはprimitives/components経由で実装する
+Component Galleryを先に作る
+UI変更時は指定サイズでスクリーンショット確認する
+```
+
 ## Role
 
 Claude Codeは、主に以下を担当する。
@@ -110,6 +126,11 @@ UI枠/アイコン/線/札枠はSVG優先
 文字は画像に焼き込まない
 重要UI寸法は整数pxへ丸める
 必要箇所だけ9-sliceを使う
+Codex/Claude Codeはデザインを発明しない
+tokens.css以外へ新しい色を勝手に追加しない
+画面ごとの独自ボタン/独自パネルを作らない
+UIはprimitives/components経由で実装する
+Component Galleryを先に作る
 縦画面に本UIを無理に詰めない
 Vamp-pon側は読み取り専用
 世界観を扱う時はVamp-pon shared master indexを読む
@@ -159,9 +180,10 @@ Tailwind
 12. CPU minimum strategy
 13. localStorage
 14. JSON import/export
-15. Deck Editor UI
-16. Match UI
-17. Result / Collection UI
+15. UI foundation: tokens / primitives / responsive metrics / Component Gallery
+16. Deck Editor UI
+17. Match UI
+18. Result / Collection UI
 ```
 
 ## Validation
@@ -174,6 +196,8 @@ npm run build
 ```
 
 まだscriptが存在しない段階では、その理由と次に追加するscriptを報告する。
+
+UI変更時は `docs/49-ui-quality-gate-and-codex-design-rules.md` のスクリーンショット確認サイズも報告する。
 
 ## Reporting
 
