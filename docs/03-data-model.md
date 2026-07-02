@@ -1,25 +1,108 @@
 # Data Model
 
+## Purpose
+
+`soro-pon` のMVP実装で使う主要データ型を固定する。
+
+このファイルは、TypeScript実装・Zod schema・JSON import/export・localStorage・テストの基準になる。
+
 ## Design Principles
 
 - 3〜4人戦を前提にする
 - 2人専用構造にしない
 - 標準ルールはドンジャラ互換にする
-- 将来の拡張ルールに耐えるRuleConfigを持つ
+- 通常版/拡張版は1つのDeckProject内のvariantとして扱う
 - 牌はカテゴリを複数持てる
+- カテゴリごとに色を持てる
+- 牌の見た目は画像なしでも成立する
 - オールマイティ牌を定義できる
 - 画像は共有JSONに含めない
 - ルールエンジンはUIから分離する
 - Zodでimport/export schemaを検証する
 - あがり判定用の役と、加点用の特殊役/ボーナスを分ける
+- Result後のprogressionを将来拡張できるようにする
+
+## Primitive IDs
+
+実装上はすべて `string` でよいが、意味を分けて扱う。
+
+```ts
+type DeckProjectId = string;
+type DeckVariantId = string;
+type TileId = string;
+type TileInstanceId = string;
+type CategoryId = string;
+type RoleId = string;
+type PlayerId = string;
+```
+
+## DeckProject
+
+デッキ入口は1つ。
+
+通常版と拡張版は別デッキではなく、同じDeckProject内のvariantとして扱う。
+
+```ts
+type DeckProject = {
+  version: 1;
+  id: DeckProjectId;
+  name: string;
+  description?: string;
+  categories: TileCategory[];
+  tiles: Tile[];
+  variants: DeckVariant[];
+  activeVariantId: DeckVariantId;
+  createdAt?: string;
+  updatedAt?: string;
+};
+```
+
+## DeckVariant
+
+```ts
+type DeckVariant = {
+  id: DeckVariantId;
+  name: string;
+  label: '通常版' | '拡張版';
+  ruleConfig: RuleConfig;
+  roles: Role[];
+  scoreBonuses?: ScoreBonus[];
+  isExperimental?: boolean;
+};
+```
+
+## TileCategory
+
+カテゴリは色を持つ。
+
+```ts
+type TileCategory = {
+  id: CategoryId;
+  name: string;
+  color: string;
+  priority?: number;
+  icon?: string;
+  description?: string;
+};
+```
+
+表示色の優先順位:
+
+```text
+1. tile.primaryCategoryId
+2. category.priority が高いもの
+3. tile.categories の先頭
+4. wildcardは専用色を優先してよい
+```
 
 ## Tile
 
 ```ts
 type Tile = {
-  id: string;
+  id: TileId;
   name: string;
-  categories: string[];
+  categories: CategoryId[];
+  primaryCategoryId?: CategoryId;
   emoji?: string;
   fallbackLabel?: string;
   count: number;
@@ -30,6 +113,7 @@ type Tile = {
 ### Notes
 
 - `categories` は複数可
+- `primaryCategoryId` は牌の外枠/帯の色に使う
 - `emoji` は画像がない場合の表示
 - `fallbackLabel` は絵文字も画像もない場合の短い表示
 - `count` は山に入れる枚数
@@ -37,13 +121,11 @@ type Tile = {
 
 ## WildcardRule
 
-オールマイティ牌の代用範囲を定義する。
-
 ```ts
 type WildcardRule = {
   kind: 'any_tile' | 'category_limited' | 'specific_tiles';
-  categories?: string[];
-  tileIds?: string[];
+  categories?: CategoryId[];
+  tileIds?: TileId[];
   maxUsePerRole?: number;
   canCompleteWinRole: boolean;
   canCompleteSpecialBonus: boolean;
@@ -52,7 +134,7 @@ type WildcardRule = {
 };
 ```
 
-### Recommended Defaults
+推奨デフォルト:
 
 ```ts
 const DEFAULT_WILDCARD_RULE: WildcardRule = {
@@ -65,27 +147,14 @@ const DEFAULT_WILDCARD_RULE: WildcardRule = {
 };
 ```
 
-### Notes
-
-- `canCompleteWinRole`: 上がり役の不足分を補える
-- `canCompleteSpecialBonus`: 特殊役の不足分を補える
-- `canTriggerRonWhenDiscarded`: オールマイティが捨てられたとき、それを使ってロンできるか
-- `countsForScoreBonus`: 同じキャラボーナスなどのスコアボーナス対象に含めるか
-
-重要:
-
-- デフォルトでは、手牌内のオールマイティは代用可
-- デフォルトでは、捨てられたオールマイティでロンは発生しない
-- デフォルトでは、オールマイティは同じキャラボーナスの枚数に含めない
-
 ## TileInstance
 
 山・手牌・捨て牌では、定義としてのTileではなくインスタンスを使う。
 
 ```ts
 type TileInstance = {
-  instanceId: string;
-  tileId: string;
+  instanceId: TileInstanceId;
+  tileId: TileId;
 };
 ```
 
@@ -95,7 +164,7 @@ type TileInstance = {
 
 ```ts
 type LocalTileOverride = {
-  tileId: string;
+  tileId: TileId;
   displayName?: string;
   localImageId?: string;
   emoji?: string;
@@ -105,11 +174,6 @@ type LocalTileOverride = {
 これは共有JSONに含めない。
 
 ## RuleConfig
-
-標準ルールと将来の拡張ルールを分離するために、RuleConfigを持つ。
-
-MVPでは `BASE_DONJARA_RULE` のみを有効にする。  
-ただし、後から14枚手札や2〜14枚役などを入れられるように、型としては拡張可能にする。
 
 ```ts
 type RuleConfig = {
@@ -140,7 +204,7 @@ const BASE_DONJARA_RULE: RuleConfig = {
   handSizeAfterDraw: 9,
   winHandSize: 9,
   roleSpanMin: 3,
-  roleSpanMax: 3,
+  roleSpanMax: 9,
   allowRon: true,
   allowPon: false,
   allowReach: false,
@@ -151,7 +215,7 @@ const BASE_DONJARA_RULE: RuleConfig = {
 };
 ```
 
-将来拡張候補:
+拡張ルール:
 
 ```ts
 const EXTENDED_HAND_RULE: RuleConfig = {
@@ -174,8 +238,6 @@ const EXTENDED_HAND_RULE: RuleConfig = {
 
 ## RoleKind
 
-役候補爆発を防ぐため、役を分類する。
-
 ```ts
 type RoleKind = 'win_role' | 'special_bonus' | 'score_bonus';
 ```
@@ -184,11 +246,43 @@ type RoleKind = 'win_role' | 'special_bonus' | 'score_bonus';
 - `special_bonus`: 上がった後に加点。ツモ/ロン対象外
 - `score_bonus`: 上がった後に加点。ツモ/ロン対象外
 
+## Role Match Policy
+
+```ts
+type RoleMatchMode = 'contains_pattern' | 'exact_hand';
+type RoleCoveragePolicy = 'allow_extra_tiles' | 'must_cover_full_hand';
+```
+
+- `contains_pattern`: 手札内に条件が含まれれば成立
+- `exact_hand`: 手札全体が条件を満たす場合だけ成立
+- `allow_extra_tiles`: 余り牌を許可する
+- `must_cover_full_hand`: 手札全体を役条件で覆う
+
+13枚役:
+
+```ts
+{
+  span: 13,
+  matchMode: 'contains_pattern',
+  coveragePolicy: 'allow_extra_tiles'
+}
+```
+
+14枚役:
+
+```ts
+{
+  span: 14,
+  matchMode: 'exact_hand',
+  coveragePolicy: 'must_cover_full_hand'
+}
+```
+
 ## Role
 
 ```ts
 type Role = {
-  id: string;
+  id: RoleId;
   name: string;
   kind: RoleKind;
   points: number;
@@ -199,6 +293,8 @@ type Role = {
   canRon: boolean;
   allowWildcard?: boolean;
   maxWildcardUse?: number;
+  matchMode?: RoleMatchMode;
+  coveragePolicy?: RoleCoveragePolicy;
 };
 ```
 
@@ -218,19 +314,20 @@ kind = score_bonus:
   canRon must be false
 ```
 
-### Notes
+## RoleCondition
 
-- 標準ルールでは `win_role.span = 3`
-- 拡張ルールでは `win_role.span = 2〜14` を許可する予定
-- `span = 2` の `win_role` はツモ/ロン可能な小型あがり役
-- `span = 2` の役でもポンは不可
-- `special_bonus` と `score_bonus` はロン候補にしない
-- `allowWildcard` がfalseの役ではオールマイティを使えない
-- `maxWildcardUse` で役ごとのオールマイティ使用枚数を制限できる
+```ts
+type RoleCondition =
+  | { type: 'contains_all'; tileIds: TileId[] }
+  | { type: 'same_tile_count'; count: number }
+  | { type: 'same_name_count'; name: string; count: number }
+  | { type: 'same_category_count'; category: CategoryId; count: number }
+  | { type: 'all_different_categories'; count: number }
+  | { type: 'exact_group'; tileIds: TileId[] }
+  | { type: 'choose_n_from'; tileIds: TileId[]; choose: number };
+```
 
 ## ScoreBonus
-
-同じキャラ/同じ牌が多いほど加点する場合は、RoleではなくScoreBonusとして分けてもよい。
 
 ```ts
 type ScoreBonus = {
@@ -245,70 +342,25 @@ type ScoreBonus = {
 };
 ```
 
-MVPでは `Role.kind = 'score_bonus'` でもよい。  
-将来的に複雑になる場合は `ScoreBonus[]` として分離する。
-
-## RoleCondition
+## WildcardAssignment
 
 ```ts
-type RoleCondition =
-  | {
-      type: 'contains_all';
-      tileIds: string[];
-    }
-  | {
-      type: 'same_name_count';
-      name: string;
-      count: number;
-    }
-  | {
-      type: 'same_category_count';
-      category: string;
-      count: number;
-    }
-  | {
-      type: 'all_different_categories';
-      count: number;
-    }
-  | {
-      type: 'exact_group';
-      tileIds: string[];
-    }
-  | {
-      type: 'choose_n_from';
-      tileIds: string[];
-      choose: number;
-    };
-```
-
-### Notes
-
-- `choose_n_from` は特殊役で使う
-- 例: 4キャラのうち3キャラが含まれていたら加点
-- オールマイティを使えるかは `RuleConfig.allowWildcard`, `Tile.wildcard`, `Role.allowWildcard` で決める
-
-## DeckDefinition / RuleSet
-
-```ts
-type DeckDefinition = {
-  version: 1;
-  id: string;
-  name: string;
-  description?: string;
-  minPlayers: 3;
-  maxPlayers: 4;
-  ruleConfig: RuleConfig;
-  tiles: Tile[];
-  roles: Role[];
-  scoreBonuses?: ScoreBonus[];
+type WildcardAssignment = {
+  wildcardTileInstanceId: TileInstanceId;
+  usedAsTileId?: TileId;
+  usedAsCategory?: CategoryId;
+  roleId: RoleId;
+  source: 'auto' | 'manual';
 };
 ```
+
+MVPでは `source: 'auto'` のみでよい。
 
 ## PlayerState
 
 ```ts
 type PlayerState = {
-  id: string;
+  id: PlayerId;
   name: string;
   type: 'human' | 'cpu';
   hand: TileInstance[];
@@ -319,42 +371,21 @@ type PlayerState = {
 };
 ```
 
-### Notes
-
-- `isReach` は将来拡張用
-- MVPでは常にfalse扱いでよい
-
-## ReactionState
-
-捨て牌へのロン反応を扱うための状態。
-
-```ts
-type ReactionState = {
-  discardOwnerId: string;
-  discardedTile: TileInstance;
-  candidatePlayerIds: string[];
-  type: 'ron';
-};
-```
-
-重要:
-
-- reactionはロン用
-- ポンは作らない
-- カンもチーも作らない
-- ロン判定は `win_role` のみ
-- `special_bonus` と `score_bonus` はロン判定に使わない
-- 捨てられたオールマイティでロンできるかは `canTriggerRonWhenDiscarded` で制御する
-
-MVPでは未使用でもよいが、MatchStateに後から追加できる設計にする。
-
 ## MatchState
 
 ```ts
-type MatchPhase = 'draw' | 'discard' | 'reaction' | 'result';
+type MatchPhase = 'setup' | 'draw' | 'discard' | 'reaction' | 'result';
+
+type ReactionState = {
+  discardOwnerId: PlayerId;
+  discardedTile: TileInstance;
+  candidatePlayerId?: PlayerId;
+  type: 'ron';
+};
 
 type MatchState = {
-  deckId: string;
+  deckProjectId: DeckProjectId;
+  variantId: DeckVariantId;
   ruleConfigId: string;
   players: PlayerState[];
   drawPile: TileInstance[];
@@ -363,11 +394,10 @@ type MatchState = {
   lastDrawnTile?: TileInstance;
   lastDiscard?: {
     tile: TileInstance;
-    ownerPlayerId: string;
+    ownerPlayerId: PlayerId;
   };
   reaction?: ReactionState;
-  selectedTileInstanceId?: string;
-  winnerPlayerId?: string;
+  selectedTileInstanceId?: TileInstanceId;
   result?: MatchResult;
 };
 ```
@@ -375,38 +405,97 @@ type MatchState = {
 ## MatchResult
 
 ```ts
-type WinMethod = 'tsumo' | 'ron';
+type WinMethod = 'tsumo' | 'ron' | 'draw';
 
-type WildcardUse = {
-  wildcardTileInstanceId: string;
-  usedAsTileId?: string;
-  usedAsCategory?: string;
-  roleId: string;
+type PaymentRecord = {
+  fromPlayerId?: PlayerId;
+  toPlayerId: PlayerId;
+  points: number;
+  reason: 'win' | 'tsumo' | 'ron' | 'bonus' | 'system';
+};
+
+type EvaluatedRoleSummary = {
+  roleId: RoleId;
+  name: string;
+  points: number;
+  span: number;
 };
 
 type MatchResult = {
-  winnerPlayerId: string;
+  resultType: 'win' | 'draw';
+  winnerPlayerId?: PlayerId;
   winMethod: WinMethod;
-  sourcePlayerId?: string; // ronの場合の放銃者
-  winRoles: Array<{
-    roleId: string;
-    name: string;
-    points: number;
-    span: number;
-  }>;
-  specialBonuses: Array<{
-    roleId: string;
-    name: string;
-    points: number;
-    span: number;
-  }>;
+  sourcePlayerId?: PlayerId;
+  selectedWinRole?: EvaluatedRoleSummary;
+  matchedWinRoles: Array<EvaluatedRoleSummary & { selected: boolean }>;
+  specialBonuses: EvaluatedRoleSummary[];
   scoreBonuses: Array<{
     bonusId: string;
     name: string;
     points: number;
   }>;
-  wildcardUses: WildcardUse[];
+  wildcardAssignments: WildcardAssignment[];
   totalPoints: number;
+  earnedCoins: number;
+  paymentRecords: PaymentRecord[];
+};
+```
+
+## Progression
+
+```ts
+type PlayerProgress = {
+  version: 1;
+  coins: number;
+  unlockedTitleIds: string[];
+  selectedTitleId?: string;
+  unlockedCosmeticIds: string[];
+  achievementStates: AchievementState[];
+  roleCollection: RoleCollectionEntry[];
+  resultAlbum: ResultAlbumEntry[];
+};
+
+type AchievementState = {
+  achievementId: string;
+  unlocked: boolean;
+  progress: number;
+  target: number;
+  unlockedAt?: string;
+};
+
+type RoleCollectionEntry = {
+  roleId: RoleId;
+  roleName: string;
+  kind: RoleKind;
+  deckProjectId: DeckProjectId;
+  variantId: DeckVariantId;
+  firstAchievedAt: string;
+  bestPoints: number;
+  usedWildcard: boolean;
+};
+
+type ResultAlbumEntry = {
+  id: string;
+  createdAt: string;
+  deckProjectId: DeckProjectId;
+  variantId: DeckVariantId;
+  totalPoints: number;
+  selectedWinRoleName?: string;
+  specialBonusNames: string[];
+  scoreBonusNames: string[];
+};
+```
+
+## ValidationIssue
+
+```ts
+type ValidationIssue = {
+  severity: 'error' | 'warning' | 'info';
+  code: string;
+  message: string;
+  path?: string;
+  relatedId?: string;
+  actionLabel?: string;
 };
 ```
 
@@ -414,12 +503,15 @@ type MatchResult = {
 
 ```text
 1. win_role であがり判定
-2. オールマイティが必要なら代用割当を行う
-3. あがり成立
-4. 手の中に special_bonus が含まれているか判定
-5. score_bonus を計算
-6. wildcardUses を記録
-7. totalPoints を出す
+2. オールマイティが必要なら自動割当
+3. 複数win_role成立時は points desc, span desc, definition order asc
+4. selectedWinRoleを1つ採用
+5. あがり成立後にspecial_bonusを判定
+6. score_bonusを計算
+7. wildcardAssignmentsを記録
+8. totalPointsを出す
+9. earnedCoinsを出す
+10. MatchResultを保存する
 ```
 
 ## Shared JSON Rule
@@ -428,6 +520,9 @@ type MatchResult = {
 
 - deck id
 - deck name
+- description
+- category definitions
+- category colors
 - ruleConfig
 - tile definitions
 - wildcard rule
@@ -451,26 +546,10 @@ type MatchResult = {
 - localImageId
 - blob URL
 - file path
+- external asset URL
 
-## Validation
+## Final Decision
 
-import時はZod schemaで検証する。
+このデータモデルをMVP実装の正とする。
 
-- 必須フィールド欠落はエラー
-- unknown field は原則stripまたはエラー
-- 画像系フィールドは拒否または除外
-- tilesが空ならエラー
-- rolesが空なら警告またはエラー
-- player count は3または4のみ
-- `allowPon` は常に false
-- `allowKan` は常に false
-- `allowChi` は常に false
-- `special_bonus.canTsumo` は false
-- `special_bonus.canRon` は false
-- `score_bonus.canTsumo` は false
-- `score_bonus.canRon` は false
-- wildcard `maxUsePerRole` は原則1を推奨
-- wildcard `countsForScoreBonus` は原則falseを推奨
-- wildcard `canTriggerRonWhenDiscarded` は原則falseを推奨
-- MVPでは `ruleConfig.id = 'base-donjara'` のみ有効
-- 拡張ルールはexperimental扱い
+実装時に型を変更したい場合は、先にこのファイルとZod schema仕様を更新する。
