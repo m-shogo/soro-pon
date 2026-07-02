@@ -2,7 +2,8 @@
 
 `soro-pon` は、プレイヤーが **デッキ・牌・役・得点** を自由に決められる、3〜4人用のカスタム牌ゲームです。
 
-現在は **MVP実装準備完了** の状態です。実装は `docs/34-mvp-implementation-prompt.md` と `docs/35-mvp-test-cases.md` を正として、小さいコミットで進めます。
+現在は **MVP実装準備完了** の状態です。  
+ただし、MVP本実装に入る前に、`docs/38-screen-generation-plan.md` に沿って全主要画面のデザインを生成・採用します。
 
 ## AI作業入口
 
@@ -14,6 +15,15 @@ AGENTS.md
 CLAUDE.md or CODEX.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
+```
+
+画面生成を行う場合は、追加で以下を読むこと。
+
+```text
+docs/10-screen-design-spec.md
+docs/11-design-generation-prompt.md
+docs/37-visual-design-direction.md
+docs/38-screen-generation-plan.md
 ```
 
 `.claude/README.md` と `.codex/README.md` は補助メモです。仕様の正本は `README.md` / `AGENTS.md` / `docs/` に集約します。
@@ -50,6 +60,26 @@ docs/35-mvp-test-cases.md
 - production export payload
 
 公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどの安全テーマで作ります。
+
+## デザイン方針
+
+MVPの見た目は以下で固定します。
+
+```text
+明るい卓上ボードゲームUI
++ 麻雀アプリの操作感
++ カード/デッキビルダーの作りやすさ
++ クリアボードの収集感
+```
+
+- TOP / Deck / Editor / Result / Collection は 390x844 portrait-first
+- Match は 844x390 landscape-first
+- Portrait match では横向き案内を出す
+- 牌は角丸カード状
+- 牌の外枠/帯/チップでカテゴリ色を見せる
+- 暗すぎる/幼すぎる/ソシャゲすぎる方向にはしない
+
+詳細は `docs/37-visual-design-direction.md` と `docs/38-screen-generation-plan.md` にまとめます。
 
 ## 実装スタック方針
 
@@ -167,6 +197,8 @@ docs/35-mvp-test-cases.md
 
 実装開始時はこの2つを正とします。
 
+ただし、画面デザイン生成が終わるまでは、MVP本実装には入らない方針です。
+
 ## ドキュメント
 
 - [Product Brief](docs/00-product-brief.md)
@@ -206,6 +238,8 @@ docs/35-mvp-test-cases.md
 - [MVP Implementation Prompt](docs/34-mvp-implementation-prompt.md)
 - [MVP Test Cases](docs/35-mvp-test-cases.md)
 - [Doc Consistency Audit](docs/36-doc-consistency-audit.md)
+- [Visual Design Direction](docs/37-visual-design-direction.md)
+- [Screen Generation Plan](docs/38-screen-generation-plan.md)
 
 ## 現時点でやらないこと
 
