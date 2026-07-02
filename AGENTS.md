@@ -39,7 +39,7 @@ docs/42-shared-vampon-source-policy.md
 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う作業では、必ず先に以下を読む。
 
 ```text
-/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-world-bible.md
+/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
 /Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
 ```
 
@@ -119,7 +119,7 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - 単体の漫画風アプリとしてデザインしない
 - 紙/黒インク/小さな灯り/夜の机/記憶を軸にする
 - Vamp-pon側を変更しない。Vamp-pon側は読み取り専用
-- 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う時は必ずVamp-pon shared-world-bibleを読む
+- 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う時は必ずVamp-pon shared master indexを読む
 - Deck Editorは主役級機能として扱う
 - カテゴリごとに色を持たせ、牌の外枠/ラベル/チップで見せる
 - 役はテンプレートとビジュアル選択で作れるようにする
