@@ -36,6 +36,20 @@
 
 公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどで作ります。
 
+## 役分類方針
+
+役候補の爆発とテンポ悪化を防ぐため、役は分類します。
+
+```text
+上がり役 = あがり判定に使う
+特殊役 = 上がった後に加点する
+スコアボーナス = 上がった後に加点する
+```
+
+ロン/ツモ判定の対象にするのは、原則として **上がり役だけ** です。
+
+特殊役や同じキャラボーナスは、ロン候補にせず、上がった後の加点として扱います。詳細は `docs/14-role-taxonomy-and-scoring.md` にまとめます。
+
 ## 拡張ルール方針
 
 標準ルールはドンジャラ互換で固定します。
@@ -80,6 +94,7 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Design Generation Prompt](docs/11-design-generation-prompt.md)
 - [Advanced Rule Modules](docs/12-advanced-rule-modules.md)
 - [Deck Variants and Balance](docs/13-deck-variants-and-balance.md)
+- [Role Taxonomy and Scoring](docs/14-role-taxonomy-and-scoring.md)
 
 ## 現時点でやらないこと
 
