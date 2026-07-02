@@ -31,6 +31,7 @@ docs/41-vampon-in-world-game-direction.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -82,6 +83,19 @@ UI枠/アイコン/線/札枠はSVG優先
 
 画面生成物はそのままruntime画像にせず、コンポーネント・SVG・CSS・必要最小限のPNG/WebP素材へ分解する。
 
+## UI Quality Rule
+
+画面生成・UI分解・UI実装では、`docs/49-ui-quality-gate-and-codex-design-rules.md` を正とする。
+
+```text
+Codexはデザインを発明しない
+採用済みデザインターゲット10枚をUI品質基準にする
+tokens.css以外へ新しい色を勝手に追加しない
+画面ごとの独自ボタン/独自パネルを作らない
+UIはprimitives/components経由で実装する
+Component Galleryを先に作る
+```
+
 ## Required Screens
 
 ### Landscape-first 844x390 Design Reference
@@ -127,6 +141,7 @@ UI枠/アイコン/線/札枠はSVG優先
 33 SVG Frame / Icon Sheet
 34 9-slice Paper Panel Sheet
 35 Texture / Ink / Lantern Overlay Sheet
+36 Component Gallery Reference Sheet
 ```
 
 ## Generation Order
@@ -152,6 +167,7 @@ Achievement / Clear Board Tile Sheet
 SVG Frame / Icon Sheet
 9-slice Paper Panel Sheet
 Texture / Ink / Lantern Overlay Sheet
+Component Gallery Reference Sheet
 ```
 
 確認ポイント:
@@ -165,6 +181,7 @@ Vamp-ponの紙/黒インク/ランタン光がある
 SVG化できる枠/アイコン/線が分かる
 9-sliceにすべき紙パネルが分かる
 PNG/WebPにすべき質感素材が分かる
+画面ごとの独自部品ではなく共通Component化できる
 ```
 
 ## Batch 2: Entry Screens
@@ -293,6 +310,8 @@ SVG化する部品
 PNG/WebP素材候補
 文字をHTML textにする箇所
 整数pxで管理すべきUI寸法
+tokensに追加が必要なもの
+Component Galleryに追加すべきもの
 ```
 
 ## Design Review Checklist
@@ -309,6 +328,8 @@ Vamp-pon世界内の遊びに見えるか
 画面全体scale前提になっていないか
 文字入り画像に頼っていないか
 SVG/9-slice/PNG/WebPの分解方針が見えるか
+画面ごとの独自デザインを作っていないか
+白い汎用WebアプリUIへ寄っていないか
 ```
 
 ## Final Gate Before Implementation
@@ -322,6 +343,7 @@ Deck Editorが横画面で作りやすそうに見える
 デザインから実装コンポーネント名に落とせる
 Web responsive方針が見える
 SVG/9-slice/PNG/WebPの使い分けが見える
+Component Galleryで共通部品として確認できる
 ```
 
 ## Final Decision
@@ -331,3 +353,4 @@ SVG/9-slice/PNG/WebPの使い分けが見える
 ただし、デザイン生成のための静的HTML/プロトタイプや画像生成prompt作成は進めてよい。
 
 UI実装の鮮明さ・レスポンシブ・素材形式の判断は `docs/48-responsive-crisp-ui-system.md` を正とする。
+UI品質・Codexのデザイン境界・ダサくならないための実装制約は `docs/49-ui-quality-gate-and-codex-design-rules.md` を正とする。
