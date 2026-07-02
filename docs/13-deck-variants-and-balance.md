@@ -2,13 +2,16 @@
 
 ## Purpose
 
-拡張ルールを入れる場合、通常デッキと拡張デッキをどう扱うかを決める。
+通常ルール版と拡張ルール版をどう扱うかを固定する。
 
 結論:
 
+- デッキ入口は1つにする
+- 通常版と拡張版は同じDeckProject内のvariantとして持つ
+- 両方ある場合はワンクリックで切り替え可能にする
 - 拡張ルール用に完全な別デッキを最初から手作業で作らせない
-- 通常デッキからコピーして拡張版を作れる導線を用意する
-- ただし、標準ルール用デッキと拡張ルール用デッキは内部的には別variantとして扱う
+- 通常版から拡張版を作れる導線を用意する
+- 通常版と拡張版は内部的には別variantとして扱う
 
 ## Why
 
@@ -33,11 +36,13 @@
 
 同じ牌セットでも、役の作り方と点数バランスは大きく変わる。
 
-そのため、同じ1つのdeckを無理に両対応させると、UIもvalidationもバランスも複雑になる。
+そのため、1つの役表で通常/拡張の両方を無理に扱わない。
 
-## Recommended Model
+ただし、ユーザーには2つの別デッキとして探させない。
 
-デッキは1つの親情報を持ち、その中にvariantを持てるようにする。
+## Fixed Model
+
+MVPからDeckProject方式を使う。
 
 ```ts
 type DeckProject = {
@@ -47,26 +52,27 @@ type DeckProject = {
   description?: string;
   tiles: Tile[];
   variants: DeckVariant[];
+  activeVariantId: string;
 };
 
 type DeckVariant = {
   id: string;
   name: string;
+  label: '通常版' | '拡張版';
   ruleConfig: RuleConfig;
   roles: Role[];
-  scoringNotes?: string;
+  scoreBonuses?: ScoreBonus[];
+  isExperimental?: boolean;
 };
 ```
 
-ただしMVPでは、実装を簡単にするため `DeckDefinition` 1つでもよい。
-
-将来的に以下のように移行する。
+構造:
 
 ```text
 DeckProject
   ├─ tiles: 共通牌セット
-  ├─ variant: 通常ルール版
-  └─ variant: 拡張ルール版
+  ├─ variant: 通常版
+  └─ variant: 拡張版
 ```
 
 ## User Flow
@@ -74,9 +80,9 @@ DeckProject
 ### Normal Flow
 
 ```text
-動物デッキを作る
+デッキを作る
 ↓
-通常ルールで役を作る
+通常版で役を作る
 ↓
 遊ぶ
 ```
@@ -84,9 +90,11 @@ DeckProject
 ### Extended Flow
 
 ```text
-通常デッキをコピー
+通常版がある
 ↓
-「拡張ルール版を作成」
+「拡張版を作成」
+↓
+同じDeckProject内に拡張版variantを追加
 ↓
 牌セットはそのまま
 ↓
@@ -97,37 +105,69 @@ DeckProject
 
 ## UI Requirement
 
-Deck Editorには将来的に以下の導線を置く。
+Deck Detail / Match Setup / Deck Editor にはvariant切替を置く。
 
 ```text
-[このデッキをコピー]
-[拡張ルール版を作成]
+[通常版] [拡張版]
 ```
 
-拡張ルール版を作成するときは、自動で以下を行う。
+表示条件:
 
-- tilesをコピー
-- 既存の3枚役をコピー
-- ruleConfigを `extended-hand` に変更
-- 新しい役名/点数はユーザーが調整
-- 2〜14枚役を追加できるようにする
+- 通常版だけある場合: 通常版のみ表示
+- 拡張版だけある場合: 拡張版のみ表示
+- 両方ある場合: ワンクリックで切り替え
+- 拡張版は experimental ラベルを表示
+
+通常版だけ存在するDeckProjectには以下のボタンを出す。
+
+```text
+[拡張版を作成]
+```
+
+押した時の挙動:
+
+- tilesは同じものを使う
+- 通常版rolesをコピーする
+- ruleConfigを `extended-hand` にする
+- 拡張版variantを同じDeckProjectに追加する
+- デッキ一覧上は1つのデッキカードのまま
+
+## Deck List Display
+
+Deck Listでは通常版/拡張版を別カードにしない。
+
+1つのDeckProjectを1カードとして表示する。
+
+表示例:
+
+```text
+デッキ名
+対応: 通常版あり / 拡張版あり
+現在: 通常版
+警告: 2件
+[遊ぶ] [編集] [通常版] [拡張版]
+```
 
 ## Naming
 
-コピー時の名前例。
-
-```text
-動物スターター
-動物スターター Extended
-動物スターター 14枚版
-動物スターター 拡張ルール版
-```
-
-日本語UIでは以下が分かりやすい。
+variant名の例。
 
 ```text
 通常版
 拡張版
+```
+
+DeckProject名は共通。
+
+```text
+動物スターター
+```
+
+variant表示:
+
+```text
+動物スターター / 通常版
+動物スターター / 拡張版
 ```
 
 ## Balance Risk
@@ -212,7 +252,7 @@ Deck Editorには将来的に以下の導線を置く。
 
 ## Balance Guardrails
 
-Deck Editorに将来的に入れたい警告。
+Deck Editorに入れる警告。
 
 ```text
 2枚役の点数が高すぎます
@@ -223,43 +263,12 @@ Deck Editorに将来的に入れたい警告。
 牌の総数に対して役が多すぎます
 ```
 
-## Practical Recommendation
-
-最初の実装では以下。
-
-```text
-MVP:
-通常版だけ
-3枚役だけ
-8枚手牌 + 9枚あがり
-ロンは標準ルールに必要な範囲で検討
-```
-
-次の段階。
-
-```text
-Deck copy:
-通常版から拡張版を作成
-牌セットをコピー
-役はコピーしつつ編集可能
-```
-
-さらに後。
-
-```text
-Extended beta:
-13枚手牌 + 14枚あがり
-2〜14枚役
-2枚役はツモ/ロン可能
-ポンなし
-リーチあり
-重複ボーナスあり
-```
-
 ## Final Decision
 
+- デッキ入口は1つ
+- DeckProject内に通常版/拡張版variantを持つ
+- 通常版と拡張版が両方ある場合はワンクリック切替
 - 拡張ルール用にゼロから別デッキを作らせない
-- 通常デッキからコピーして作れるようにする
-- 内部的には通常版と拡張版をvariantとして分ける
+- 通常版から拡張版を作れるようにする
 - 1つの役表で通常/拡張の両方を無理に扱わない
 - バランス警告をDeck Editorに入れる
