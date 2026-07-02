@@ -2,7 +2,21 @@
 
 `soro-pon` は、プレイヤーが **デッキ・牌・役・得点** を自由に決められる、3〜4人用のカスタム牌ゲームです。
 
-現時点では実装を急がず、まずは仕様・制約・共有方針・AI実装プロンプト・画面デザイン生成情報を固める段階です。
+現在は **MVP実装準備完了** の状態です。実装は `docs/34-mvp-implementation-prompt.md` と `docs/35-mvp-test-cases.md` を正として、小さいコミットで進めます。
+
+## AI作業入口
+
+AIエージェントは、作業前に以下を読むこと。
+
+```text
+README.md
+AGENTS.md
+CLAUDE.md or CODEX.md
+docs/34-mvp-implementation-prompt.md
+docs/35-mvp-test-cases.md
+```
+
+`.claude/README.md` と `.codex/README.md` は補助メモです。仕様の正本は `README.md` / `AGENTS.md` / `docs/` に集約します。
 
 ## このゲームの核
 
@@ -24,16 +38,18 @@
 このrepoでは、旧repoや過去実装は参考にしません。  
 完全新規で、仕様から整理して作ります。
 
-また、開発中のローカル検証で既存IP題材を使うことはありますが、以下には入れません。
+開発中のローカル検証で既存IP題材を使う場合も、以下には入れません。
 
 - `src/`
 - `public/`
+- `docs/`
+- `README.md`
 - build成果物
 - 公式サンプル
 - 公式スクリーンショット
 - production export payload
 
-公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどで作ります。
+公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどの安全テーマで作ります。
 
 ## 実装スタック方針
 
@@ -65,14 +81,13 @@ Next.js / Unity / Godot / Phaser / Supabase / Firebase はMVP初期では使い�
 
 オールマイティ牌を入れます。
 
-ただし、無制限に何でも代用できるとバランスが壊れるため、以下を標準方針にします。
-
 - 基本は1役につき1枚まで
 - 手牌内のオールマイティは代用可
 - 捨てられたオールマイティでロンは原則不可
 - 特殊役の加点には使える
 - スコアボーナスには原則含めない
 - 使用した場合は結果画面に表示する
+- 対戦中に毎回クリック選択式にはしない
 
 詳細は `docs/15-wildcard-rules.md` と `docs/22-wildcard-ux-and-mahjong-feel.md` にまとめます。
 
@@ -80,14 +95,12 @@ Next.js / Unity / Godot / Phaser / Supabase / Firebase はMVP初期では使い�
 
 標準ルールはドンジャラ互換で固定します。
 
-ただし将来的に、以下のような拡張ルールを入れられるように、データモデルには最初から余地を持たせます。
+将来的に、以下のような拡張ルールを入れられるように、データモデルには最初から余地を持たせます。
 
 - 13枚手牌 + 14枚あがり
 - 2〜14枚役
 - 2枚役はツモ/ロン可能
 - 2枚役のポンはなし
-- 同じ牌/同じキャラが多いほど得点反映
-- リーチ
 - ポンなし
 - カンなし
 - チーなし
@@ -98,7 +111,7 @@ Next.js / Unity / Godot / Phaser / Supabase / Firebase はMVP初期では使い�
 
 TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応します。
 
-ただし、対戦画面は4人対戦、牌の見やすさ、捨て牌の見やすさを優先して、スマホ横向き前提で設計します。
+対戦画面は、4人対戦・牌の見やすさ・捨て牌の見やすさを優先して、スマホ横向き前提で設計します。
 
 - 対戦画面: 横向き前提
 - 基準: 844x390
@@ -145,24 +158,14 @@ samples/animal-starter.deck.json
 
 詳細は `docs/33-official-animal-starter-deck.md` にまとめます。
 
-## MVP開始前チェック
+## MVP実装入口
 
-固定済みのMVP判断は `docs/19-fixed-mvp-decisions.md` を正とします。
+```text
+docs/34-mvp-implementation-prompt.md
+docs/35-mvp-test-cases.md
+```
 
-追加で、以下を固定済みです。
-
-- 点数支払い: `docs/24-scoring-and-payment.md`
-- 役判定エンジン: `docs/25-role-evaluation-engine.md`
-- デッキ検証/バランス: `docs/26-deck-validation-and-balance-rules.md`
-- CPU/対局フロー: `docs/27-cpu-minimum-strategy-and-match-flow.md`
-- リリース安全チェック: `docs/28-release-safety-checklist.md`
-- リザルト後の継続導線: `docs/29-result-progression-collection.md`
-- 初回導線/プレイテスト循環: `docs/30-first-run-and-playtest-loop.md`
-- 実装スタック: `docs/31-implementation-stack-decision.md`
-- Zod schema仕様: `docs/32-zod-schema-spec.md`
-- 公式サンプル: `docs/33-official-animal-starter-deck.md`
-- MVP実装プロンプト: `docs/34-mvp-implementation-prompt.md`
-- MVPテストケース: `docs/35-mvp-test-cases.md`
+実装開始時はこの2つを正とします。
 
 ## ドキュメント
 
@@ -174,7 +177,7 @@ samples/animal-starter.deck.json
 - [IP and UGC Policy](docs/05-ip-and-ugc-policy.md)
 - [Design Principles](docs/06-design-principles.md)
 - [Roadmap](docs/07-roadmap.md)
-- [Fable Implementation Prompt](docs/08-fable-implementation-prompt.md)
+- [Deprecated Fable Implementation Prompt](docs/08-fable-implementation-prompt.md)
 - [Local Dev Fixtures Policy](docs/09-local-dev-fixtures-policy.md)
 - [Screen Design Spec](docs/10-screen-design-spec.md)
 - [Design Generation Prompt](docs/11-design-generation-prompt.md)
@@ -187,7 +190,7 @@ samples/animal-starter.deck.json
 - [MVP Readiness Checklist](docs/18-mvp-readiness-checklist.md)
 - [Fixed MVP Decisions](docs/19-fixed-mvp-decisions.md)
 - [Extended Role Span and DB Policy](docs/20-extended-role-span-and-db-policy.md)
-- [Remaining Spec Gaps and Next Decisions](docs/21-remaining-spec-gaps-and-next-decisions.md)
+- [Resolved Spec Gaps](docs/21-remaining-spec-gaps-and-next-decisions.md)
 - [Wildcard UX and Mahjong-like Feel](docs/22-wildcard-ux-and-mahjong-feel.md)
 - [Deck Editor UX and Category Colors](docs/23-deck-editor-ux-and-category-colors.md)
 - [Scoring and Payment](docs/24-scoring-and-payment.md)
@@ -202,6 +205,7 @@ samples/animal-starter.deck.json
 - [Official Animal Starter Deck](docs/33-official-animal-starter-deck.md)
 - [MVP Implementation Prompt](docs/34-mvp-implementation-prompt.md)
 - [MVP Test Cases](docs/35-mvp-test-cases.md)
+- [Doc Consistency Audit](docs/36-doc-consistency-audit.md)
 
 ## 現時点でやらないこと
 
@@ -217,4 +221,4 @@ samples/animal-starter.deck.json
 - productionへのローカル検証データ混入
 - 強さに関係する購入
 
-まずは仕様をブラッシュアップし、Fable / Claude Code / Codex が間違えない状態にします。
+実装は Claude Code / Codex / Cursor が間違えないよう、README / AGENTS / CLAUDE / CODEX / docs を正として進めます。
