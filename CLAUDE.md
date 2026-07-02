@@ -16,7 +16,7 @@ docs/35-mvp-test-cases.md
 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う場合は、必ず先に以下を読む。
 
 ```text
-/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-world-bible.md
+/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
 /Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
 ```
 
@@ -56,7 +56,7 @@ special_bonus / score_bonus をロン候補にしない
 オールマイティを毎回クリック選択式にしない
 コインで強さを買わせない
 Vamp-pon側は読み取り専用
-世界観を扱う時はVamp-pon shared-world-bibleを読む
+世界観を扱う時はVamp-pon shared master indexを読む
 ```
 
 ## Implementation Stack
