@@ -9,6 +9,7 @@ README.md
 AGENTS.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
+docs/47-mvp-implementation-final-gate.md
 ```
 
 画面/UI/世界観を扱う場合は追加で必ず読む。
@@ -19,6 +20,7 @@ docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う場合は、必ず先に以下を読む。
@@ -34,9 +36,8 @@ docs/46-landscape-first-web-responsive-policy.md
 ## Current Status
 
 ```text
-MVP実装準備完了。
-仕様docsは整備済み。
-実装は小さいコミットで進める。
+MVP Phase 1 実装開始可能。
+最初は UI ではなく domain / schema / engine / tests を固める。
 ```
 
 ## Fixed Orientation
@@ -89,11 +90,15 @@ Tailwind
 ```text
 3〜4人用
 2人戦なし
+RuleConfig.supportedPlayerCounts で3/4人対応
+minPlayers / maxPlayers はMVPでは使わない
 通常版は8枚手牌、引いて9枚
 拡張版は13枚手牌、引いて14枚
 ポン/カン/チーなし
+Role.kind は win_role / special_bonus のみ
+score_bonus は Role.kind に入れず ScoreBonus[] で扱う
 ロン/ツモ判定はwin_roleのみ
-special_bonus/score_bonusはロン候補にしない
+special_bonus / ScoreBonus[] はロン候補にしない
 全主要画面を844x390 landscape-firstで設計する
 縦画面に本UIを無理に詰めない
 Vamp-pon側は読み取り専用
