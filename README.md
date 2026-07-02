@@ -18,6 +18,7 @@ docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 ```
 
 画面生成・UI実装を行う場合は、追加で以下を読むこと。
@@ -32,6 +33,7 @@ docs/42-shared-vampon-source-policy.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -190,6 +192,33 @@ UI枠 / アイコン / 線 / 札枠 = SVG優先
 
 詳細は `docs/48-responsive-crisp-ui-system.md` にまとめます。
 
+## UI品質ゲート
+
+Codex / Claude Code / Cursor は、デザインを発明せず、決めたUIシステムを実装します。
+
+```text
+Codexはデザインを発明しない
+採用済みデザインターゲット10枚をUI品質基準にする
+tokens.css以外へ新しい色を勝手に追加しない
+画面ごとの独自ボタン/独自パネルを作らない
+UIはprimitives/components経由で実装する
+Component Galleryを先に作る
+UI変更時は指定サイズでスクリーンショット確認する
+```
+
+避ける見た目:
+
+```text
+白い汎用WebアプリUI
+明るい量産ボードゲームUI
+Material Design風
+Tailwind demo風
+色数が多いカードゲームUI
+角丸/影/余白が画面ごとに違うUI
+```
+
+詳細は `docs/49-ui-quality-gate-and-codex-design-rules.md` にまとめます。
+
 ## 実装スタック方針
 
 MVPは以下で固定します。
@@ -300,9 +329,10 @@ docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
 ```
 
-実装開始時はこの4つを正とします。
+実装開始時はこの5つを正とします。
 
 ## ドキュメント
 
@@ -354,6 +384,7 @@ docs/48-responsive-crisp-ui-system.md
 - [Landscape-first Web Responsive Policy](docs/46-landscape-first-web-responsive-policy.md)
 - [MVP Implementation Final Gate](docs/47-mvp-implementation-final-gate.md)
 - [Responsive Crisp UI System](docs/48-responsive-crisp-ui-system.md)
+- [UI Quality Gate and Codex Design Rules](docs/49-ui-quality-gate-and-codex-design-rules.md)
 
 ## 現時点でやらないこと
 
