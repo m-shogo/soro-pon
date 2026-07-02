@@ -33,6 +33,27 @@ Claude Code / Codex / Cursor にMVP実装を依頼するためのプロンプト
 - docs/31-implementation-stack-decision.md
 - docs/32-zod-schema-spec.md
 - docs/33-official-animal-starter-deck.md
+- docs/35-mvp-test-cases.md
+- docs/37-visual-design-direction.md
+- docs/38-screen-generation-plan.md
+- docs/46-landscape-first-web-responsive-policy.md
+- docs/47-mvp-implementation-final-gate.md
+
+画面/UI実装に入る場合は、追加で以下を必ず参照してください。
+
+- docs/10-screen-design-spec.md
+- docs/11-design-generation-prompt.md
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/01-top.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/02-deck-list.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/03-deck-detail.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/04-match-setup.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/05-deck-editor.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/06-tile-editor.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/07-match-discard-phase.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/08-match-win-or-ron-phase.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/09-result.png
+- docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
 
 実装スタックは以下で固定です。
 
@@ -50,15 +71,21 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 
 - 3〜4人用
 - 2人戦なし
+- RuleConfig.supportedPlayerCounts で 3/4 人対応を表す
+- minPlayers / maxPlayers はMVPでは使わない
 - 通常版は8枚手牌、引いて9枚
 - 拡張版は13枚手牌、引いて14枚
 - ポン/カン/チーなし
+- Role.kind は win_role / special_bonus のみ
+- score_bonus は Role.kind に入れず、ScoreBonus[] で扱う
 - ロン/ツモ判定はwin_roleのみ
-- special_bonusとscore_bonusはロン候補にしない
+- special_bonusとscoreBonusesはロン候補にしない
 - オールマイティは基本自動割当
 - 捨てられたオールマイティでロンは原則不可
 - 共有JSONに画像情報を入れない
 - 既存IPデータをsrc/public/docs/README/公式サンプル/公式スクショへ入れない
+- 全主要画面は 844x390 landscape-first
+- portraitはrotate promptまたは限定utilityのみ
 
 実装順序:
 
@@ -134,9 +161,11 @@ Phase 5:
 - normal variantで9枚手札のwin_role判定ができる
 - extended variantで2/3/10/13/14枚役の判定ができる
 - special_bonusだけではロンできない
-- score_bonusだけではロンできない
+- ScoreBonus[]だけではロンできない
 - wildcardを使った上がりがResultに表示される
 - shared JSONに画像fieldが入っていたら拒否する
+- supportedPlayerCounts が [3, 4] でparseできる
+- 2人戦を開始できない
 
 作業後は以下を報告してください。
 
@@ -150,3 +179,5 @@ Phase 5:
 ## Final Decision
 
 このプロンプトをMVP実装開始時の正とする。
+
+古いdocsと迷った場合は `docs/47-mvp-implementation-final-gate.md` を優先する。
