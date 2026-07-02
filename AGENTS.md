@@ -29,6 +29,7 @@
 16. `docs/14-role-taxonomy-and-scoring.md`
 17. `docs/15-wildcard-rules.md`
 18. `docs/16-match-layout-orientation.md`
+19. `docs/17-screen-actions-and-requirements.md`
 
 ## Absolute Rules
 
@@ -56,6 +57,7 @@
 - 対戦画面はスマホ横向き前提で設計する
 - TOP/Editor/Resultは縦画面にも対応する
 - 縦向きで対戦画面を無理に作らず、横向き案内を出す
+- 画面やボタンを追加する場合は、先に `docs/17-screen-actions-and-requirements.md` に仕様を追記する
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -126,6 +128,17 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 - 役候補は常時大きく出さない
 - portrait時は横向き案内を出す
 
+## Screen Action Policy
+
+画面やボタンを実装する時は `docs/17-screen-actions-and-requirements.md` を正とする。
+
+- ボタンには押した時の挙動を持たせる
+- 押せない状態を明確にする
+- 危険操作は確認ダイアログを挟む
+- 対戦中にEditor/JSON共有を目立たせない
+- ResultからDeck Editorへ戻れるようにする
+- Deck EditorにはBalance Checkを持たせる
+
 ## Advanced Rule Policy
 
 以下の拡張ルール案はある。
@@ -172,7 +185,8 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 2. `docs/03-data-model.md` で必要データを確認
 3. `docs/10-screen-design-spec.md` で画面要件を確認
 4. `docs/16-match-layout-orientation.md` で対戦画面の向きを確認
-5. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
+5. `docs/17-screen-actions-and-requirements.md` で必要ボタンと挙動を確認
+6. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
 
 デザイン生成時も、ルールを変えない。
 
@@ -192,7 +206,6 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 ```text
 dev-fixtures/ip-local/
 *.ip-local.json
-*.local-deck.json
 ```
 
 このデータはgit管理しない。
