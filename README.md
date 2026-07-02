@@ -69,9 +69,18 @@ docs/42-shared-vampon-source-policy.md
 
 世界観・キャラ・敵・ステージ・武器・アイテムの正本は、soro-pon側へコピーせず、Vamp-pon repo側の共有資料を参照します。
 
+今後の第一入口は以下です。
+
 ```text
 m-shogo/vamp-pon
-docs/shared-world-bible.md
+docs/shared-vampon-master-index.md
+```
+
+ローカル作業では以下を先に読みます。
+
+```text
+/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
+/Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
 ```
 
 soro-pon側の参照ルールは `docs/42-shared-vampon-source-policy.md` にまとめます。
