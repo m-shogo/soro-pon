@@ -1,0 +1,23 @@
+{
+  "targetFile": "dev-fixtures/ip-local/one-piece-deckproject.local.json",
+  "temporaryLocalOnly": true,
+  "deleteBeforePublic": true,
+  "replaceTileId": "free_flag",
+  "withTile": {
+    "id": "viver_card",
+    "name": "ビブルカード",
+    "categories": ["オールマイティ", "特殊牌", "旅の導き"],
+    "emoji": "🧭",
+    "fallbackLabel": "紙",
+    "count": 3,
+    "wildcard": {
+      "kind": "any_tile",
+      "maxUsePerRole": 1,
+      "canCompleteWinRole": true,
+      "canCompleteSpecialBonus": true,
+      "canTriggerRonWhenDiscarded": false,
+      "countsForScoreBonus": false
+    }
+  },
+  "reason": "オールマイティ牌は汎用的な旗より、足りない仲間を指し示すカードの方がルール上自然で、ローカル検証デッキとしても濃い。"
+}
