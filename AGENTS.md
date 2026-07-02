@@ -28,6 +28,7 @@
 15. `docs/13-deck-variants-and-balance.md`
 16. `docs/14-role-taxonomy-and-scoring.md`
 17. `docs/15-wildcard-rules.md`
+18. `docs/16-match-layout-orientation.md`
 
 ## Absolute Rules
 
@@ -52,6 +53,9 @@
 - オールマイティは基本1役につき1枚まで
 - 捨てられたオールマイティでロンは原則不可
 - オールマイティはスコアボーナスに原則含めない
+- 対戦画面はスマホ横向き前提で設計する
+- TOP/Editor/Resultは縦画面にも対応する
+- 縦向きで対戦画面を無理に作らず、横向き案内を出す
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -109,6 +113,19 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 - 同じキャラボーナスなどのスコアボーナスには原則含めない
 - 使用した場合は結果画面で表示する
 
+## Match Layout Policy
+
+対戦画面はスマホ横向き前提。
+
+- 基準サイズは844x390
+- 4人対戦の見やすさを優先
+- 自分の手牌は下部に大きく表示
+- 捨て牌は中央に分かりやすく表示
+- 相手3人は上/左右のミニ表示
+- 主要アクションは右下〜下部
+- 役候補は常時大きく出さない
+- portrait時は横向き案内を出す
+
 ## Advanced Rule Policy
 
 以下の拡張ルール案はある。
@@ -154,7 +171,8 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 1. `docs/02-game-rules.md` でルールを確認
 2. `docs/03-data-model.md` で必要データを確認
 3. `docs/10-screen-design-spec.md` で画面要件を確認
-4. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
+4. `docs/16-match-layout-orientation.md` で対戦画面の向きを確認
+5. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
 
 デザイン生成時も、ルールを変えない。
 
@@ -214,4 +232,5 @@ dev-fixtures/ip-local/
 - 画像がなければ絵文字
 - 絵文字がなければfallbackLabel
 - fallbackLabelがなければ名前
-- 390x844スマホ縦を基準にする
+- TOP/Editor/Resultは縦対応
+- Matchは横向き前提
