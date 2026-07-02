@@ -54,6 +54,8 @@
 
 これらはMVPの対局UIには最初から入れず、`docs/12-advanced-rule-modules.md` でexperimental扱いにします。
 
+拡張ルール用デッキはゼロから作らせず、通常デッキからコピーして拡張版を作る導線にします。詳細は `docs/13-deck-variants-and-balance.md` にまとめます。
+
 ## デザイン生成方針
 
 最終的には、対戦画面・Editor画面・結果画面などのデザインも、このrepo内の情報をもとに生成します。
@@ -77,6 +79,7 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Screen Design Spec](docs/10-screen-design-spec.md)
 - [Design Generation Prompt](docs/11-design-generation-prompt.md)
 - [Advanced Rule Modules](docs/12-advanced-rule-modules.md)
+- [Deck Variants and Balance](docs/13-deck-variants-and-balance.md)
 
 ## 現時点でやらないこと
 
