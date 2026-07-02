@@ -1,0 +1,198 @@
+# MVP Implementation Final Gate
+
+## Purpose
+
+MVP本実装へ入る直前に、実装AIが迷いやすい仕様差分を最終固定する。
+
+このファイルは、古い記述が残っている場合の上書きルールとして扱う。
+
+## Final Gate Status
+
+```text
+MVP Phase 1 implementation may start after reading this file.
+```
+
+ただし、UI本実装は domain / schema / engine / tests が通ってから進める。
+
+## 1. Orientation Is Landscape-first Everywhere
+
+全主要画面は横画面を正とする。
+
+```text
+base canvas: 844x390 landscape
+main screens: landscape-first
+portrait: rotate prompt or limited utility only
+```
+
+対象:
+
+```text
+TOP
+Deck List
+Deck Detail
+Deck Editor
+Tile Editor
+Role Editors
+Rule Settings
+Balance Check
+Import / Export
+Match Setup
+Match
+Result
+Collection
+Clear Board
+Dialogs
+```
+
+古い `TOP/Editor/Resultは縦画面にも対応` のような記述は使わない。
+
+Portraitでは、対戦画面・編集画面を無理に詰め込まない。
+
+## 2. Adopted Design Targets
+
+画面デザイン・UI実装の品質基準は以下。
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/01-top.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/02-deck-list.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/03-deck-detail.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/04-match-setup.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/05-deck-editor.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/06-tile-editor.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/07-match-discard-phase.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/08-match-win-or-ron-phase.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/09-result.png
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
+```
+
+参照画像は直接runtime素材として使わない。色、余白、紙UI、黒インク、ランタン光、情報密度の基準にする。
+
+## 3. Supported Player Counts
+
+3人/4人対応は、`RuleConfig.supportedPlayerCounts` で持つ。
+
+```ts
+type SupportedPlayerCount = 3 | 4;
+
+type RuleConfig = {
+  id: string;
+  name: string;
+  supportedPlayerCounts: SupportedPlayerCount[];
+  handSizeNormal: number;
+  handSizeAfterDraw: number;
+  winHandSize: number;
+  roleSpanMin: number;
+  roleSpanMax: number;
+  allowRon: boolean;
+  allowPon: false;
+  allowReach: boolean;
+  allowScoreBonus: boolean;
+  allowWildcard: boolean;
+  allowKan: false;
+  allowChi: false;
+};
+```
+
+MVP公式サンプルは以下。
+
+```ts
+supportedPlayerCounts: [3, 4]
+```
+
+`minPlayers` / `maxPlayers` はMVPでは使わない。
+
+## 4. Score Bonus Is Separate From Role
+
+MVPでは `score_bonus` を `Role.kind` に入れない。
+
+固定:
+
+```ts
+type RoleKind = 'win_role' | 'special_bonus';
+```
+
+`score_bonus` は `ScoreBonus[]` で扱う。
+
+```ts
+type ScoreBonus = {
+  id: string;
+  name: string;
+  type: 'duplicate_tile' | 'duplicate_name' | 'duplicate_category';
+  minCount: number;
+  points: number;
+  maxPoints?: number;
+  description?: string;
+  allowWildcard?: boolean;
+};
+```
+
+`DeckVariant` は以下。
+
+```ts
+type DeckVariant = {
+  id: string;
+  name: string;
+  label: '通常版' | '拡張版';
+  ruleConfig: RuleConfig;
+  roles: Role[];
+  scoreBonuses?: ScoreBonus[];
+  isExperimental?: boolean;
+};
+```
+
+## 5. Ron / Tsumo Candidate Rule
+
+ロン/ツモ候補にするのは `Role.kind = 'win_role'` だけ。
+
+```text
+win_role: tsumo/ron candidate
+special_bonus: after-win points only
+scoreBonuses: after-win points only
+```
+
+禁止:
+
+```text
+special_bonusでロン
+special_bonusでツモ
+scoreBonusだけで勝利
+scoreBonusをロン候補にする
+```
+
+## 6. Implementation Order
+
+最初にUIへ入らない。
+
+```text
+Phase 1: Vite + React + TypeScript + Vitest + Zod setup
+Phase 2: domain types / Zod schema / animal starter parse test
+Phase 3: role evaluation / wildcard assignment / scoring / deck validation
+Phase 4: match flow / CPU minimum strategy
+Phase 5: localStorage / import-export
+Phase 6: landscape UI implementation based on adopted references
+```
+
+## 7. Asset Generation Workflow
+
+UIパーツを画像生成する場合は以下を使う。
+
+```text
+tools/asset-factory/soro-pon-ui/
+```
+
+固定フロー:
+
+```text
+緑背景で生成
+Pythonで緑背景を透過
+透過PNGだけ public/assets/ui/soro-pon/v1/ へ置く
+```
+
+## Final Decision
+
+MVP実装時に迷った場合は、このファイルを優先する。
+
+```text
+docs/47-mvp-implementation-final-gate.md
+```
