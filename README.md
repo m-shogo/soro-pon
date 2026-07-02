@@ -110,6 +110,19 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 
 詳細は `docs/23-deck-editor-ux-and-category-colors.md` にまとめます。
 
+## リザルト後の継続導線
+
+対戦後は、勝敗だけで終わらせず、次に続く理由を作ります。
+
+- 合計点に応じてコインを獲得する
+- 称号を解放する
+- クリアボード型の実績を進める
+- 役コレクションを埋める
+- Result Albumに高得点や初達成を残す
+- コインは強さではなく見た目・称号・作成補助・コレクションに使う
+
+詳細は `docs/29-result-progression-collection.md` にまとめます。
+
 ## MVP開始前チェック
 
 固定済みのMVP判断は `docs/19-fixed-mvp-decisions.md` を正とします。
@@ -121,6 +134,7 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 - デッキ検証/バランス: `docs/26-deck-validation-and-balance-rules.md`
 - CPU/対局フロー: `docs/27-cpu-minimum-strategy-and-match-flow.md`
 - リリース安全チェック: `docs/28-release-safety-checklist.md`
+- リザルト後の継続導線: `docs/29-result-progression-collection.md`
 
 ## ドキュメント
 
@@ -153,6 +167,7 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 - [Deck Validation and Balance Rules](docs/26-deck-validation-and-balance-rules.md)
 - [CPU Minimum Strategy and Match Flow](docs/27-cpu-minimum-strategy-and-match-flow.md)
 - [Release Safety Checklist](docs/28-release-safety-checklist.md)
+- [Result Progression and Collection](docs/29-result-progression-collection.md)
 
 ## 現時点でやらないこと
 
@@ -160,11 +175,12 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 - ログイン
 - Supabase導入
 - PWA
-- 実績
-- デイリー
+- デイリー任務
+- 期間限定イベント
 - 公開ギャラリー
 - ランキング
 - 画像付き共有
 - productionへのローカル検証データ混入
+- 強さに関係する購入
 
 まずは仕様をブラッシュアップし、Fable / Claude Code / Codex が間違えない状態にします。
