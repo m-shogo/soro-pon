@@ -101,13 +101,13 @@ Tailwind
 
 public repoに残すべきでない一時IP fixtureを削除済み。
 
-削除対象:
+現在のtreeでは、以下を残さない。
 
 ```text
-dev-fixtures/ip-local/one-piece-deckproject.local.json
-dev-fixtures/ip-local/one-piece-wildcard-rename.local.json
-dev-fixtures/ip-local/one-piece-extended-role-spans.local.json
-dev-fixtures/ip-local/one-piece-extended-special-bonuses.local.json
+dev-fixtures/ip-local/*.json
+*.ip-local.json
+*.local-deck.json
+*.local-fixture.json
 ```
 
 ## Consistency Rules
