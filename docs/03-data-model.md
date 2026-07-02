@@ -6,6 +6,20 @@
 
 このファイルは、TypeScript実装・Zod schema・JSON import/export・localStorage・テストの基準になる。
 
+## Final Gate Alignment
+
+このファイルは `docs/47-mvp-implementation-final-gate.md` と整合する。
+
+固定:
+
+```text
+全主要画面は 844x390 landscape-first
+3人/4人対応は RuleConfig.supportedPlayerCounts で表す
+minPlayers / maxPlayers はMVPでは使わない
+Role.kind は win_role / special_bonus のみ
+score_bonus は Role.kind に入れず ScoreBonus[] として扱う
+```
+
 ## Design Principles
 
 - 3〜4人戦を前提にする
@@ -33,6 +47,7 @@ type TileId = string;
 type TileInstanceId = string;
 type CategoryId = string;
 type RoleId = string;
+type ScoreBonusId = string;
 type PlayerId = string;
 ```
 
@@ -176,9 +191,12 @@ type LocalTileOverride = {
 ## RuleConfig
 
 ```ts
+type SupportedPlayerCount = 3 | 4;
+
 type RuleConfig = {
   id: string;
   name: string;
+  supportedPlayerCounts: SupportedPlayerCount[];
   handSizeNormal: number;
   handSizeAfterDraw: number;
   winHandSize: number;
@@ -194,12 +212,15 @@ type RuleConfig = {
 };
 ```
 
+`minPlayers` / `maxPlayers` はMVPでは使わない。
+
 標準ルール:
 
 ```ts
 const BASE_DONJARA_RULE: RuleConfig = {
   id: 'base-donjara',
   name: 'ドンジャラ互換',
+  supportedPlayerCounts: [3, 4],
   handSizeNormal: 8,
   handSizeAfterDraw: 9,
   winHandSize: 9,
@@ -221,6 +242,7 @@ const BASE_DONJARA_RULE: RuleConfig = {
 const EXTENDED_HAND_RULE: RuleConfig = {
   id: 'extended-hand',
   name: '拡張手札',
+  supportedPlayerCounts: [3, 4],
   handSizeNormal: 13,
   handSizeAfterDraw: 14,
   winHandSize: 14,
@@ -239,12 +261,13 @@ const EXTENDED_HAND_RULE: RuleConfig = {
 ## RoleKind
 
 ```ts
-type RoleKind = 'win_role' | 'special_bonus' | 'score_bonus';
+type RoleKind = 'win_role' | 'special_bonus';
 ```
 
 - `win_role`: あがり判定に使う。ツモ/ロン対象
 - `special_bonus`: 上がった後に加点。ツモ/ロン対象外
-- `score_bonus`: 上がった後に加点。ツモ/ロン対象外
+
+`score_bonus` は `RoleKind` に含めない。`ScoreBonus[]` で扱う。
 
 ## Role Match Policy
 
@@ -308,10 +331,6 @@ kind = win_role:
 kind = special_bonus:
   canTsumo must be false
   canRon must be false
-
-kind = score_bonus:
-  canTsumo must be false
-  canRon must be false
 ```
 
 ## RoleCondition
@@ -329,9 +348,11 @@ type RoleCondition =
 
 ## ScoreBonus
 
+`score_bonus` は `Role.kind` ではなく、この型で分離する。
+
 ```ts
 type ScoreBonus = {
-  id: string;
+  id: ScoreBonusId;
   name: string;
   type: 'duplicate_tile' | 'duplicate_name' | 'duplicate_category';
   minCount: number;
@@ -349,7 +370,7 @@ type WildcardAssignment = {
   wildcardTileInstanceId: TileInstanceId;
   usedAsTileId?: TileId;
   usedAsCategory?: CategoryId;
-  roleId: RoleId;
+  roleId: RoleId | ScoreBonusId;
   source: 'auto' | 'manual';
 };
 ```
@@ -421,6 +442,12 @@ type EvaluatedRoleSummary = {
   span: number;
 };
 
+type EvaluatedScoreBonusSummary = {
+  bonusId: ScoreBonusId;
+  name: string;
+  points: number;
+};
+
 type MatchResult = {
   resultType: 'win' | 'draw';
   winnerPlayerId?: PlayerId;
@@ -429,11 +456,7 @@ type MatchResult = {
   selectedWinRole?: EvaluatedRoleSummary;
   matchedWinRoles: Array<EvaluatedRoleSummary & { selected: boolean }>;
   specialBonuses: EvaluatedRoleSummary[];
-  scoreBonuses: Array<{
-    bonusId: string;
-    name: string;
-    points: number;
-  }>;
+  scoreBonuses: EvaluatedScoreBonusSummary[];
   wildcardAssignments: WildcardAssignment[];
   totalPoints: number;
   earnedCoins: number;
@@ -444,6 +467,8 @@ type MatchResult = {
 ## Progression
 
 ```ts
+type CollectionEntryKind = 'win_role' | 'special_bonus' | 'score_bonus';
+
 type PlayerProgress = {
   version: 1;
   coins: number;
@@ -464,9 +489,9 @@ type AchievementState = {
 };
 
 type RoleCollectionEntry = {
-  roleId: RoleId;
+  roleId: RoleId | ScoreBonusId;
   roleName: string;
-  kind: RoleKind;
+  kind: CollectionEntryKind;
   deckProjectId: DeckProjectId;
   variantId: DeckVariantId;
   firstAchievedAt: string;
@@ -507,7 +532,7 @@ type ValidationIssue = {
 3. 複数win_role成立時は points desc, span desc, definition order asc
 4. selectedWinRoleを1つ採用
 5. あがり成立後にspecial_bonusを判定
-6. score_bonusを計算
+6. scoreBonusesを計算
 7. wildcardAssignmentsを記録
 8. totalPointsを出す
 9. earnedCoinsを出す
@@ -524,6 +549,7 @@ type ValidationIssue = {
 - category definitions
 - category colors
 - ruleConfig
+- supportedPlayerCounts
 - tile definitions
 - wildcard rule
 - categories
