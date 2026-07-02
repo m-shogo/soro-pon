@@ -2,8 +2,9 @@
 
 `soro-pon` は、プレイヤーが **デッキ・牌・役・得点** を自由に決められる、3〜4人用のカスタム牌ゲームです。
 
-現在は **MVP実装準備完了** の状態です。  
-ただし、MVP本実装に入る前に、`docs/38-screen-generation-plan.md` に沿って全主要画面のデザインを生成・採用します。
+現在は **MVP Phase 1 実装開始可能** の状態です。
+
+ただし、実装はすぐUIへ入らず、まず `domain / schema / engine / tests` を固めます。
 
 ## AI作業入口
 
@@ -15,9 +16,10 @@ AGENTS.md
 CLAUDE.md or CODEX.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
+docs/47-mvp-implementation-final-gate.md
 ```
 
-画面生成を行う場合は、追加で以下を読むこと。
+画面生成・UI実装を行う場合は、追加で以下を読むこと。
 
 ```text
 docs/10-screen-design-spec.md
@@ -28,6 +30,7 @@ docs/41-vampon-in-world-game-direction.md
 docs/42-shared-vampon-source-policy.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
 `.claude/README.md` と `.codex/README.md` は補助メモです。仕様の正本は `README.md` / `AGENTS.md` / `docs/` に集約します。
@@ -49,8 +52,8 @@ docs/46-landscape-first-web-responsive-policy.md
 
 ## 重要方針
 
-このrepoでは、旧repoや過去実装は参考にしません。  
-完全新規で、仕様から整理して作ります。
+このrepoでは、旧repoや過去実装は参考にしません。
+完全新規で、仕様docsを正として作ります。
 
 開発中のローカル検証で既存IP題材を使う場合も、以下には入れません。
 
@@ -109,6 +112,30 @@ soro-pon = Vamp-pon世界の中で流行っている記憶札遊び
 勝負どころだけ少し漫画的
 ```
 
+## 採用済み横画面デザインターゲット
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
+```
+
+この10枚を、画面ごとの差を出さないためのUI品質基準にします。
+
+```text
+01-top.png
+02-deck-list.png
+03-deck-detail.png
+04-match-setup.png
+05-deck-editor.png
+06-tile-editor.png
+07-match-discard-phase.png
+08-match-win-or-ron-phase.png
+09-result.png
+10-collection.png
+```
+
+参照画像はruntime素材として直接使いません。
+色、余白、紙UI、黒インク、ランタン光、横画面の情報密度の基準にします。
+
 ## 画面・向き方針
 
 `soro-pon` は **横画面固定を正** とします。
@@ -122,7 +149,7 @@ portrait: rotate prompt or limited utility only
 - 全主要画面はまず 844x390 landscape で設計する
 - TOP / Deck / Editor / Result / Collection も landscape-first にする
 - 過去の portrait-first 方針は使わない
-- Webでは端末幅に応じて縮尺・余白・折りたたみでよしなに対応する
+- Webでは端末幅に応じて縮尺・余白・折りたたみで対応する
 - 縦画面に対戦UIや編集UIを無理に詰め込まない
 - Portraitでは横向き案内、またはTOP/ヘルプ等の限定表示にする
 - 牌は記憶札として見せる
@@ -131,7 +158,7 @@ portrait: rotate prompt or limited utility only
 - 山は大きく出さず、残り枚数だけ小さく表示する
 - Three.jsは小さな灯り/札の浮き/インク/Result演出の補助に使う
 
-詳細は `docs/46-landscape-first-web-responsive-policy.md` を正とします。
+詳細は `docs/46-landscape-first-web-responsive-policy.md` と `docs/47-mvp-implementation-final-gate.md` を正とします。
 
 ## 実装スタック方針
 
@@ -150,14 +177,16 @@ Next.js / Unity / Godot / Phaser / Supabase / Firebase はMVP初期では使い�
 役候補の爆発とテンポ悪化を防ぐため、役は分類します。
 
 ```text
-上がり役 = あがり判定に使う
-特殊役 = 上がった後に加点する
-スコアボーナス = 上がった後に加点する
+上がり役 = win_role = あがり判定に使う
+特殊役 = special_bonus = 上がった後に加点する
+スコアボーナス = ScoreBonus[] = 上がった後に加点する
 ```
 
-ロン/ツモ判定の対象にするのは、原則として **上がり役だけ** です。
+MVPでは `score_bonus` を `Role.kind` に入れません。
 
-特殊役や同じキャラボーナスは、ロン候補にせず、上がった後の加点として扱います。詳細は `docs/14-role-taxonomy-and-scoring.md` にまとめます。
+ロン/ツモ判定の対象にするのは、原則として **win_roleだけ** です。
+
+詳細は `docs/14-role-taxonomy-and-scoring.md` にまとめます。
 
 ## オールマイティ牌方針
 
@@ -187,7 +216,8 @@ Next.js / Unity / Godot / Phaser / Supabase / Firebase はMVP初期では使い�
 - カンなし
 - チーなし
 
-拡張ルール用デッキはゼロから作らせず、通常デッキからコピーして拡張版を作る導線にします。詳細は `docs/13-deck-variants-and-balance.md` と `docs/20-extended-role-span-and-db-policy.md` にまとめます。
+拡張ルール用デッキはゼロから作らせず、通常デッキからコピーして拡張版を作る導線にします。
+詳細は `docs/13-deck-variants-and-balance.md` と `docs/20-extended-role-span-and-db-policy.md` にまとめます。
 
 ## Deck Editor 方針
 
@@ -238,11 +268,10 @@ samples/animal-starter.deck.json
 ```text
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
+docs/47-mvp-implementation-final-gate.md
 ```
 
-実装開始時はこの2つを正とします。
-
-ただし、画面デザイン生成が終わるまでは、MVP本実装には入らない方針です。
+実装開始時はこの3つを正とします。
 
 ## ドキュメント
 
@@ -292,6 +321,7 @@ docs/35-mvp-test-cases.md
 - [Vamp-pon Character Generation Gate](docs/44-vampon-character-generation-gate.md)
 - [Vamp-pon Reference Gate](docs/45-vampon-reference-gate.md)
 - [Landscape-first Web Responsive Policy](docs/46-landscape-first-web-responsive-policy.md)
+- [MVP Implementation Final Gate](docs/47-mvp-implementation-final-gate.md)
 
 ## 現時点でやらないこと
 
