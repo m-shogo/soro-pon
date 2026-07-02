@@ -100,6 +100,12 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 
 詳細は `docs/16-match-layout-orientation.md` にまとめます。
 
+## 画面機能・ボタン仕様
+
+画面ごとの必要機能、ボタン、押した時の挙動、表示条件、バリデーションは `docs/17-screen-actions-and-requirements.md` にまとめます。
+
+AIは画面やボタンを追加する場合、必ずこのファイルに仕様を追加してから実装します。
+
 ## デザイン生成方針
 
 最終的には、対戦画面・Editor画面・結果画面などのデザインも、このrepo内の情報をもとに生成します。
@@ -127,6 +133,7 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Role Taxonomy and Scoring](docs/14-role-taxonomy-and-scoring.md)
 - [Wildcard Rules](docs/15-wildcard-rules.md)
 - [Match Layout and Orientation](docs/16-match-layout-orientation.md)
+- [Screen Actions and Requirements](docs/17-screen-actions-and-requirements.md)
 
 ## 現時点でやらないこと
 
