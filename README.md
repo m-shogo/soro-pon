@@ -2,12 +2,16 @@
 
 `soro-pon` は、プレイヤーが **デッキ・牌・役・得点** を自由に決められる、3〜4人用のカスタム牌ゲームです。
 
-現時点では実装を急がず、まずは仕様・制約・共有方針・AI実装プロンプトを固める段階です。
+現時点では実装を急がず、まずは仕様・制約・共有方針・AI実装プロンプト・画面デザイン生成情報を固める段階です。
 
 ## このゲームの核
 
-- ドンジャラと同じルール感の、絵柄をそろえて役を作る牌ゲーム
+- 最終ルールはドンジャラと同じ構造で固定
 - 3〜4人用
+- 2人戦は作らない
+- 通常手牌8枚
+- 自分の番で1枚引くと9枚
+- あがり形は3枚セット×3組
 - MVPはローカル対戦のみ
 - 最初は人間1人 + CPU2〜3人
 - オンライン対戦、ログイン、ランキング、公開ギャラリーは後回し
@@ -32,6 +36,14 @@
 
 公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどで作ります。
 
+## デザイン生成方針
+
+最終的には、対戦画面・Editor画面・結果画面などのデザインも、このrepo内の情報をもとに生成します。
+
+そのため、画面生成に必要な情報は `docs/10-screen-design-spec.md` と `docs/11-design-generation-prompt.md` に集約します。
+
+AIは、デザインを作るためにルールを変えてはいけません。
+
 ## ドキュメント
 
 - [Product Brief](docs/00-product-brief.md)
@@ -44,6 +56,8 @@
 - [Roadmap](docs/07-roadmap.md)
 - [Fable Implementation Prompt](docs/08-fable-implementation-prompt.md)
 - [Local Dev Fixtures Policy](docs/09-local-dev-fixtures-policy.md)
+- [Screen Design Spec](docs/10-screen-design-spec.md)
+- [Design Generation Prompt](docs/11-design-generation-prompt.md)
 
 ## 現時点でやらないこと
 
@@ -59,4 +73,4 @@
 - ランキング
 - 画像付き共有
 
-まずは仕様をブラッシュアップし、Fable / Claude Code が間違えない状態にします。
+まずは仕様をブラッシュアップし、Fable / Claude Code / Codex が間違えない状態にします。
