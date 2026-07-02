@@ -12,6 +12,19 @@ TypeScript型と共有JSON/localStorageの検証仕様を固定する。
 localStorageもschemaVersionを見てparseする。
 ```
 
+## Final Gate Alignment
+
+このファイルは `docs/47-mvp-implementation-final-gate.md` と整合する。
+
+固定:
+
+```text
+RuleConfig.supportedPlayerCounts で 3/4 人対応を表す
+minPlayers / maxPlayers はMVPでは使わない
+Role.kind は win_role / special_bonus のみ
+score_bonus は Role.kind に入れず ScoreBonus[] で扱う
+```
+
 ## Schema Files
 
 実装時は以下を作る。
@@ -21,6 +34,7 @@ src/schemas/category.schema.ts
 src/schemas/tile.schema.ts
 src/schemas/rule-config.schema.ts
 src/schemas/role.schema.ts
+src/schemas/score-bonus.schema.ts
 src/schemas/deck-project.schema.ts
 src/schemas/match-result.schema.ts
 src/schemas/progression.schema.ts
@@ -133,9 +147,12 @@ primaryCategoryIdがcategoriesに含まれていなければerror
 ## RuleConfig Schema
 
 ```ts
+const supportedPlayerCountSchema = z.union([z.literal(3), z.literal(4)]);
+
 const ruleConfigSchema = z.object({
   id: idSchema,
   name: displayNameSchema,
+  supportedPlayerCounts: z.array(supportedPlayerCountSchema).min(1).max(2),
   handSizeNormal: z.number().int().min(1).max(20),
   handSizeAfterDraw: z.number().int().min(2).max(21),
   winHandSize: z.number().int().min(2).max(21),
@@ -149,6 +166,9 @@ const ruleConfigSchema = z.object({
   allowKan: z.literal(false),
   allowChi: z.literal(false),
 }).strict().superRefine((value, ctx) => {
+  if (new Set(value.supportedPlayerCounts).size !== value.supportedPlayerCounts.length) {
+    ctx.addIssue({ code: 'custom', message: 'supportedPlayerCounts must be unique' });
+  }
   if (value.handSizeAfterDraw !== value.handSizeNormal + 1) {
     ctx.addIssue({ code: 'custom', message: 'handSizeAfterDraw must be handSizeNormal + 1' });
   }
@@ -181,7 +201,7 @@ const roleConditionSchema = z.discriminatedUnion('type', [
 const roleSchema = z.object({
   id: idSchema,
   name: displayNameSchema,
-  kind: z.enum(['win_role', 'special_bonus', 'score_bonus']),
+  kind: z.enum(['win_role', 'special_bonus']),
   points: z.number().int().min(0).max(9999),
   span: z.number().int().min(2).max(14),
   condition: roleConditionSchema,
@@ -193,8 +213,8 @@ const roleSchema = z.object({
   matchMode: z.enum(['contains_pattern', 'exact_hand']).optional(),
   coveragePolicy: z.enum(['allow_extra_tiles', 'must_cover_full_hand']).optional(),
 }).strict().superRefine((value, ctx) => {
-  if (value.kind !== 'win_role' && (value.canTsumo || value.canRon)) {
-    ctx.addIssue({ code: 'custom', message: 'special_bonus and score_bonus cannot be tsumo/ron candidates' });
+  if (value.kind === 'special_bonus' && (value.canTsumo || value.canRon)) {
+    ctx.addIssue({ code: 'custom', message: 'special_bonus cannot be tsumo/ron candidate' });
   }
   if (value.kind === 'win_role' && !value.canTsumo && !value.canRon) {
     ctx.addIssue({ code: 'custom', message: 'win_role should allow tsumo or ron' });
@@ -203,6 +223,8 @@ const roleSchema = z.object({
 ```
 
 ## ScoreBonus Schema
+
+`score_bonus` は `Role.kind` ではなく、`ScoreBonus[]` で扱う。
 
 ```ts
 const scoreBonusSchema = z.object({
@@ -288,6 +310,8 @@ migration不能なら破棄前に確認
 - Zod schemaはTypeScript型より先に整備する
 - 共有JSONはstrictに検証する
 - 画像系fieldは拒否する
-- special_bonus/score_bonusがロン候補になったらerror
+- special_bonusがロン/ツモ候補になったらerror
+- score_bonusはRole.kindに入れずScoreBonus[]で扱う
 - allowPon/allowKan/allowChiはliteral false
+- supportedPlayerCountsは3/4だけ許可する
 - DeckProject import後に参照整合性を検証する
