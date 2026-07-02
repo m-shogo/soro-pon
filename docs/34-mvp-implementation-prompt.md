@@ -38,6 +38,7 @@ Claude Code / Codex / Cursor にMVP実装を依頼するためのプロンプト
 - docs/38-screen-generation-plan.md
 - docs/46-landscape-first-web-responsive-policy.md
 - docs/47-mvp-implementation-final-gate.md
+- docs/48-responsive-crisp-ui-system.md
 
 画面/UI実装に入る場合は、追加で以下を必ず参照してください。
 
@@ -84,7 +85,15 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 - 捨てられたオールマイティでロンは原則不可
 - 共有JSONに画像情報を入れない
 - 既存IPデータをsrc/public/docs/README/公式サンプル/公式スクショへ入れない
-- 全主要画面は 844x390 landscape-first
+- 全主要画面は 844x390 landscape-first をデザイン基準にする
+- 844x390を実寸固定キャンバスとして扱わない
+- スマホ横では100svw x 100svhへフィットさせる
+- 画面全体をtransform scaleで引き伸ばさない
+- UI枠/アイコン/線/札枠はSVG優先
+- 絵/背景/紙質感/インク汚れは高解像度PNG/WebP
+- 文字は画像に焼き込まずHTML textで描画する
+- 重要UI寸法は整数pxへ丸める
+- 紙パネルや手描き縁が必要な箇所だけ9-sliceを使う
 - portraitはrotate promptまたは限定utilityのみ
 
 実装順序:
@@ -181,3 +190,5 @@ Phase 5:
 このプロンプトをMVP実装開始時の正とする。
 
 古いdocsと迷った場合は `docs/47-mvp-implementation-final-gate.md` を優先する。
+
+UIのレスポンシブ・鮮明さ・9-slice/SVG/PNG/WebP使い分けで迷った場合は `docs/48-responsive-crisp-ui-system.md` を優先する。
