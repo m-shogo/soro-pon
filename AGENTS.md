@@ -30,6 +30,7 @@
 17. `docs/15-wildcard-rules.md`
 18. `docs/16-match-layout-orientation.md`
 19. `docs/17-screen-actions-and-requirements.md`
+20. `docs/18-mvp-readiness-checklist.md`
 
 ## Absolute Rules
 
@@ -58,6 +59,7 @@
 - TOP/Editor/Resultは縦画面にも対応する
 - 縦向きで対戦画面を無理に作らず、横向き案内を出す
 - 画面やボタンを追加する場合は、先に `docs/17-screen-actions-and-requirements.md` に仕様を追記する
+- MVP実装前に `docs/18-mvp-readiness-checklist.md` の未確定項目を確認する
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -139,6 +141,20 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 - ResultからDeck Editorへ戻れるようにする
 - Deck EditorにはBalance Checkを持たせる
 
+## MVP Readiness Policy
+
+MVP実装前に `docs/18-mvp-readiness-checklist.md` を確認する。
+
+特に以下をユーザー判断または仮固定する。
+
+- 標準総牌枚数
+- 1種類あたりの推奨枚数
+- 複数人ロンの扱い
+- 複数win_role成立時の得点方針
+- CPUの最低限ロジック
+- 保存方式
+- 公式サンプルデッキ
+
 ## Advanced Rule Policy
 
 以下の拡張ルール案はある。
@@ -186,7 +202,8 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 3. `docs/10-screen-design-spec.md` で画面要件を確認
 4. `docs/16-match-layout-orientation.md` で対戦画面の向きを確認
 5. `docs/17-screen-actions-and-requirements.md` で必要ボタンと挙動を確認
-6. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
+6. `docs/18-mvp-readiness-checklist.md` でMVP前提を確認
+7. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
 
 デザイン生成時も、ルールを変えない。
 
