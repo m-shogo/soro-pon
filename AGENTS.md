@@ -22,6 +22,7 @@ CLAUDE.md or CODEX.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
+docs/48-responsive-crisp-ui-system.md
 ```
 
 画面生成・UI実装時の正本。
@@ -36,6 +37,8 @@ docs/42-shared-vampon-source-policy.md
 docs/44-vampon-character-generation-gate.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/47-mvp-implementation-final-gate.md
+docs/48-responsive-crisp-ui-system.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -63,8 +66,9 @@ Vamp-pon設定をsoro-pon側へ丸コピーしない
 `soro-pon` は横画面固定を正とする。
 
 ```text
-primary: 844x390 landscape
-web: responsive scale / adaptive layout
+primary design reference: 844x390 landscape
+actual phone landscape display: 100svw x 100svh
+web: responsive layout / adaptive layout
 portrait: rotate prompt or limited utility only
 ```
 
@@ -72,13 +76,42 @@ portrait: rotate prompt or limited utility only
 
 ```text
 全主要画面をまず横画面で設計する
+844x390は実寸固定キャンバスではなくデザイン基準として扱う
+スマホ横では100svw x 100svhへフィットさせる
 TOP / Deck / Editor / Result / Collection も landscape-first
 過去の portrait-first 方針は使わない
-Webでは縮尺・余白・折りたたみで対応する
+WebではCSS Grid / flex / clamp / responsive metricsで対応する
+画面全体をtransform scaleで引き伸ばさない
 縦画面に本UIを無理に詰めない
 ```
 
-詳細は `docs/46-landscape-first-web-responsive-policy.md` と `docs/47-mvp-implementation-final-gate.md` を正とする。
+詳細は `docs/46-landscape-first-web-responsive-policy.md` / `docs/47-mvp-implementation-final-gate.md` / `docs/48-responsive-crisp-ui-system.md` を正とする。
+
+## Crisp Responsive UI Gate
+
+UI実装・UI素材整理・画像パーツ生成では `docs/48-responsive-crisp-ui-system.md` を必ず守る。
+
+固定:
+
+```text
+UI枠/アイコン/線/札枠はSVG優先
+絵/背景/紙質感/インク汚れは高解像度PNG/WebP
+文字は画像に焼き込まずHTML text
+重要UI寸法は整数pxへ丸める
+紙パネルや手描き縁が必要な箇所だけ9-slice
+PCでは中央ゲーム卓 + 外側補助/夜机背景
+必須UIはゲーム卓内に置く
+```
+
+禁止:
+
+```text
+844x390全体をtransform scaleで伸縮する
+低解像度PNGを拡大して使う
+文字入り画像を量産する
+ロン/あがる/捨てるなど必須操作をPC専用外側パネルへ逃がす
+札のaspect-ratioを崩す
+```
 
 ## Adopted Design Target
 
@@ -158,6 +191,7 @@ Vamp-ponキャラを画像生成・画面デザイン・対戦相手アバター
 28. `docs/45-vampon-reference-gate.md`
 29. `docs/46-landscape-first-web-responsive-policy.md`
 30. `docs/47-mvp-implementation-final-gate.md`
+31. `docs/48-responsive-crisp-ui-system.md`
 
 ## Deprecated / History Only
 
@@ -195,9 +229,18 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - オールマイティはスコアボーナスに原則含めない
 - オールマイティは基本自動割当。毎回クリック選択式にしない
 - soro-ponは横画面固定を正とする
-- 全主要画面をまず844x390 landscapeで設計する
+- 全主要画面をまず844x390 landscape基準で設計する
+- 844x390は実寸固定キャンバスではなくデザイン基準として扱う
+- スマホ横では100svw x 100svhへフィットさせる
+- WebではCSS Grid / flex / clamp / responsive metricsで対応する
+- 画面全体をtransform scaleで引き伸ばさない
+- UI枠/アイコン/線/札枠はSVG優先
+- 絵/背景/紙質感/インク汚れは高解像度PNG/WebP
+- 文字は画像に焼き込まずHTML textで描画する
+- 重要UI寸法は整数pxへ丸める
+- 紙パネルや手描き縁が必要な箇所だけ9-sliceを使う
+- 低解像度PNGを大きく拡大しない
 - TOP/Deck/Editor/Result/Collectionもportrait-firstにしない
-- Webではresponsive scale / adaptive layoutで対応する
 - 縦画面に本UIを無理に詰めず、rotate promptまたは限定utilityにする
 - soro-ponはVamp-pon世界内で流行っている記憶札遊びとして扱う
 - 単体の漫画風アプリとしてデザインしない
@@ -278,64 +321,3 @@ Visual keywords:
 - supportedPlayerCounts parse / 2人戦拒否
 - forbidden image fields reject
 - special_bonus / ScoreBonus[] cannot ron
-- wildcard auto assignment
-- 13枚役 allow extra tile
-- 14枚役 must cover full hand
-- deck validation thresholds
-- progression coin cap
-- npm test
-- npm run build
-
-## Shared JSON Rule
-
-共有JSONに入れてよい。
-
-- deck name
-- category definitions
-- category colors
-- tile definitions
-- categories
-- emoji
-- fallbackLabel
-- counts
-- roles
-- scoreBonuses
-- points
-- role conditions
-- wildcard rule
-- supportedPlayerCounts
-
-共有JSONに入れてはいけない。
-
-- image
-- imageUrl
-- remoteImage
-- imageBase64
-- localImageId
-- external asset URL
-- blob URL
-- file path
-
-## UI Principle
-
-- 1画面1目的
-- 横画面で最初に成立させる
-- 自分の手牌が主役
-- 捨て牌は全員分見える
-- 山は大きく出さず、残り枚数を小さく表示する
-- 相手3人はミニ表示
-- 牌の一番下に必ず名前
-- 画像がなければ絵文字
-- 絵文字がなければfallbackLabel
-- fallbackLabelがなければ名前
-- 牌の外枠/ラベル/チップでカテゴリ色を見せる
-- 縦画面には本UIを詰め込まない
-
-## Commit Policy
-
-- 1コミット1目的
-- 小さく進める
-- build/testをこまめに確認する
-- 大きい作業は分割する
-- 実装前に短い計画を出す
-- 作業後に変更内容・検証結果・次の作業を報告する
