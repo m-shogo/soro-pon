@@ -15,7 +15,7 @@ coverage/
 *.log
 npm-debug.log*
 pnpm-debug.log*
-yarn-debug.log*
+yarn-error.log*
 yarn-error.log*
 
 # OS / editor
@@ -33,3 +33,7 @@ dev-fixtures/ip-local/
 # local image overrides
 .local-images/
 *.local-image-map.json
+
+# local-only design references
+# Existing IP, generated experiments, or personal visual references must never be committed here.
+.local-design/
