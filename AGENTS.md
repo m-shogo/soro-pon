@@ -5,7 +5,7 @@
 ## Project Status
 
 現在は実装前の設計・資料整理フェーズ。  
-実装を始める前に、必ず `docs/` を読む。
+実装または画面デザイン生成を始める前に、必ず `docs/` を読む。
 
 ## Must Read
 
@@ -22,6 +22,8 @@
 9. `docs/07-roadmap.md`
 10. `docs/08-fable-implementation-prompt.md`
 11. `docs/09-local-dev-fixtures-policy.md`
+12. `docs/10-screen-design-spec.md`
+13. `docs/11-design-generation-prompt.md`
 
 ## Absolute Rules
 
@@ -32,7 +34,9 @@
 - 共有JSONに画像情報を入れない
 - 画像付き共有を作らない
 - 3〜4人用を前提にする
-- 2人戦を先に作らない
+- 2人戦を作らない
+- 最終ルールはドンジャラと同じ構造にする
+- 通常手牌8枚、引いた後9枚、あがり形は3枚セット×3組
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -49,6 +53,22 @@
 - 役
 - 得点
 
+## Rule Lock
+
+AIは、見た目や実装都合でルールを変えてはいけない。
+
+固定:
+
+- 3〜4人用
+- 2人戦なし
+- 共通山
+- 共通役表
+- 通常手牌8枚
+- 引いた後9枚
+- 9枚であがり判定
+- あがり形は3枚セット×3組
+- 役と得点はデッキ定義
+
 ## Implementation Priority
 
 実装開始時はこの順番。
@@ -63,6 +83,17 @@
 8. JSON import/export
 9. Editor UI
 10. Match UI
+
+## Design Generation Priority
+
+画面デザイン生成時はこの順番。
+
+1. `docs/02-game-rules.md` でルールを確認
+2. `docs/03-data-model.md` で必要データを確認
+3. `docs/10-screen-design-spec.md` で画面要件を確認
+4. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
+
+デザイン生成時も、ルールを変えない。
 
 ## Commit Policy
 
@@ -119,3 +150,4 @@ dev-fixtures/ip-local/
 - 画像がなければ絵文字
 - 絵文字がなければfallbackLabel
 - fallbackLabelがなければ名前
+- 390x844スマホ縦を基準にする
