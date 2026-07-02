@@ -4,10 +4,16 @@
 
 Deck Editorで表示するエラー/警告/情報のしきい値を固定する。
 
-結論:
+## Final Gate Alignment
+
+このファイルは `docs/47-mvp-implementation-final-gate.md` と整合する。
+
+固定:
 
 ```text
-MVPでは遊べないものをError、壊れやすいものをWarning、改善提案をInfoにする。
+3人/4人対応は RuleConfig.supportedPlayerCounts で検証する
+minPlayers / maxPlayers はMVPでは使わない
+score_bonus は Role.kind に入れず ScoreBonus[] で検証する
 ```
 
 ## Severity
@@ -38,15 +44,16 @@ variantが0件
 activeVariantIdが存在しない
 tilesが0件
 総牌枚数が40枚未満
-minPlayers/maxPlayersが3〜4の範囲外
+supportedPlayerCountsが空
+supportedPlayerCountsに3/4以外が含まれている
+開始しようとした人数がsupportedPlayerCountsに含まれていない
 win_roleが0件
 ruleConfig.allowPonがtrue
 ruleConfig.allowKanがtrue
 ruleConfig.allowChiがtrue
 special_bonus.canRonがtrue
 special_bonus.canTsumoがtrue
-score_bonus.canRonがtrue
-score_bonus.canTsumoがtrue
+Role.kindにscore_bonusが入っている
 role.spanがruleConfig範囲外
 role.spanがwinHandSizeを超える
 画像URL/base64/file path/blob URLが共有JSONに含まれている
@@ -68,7 +75,8 @@ ron可能win_roleが20件超
 3枚win_roleが100点超
 14枚win_roleが200点未満
 special_bonusが150点超
-score_bonusにmaxPointsがない
+scoreBonusにmaxPointsがない
+scoreBonus.allowWildcardがtrue
 wildcardが総牌数の15%超
 最高点win_roleでwildcard許可
 同じカテゴリ色が似すぎている
@@ -106,6 +114,15 @@ warning: 1枚
 warning: 5枚超
 ```
 
+### Player Count
+
+```text
+supportedPlayerCounts: [3, 4] 推奨
+空配列: error
+3/4以外: error
+2人戦開始: error
+```
+
 ### Role Count
 
 ```text
@@ -122,7 +139,7 @@ ron可能win_role 20件超: warning
 ```text
 9枚系win_role: 150〜300推奨
 special_bonus: 30〜150推奨
-score_bonus: 10〜50推奨
+scoreBonus: 10〜50推奨
 ```
 
 拡張版:
@@ -220,10 +237,13 @@ primaryCategoryIdが存在しないカテゴリを指す: error
 - Errorは遊べない/保存不可レベル
 - Warningは遊べるが危険
 - Infoは改善提案
+- supportedPlayerCountsは3/4だけ許可する
+- 2人戦は開始不可
 - 総牌枚数81枚推奨
 - 40枚未満はError
 - 60枚未満はWarning
 - 2枚役50点超はWarning
 - wildcard 15%超はWarning
 - scoreBonus maxPointsなしはWarning
+- Role.kindにscore_bonusがあればError
 - Deck Editor上部に常時サマリを表示する
