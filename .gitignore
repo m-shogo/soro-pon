@@ -37,3 +37,8 @@ dev-fixtures/ip-local/
 # local-only design references
 # Existing IP, generated experiments, or personal visual references must never be committed here.
 .local-design/
+
+# generated UI asset intermediates
+# Keep prompts/scripts in git, but not raw or temporary generated images.
+tools/asset-factory/soro-pon-ui/raw-green/
+tools/asset-factory/soro-pon-ui/processed/
