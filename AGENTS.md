@@ -5,8 +5,8 @@
 ## Project Status
 
 ```text
-MVP実装準備完了。
-ただし、MVP本実装前に全主要画面のデザイン生成を行う。
+MVP Phase 1 実装開始可能。
+ただし、最初はUIではなく domain / schema / engine / tests を固める。
 ```
 
 実装または画面デザイン生成を始める前に、必ず `README.md` とこのファイルを読む。
@@ -21,9 +21,10 @@ AGENTS.md
 CLAUDE.md or CODEX.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
+docs/47-mvp-implementation-final-gate.md
 ```
 
-画面生成時の正本。
+画面生成・UI実装時の正本。
 
 ```text
 docs/10-screen-design-spec.md
@@ -35,6 +36,7 @@ docs/42-shared-vampon-source-policy.md
 docs/44-vampon-character-generation-gate.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
 ## Mandatory Vamp-pon World Read
@@ -72,11 +74,23 @@ portrait: rotate prompt or limited utility only
 全主要画面をまず横画面で設計する
 TOP / Deck / Editor / Result / Collection も landscape-first
 過去の portrait-first 方針は使わない
-Webでは縮尺・余白・折りたたみでよしなに対応する
+Webでは縮尺・余白・折りたたみで対応する
 縦画面に本UIを無理に詰めない
 ```
 
-詳細は `docs/46-landscape-first-web-responsive-policy.md` を正とする。
+詳細は `docs/46-landscape-first-web-responsive-policy.md` と `docs/47-mvp-implementation-final-gate.md` を正とする。
+
+## Adopted Design Target
+
+UI品質基準。
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
+```
+
+新規UIや画像生成時は、この10枚の質感・余白・紙UI・黒インク・ランタン光・横画面情報密度を基準にする。
+
+参照画像はruntime素材として直接使わない。
 
 ## Vamp-pon Reference Gate
 
@@ -120,28 +134,30 @@ Vamp-ponキャラを画像生成・画面デザイン・対戦相手アバター
 4. `docs/03-data-model.md`
 5. `docs/10-screen-design-spec.md`
 6. `docs/11-design-generation-prompt.md`
-7. `docs/17-screen-actions-and-requirements.md`
-8. `docs/23-deck-editor-ux-and-category-colors.md`
-9. `docs/24-scoring-and-payment.md`
-10. `docs/25-role-evaluation-engine.md`
-11. `docs/26-deck-validation-and-balance-rules.md`
-12. `docs/27-cpu-minimum-strategy-and-match-flow.md`
-13. `docs/28-release-safety-checklist.md`
-14. `docs/29-result-progression-collection.md`
-15. `docs/30-first-run-and-playtest-loop.md`
-16. `docs/31-implementation-stack-decision.md`
-17. `docs/32-zod-schema-spec.md`
-18. `docs/33-official-animal-starter-deck.md`
-19. `docs/34-mvp-implementation-prompt.md`
-20. `docs/35-mvp-test-cases.md`
-21. `docs/36-doc-consistency-audit.md`
-22. `docs/37-visual-design-direction.md`
-23. `docs/38-screen-generation-plan.md`
-24. `docs/41-vampon-in-world-game-direction.md`
-25. `docs/42-shared-vampon-source-policy.md`
-26. `docs/44-vampon-character-generation-gate.md`
-27. `docs/45-vampon-reference-gate.md`
-28. `docs/46-landscape-first-web-responsive-policy.md`
+7. `docs/14-role-taxonomy-and-scoring.md`
+8. `docs/17-screen-actions-and-requirements.md`
+9. `docs/23-deck-editor-ux-and-category-colors.md`
+10. `docs/24-scoring-and-payment.md`
+11. `docs/25-role-evaluation-engine.md`
+12. `docs/26-deck-validation-and-balance-rules.md`
+13. `docs/27-cpu-minimum-strategy-and-match-flow.md`
+14. `docs/28-release-safety-checklist.md`
+15. `docs/29-result-progression-collection.md`
+16. `docs/30-first-run-and-playtest-loop.md`
+17. `docs/31-implementation-stack-decision.md`
+18. `docs/32-zod-schema-spec.md`
+19. `docs/33-official-animal-starter-deck.md`
+20. `docs/34-mvp-implementation-prompt.md`
+21. `docs/35-mvp-test-cases.md`
+22. `docs/36-doc-consistency-audit.md`
+23. `docs/37-visual-design-direction.md`
+24. `docs/38-screen-generation-plan.md`
+25. `docs/41-vampon-in-world-game-direction.md`
+26. `docs/42-shared-vampon-source-policy.md`
+27. `docs/44-vampon-character-generation-gate.md`
+28. `docs/45-vampon-reference-gate.md`
+29. `docs/46-landscape-first-web-responsive-policy.md`
+30. `docs/47-mvp-implementation-final-gate.md`
 
 ## Deprecated / History Only
 
@@ -160,6 +176,8 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - 画像付き共有を作らない
 - 3〜4人用を前提にする
 - 2人戦を作らない
+- 3人/4人対応は `RuleConfig.supportedPlayerCounts` で表す
+- `minPlayers` / `maxPlayers` はMVPでは使わない
 - 最終ルールはドンジャラと同じ構造にする
 - 通常手牌8枚、引いた後9枚、あがり形は3枚セット×3組
 - 拡張ルールは型で考慮してよいが、MVP対局UIには勝手に入れない
@@ -167,6 +185,8 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - ポン、カン、チーを作らない
 - デッキ入口は1つにし、通常版/拡張版は同じDeckProject内のvariantとして扱う
 - 通常版/拡張版が両方ある場合はワンクリックで切り替え可能にする
+- `Role.kind` は `win_role` / `special_bonus` のみ
+- `score_bonus` は `Role.kind` に入れず、`ScoreBonus[]` として扱う
 - ロン/ツモ判定は上がり役だけを対象にする
 - 特殊役とスコアボーナスはロン候補にしない
 - オールマイティ牌は入れるが無制限にしない
@@ -177,9 +197,8 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - soro-ponは横画面固定を正とする
 - 全主要画面をまず844x390 landscapeで設計する
 - TOP/Deck/Editor/Result/Collectionもportrait-firstにしない
-- Webではresponsive scale / adaptive layoutでよしなに対応する
+- Webではresponsive scale / adaptive layoutで対応する
 - 縦画面に本UIを無理に詰めず、rotate promptまたは限定utilityにする
-- 画面デザイン生成が終わるまでMVP本実装に入らない
 - soro-ponはVamp-pon世界内で流行っている記憶札遊びとして扱う
 - 単体の漫画風アプリとしてデザインしない
 - 紙/黒インク/小さな灯り/夜の机/記憶を軸にする
@@ -227,14 +246,6 @@ Visual keywords:
 横画面の麻雀/ドンジャラ卓
 ```
 
-Orientation:
-
-```text
-All main screens: 844x390 landscape-first
-Web: responsive scale / adaptive layout
-Portrait: rotate prompt or limited utility only
-```
-
 ## Implementation Priority
 
 本実装開始時はこの順番。
@@ -264,8 +275,9 @@ Portrait: rotate prompt or limited utility only
 最低限:
 
 - animal starter deck parse
+- supportedPlayerCounts parse / 2人戦拒否
 - forbidden image fields reject
-- special_bonus / score_bonus cannot ron
+- special_bonus / ScoreBonus[] cannot ron
 - wildcard auto assignment
 - 13枚役 allow extra tile
 - 14枚役 must cover full hand
@@ -287,9 +299,11 @@ Portrait: rotate prompt or limited utility only
 - fallbackLabel
 - counts
 - roles
+- scoreBonuses
 - points
 - role conditions
 - wildcard rule
+- supportedPlayerCounts
 
 共有JSONに入れてはいけない。
 
