@@ -25,6 +25,7 @@ docs/11-design-generation-prompt.md
 docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
 docs/41-vampon-in-world-game-direction.md
+docs/42-shared-vampon-source-policy.md
 ```
 
 `.claude/README.md` と `.codex/README.md` は補助メモです。仕様の正本は `README.md` / `AGENTS.md` / `docs/` に集約します。
@@ -61,6 +62,19 @@ docs/41-vampon-in-world-game-direction.md
 - production export payload
 
 公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどの安全テーマで作ります。
+
+## Vamp-pon共有資料
+
+`soro-pon` は、Vamp-pon世界内で流行っている記憶札遊びとして扱います。
+
+世界観・キャラ・敵・ステージ・武器・アイテムの正本は、soro-pon側へコピーせず、Vamp-pon repo側の共有資料を参照します。
+
+```text
+m-shogo/vamp-pon
+docs/shared-world-bible.md
+```
+
+soro-pon側の参照ルールは `docs/42-shared-vampon-source-policy.md` にまとめます。
 
 ## デザイン方針
 
@@ -256,6 +270,7 @@ docs/35-mvp-test-cases.md
 - [Three.js / WebGL Policy](docs/39-threejs-webgl-policy.md)
 - [Stylish Three.js Experiment Plan](docs/40-stylish-threejs-experiment-plan.md)
 - [Vamp-pon In-world Game Direction](docs/41-vampon-in-world-game-direction.md)
+- [Shared Vamp-pon Source Policy](docs/42-shared-vampon-source-policy.md)
 
 ## 現時点でやらないこと
 
