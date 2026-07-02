@@ -35,6 +35,18 @@
 
 公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどで作ります。
 
+## 実装スタック方針
+
+MVPは以下で固定します。
+
+```text
+TypeScript + React + Vite + Zod + Vitest
+```
+
+Next.js / Unity / Godot / Phaser / Supabase / Firebase はMVP初期では使いません。
+
+詳細は `docs/31-implementation-stack-decision.md` にまとめます。
+
 ## 役分類方針
 
 役候補の爆発とテンポ悪化を防ぐため、役は分類します。
@@ -123,6 +135,16 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 
 詳細は `docs/29-result-progression-collection.md` にまとめます。
 
+## 公式サンプル
+
+MVP公式サンプルは安全テーマの **動物スターター** です。
+
+```text
+samples/animal-starter.deck.json
+```
+
+詳細は `docs/33-official-animal-starter-deck.md` にまとめます。
+
 ## MVP開始前チェック
 
 固定済みのMVP判断は `docs/19-fixed-mvp-decisions.md` を正とします。
@@ -135,6 +157,12 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 - CPU/対局フロー: `docs/27-cpu-minimum-strategy-and-match-flow.md`
 - リリース安全チェック: `docs/28-release-safety-checklist.md`
 - リザルト後の継続導線: `docs/29-result-progression-collection.md`
+- 初回導線/プレイテスト循環: `docs/30-first-run-and-playtest-loop.md`
+- 実装スタック: `docs/31-implementation-stack-decision.md`
+- Zod schema仕様: `docs/32-zod-schema-spec.md`
+- 公式サンプル: `docs/33-official-animal-starter-deck.md`
+- MVP実装プロンプト: `docs/34-mvp-implementation-prompt.md`
+- MVPテストケース: `docs/35-mvp-test-cases.md`
 
 ## ドキュメント
 
@@ -168,6 +196,12 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 - [CPU Minimum Strategy and Match Flow](docs/27-cpu-minimum-strategy-and-match-flow.md)
 - [Release Safety Checklist](docs/28-release-safety-checklist.md)
 - [Result Progression and Collection](docs/29-result-progression-collection.md)
+- [First Run and Playtest Loop](docs/30-first-run-and-playtest-loop.md)
+- [Implementation Stack Decision](docs/31-implementation-stack-decision.md)
+- [Zod Schema Spec](docs/32-zod-schema-spec.md)
+- [Official Animal Starter Deck](docs/33-official-animal-starter-deck.md)
+- [MVP Implementation Prompt](docs/34-mvp-implementation-prompt.md)
+- [MVP Test Cases](docs/35-mvp-test-cases.md)
 
 ## 現時点でやらないこと
 
