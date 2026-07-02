@@ -110,7 +110,7 @@ AIは画面やボタンを追加する場合、必ずこのファイルに仕様
 
 実装に入る前の残TODO、仮固定案、MVP完了条件、テスト観点は `docs/18-mvp-readiness-checklist.md` にまとめます。
 
-ここに残っている未確定項目を固定してから、MVP実装プロンプトを更新します。
+固定済みのMVP判断は `docs/19-fixed-mvp-decisions.md` を正とします。
 
 ## デザイン生成方針
 
@@ -141,6 +141,7 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Match Layout and Orientation](docs/16-match-layout-orientation.md)
 - [Screen Actions and Requirements](docs/17-screen-actions-and-requirements.md)
 - [MVP Readiness Checklist](docs/18-mvp-readiness-checklist.md)
+- [Fixed MVP Decisions](docs/19-fixed-mvp-decisions.md)
 
 ## 現時点でやらないこと
 
