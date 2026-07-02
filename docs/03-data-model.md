@@ -7,6 +7,7 @@
 - 標準ルールはドンジャラ互換にする
 - 将来の拡張ルールに耐えるRuleConfigを持つ
 - 牌はカテゴリを複数持てる
+- オールマイティ牌を定義できる
 - 画像は共有JSONに含めない
 - ルールエンジンはUIから分離する
 - Zodでimport/export schemaを検証する
@@ -22,6 +23,7 @@ type Tile = {
   emoji?: string;
   fallbackLabel?: string;
   count: number;
+  wildcard?: WildcardRule;
 };
 ```
 
@@ -31,6 +33,50 @@ type Tile = {
 - `emoji` は画像がない場合の表示
 - `fallbackLabel` は絵文字も画像もない場合の短い表示
 - `count` は山に入れる枚数
+- `wildcard` がある牌はオールマイティ牌として扱える
+
+## WildcardRule
+
+オールマイティ牌の代用範囲を定義する。
+
+```ts
+type WildcardRule = {
+  kind: 'any_tile' | 'category_limited' | 'specific_tiles';
+  categories?: string[];
+  tileIds?: string[];
+  maxUsePerRole?: number;
+  canCompleteWinRole: boolean;
+  canCompleteSpecialBonus: boolean;
+  canTriggerRonWhenDiscarded: boolean;
+  countsForScoreBonus: boolean;
+};
+```
+
+### Recommended Defaults
+
+```ts
+const DEFAULT_WILDCARD_RULE: WildcardRule = {
+  kind: 'any_tile',
+  maxUsePerRole: 1,
+  canCompleteWinRole: true,
+  canCompleteSpecialBonus: true,
+  canTriggerRonWhenDiscarded: false,
+  countsForScoreBonus: false,
+};
+```
+
+### Notes
+
+- `canCompleteWinRole`: 上がり役の不足分を補える
+- `canCompleteSpecialBonus`: 特殊役の不足分を補える
+- `canTriggerRonWhenDiscarded`: オールマイティが捨てられたとき、それを使ってロンできるか
+- `countsForScoreBonus`: 同じキャラボーナスなどのスコアボーナス対象に含めるか
+
+重要:
+
+- デフォルトでは、手牌内のオールマイティは代用可
+- デフォルトでは、捨てられたオールマイティでロンは発生しない
+- デフォルトでは、オールマイティは同じキャラボーナスの枚数に含めない
 
 ## TileInstance
 
@@ -78,6 +124,7 @@ type RuleConfig = {
   allowPon: false;
   allowReach: boolean;
   allowScoreBonus: boolean;
+  allowWildcard: boolean;
   allowKan: false;
   allowChi: false;
 };
@@ -98,6 +145,7 @@ const BASE_DONJARA_RULE: RuleConfig = {
   allowPon: false,
   allowReach: false,
   allowScoreBonus: true,
+  allowWildcard: true,
   allowKan: false,
   allowChi: false,
 };
@@ -118,6 +166,7 @@ const EXTENDED_HAND_RULE: RuleConfig = {
   allowPon: false,
   allowReach: true,
   allowScoreBonus: true,
+  allowWildcard: true,
   allowKan: false,
   allowChi: false,
 };
@@ -148,6 +197,8 @@ type Role = {
   description?: string;
   canTsumo: boolean;
   canRon: boolean;
+  allowWildcard?: boolean;
+  maxWildcardUse?: number;
 };
 ```
 
@@ -174,6 +225,8 @@ kind = score_bonus:
 - `span = 2` の `win_role` はツモ/ロン可能な小型あがり役
 - `span = 2` の役でもポンは不可
 - `special_bonus` と `score_bonus` はロン候補にしない
+- `allowWildcard` がfalseの役ではオールマイティを使えない
+- `maxWildcardUse` で役ごとのオールマイティ使用枚数を制限できる
 
 ## ScoreBonus
 
@@ -188,6 +241,7 @@ type ScoreBonus = {
   points: number;
   maxPoints?: number;
   description?: string;
+  allowWildcard?: boolean;
 };
 ```
 
@@ -231,6 +285,7 @@ type RoleCondition =
 
 - `choose_n_from` は特殊役で使う
 - 例: 4キャラのうち3キャラが含まれていたら加点
+- オールマイティを使えるかは `RuleConfig.allowWildcard`, `Tile.wildcard`, `Role.allowWildcard` で決める
 
 ## DeckDefinition / RuleSet
 
@@ -289,6 +344,7 @@ type ReactionState = {
 - カンもチーも作らない
 - ロン判定は `win_role` のみ
 - `special_bonus` と `score_bonus` はロン判定に使わない
+- 捨てられたオールマイティでロンできるかは `canTriggerRonWhenDiscarded` で制御する
 
 MVPでは未使用でもよいが、MatchStateに後から追加できる設計にする。
 
@@ -321,6 +377,13 @@ type MatchState = {
 ```ts
 type WinMethod = 'tsumo' | 'ron';
 
+type WildcardUse = {
+  wildcardTileInstanceId: string;
+  usedAsTileId?: string;
+  usedAsCategory?: string;
+  roleId: string;
+};
+
 type MatchResult = {
   winnerPlayerId: string;
   winMethod: WinMethod;
@@ -342,6 +405,7 @@ type MatchResult = {
     name: string;
     points: number;
   }>;
+  wildcardUses: WildcardUse[];
   totalPoints: number;
 };
 ```
@@ -350,10 +414,12 @@ type MatchResult = {
 
 ```text
 1. win_role であがり判定
-2. あがり成立
-3. 手の中に special_bonus が含まれているか判定
-4. score_bonus を計算
-5. totalPoints を出す
+2. オールマイティが必要なら代用割当を行う
+3. あがり成立
+4. 手の中に special_bonus が含まれているか判定
+5. score_bonus を計算
+6. wildcardUses を記録
+7. totalPoints を出す
 ```
 
 ## Shared JSON Rule
@@ -364,6 +430,7 @@ type MatchResult = {
 - deck name
 - ruleConfig
 - tile definitions
+- wildcard rule
 - categories
 - emoji
 - fallbackLabel
@@ -402,5 +469,8 @@ import時はZod schemaで検証する。
 - `special_bonus.canRon` は false
 - `score_bonus.canTsumo` は false
 - `score_bonus.canRon` は false
+- wildcard `maxUsePerRole` は原則1を推奨
+- wildcard `countsForScoreBonus` は原則falseを推奨
+- wildcard `canTriggerRonWhenDiscarded` は原則falseを推奨
 - MVPでは `ruleConfig.id = 'base-donjara'` のみ有効
 - 拡張ルールはexperimental扱い
