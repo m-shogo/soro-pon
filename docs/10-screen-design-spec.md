@@ -2,9 +2,9 @@
 
 ## Purpose
 
-将来的に、対戦画面・Editor画面・結果画面などのデザインをこのrepo内の情報から生成できるようにする。
+MVP実装前に全主要画面を生成し、採用デザインを固定する。
 
-AIに画面を作らせるときは、このファイルを必ず参照する。
+画面デザイン生成時は、このファイルと `docs/37-visual-design-direction.md` / `docs/38-screen-generation-plan.md` を必ず参照する。
 
 ## Design Generation Rule
 
@@ -15,25 +15,43 @@ AIに画面を作らせるときは、このファイルを必ず参照する。
 - 共有・画像方針は `docs/04-sharing-and-local-images.md` を正とする
 - IP/UGC方針は `docs/05-ip-and-ugc-policy.md` を正とする
 - デザイン原則は `docs/06-design-principles.md` を正とする
+- ビジュアル方向性は `docs/37-visual-design-direction.md` を正とする
+- 生成順は `docs/38-screen-generation-plan.md` を正とする
 
 AIは、見た目を作るためにルールを変えてはいけない。
 
-## Target Device
-
-最初の主要ターゲットはスマホ縦画面。
-
-基準サイズ:
+## Target Device and Orientation
 
 ```text
-390 x 844
+TOP / Deck List / Deck Detail / Editor / Result / Collection: portrait-first 390x844
+Match: landscape-first 844x390
+Portrait match: rotate prompt
 ```
 
-対応想定:
+## Visual Direction
 
-- iPhone標準幅
-- Android標準幅
-- Safe areaあり
-- 片手操作しやすいUI
+```text
+明るい卓上ボードゲームUI
+麻雀アプリの操作感
+カード/デッキビルダーの作りやすさ
+クリアボードの収集感
+```
+
+見た目の比喩:
+
+```text
+明るい木のテーブルに、色分けされた牌カードを並べて遊ぶ。
+```
+
+避ける方向:
+
+```text
+暗いカードゲームUI
+高級麻雀UI
+ソシャゲガチャUI
+幼すぎる知育アプリ
+情報量が多い管理画面
+```
 
 ## Global Layout Principles
 
@@ -44,6 +62,7 @@ AIは、見た目を作るためにルールを変えてはいけない。
 - 画面下部は主要アクション
 - 重要なボタンは親指で押しやすい位置
 - 小さい文字を多用しない
+- 画像なしでも破綻させない
 
 ## Common Components
 
@@ -53,9 +72,9 @@ AIは、見た目を作るためにルールを変えてはいけない。
 
 ```text
 ┌────────────┐
+│ category   │ ← top bar / category color
 │            │
-│  image     │
-│  or emoji  │
+│ emoji/img  │
 │            │
 ├────────────┤
 │ name       │
@@ -64,10 +83,13 @@ AIは、見た目を作るためにルールを変えてはいけない。
 
 必須:
 
+- 外枠にprimary category color
+- 上部帯にprimary category color
 - 下部に名前
 - 画像があっても名前を消さない
 - 選択状態が分かる
 - 捨てられる/捨てられない状態が分かる
+- オールマイティは金色アクセント
 - 3〜4人戦でも自分の手牌が見やすい
 
 表示優先:
@@ -88,7 +110,6 @@ AIは、見た目を作るためにルールを変えてはいけない。
 - 手牌枚数
 - 捨て牌枚数
 - 現在ターンかどうか
-- テンパイ/危険状態は将来表示
 
 表示しないもの:
 
@@ -103,74 +124,12 @@ AIは、見た目を作るためにルールを変えてはいけない。
 - 引く
 - 捨てる
 - あがる
+- ロン
 - パス
 - もう一局
+- デッキを調整
 
-ボタンは大きく、状態を明確にする。
-
-## Match Screen
-
-### Goal
-
-プレイヤーが今やるべきことを迷わない画面。
-
-### Information Priority
-
-1. 自分の手牌
-2. 現在の操作状態
-3. 引く/捨てる/あがるボタン
-4. 相手3人の状態
-5. 山・捨て牌
-6. 成立候補役
-7. 得点
-
-### Layout
-
-```text
-┌────────────────────┐
-│ Opponent Mini Row   │
-│ P2 / P3 / P4        │
-├────────────────────┤
-│ Round Status        │
-│ current turn / deck │
-├────────────────────┤
-│ Discard / Draw Area │
-├────────────────────┤
-│ My Hand             │
-│ 8 or 9 tiles        │
-├────────────────────┤
-│ Action Bar          │
-│ Draw / Discard / Win│
-└────────────────────┘
-```
-
-### My Hand
-
-- 通常時8枚
-- 引いた後9枚
-- 9枚時は「あがる」「捨てる」の判断を促す
-- 牌は横スクロールより、できれば2段または3段で見やすくする
-- 390px幅で名前が読めること
-
-### State Copy
-
-状態文言は短く。
-
-例:
-
-```text
-あなたの番です。1枚引いてください。
-9枚になりました。あがるか、1枚捨ててください。
-CPU2の捨て牌であがれます。
-```
-
-### Match Screen Must Not
-
-- 相手の情報を大きくしすぎない
-- 役一覧を常時大きく出さない
-- Editor導線を混ぜない
-- 共有ボタンを対局中に目立たせない
-- 画面下部に小さいボタンを並べすぎない
+ボタンは大きく、押せる状態だけ目立たせる。
 
 ## Home Screen
 
@@ -178,14 +137,18 @@ CPU2の捨て牌であがれます。
 
 すぐ始める。
 
-### Layout
+### Portrait Layout 390x844
 
 ```text
 soro-pon
+短い説明
 
-[サンプルで遊ぶ]
+[まず遊ぶ]
+[デッキ一覧]
 [デッキを作る]
 [JSONを読み込む]
+
+動物スターターカード
 ```
 
 最初のHomeに入れないもの:
@@ -194,79 +157,129 @@ soro-pon
 - ランキング
 - 公開ギャラリー
 - アカウント
-- 実績
 - デイリー
 
-## Deck Editor
+## Deck List / Deck Detail
 
 ### Goal
 
-その卓で使うデッキ/ルールセットを作る。
+作ったデッキを選ぶ。通常版/拡張版を迷わず切り替える。
+
+Must Show:
+
+- デッキ名
+- 通常版/拡張版対応
+- 総牌枚数
+- 役数
+- 警告数
+- 最終更新
+
+Actions:
+
+- 遊ぶ
+- 編集
+- 複製
+- Export
+- Delete
+
+## Deck Editor Family
+
+Deck Editorはこのゲームの主役級機能。
+
+### Tabs
+
+```text
+基本情報
+カテゴリ
+牌
+上がり役
+特殊役
+ボーナス
+ルール
+バランス
+共有
+```
+
+### Editor Layout
+
+Portrait 390x844では、タブ切替中心。
+
+```text
+Header: deck name / save state / warnings
+Tab row
+Main edit area
+Live preview / action area
+```
+
+Must:
+
+- カテゴリ色が常に見える
+- 牌プレビューがある
+- 役テンプレートから作れる
+- 点数目安がある
+- バランス警告から修正に行ける
+- Empty Stateに次の行動がある
+
+## Match Screen
+
+### Goal
+
+プレイヤーが今やるべきことを迷わない画面。
+
+### Orientation
+
+Matchは **landscape-first 844x390**。
+
+Portraitでは対戦UIを無理に詰めず、Rotate Promptを出す。
 
 ### Information Priority
 
-1. デッキ名
-2. 3人戦/4人戦設定
-3. 牌一覧
-4. 役一覧
-5. JSON export/import
+1. 自分の手牌
+2. 現在の操作状態
+3. 引く/捨てる/あがる/ロン/パス
+4. 直近の捨て牌
+5. 相手3人の状態
+6. 山/捨て牌
+7. 成立候補役
 
-### Must Show
-
-- 牌の種類数
-- 総牌枚数
-- 役数
-- 最高得点役
-- 3人/4人対応
-
-## Tile Editor
-
-### Goal
-
-牌を作る。
-
-入力順:
-
-1. name
-2. emoji
-3. fallbackLabel
-4. categories
-5. count
-6. local image
-
-注意:
-
-- categoriesは複数入力できる
-- local imageは共有されないと明記する
-- 名前は必須
-- countは必須
-
-## Role Editor
-
-### Goal
-
-役と得点を作る。
-
-入力順:
-
-1. role name
-2. points
-3. condition type
-4. condition details
-5. description
-
-UIで必ず見せる:
-
-- この役が何を要求しているか
-- 点数
-- 対象カテゴリ/牌
-- 条件の自然文プレビュー
-
-例:
+### Landscape Layout 844x390
 
 ```text
-森カテゴリを3枚そろえる → 20点
+┌──────────────────────────────────────────────┐
+│ Opponent left   Center discard   Opponent top │
+│                                              │
+│ Opponent right  Latest discard   Role hint    │
+├──────────────────────────────────────────────┤
+│ My hand tiles 8〜9                  Actions   │
+└──────────────────────────────────────────────┘
 ```
+
+### My Hand
+
+- 通常時8枚
+- 引いた後9枚
+- 9枚時は「あがる」「捨てる」の判断を促す
+- 横向きで牌名が読めること
+- 選択牌は少し浮かせる
+
+### State Copy
+
+状態文言は短く。
+
+```text
+あなたの番です。1枚引いてください。
+9枚です。あがるか、1枚捨ててください。
+ロンできます。
+```
+
+### Match Screen Must Not
+
+- portraitに無理やり全情報を詰めない
+- 相手の情報を大きくしすぎない
+- 役一覧を常時大きく出さない
+- Editor導線を混ぜない
+- 共有ボタンを対局中に目立たせない
+- 画面下部に小さいボタンを並べすぎない
 
 ## Result Screen
 
@@ -276,13 +289,42 @@ UIで必ず見せる:
 
 表示するもの:
 
-- 勝者
-- 成立役
-- 各役の点数
+- 勝者 / 流局
+- ツモ/ロン
+- 上がり役
+- 特殊役
+- スコアボーナス
+- オールマイティ使用
 - 合計点
+- 獲得コイン
+- 実績/称号/コレクション進行
+
+Actions:
+
 - もう一局
-- デッキを編集
-- 結果をコピー
+- デッキを調整
+- コレクションを見る
+- クリアボードを見る
+- TOPへ
+
+## Collection / Clear Board
+
+### Goal
+
+また遊ぶ理由を作る。
+
+Direction:
+
+```text
+カービィのエアライドのクリアチェッカー的なマス目
+ただしソシャゲ感は薄く
+```
+
+Must:
+
+- 未達成/達成済みが分かる
+- 次に狙える目標が分かる
+- 報酬が強さに見えない
 
 ## Visual Tone
 
@@ -291,18 +333,18 @@ UIで必ず見せる:
 - でも幼すぎない
 - 牌の視認性が最優先
 - 装飾より情報整理
+- 軽いゲーム感は出す
 
 ## Color Direction
 
-最初は色数を絞る。
-
 推奨:
 
-- background: 暖かい白 or 薄いベージュ
-- tile: 白/アイボリー
-- primary: 青 or 緑
-- accent: 黄色/金
+- background: 暖かい白 / 薄いベージュ / 明るい木目
+- tile: 白 / アイボリー
+- primary: 青緑
+- accent: 黄色 / 金
 - danger: 赤
+- category: user-defined category colors
 
 避ける:
 
@@ -313,29 +355,30 @@ UIで必ず見せる:
 
 ## Generated Design Deliverables
 
-将来デザイン生成時に作るもの。
+詳細な生成リストは `docs/38-screen-generation-plan.md` を正とする。
 
-- Match screen 390x844
-- Home screen 390x844
-- Deck Editor 390x844
-- Tile Editor 390x844
-- Role Editor 390x844
-- Result screen 390x844
-- Tile component sheet
-- Button component sheet
-- Player mini panel sheet
+最低限:
+
+- Component Sheets
+- TOP
+- Deck List
+- Deck Detail
+- Deck Editor family
+- Match landscape family
+- Result
+- Collection
+- Dialogs
 
 ## Design Review Checklist
-
-デザインを採用する前に確認する。
 
 - 自分の手牌が主役か
 - 8枚/9枚が自然に表示できるか
 - 3人戦/4人戦の相手表示が破綻しないか
 - 牌の名前が読めるか
+- カテゴリ色が意味を持っているか
 - 画像なしでも成立するか
 - 画像ありでも名前が消えないか
-- 「引く」「捨てる」「あがる」が迷わないか
+- 「引く」「捨てる」「あがる」「ロン」が迷わないか
 - 役候補が邪魔をしていないか
 - Editor画面が自作しやすいか
-- 共有JSONが画像なしであることが説明されているか
+- Resultからもう一局/調整へ行きたくなるか
