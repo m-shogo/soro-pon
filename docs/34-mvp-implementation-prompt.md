@@ -39,6 +39,7 @@ Claude Code / Codex / Cursor にMVP実装を依頼するためのプロンプト
 - docs/46-landscape-first-web-responsive-policy.md
 - docs/47-mvp-implementation-final-gate.md
 - docs/48-responsive-crisp-ui-system.md
+- docs/49-ui-quality-gate-and-codex-design-rules.md
 
 画面/UI実装に入る場合は、追加で以下を必ず参照してください。
 
@@ -94,6 +95,13 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 - 文字は画像に焼き込まずHTML textで描画する
 - 重要UI寸法は整数pxへ丸める
 - 紙パネルや手描き縁が必要な箇所だけ9-sliceを使う
+- Codexはデザインを発明しない
+- 採用済みデザインターゲット10枚をUI品質基準にする
+- tokens.css以外へ新しい色を勝手に追加しない
+- 画面ごとの独自ボタン/独自パネルを作らない
+- UIはprimitives/components経由で実装する
+- Component Galleryを先に作る
+- UI変更時は指定サイズでスクリーンショット確認する
 - portraitはrotate promptまたは限定utilityのみ
 
 実装順序:
@@ -112,12 +120,13 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 12. CPU minimum strategy
 13. localStorage保存
 14. JSON import/export
-15. Deck List / Deck Detail
-16. Deck Editor 最小版
-17. Match Setup
-18. Match Landscape UI
-19. Result UI
-20. Collection / Clear Board 最小版
+15. UI foundation: tokens / primitives / responsive metrics / Component Gallery
+16. Deck List / Deck Detail
+17. Deck Editor 最小版
+18. Match Setup
+19. Match Landscape UI
+20. Result UI
+21. Collection / Clear Board 最小版
 
 コミット方針:
 
@@ -125,6 +134,7 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 - 小さく進める
 - まず型/Zod/エンジン/テストを優先
 - UIは型とルールエンジンが通ってから
+- UI実装はComponent Galleryを通してから各画面へ進める
 
 最初のPRまたは作業単位:
 
@@ -151,12 +161,19 @@ Phase 3:
 - Result minimal
 
 Phase 4:
+- UI foundation
+- tokens.css
+- responsive metrics
+- primitives/components
+- Component Gallery
+
+Phase 5:
 - Deck Editor minimal
 - category color preview
 - role template builder minimal
 - balance check
 
-Phase 5:
+Phase 6:
 - Match UI
 - CPU
 - Result progression
@@ -175,6 +192,7 @@ Phase 5:
 - shared JSONに画像fieldが入っていたら拒否する
 - supportedPlayerCounts が [3, 4] でparseできる
 - 2人戦を開始できない
+- UI変更時は 844x390 / 932x430 / 852x393 / 1024x600 / 1366x768 でスクリーンショット確認する
 
 作業後は以下を報告してください。
 
@@ -192,3 +210,5 @@ Phase 5:
 古いdocsと迷った場合は `docs/47-mvp-implementation-final-gate.md` を優先する。
 
 UIのレスポンシブ・鮮明さ・9-slice/SVG/PNG/WebP使い分けで迷った場合は `docs/48-responsive-crisp-ui-system.md` を優先する。
+
+UI品質・Codexのデザイン境界・ダサくならないための実装制約で迷った場合は `docs/49-ui-quality-gate-and-codex-design-rules.md` を優先する。
