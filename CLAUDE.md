@@ -11,6 +11,7 @@ README.md
 AGENTS.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
+docs/47-mvp-implementation-final-gate.md
 ```
 
 画面/UI/世界観を扱う場合は追加で必ず読む。
@@ -21,6 +22,7 @@ docs/37-visual-design-direction.md
 docs/38-screen-generation-plan.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
 世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う場合は、必ず先に以下を読む。
@@ -36,8 +38,9 @@ docs/46-landscape-first-web-responsive-policy.md
 ## Current Status
 
 ```text
-MVP実装準備完了。
+MVP Phase 1 実装開始可能。
 実装は TypeScript + React + Vite + Zod + Vitest で進める。
+最初は UI ではなく domain / schema / engine / tests を固める。
 ```
 
 ## Fixed Orientation
@@ -71,8 +74,12 @@ Claude Codeは、主に以下を担当する。
 既存IPデータをsrc/public/docs/README/公式サンプルへ入れない
 共有JSONに画像情報を入れない
 2人戦を作らない
+RuleConfig.supportedPlayerCounts で3/4人対応する
+minPlayers / maxPlayers はMVPでは使わない
 ポン/カン/チーを作らない
-special_bonus / score_bonus をロン候補にしない
+Role.kind は win_role / special_bonus のみ
+score_bonus は Role.kind に入れず ScoreBonus[] で扱う
+special_bonus / ScoreBonus[] をロン候補にしない
 オールマイティを毎回クリック選択式にしない
 コインで強さを買わせない
 全主要画面を844x390 landscape-firstで設計する
