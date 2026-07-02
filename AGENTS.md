@@ -26,6 +26,7 @@
 13. `docs/11-design-generation-prompt.md`
 14. `docs/12-advanced-rule-modules.md`
 15. `docs/13-deck-variants-and-balance.md`
+16. `docs/14-role-taxonomy-and-scoring.md`
 
 ## Absolute Rules
 
@@ -43,6 +44,9 @@
 - 2枚役はツモ/ロン可能だが、ポンは作らない
 - ポン、カン、チーを作らない
 - 拡張ルール用デッキは通常デッキからコピーして作る導線にする
+- ロン/ツモ判定は上がり役だけを対象にする
+- 特殊役とスコアボーナスはロン候補にしない
+- 同じキャラボーナスは上がった後の加点として扱う
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -74,6 +78,18 @@ AIは、見た目や実装都合でルールを変えてはいけない。
 - 9枚であがり判定
 - あがり形は3枚セット×3組
 - 役と得点はデッキ定義
+
+## Role Taxonomy
+
+役は分類する。
+
+```text
+win_role: あがり判定に使う。ツモ/ロン対象
+special_bonus: 上がった後に加点。ツモ/ロン対象外
+score_bonus: 上がった後に加点。ツモ/ロン対象外
+```
+
+AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない。
 
 ## Advanced Rule Policy
 
