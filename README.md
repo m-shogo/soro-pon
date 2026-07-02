@@ -85,6 +85,21 @@
 
 拡張ルール用デッキはゼロから作らせず、通常デッキからコピーして拡張版を作る導線にします。詳細は `docs/13-deck-variants-and-balance.md` にまとめます。
 
+## 画面・向き方針
+
+TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応します。
+
+ただし、対戦画面は4人対戦、牌の見やすさ、捨て牌の見やすさを優先して、スマホ横向き前提で設計します。
+
+- 対戦画面: 横向き前提
+- 基準: 844x390
+- 縦向き時: 横向き案内を表示
+- orientation lockには依存しない
+- 麻雀アプリの情報配置を参考にする
+- ただし牌名・画像・カテゴリの見やすさを優先する
+
+詳細は `docs/16-match-layout-orientation.md` にまとめます。
+
 ## デザイン生成方針
 
 最終的には、対戦画面・Editor画面・結果画面などのデザインも、このrepo内の情報をもとに生成します。
@@ -111,6 +126,7 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Deck Variants and Balance](docs/13-deck-variants-and-balance.md)
 - [Role Taxonomy and Scoring](docs/14-role-taxonomy-and-scoring.md)
 - [Wildcard Rules](docs/15-wildcard-rules.md)
+- [Match Layout and Orientation](docs/16-match-layout-orientation.md)
 
 ## 現時点でやらないこと
 
