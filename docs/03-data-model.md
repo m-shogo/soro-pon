@@ -73,7 +73,8 @@ type RuleConfig = {
   winHandSize: number;
   roleSpanMin: number;
   roleSpanMax: number;
-  allowPon: boolean;
+  allowRon: boolean;
+  allowPon: false;
   allowReach: boolean;
   allowDuplicateBonus: boolean;
   allowKan: false;
@@ -92,6 +93,7 @@ const BASE_DONJARA_RULE: RuleConfig = {
   winHandSize: 9,
   roleSpanMin: 3,
   roleSpanMax: 3,
+  allowRon: true,
   allowPon: false,
   allowReach: false,
   allowDuplicateBonus: false,
@@ -111,7 +113,8 @@ const EXTENDED_HAND_RULE: RuleConfig = {
   winHandSize: 14,
   roleSpanMin: 2,
   roleSpanMax: 14,
-  allowPon: true,
+  allowRon: true,
+  allowPon: false,
   allowReach: true,
   allowDuplicateBonus: true,
   allowKan: false,
@@ -137,6 +140,8 @@ type Role = {
 
 - 標準ルールでは `span = 3`
 - 拡張ルールでは `span = 2〜14` を許可する予定
+- `span = 2` の役はツモ/ロン可能な小型あがり役
+- `span = 2` の役でもポンは不可
 - `duplicateBonus` は将来拡張用。MVPでは使わない
 
 ## DuplicateBonus
@@ -220,16 +225,22 @@ type PlayerState = {
 
 ## ReactionState
 
-捨て牌への反応を将来扱うための状態。
+捨て牌へのロン反応を扱うための状態。
 
 ```ts
 type ReactionState = {
   discardOwnerId: string;
   discardedTile: TileInstance;
   candidatePlayerIds: string[];
-  type: 'win' | 'pon';
+  type: 'ron';
 };
 ```
+
+重要:
+
+- reactionはロン用
+- ポンは作らない
+- カンもチーも作らない
 
 MVPでは未使用でもよいが、MatchStateに後から追加できる設計にする。
 
@@ -260,8 +271,12 @@ type MatchState = {
 ## MatchResult
 
 ```ts
+type WinMethod = 'tsumo' | 'ron';
+
 type MatchResult = {
   winnerPlayerId: string;
+  winMethod: WinMethod;
+  sourcePlayerId?: string; // ronの場合の放銃者
   roles: Array<{
     roleId: string;
     name: string;
@@ -311,5 +326,8 @@ import時はZod schemaで検証する。
 - tilesが空ならエラー
 - rolesが空なら警告またはエラー
 - player count は3または4のみ
+- `allowPon` は常に false
+- `allowKan` は常に false
+- `allowChi` は常に false
 - MVPでは `ruleConfig.id = 'base-donjara'` のみ有効
 - 拡張ルールはexperimental扱い
