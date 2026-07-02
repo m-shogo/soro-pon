@@ -78,7 +78,34 @@ UI枠・アイコン・線はSVG優先
 札のaspect-ratioを崩す
 ```
 
-## 3. Adopted Design Targets
+## 3. UI Quality Gate
+
+UI実装時は、`docs/49-ui-quality-gate-and-codex-design-rules.md` を必ず読む。
+
+固定:
+
+```text
+Codexはデザインを発明しない
+採用済みデザインターゲット10枚を品質基準にする
+tokens.css以外へ新しい色を勝手に追加しない
+画面ごとの独自ボタン/独自パネルを作らない
+UIはprimitives/components経由で実装する
+Component Galleryを先に作る
+UI変更時は指定サイズでスクリーンショット確認する
+```
+
+禁止:
+
+```text
+白い汎用WebアプリUI
+明るい量産ボードゲームUI
+Material Design風
+Tailwind demo風
+色数が多いカードゲームUI
+角丸/影/余白が画面ごとに違うUI
+```
+
+## 4. Adopted Design Targets
 
 画面デザイン・UI実装の品質基準は以下。
 
@@ -98,7 +125,7 @@ docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
 
 参照画像は直接runtime素材として使わない。色、余白、紙UI、黒インク、ランタン光、情報密度の基準にする。
 
-## 4. Supported Player Counts
+## 5. Supported Player Counts
 
 3人/4人対応は、`RuleConfig.supportedPlayerCounts` で持つ。
 
@@ -132,7 +159,7 @@ supportedPlayerCounts: [3, 4]
 
 `minPlayers` / `maxPlayers` はMVPでは使わない。
 
-## 5. Score Bonus Is Separate From Role
+## 6. Score Bonus Is Separate From Role
 
 MVPでは `score_bonus` を `Role.kind` に入れない。
 
@@ -171,7 +198,7 @@ type DeckVariant = {
 };
 ```
 
-## 6. Ron / Tsumo Candidate Rule
+## 7. Ron / Tsumo Candidate Rule
 
 ロン/ツモ候補にするのは `Role.kind = 'win_role'` だけ。
 
@@ -190,7 +217,7 @@ scoreBonusだけで勝利
 scoreBonusをロン候補にする
 ```
 
-## 7. Implementation Order
+## 8. Implementation Order
 
 最初にUIへ入らない。
 
@@ -200,10 +227,11 @@ Phase 2: domain types / Zod schema / animal starter parse test
 Phase 3: role evaluation / wildcard assignment / scoring / deck validation
 Phase 4: match flow / CPU minimum strategy
 Phase 5: localStorage / import-export
-Phase 6: landscape UI implementation based on adopted references and crisp responsive UI system
+Phase 6: UI foundation: tokens / primitives / Component Gallery / responsive metrics
+Phase 7: landscape UI implementation based on adopted references, crisp responsive UI system, and UI quality gate
 ```
 
-## 8. Asset Generation Workflow
+## 9. Asset Generation Workflow
 
 UIパーツを画像生成する場合は以下を使う。
 
@@ -234,4 +262,10 @@ UIのレスポンシブ・鮮明さ・9-slice/SVG/PNG/WebP使い分けで迷っ�
 
 ```text
 docs/48-responsive-crisp-ui-system.md
+```
+
+UI品質・Codexのデザイン境界・ダサくならないための実装制約で迷った場合は、以下を優先する。
+
+```text
+docs/49-ui-quality-gate-and-codex-design-rules.md
 ```
