@@ -28,11 +28,10 @@
 
 - `src/`
 - `public/`
-- `docs/`
-- `README`
 - build成果物
 - 公式サンプル
 - 公式スクリーンショット
+- production export payload
 
 公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどで作ります。
 
@@ -63,7 +62,7 @@
 - スコアボーナスには原則含めない
 - 使用した場合は結果画面に表示する
 
-詳細は `docs/15-wildcard-rules.md` にまとめます。
+詳細は `docs/15-wildcard-rules.md` と `docs/22-wildcard-ux-and-mahjong-feel.md` にまとめます。
 
 ## 拡張ルール方針
 
@@ -81,9 +80,7 @@
 - カンなし
 - チーなし
 
-これらはMVPの対局UIには最初から入れず、`docs/12-advanced-rule-modules.md` でexperimental扱いにします。
-
-拡張ルール用デッキはゼロから作らせず、通常デッキからコピーして拡張版を作る導線にします。詳細は `docs/13-deck-variants-and-balance.md` にまとめます。
+拡張ルール用デッキはゼロから作らせず、通常デッキからコピーして拡張版を作る導線にします。詳細は `docs/13-deck-variants-and-balance.md` と `docs/20-extended-role-span-and-db-policy.md` にまとめます。
 
 ## 画面・向き方針
 
@@ -100,25 +97,30 @@ TOP / デッキ作成 / 役編集 / リザルトは縦画面にも対応しま�
 
 詳細は `docs/16-match-layout-orientation.md` にまとめます。
 
-## 画面機能・ボタン仕様
+## Deck Editor 方針
 
-画面ごとの必要機能、ボタン、押した時の挙動、表示条件、バリデーションは `docs/17-screen-actions-and-requirements.md` にまとめます。
+このゲームの主役級機能は、デッキを気持ちよく作れることです。
 
-AIは画面やボタンを追加する場合、必ずこのファイルに仕様を追加してから実装します。
+- カテゴリごとに色を指定できる
+- 牌の外枠/帯/チップでカテゴリ色を見せる
+- 役はテンプレートとビジュアル選択で作る
+- 得点には目安と警告を出す
+- 役作成時にライブテストを出す
+- かんたん/詳細モードを分ける
+
+詳細は `docs/23-deck-editor-ux-and-category-colors.md` にまとめます。
 
 ## MVP開始前チェック
 
-実装に入る前の残TODO、仮固定案、MVP完了条件、テスト観点は `docs/18-mvp-readiness-checklist.md` にまとめます。
-
 固定済みのMVP判断は `docs/19-fixed-mvp-decisions.md` を正とします。
 
-## デザイン生成方針
+追加で、以下を固定済みです。
 
-最終的には、対戦画面・Editor画面・結果画面などのデザインも、このrepo内の情報をもとに生成します。
-
-そのため、画面生成に必要な情報は `docs/10-screen-design-spec.md` と `docs/11-design-generation-prompt.md` に集約します。
-
-AIは、デザインを作るためにルールを変えてはいけません。
+- 点数支払い: `docs/24-scoring-and-payment.md`
+- 役判定エンジン: `docs/25-role-evaluation-engine.md`
+- デッキ検証/バランス: `docs/26-deck-validation-and-balance-rules.md`
+- CPU/対局フロー: `docs/27-cpu-minimum-strategy-and-match-flow.md`
+- リリース安全チェック: `docs/28-release-safety-checklist.md`
 
 ## ドキュメント
 
@@ -142,11 +144,18 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Screen Actions and Requirements](docs/17-screen-actions-and-requirements.md)
 - [MVP Readiness Checklist](docs/18-mvp-readiness-checklist.md)
 - [Fixed MVP Decisions](docs/19-fixed-mvp-decisions.md)
+- [Extended Role Span and DB Policy](docs/20-extended-role-span-and-db-policy.md)
+- [Remaining Spec Gaps and Next Decisions](docs/21-remaining-spec-gaps-and-next-decisions.md)
+- [Wildcard UX and Mahjong-like Feel](docs/22-wildcard-ux-and-mahjong-feel.md)
+- [Deck Editor UX and Category Colors](docs/23-deck-editor-ux-and-category-colors.md)
+- [Scoring and Payment](docs/24-scoring-and-payment.md)
+- [Role Evaluation Engine](docs/25-role-evaluation-engine.md)
+- [Deck Validation and Balance Rules](docs/26-deck-validation-and-balance-rules.md)
+- [CPU Minimum Strategy and Match Flow](docs/27-cpu-minimum-strategy-and-match-flow.md)
+- [Release Safety Checklist](docs/28-release-safety-checklist.md)
 
 ## 現時点でやらないこと
 
-- 実装開始
-- UI作り込み
 - オンライン対戦
 - ログイン
 - Supabase導入
@@ -156,6 +165,6 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - 公開ギャラリー
 - ランキング
 - 画像付き共有
-- 拡張ルールの対局UI実装
+- productionへのローカル検証データ混入
 
 まずは仕様をブラッシュアップし、Fable / Claude Code / Codex が間違えない状態にします。
