@@ -19,10 +19,14 @@ MVP Phase 1 implementation may start after reading this file.
 全主要画面は横画面を正とする。
 
 ```text
-base canvas: 844x390 landscape
+base design reference: 844x390 landscape
 main screens: landscape-first
+actual display: responsive 100svw x 100svh in phone landscape
 portrait: rotate prompt or limited utility only
 ```
+
+844x390 は実寸固定キャンバスではなく、デザイン基準サイズとして扱う。
+スマホ横では端末画面にフィットさせ、PCでは中央ゲーム卓 + 外側補助/夜机背景で扱う。
 
 対象:
 
@@ -48,7 +52,33 @@ Dialogs
 
 Portraitでは、対戦画面・編集画面を無理に詰め込まない。
 
-## 2. Adopted Design Targets
+## 2. Crisp Responsive UI System
+
+UI実装時は、`docs/48-responsive-crisp-ui-system.md` を必ず読む。
+
+固定:
+
+```text
+844x390はデザイン基準であり、実寸固定ではない
+スマホ横は100svw x 100svhへフィット
+画面全体を transform: scale() で拡大縮小しない
+UI枠・アイコン・線はSVG優先
+絵・背景・紙質感・インク汚れは高解像度PNG/WebP
+文字は画像に焼き込まずHTML textで描画
+重要UIの寸法は整数pxへ丸める
+紙パネルや手描き縁が必要な箇所だけ9-sliceを使う
+```
+
+禁止:
+
+```text
+低解像度PNGを拡大してUIに使う
+文字入り画像を量産する
+必須操作をPC専用外側パネルへ逃がす
+札のaspect-ratioを崩す
+```
+
+## 3. Adopted Design Targets
 
 画面デザイン・UI実装の品質基準は以下。
 
@@ -68,7 +98,7 @@ docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
 
 参照画像は直接runtime素材として使わない。色、余白、紙UI、黒インク、ランタン光、情報密度の基準にする。
 
-## 3. Supported Player Counts
+## 4. Supported Player Counts
 
 3人/4人対応は、`RuleConfig.supportedPlayerCounts` で持つ。
 
@@ -102,7 +132,7 @@ supportedPlayerCounts: [3, 4]
 
 `minPlayers` / `maxPlayers` はMVPでは使わない。
 
-## 4. Score Bonus Is Separate From Role
+## 5. Score Bonus Is Separate From Role
 
 MVPでは `score_bonus` を `Role.kind` に入れない。
 
@@ -141,7 +171,7 @@ type DeckVariant = {
 };
 ```
 
-## 5. Ron / Tsumo Candidate Rule
+## 6. Ron / Tsumo Candidate Rule
 
 ロン/ツモ候補にするのは `Role.kind = 'win_role'` だけ。
 
@@ -160,7 +190,7 @@ scoreBonusだけで勝利
 scoreBonusをロン候補にする
 ```
 
-## 6. Implementation Order
+## 7. Implementation Order
 
 最初にUIへ入らない。
 
@@ -170,10 +200,10 @@ Phase 2: domain types / Zod schema / animal starter parse test
 Phase 3: role evaluation / wildcard assignment / scoring / deck validation
 Phase 4: match flow / CPU minimum strategy
 Phase 5: localStorage / import-export
-Phase 6: landscape UI implementation based on adopted references
+Phase 6: landscape UI implementation based on adopted references and crisp responsive UI system
 ```
 
-## 7. Asset Generation Workflow
+## 8. Asset Generation Workflow
 
 UIパーツを画像生成する場合は以下を使う。
 
@@ -189,10 +219,19 @@ Pythonで緑背景を透過
 透過PNGだけ public/assets/ui/soro-pon/v1/ へ置く
 ```
 
+ただし、UI枠・アイコン・線・札枠はSVG優先。PNG/WebPは絵・背景・紙質感・インク汚れに使う。
+9-sliceは紙パネルや手描き縁を守りたい箇所だけ使う。
+
 ## Final Decision
 
 MVP実装時に迷った場合は、このファイルを優先する。
 
 ```text
 docs/47-mvp-implementation-final-gate.md
+```
+
+UIのレスポンシブ・鮮明さ・9-slice/SVG/PNG/WebP使い分けで迷った場合は、以下を優先する。
+
+```text
+docs/48-responsive-crisp-ui-system.md
 ```
