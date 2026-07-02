@@ -17,6 +17,7 @@ CLAUDE.md or CODEX.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
+docs/48-responsive-crisp-ui-system.md
 ```
 
 画面生成・UI実装を行う場合は、追加で以下を読むこと。
@@ -30,6 +31,7 @@ docs/41-vampon-in-world-game-direction.md
 docs/42-shared-vampon-source-policy.md
 docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
+docs/48-responsive-crisp-ui-system.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -141,15 +143,19 @@ docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
 `soro-pon` は **横画面固定を正** とします。
 
 ```text
-primary layout: 844x390 landscape
-web: responsive scale / adaptive layout
+primary design reference: 844x390 landscape
+actual phone landscape display: 100svw x 100svh
+web: responsive layout / adaptive layout
 portrait: rotate prompt or limited utility only
 ```
 
-- 全主要画面はまず 844x390 landscape で設計する
+- 全主要画面はまず 844x390 landscape をデザイン基準にする
+- 844x390を実寸固定キャンバスとして扱わない
+- スマホ横では画面いっぱいにフィットさせる
 - TOP / Deck / Editor / Result / Collection も landscape-first にする
 - 過去の portrait-first 方針は使わない
-- Webでは端末幅に応じて縮尺・余白・折りたたみで対応する
+- Webでは端末幅に応じて余白・折りたたみ・responsive metricsで対応する
+- 画面全体を `transform: scale()` で引き伸ばさない
 - 縦画面に対戦UIや編集UIを無理に詰め込まない
 - Portraitでは横向き案内、またはTOP/ヘルプ等の限定表示にする
 - 牌は記憶札として見せる
@@ -158,7 +164,31 @@ portrait: rotate prompt or limited utility only
 - 山は大きく出さず、残り枚数だけ小さく表示する
 - Three.jsは小さな灯り/札の浮き/インク/Result演出の補助に使う
 
-詳細は `docs/46-landscape-first-web-responsive-policy.md` と `docs/47-mvp-implementation-final-gate.md` を正とします。
+詳細は `docs/46-landscape-first-web-responsive-policy.md` / `docs/47-mvp-implementation-final-gate.md` / `docs/48-responsive-crisp-ui-system.md` を正とします。
+
+## 鮮明レスポンシブUI方針
+
+UI実装では、デザインがボケないことを重視します。
+
+```text
+UI枠 / アイコン / 線 / 札枠 = SVG優先
+絵 / 背景 / 紙質感 / インク汚れ = 高解像度PNG/WebP
+紙パネルや手描き縁 = 必要箇所だけ9-slice
+文字 = 画像に焼き込まずHTML text
+重要UI寸法 = 整数pxへ丸める
+```
+
+禁止:
+
+```text
+画面全体をtransform scaleで引き伸ばす
+低解像度PNGを拡大して使う
+文字入り画像を量産する
+必須操作をPC専用外側パネルへ逃がす
+札のaspect-ratioを崩す
+```
+
+詳細は `docs/48-responsive-crisp-ui-system.md` にまとめます。
 
 ## 実装スタック方針
 
@@ -269,9 +299,10 @@ samples/animal-starter.deck.json
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
+docs/48-responsive-crisp-ui-system.md
 ```
 
-実装開始時はこの3つを正とします。
+実装開始時はこの4つを正とします。
 
 ## ドキュメント
 
@@ -322,6 +353,7 @@ docs/47-mvp-implementation-final-gate.md
 - [Vamp-pon Reference Gate](docs/45-vampon-reference-gate.md)
 - [Landscape-first Web Responsive Policy](docs/46-landscape-first-web-responsive-policy.md)
 - [MVP Implementation Final Gate](docs/47-mvp-implementation-final-gate.md)
+- [Responsive Crisp UI System](docs/48-responsive-crisp-ui-system.md)
 
 ## 現時点でやらないこと
 
