@@ -50,6 +50,21 @@
 
 特殊役や同じキャラボーナスは、ロン候補にせず、上がった後の加点として扱います。詳細は `docs/14-role-taxonomy-and-scoring.md` にまとめます。
 
+## オールマイティ牌方針
+
+オールマイティ牌を入れます。
+
+ただし、無制限に何でも代用できるとバランスが壊れるため、以下を標準方針にします。
+
+- 基本は1役につき1枚まで
+- 手牌内のオールマイティは代用可
+- 捨てられたオールマイティでロンは原則不可
+- 特殊役の加点には使える
+- スコアボーナスには原則含めない
+- 使用した場合は結果画面に表示する
+
+詳細は `docs/15-wildcard-rules.md` にまとめます。
+
 ## 拡張ルール方針
 
 標準ルールはドンジャラ互換で固定します。
@@ -95,6 +110,7 @@ AIは、デザインを作るためにルールを変えてはいけません。
 - [Advanced Rule Modules](docs/12-advanced-rule-modules.md)
 - [Deck Variants and Balance](docs/13-deck-variants-and-balance.md)
 - [Role Taxonomy and Scoring](docs/14-role-taxonomy-and-scoring.md)
+- [Wildcard Rules](docs/15-wildcard-rules.md)
 
 ## 現時点でやらないこと
 
