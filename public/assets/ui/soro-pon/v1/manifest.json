@@ -4,6 +4,7 @@
   "assetFactory": "tools/asset-factory/soro-pon-ui/",
   "runtimeBasePath": "/assets/ui/soro-pon/v1/",
   "responsiveCrispUiPolicy": "docs/48-responsive-crisp-ui-system.md",
+  "uiQualityGate": "docs/49-ui-quality-gate-and-codex-design-rules.md",
   "categories": {
     "buttons": [],
     "tiles": [],
@@ -36,6 +37,10 @@
     "textMustBeHtmlTextNotBakedIntoImages": true,
     "roundImportantUiMetricsToIntegerPixels": true,
     "noGlobalTransformScaleForWholeGame": true,
+    "codexMustNotInventDesign": true,
+    "mustUseTokensAndSharedComponents": true,
+    "requiresComponentGalleryBeforeScreens": true,
+    "noScreenSpecificButtonsOrPanels": true,
     "noExistingIpAssets": true,
     "noRawGreenImages": true,
     "noLowResolutionRasterUpscaling": true
