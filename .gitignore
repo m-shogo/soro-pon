@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+build/
+coverage/
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# local-only deck fixtures
+# Existing IP or personal test decks must never be committed.
+dev-fixtures/ip-local/
+*.ip-local.json
+*.local-deck.json
+*.local-fixture.json
+
+# local image overrides
+.local-images/
+*.local-image-map.json
