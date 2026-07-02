@@ -32,37 +32,44 @@
 19. `docs/17-screen-actions-and-requirements.md`
 20. `docs/18-mvp-readiness-checklist.md`
 21. `docs/19-fixed-mvp-decisions.md`
+22. `docs/20-extended-role-span-and-db-policy.md`
+23. `docs/21-remaining-spec-gaps-and-next-decisions.md`
+24. `docs/22-wildcard-ux-and-mahjong-feel.md`
+25. `docs/23-deck-editor-ux-and-category-colors.md`
+26. `docs/24-scoring-and-payment.md`
+27. `docs/25-role-evaluation-engine.md`
+28. `docs/26-deck-validation-and-balance-rules.md`
+29. `docs/27-cpu-minimum-strategy-and-match-flow.md`
+30. `docs/28-release-safety-checklist.md`
 
 ## Absolute Rules
 
 - 旧repoを参考にしない
 - 既存コードを移植しない
-- 既存IPデータをrepoに入れない
-- `src/`, `public/`, `docs/`, `README` に既存IP名を入れない
 - 共有JSONに画像情報を入れない
 - 画像付き共有を作らない
 - 3〜4人用を前提にする
 - 2人戦を作らない
 - 最終ルールはドンジャラと同じ構造にする
 - 通常手牌8枚、引いた後9枚、あがり形は3枚セット×3組
-- 拡張ルールは最初から型で考慮してよいが、MVP対局UIには勝手に入れない
+- 拡張ルールは型で考慮してよいが、MVP対局UIには勝手に入れない
 - 2枚役はツモ/ロン可能だが、ポンは作らない
 - ポン、カン、チーを作らない
 - デッキ入口は1つにし、通常版/拡張版は同じDeckProject内のvariantとして扱う
 - 通常版/拡張版が両方ある場合はワンクリックで切り替え可能にする
-- 拡張ルール用デッキは通常版から同じDeckProject内に作成する
 - ロン/ツモ判定は上がり役だけを対象にする
 - 特殊役とスコアボーナスはロン候補にしない
-- 同じキャラボーナスは上がった後の加点として扱う
 - オールマイティ牌は入れるが無制限にしない
 - オールマイティは基本1役につき1枚まで
 - 捨てられたオールマイティでロンは原則不可
 - オールマイティはスコアボーナスに原則含めない
+- オールマイティは基本自動割当。毎回クリック選択式にしない
 - 対戦画面はスマホ横向き前提で設計する
-- TOP/Editor/Resultは縦画面にも対応する
-- 縦向きで対戦画面を無理に作らず、横向き案内を出す
+- Deck Editorは主役級機能として扱う
+- カテゴリごとに色を持たせ、牌の外枠/帯/チップで見せる
+- 役はテンプレートとビジュアル選択で作れるようにする
+- 得点には目安と警告を出す
 - 画面やボタンを追加する場合は、先に `docs/17-screen-actions-and-requirements.md` に仕様を追記する
-- MVP実装前に `docs/19-fixed-mvp-decisions.md` を確認する
 - オンライン対戦を作らない
 - ログインを作らない
 - Supabaseを入れない
@@ -93,6 +100,9 @@ AIは、見た目や実装都合でルールを変えてはいけない。
 - 引いた後9枚
 - 9枚であがり判定
 - あがり形は3枚セット×3組
+- 拡張版は13枚手牌、引いた後14枚
+- 拡張版は2〜14枚役を扱える
+- 13枚役は余り1枚を許可できる
 - 役と得点はデッキ定義
 
 ## Deck Project Policy
@@ -120,6 +130,29 @@ score_bonus: 上がった後に加点。ツモ/ロン対象外
 
 AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない。
 
+## Scoring Policy
+
+MVP初期は勝者加点方式。
+
+```text
+ロン: winnerにtotalPoints加点。sourcePlayerIdは記録。減点なし。
+ツモ: winnerにtotalPoints加点。減点なし。
+流局: 得点変動なし。
+```
+
+将来のために `paymentRecords` は持つ。
+
+## Role Evaluation Policy
+
+```text
+1. win_roleだけで上がり判定
+2. 複数win_role成立時は points desc, span desc, definition order asc
+3. selectedWinRoleを1つ採用
+4. special_bonusを加点
+5. score_bonusを加点
+6. wildcard使用内容をResultに表示
+```
+
 ## Wildcard Policy
 
 オールマイティ牌は入れる。
@@ -128,10 +161,53 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 
 - 手牌内のオールマイティは代用可
 - 基本は1役につき1枚まで
+- 自動で一番得する使い方にする
+- 手動変更UIは内訳/検証画面のみ
 - 特殊役の加点にも使える
 - 捨てられたオールマイティでロンは原則不可
 - 同じキャラボーナスなどのスコアボーナスには原則含めない
 - 使用した場合は結果画面で表示する
+
+## Deck Editor Policy
+
+Deck Editorはこのゲームの主役級機能。
+
+- カテゴリごとに色を指定できる
+- 牌の外枠/帯/チップでカテゴリ色を見せる
+- 複数カテゴリ時はprimaryCategoryIdを優先する
+- 役はテンプレートから作れる
+- 牌を並べて役を作れる
+- 点数には目安を出す
+- 役作成時にライブテストを出す
+- かんたん/詳細モードを分ける
+
+## Validation Policy
+
+固定:
+
+```text
+総牌枚数81枚推奨
+40枚未満はError
+60枚未満はWarning
+win_role 0件はError
+win_role 3件未満はWarning
+2枚役50点超はWarning
+wildcardが総牌数15%超はWarning
+scoreBonus maxPointsなしはWarning
+```
+
+## CPU Policy
+
+MVP CPUは強くなくてよいが、完全ランダムにしない。
+
+```text
+1. あがれるならあがる
+2. ロンできるならロンする
+3. 1枚足りないwin_roleに関係する牌を残す
+4. wildcardは基本残す
+5. special_bonusだけのためには無理に残さない
+6. それ以外はランダム
+```
 
 ## Match Layout Policy
 
@@ -146,56 +222,21 @@ AIは `special_bonus` や `score_bonus` をロン候補にしてはいけない�
 - 役候補は常時大きく出さない
 - portrait時は横向き案内を出す
 
-## Screen Action Policy
+## Release Safety Policy
 
-画面やボタンを実装する時は `docs/17-screen-actions-and-requirements.md` を正とする。
+公開前にローカル検証データを削除する。
 
-- ボタンには押した時の挙動を持たせる
-- 押せない状態を明確にする
-- 危険操作は確認ダイアログを挟む
-- 対戦中にEditor/JSON共有を目立たせない
-- ResultからDeck Editorへ戻れるようにする
-- Deck EditorにはBalance Checkを持たせる
+```text
+dev-fixtures/ip-local/*.json
+dev-fixtures/ip-local/*.md
+*.ip-local.json
+*.local-deck.json
+*.local-fixture.json
+```
 
-## MVP Fixed Policy
+production buildにlocal fixtureを含めない。
 
-MVP実装前に `docs/19-fixed-mvp-decisions.md` を確認する。
-
-固定済み:
-
-- 標準総牌枚数は81枚
-- 1種類あたり3枚推奨
-- 3人戦/4人戦は同じデッキで対応
-- 複数人ロンは席順優先で1人
-- 複数win_role成立時は最高点1つ
-- CPUは最低限の役寄せ + ランダム
-- MVP初期はlocalStorage
-- 画像はMVP初期ではemoji/fallbackLabel優先
-- 公式/公開サンプルは安全テーマ
-- ローカル検証データはgit管理外
-
-## Advanced Rule Policy
-
-以下の拡張ルール案はある。
-
-- 13枚手牌 + 14枚あがり
-- 2〜14枚役
-- 2枚役はツモ/ロン可能
-- 2枚役のポンはなし
-- 同じ牌/同じキャラが多いほど得点反映
-- リーチ
-- ポンなし
-- カンなし
-- チーなし
-
-方針:
-
-- データモデルでは将来拡張に耐えるようにする
-- MVPでは `BASE_DONJARA_RULE` のみ遊べるようにする
-- 拡張ルールを勝手にUIへ出さない
-- experimentalとして明示する
-- 通常版と拡張版はvariantとして分ける
-- ユーザーには通常デッキからコピーして作れる導線を用意する
+共有JSONに画像情報を入れない。
 
 ## Implementation Priority
 
@@ -204,28 +245,16 @@ MVP実装前に `docs/19-fixed-mvp-decisions.md` を確認する。
 1. 型定義
 2. Zod schema
 3. DeckProject / variant model
-4. 3人戦/4人戦のMatchState
-5. 山生成・配牌
-6. ツモ・捨てる・ターン進行
-7. 役判定
-8. 得点計算
-9. JSON import/export
-10. Editor UI
-11. Match UI
-
-## Design Generation Priority
-
-画面デザイン生成時はこの順番。
-
-1. `docs/02-game-rules.md` でルールを確認
-2. `docs/03-data-model.md` で必要データを確認
-3. `docs/10-screen-design-spec.md` で画面要件を確認
-4. `docs/16-match-layout-orientation.md` で対戦画面の向きを確認
-5. `docs/17-screen-actions-and-requirements.md` で必要ボタンと挙動を確認
-6. `docs/19-fixed-mvp-decisions.md` でMVP固定判断を確認
-7. `docs/11-design-generation-prompt.md` の対象画面プロンプトを使う
-
-デザイン生成時も、ルールを変えない。
+4. Role evaluation engine
+5. Scoring and MatchResult
+6. Deck validation
+7. 3人戦/4人戦のMatchState
+8. 山生成・配牌
+9. ツモ・捨てる・ターン進行
+10. CPU minimum strategy
+11. JSON import/export
+12. Deck Editor UI
+13. Match UI
 
 ## Commit Policy
 
@@ -236,22 +265,13 @@ MVP実装前に `docs/19-fixed-mvp-decisions.md` を確認する。
 - 実装前に短い計画を出す
 - 作業後に変更内容・検証結果・次の作業を報告する
 
-## Local-only Fixtures
-
-ローカル検証用データは以下に置いてよいが、commit禁止。
-
-```text
-dev-fixtures/ip-local/
-*.ip-local.json
-```
-
-このデータはgit管理しない。
-
 ## Shared JSON Rule
 
 共有JSONに入れてよい。
 
 - deck name
+- category definitions
+- category colors
 - tile definitions
 - categories
 - emoji
