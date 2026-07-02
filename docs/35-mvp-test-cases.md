@@ -6,6 +6,19 @@ MVP実装時に必ず通すテストケースを固定する。
 
 テストはUIより先に、domain / schema / engine を中心に作る。
 
+## Final Gate Alignment
+
+このファイルは `docs/47-mvp-implementation-final-gate.md` と整合する。
+
+固定:
+
+```text
+全主要画面は landscape-first
+RuleConfig.supportedPlayerCounts で3/4人対応を表す
+Role.kind は win_role / special_bonus のみ
+score_bonus は Role.kind に入れず ScoreBonus[] で扱う
+```
+
 ## Test Stack
 
 ```text
@@ -45,6 +58,12 @@ externalAssetUrl field fails
 ### RuleConfig
 
 ```text
+supportedPlayerCounts [3] passes
+supportedPlayerCounts [4] passes
+supportedPlayerCounts [3,4] passes
+supportedPlayerCounts [] fails
+supportedPlayerCounts [2] fails
+supportedPlayerCounts [3,4,2] fails
 allowPon true fails
 allowKan true fails
 allowChi true fails
@@ -58,12 +77,23 @@ roleSpanMin > roleSpanMax fails
 ```text
 win_role canTsumo true passes
 win_role canRon true passes
+win_role with both canTsumo/canRon false fails
 special_bonus canTsumo true fails
 special_bonus canRon true fails
-score_bonus canTsumo true fails
-score_bonus canRon true fails
+Role.kind score_bonus fails
 span below roleSpanMin warning/error by validation
 span above roleSpanMax warning/error by validation
+```
+
+### ScoreBonus
+
+```text
+ScoreBonus duplicate_tile passes
+ScoreBonus duplicate_name passes
+ScoreBonus duplicate_category passes
+ScoreBonus minCount below 2 fails
+ScoreBonus maxPoints missing is warning by validation
+ScoreBonus allowWildcard true is warning by validation
 ```
 
 ## Role Evaluation Tests
@@ -96,13 +126,13 @@ special_bonusだけではcanWin=false
 special_bonusはロン候補にならない
 ```
 
-### Score Bonus
+### ScoreBonus
 
 ```text
 同じ牌3枚で duplicate_tile bonus 加点
 wildcardはduplicate_tile bonusに含めない
-score_bonusだけではcanWin=false
-score_bonusはロン候補にならない
+ScoreBonus[]だけではcanWin=false
+ScoreBonus[]はロン候補にならない
 ```
 
 ## Wildcard Tests
@@ -111,7 +141,7 @@ score_bonusはロン候補にならない
 star can complete win_role in hand
 star can complete special_bonus
 star cannot trigger ron when discarded
-star does not count for score_bonus
+star does not count for scoreBonus
 maxUsePerRole 1 respected
 wildcardAssignments contains usedAsTileId or usedAsCategory
 Result displays wildcard assignment
@@ -150,8 +180,13 @@ draw has paymentRecords empty
 総牌枚数81枚 is OK
 総牌枚数60未満 warning
 総牌枚数40未満 error
+supportedPlayerCounts [3,4] OK
+supportedPlayerCounts empty error
+supportedPlayerCounts includes 2 error
+2人戦開始 error
 win_role 0件 error
 win_role 1〜2件 warning
+Role.kind score_bonus error
 2枚役50点超 warning
 3枚役100点超 warning
 14枚役200点未満 warning
@@ -164,6 +199,9 @@ similar category colors warning
 ## Match Flow Tests
 
 ```text
+setup rejects 2 players
+setup allows 3 players when supportedPlayerCounts includes 3
+setup allows 4 players when supportedPlayerCounts includes 4
 setup deals handSizeNormal tiles to each player
 draw phase draws one tile
 human discard requires selectedTileInstanceId
@@ -194,6 +232,7 @@ first win unlocks achievement
 ron win unlocks ron achievement
 tsumo win unlocks tsumo achievement
 first role achievement creates RoleCollectionEntry
+first scoreBonus achievement creates RoleCollectionEntry with kind score_bonus
 bestPoints updates when higher result achieved
 ResultAlbum keeps Top 10 by points
 cosmetic unlock does not affect match strength
@@ -204,10 +243,12 @@ cosmetic unlock does not affect match strength
 ```text
 exported JSON excludes local image overrides
 exported JSON includes category colors
+exported JSON includes supportedPlayerCounts
 exported JSON includes roles and scoreBonuses
 import exported animal starter passes
 import JSON with imageUrl fails
 import JSON with allowPon true fails
+import JSON with Role.kind score_bonus fails
 ```
 
 ## UI Smoke Tests
@@ -216,15 +257,20 @@ MVPで最低限手動確認する。
 
 ```text
 TOP shows まず遊ぶ / デッキ一覧 / デッキを作る / JSONを読み込む
+TOP is landscape-first
 Deck List shows 動物スターター
 Deck Detail switches 通常版/拡張版
 Deck Editor shows category colors
+Deck Editor is landscape-first
 Tile card border uses category color
-Role Builder can create role from selected tiles
+Role Builder can create win_role from selected tiles
+Special Bonus Editor creates special_bonus only
+Score Bonus Editor creates ScoreBonus[] only
 Balance Check shows warnings
 Match portrait shows rotate prompt
 Match landscape shows hand/discards/actions
 Result shows role breakdown, coins, collection progress
+Collection is landscape-first
 ```
 
 ## Final Decision
@@ -232,4 +278,5 @@ Result shows role breakdown, coins, collection progress
 - 先にschema/engine testsを作る
 - UIはsmoke testで確認する
 - animal-starter.deck.jsonは常にparse test対象
-- wildcard / special_bonus / 13枚役 / release safetyは必須テストにする
+- wildcard / special_bonus / ScoreBonus[] / 13枚役 / release safetyは必須テストにする
+- supportedPlayerCounts / 2人戦拒否は必須テストにする
