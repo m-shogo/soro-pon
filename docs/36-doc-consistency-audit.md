@@ -7,15 +7,10 @@ README / AGENTS / CLAUDE / CODEX / docs の正本関係を固定し、古い情�
 ## Current Status
 
 ```text
-MVP実装準備完了
+MVP Phase 1 実装開始可能
 ```
 
-実装入口は以下。
-
-```text
-docs/34-mvp-implementation-prompt.md
-docs/35-mvp-test-cases.md
-```
+最初はUIではなく、domain / schema / engine / tests から進める。
 
 ## Canonical Sources
 
@@ -45,6 +40,14 @@ docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
 ```
 
+### Final gate
+
+```text
+docs/47-mvp-implementation-final-gate.md
+```
+
+古いdocsと迷った場合は `docs/47-mvp-implementation-final-gate.md` を優先する。
+
 ### Data model
 
 ```text
@@ -62,6 +65,12 @@ docs/32-zod-schema-spec.md
 ```text
 samples/animal-starter.deck.json
 docs/33-official-animal-starter-deck.md
+```
+
+### Adopted UI target
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
 ```
 
 ## Deprecated / Resolved Docs
@@ -97,6 +106,26 @@ TanStack Query
 Tailwind
 ```
 
+## Final Data-model Fixes
+
+実装前に以下を固定済み。
+
+```text
+RuleConfig.supportedPlayerCounts で 3/4 人対応を表す
+minPlayers / maxPlayers はMVPでは使わない
+Role.kind は win_role / special_bonus のみ
+score_bonus は Role.kind に入れず ScoreBonus[] で扱う
+```
+
+## Final Orientation Fixes
+
+```text
+All main screens: 844x390 landscape-first
+Portrait: rotate prompt or limited utility only
+```
+
+`TOP/Editor/Resultは縦画面にも対応` のような古い方針は使わない。
+
 ## Safety Fixes Applied
 
 public repoに残すべきでない一時IP fixtureを削除済み。
@@ -116,12 +145,13 @@ dev-fixtures/ip-local/*.json
 
 ```text
 1. 詳細docs
-2. docs/03-data-model.md または docs/32-zod-schema-spec.md が関係するなら更新
-3. docs/34-mvp-implementation-prompt.md が関係するなら更新
-4. docs/35-mvp-test-cases.md が関係するなら更新
-5. README.md
-6. AGENTS.md
-7. CLAUDE.md / CODEX.md が関係するなら更新
+2. docs/47-mvp-implementation-final-gate.md に関わるなら更新
+3. docs/03-data-model.md または docs/32-zod-schema-spec.md が関係するなら更新
+4. docs/34-mvp-implementation-prompt.md が関係するなら更新
+5. docs/35-mvp-test-cases.md が関係するなら更新
+6. README.md
+7. AGENTS.md
+8. CLAUDE.md / CODEX.md が関係するなら更新
 ```
 
 ## Do Not Duplicate Full Specs
@@ -139,14 +169,15 @@ dev-fixtures/ip-local/*.json
 実装開始前に確認する。
 
 ```text
-READMEがMVP実装準備完了になっている
-AGENTSのMust Readにdocs/34/docs/35が入っている
-CLAUDE.mdがdocs/34/docs/35へ誘導している
-CODEX.mdがdocs/34/docs/35へ誘導している
+READMEがMVP Phase 1実装開始可能になっている
+AGENTSのMust Readにdocs/47が入っている
+CLAUDE.mdがdocs/47へ誘導している
+CODEX.mdがdocs/47へ誘導している
 docs/08がdeprecated redirectになっている
 docs/21がresolved memoになっている
 local IP fixtureが残っていない
 samples/animal-starter.deck.json が公式サンプルになっている
+animal-starter の ruleConfig に supportedPlayerCounts がある
 ```
 
 ## Final Decision
@@ -161,4 +192,5 @@ AGENTS.md
 CLAUDE.md or CODEX.md
 docs/34-mvp-implementation-prompt.md
 docs/35-mvp-test-cases.md
+docs/47-mvp-implementation-final-gate.md
 ```
