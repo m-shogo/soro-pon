@@ -14,6 +14,7 @@ docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 ```
 
 画面/UI/世界観を扱う場合は追加で必ず読む。
@@ -26,6 +27,7 @@ docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -89,6 +91,20 @@ Component Galleryを先に作る
 UI変更時は指定サイズでスクリーンショット確認する
 ```
 
+## Pro UI Production Quality
+
+UIを完成扱いする前に `docs/50-pro-ui-production-quality-checklist.md` を正とする。
+
+```text
+主要componentはstate matrixを持つ
+motion / animationは意味がある場所だけに使う
+typographyは分類とtokensで管理する
+touch target / focus-visibleを守る
+compact / normal / wide / desktopのdensity modeを考慮する
+performance budgetを守る
+polish pass checklistを通す
+```
+
 ## Role
 
 Claude Codeは、主に以下を担当する。
@@ -131,6 +147,11 @@ tokens.css以外へ新しい色を勝手に追加しない
 画面ごとの独自ボタン/独自パネルを作らない
 UIはprimitives/components経由で実装する
 Component Galleryを先に作る
+主要componentはstate matrixを持つ
+motion / animationは意味がある場所だけに使う
+typographyは分類とtokensで管理する
+touch target / focus-visibleを守る
+density modeとperformance budgetを守る
 縦画面に本UIを無理に詰めない
 Vamp-pon側は読み取り専用
 世界観を扱う時はVamp-pon shared master indexを読む
@@ -180,10 +201,11 @@ Tailwind
 12. CPU minimum strategy
 13. localStorage
 14. JSON import/export
-15. UI foundation: tokens / primitives / responsive metrics / Component Gallery
+15. UI foundation: tokens / primitives / responsive metrics / Component Gallery / state matrix
 16. Deck Editor UI
 17. Match UI
 18. Result / Collection UI
+19. screenshot review / polish pass / performance check
 ```
 
 ## Validation
@@ -197,7 +219,7 @@ npm run build
 
 まだscriptが存在しない段階では、その理由と次に追加するscriptを報告する。
 
-UI変更時は `docs/49-ui-quality-gate-and-codex-design-rules.md` のスクリーンショット確認サイズも報告する。
+UI変更時は `docs/49-ui-quality-gate-and-codex-design-rules.md` と `docs/50-pro-ui-production-quality-checklist.md` のスクリーンショット確認・polish項目も報告する。
 
 ## Reporting
 
