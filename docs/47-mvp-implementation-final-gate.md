@@ -105,7 +105,35 @@ Tailwind demo風
 角丸/影/余白が画面ごとに違うUI
 ```
 
-## 4. Adopted Design Targets
+## 4. Pro UI Production Quality Checklist
+
+UIを「完成」と呼ぶ前に、`docs/50-pro-ui-production-quality-checklist.md` を必ず読む。
+
+固定:
+
+```text
+主要componentはstate matrixを持つ
+motion / animationは意味がある場所だけに使う
+typographyは分類とtokensで管理する
+touch target / focus-visibleを守る
+compact / normal / wide / desktop のdensity modeを考慮する
+UI変更時は指定5サイズでscreenshot reviewする
+performance budgetを守る
+polish pass checklistを通す
+```
+
+禁止:
+
+```text
+状態差分を色だけで表す
+全ボタンを常時発光させる
+文字サイズ/影/角丸を画面ごとに直書きする
+focus-visibleを消す
+compactで手牌/捨て牌/主要操作を削る
+重いblur/glow/常時パーティクルを増やす
+```
+
+## 5. Adopted Design Targets
 
 画面デザイン・UI実装の品質基準は以下。
 
@@ -125,7 +153,7 @@ docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
 
 参照画像は直接runtime素材として使わない。色、余白、紙UI、黒インク、ランタン光、情報密度の基準にする。
 
-## 5. Supported Player Counts
+## 6. Supported Player Counts
 
 3人/4人対応は、`RuleConfig.supportedPlayerCounts` で持つ。
 
@@ -159,7 +187,7 @@ supportedPlayerCounts: [3, 4]
 
 `minPlayers` / `maxPlayers` はMVPでは使わない。
 
-## 6. Score Bonus Is Separate From Role
+## 7. Score Bonus Is Separate From Role
 
 MVPでは `score_bonus` を `Role.kind` に入れない。
 
@@ -198,7 +226,7 @@ type DeckVariant = {
 };
 ```
 
-## 7. Ron / Tsumo Candidate Rule
+## 8. Ron / Tsumo Candidate Rule
 
 ロン/ツモ候補にするのは `Role.kind = 'win_role'` だけ。
 
@@ -217,7 +245,7 @@ scoreBonusだけで勝利
 scoreBonusをロン候補にする
 ```
 
-## 8. Implementation Order
+## 9. Implementation Order
 
 最初にUIへ入らない。
 
@@ -227,11 +255,12 @@ Phase 2: domain types / Zod schema / animal starter parse test
 Phase 3: role evaluation / wildcard assignment / scoring / deck validation
 Phase 4: match flow / CPU minimum strategy
 Phase 5: localStorage / import-export
-Phase 6: UI foundation: tokens / primitives / Component Gallery / responsive metrics
-Phase 7: landscape UI implementation based on adopted references, crisp responsive UI system, and UI quality gate
+Phase 6: UI foundation: tokens / primitives / Component Gallery / responsive metrics / state matrix
+Phase 7: landscape UI implementation based on adopted references, crisp responsive UI system, UI quality gate, and pro production checklist
+Phase 8: screenshot review / polish pass / performance check
 ```
 
-## 9. Asset Generation Workflow
+## 10. Asset Generation Workflow
 
 UIパーツを画像生成する場合は以下を使う。
 
@@ -268,4 +297,10 @@ UI品質・Codexのデザイン境界・ダサくならないための実装制�
 
 ```text
 docs/49-ui-quality-gate-and-codex-design-rules.md
+```
+
+UIの状態・motion・typography・touch target・density・performance・polishで迷った場合は、以下を優先する。
+
+```text
+docs/50-pro-ui-production-quality-checklist.md
 ```
