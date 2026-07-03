@@ -24,6 +24,7 @@ docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 ```
 
 画面生成・UI実装時の正本。
@@ -41,6 +42,7 @@ docs/46-landscape-first-web-responsive-policy.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -142,6 +144,33 @@ Tailwind demo風
 角丸/影/余白が画面ごとに違うUI
 ```
 
+## Pro UI Production Quality Gate
+
+UIを完成扱いする前に `docs/50-pro-ui-production-quality-checklist.md` を必ず守る。
+
+固定:
+
+```text
+主要componentはstate matrixを持つ
+motion / animationは意味がある場所だけに使う
+typographyは分類とtokensで管理する
+touch target / focus-visibleを守る
+compact / normal / wide / desktop のdensity modeを考慮する
+performance budgetを守る
+polish pass checklistを通す
+```
+
+禁止:
+
+```text
+状態差分を色だけで表す
+全ボタンを常時発光させる
+文字サイズ/影/角丸を画面ごとに直書きする
+focus-visibleを消す
+compactで手牌/捨て牌/主要操作を削る
+重いblur/glow/常時パーティクルを増やす
+```
+
 ## Adopted Design Target
 
 UI品質基準。
@@ -222,6 +251,7 @@ Vamp-ponキャラを画像生成・画面デザイン・対戦相手アバター
 30. `docs/47-mvp-implementation-final-gate.md`
 31. `docs/48-responsive-crisp-ui-system.md`
 32. `docs/49-ui-quality-gate-and-codex-design-rules.md`
+33. `docs/50-pro-ui-production-quality-checklist.md`
 
 ## Deprecated / History Only
 
@@ -276,6 +306,13 @@ docs/21-remaining-spec-gaps-and-next-decisions.md
 - 画面ごとの独自ボタン/独自パネルを作らない
 - UIはprimitives/components経由で実装する
 - Component Galleryを先に作る
+- 主要componentはstate matrixを持つ
+- motion / animationは意味がある場所だけに使う
+- typographyは分類とtokensで管理する
+- touch target / focus-visibleを守る
+- compact / normal / wide / desktop のdensity modeを考慮する
+- performance budgetを守る
+- polish pass checklistを通す
 - UI変更時は指定サイズでスクリーンショット確認する
 - TOP/Deck/Editor/Result/Collectionもportrait-firstにしない
 - 縦画面に本UIを無理に詰めず、rotate promptまたは限定utilityにする
@@ -344,10 +381,11 @@ Visual keywords:
 12. CPU minimum strategy
 13. localStorage
 14. JSON import/export
-15. UI foundation: tokens / primitives / responsive metrics / Component Gallery
+15. UI foundation: tokens / primitives / responsive metrics / Component Gallery / state matrix
 16. Deck Editor UI
 17. Match UI
 18. Result / Collection UI
+19. screenshot review / polish pass / performance check
 
 ## Test Policy
 
