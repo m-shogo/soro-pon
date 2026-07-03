@@ -19,6 +19,7 @@ docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 ```
 
 画面生成・UI実装を行う場合は、追加で以下を読むこと。
@@ -34,6 +35,7 @@ docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -219,6 +221,33 @@ Tailwind demo風
 
 詳細は `docs/49-ui-quality-gate-and-codex-design-rules.md` にまとめます。
 
+## プロUI量産品質チェック
+
+UIを完成扱いする前に、状態・動き・文字・操作性・密度・性能・磨き込みを確認します。
+
+```text
+主要componentはstate matrixを持つ
+motion / animationは意味がある場所だけに使う
+typographyは分類とtokensで管理する
+touch target / focus-visibleを守る
+compact / normal / wide / desktop のdensity modeを考慮する
+performance budgetを守る
+polish pass checklistを通す
+```
+
+禁止:
+
+```text
+状態差分を色だけで表す
+全ボタンを常時発光させる
+文字サイズ/影/角丸を画面ごとに直書きする
+focus-visibleを消す
+compactで手牌/捨て牌/主要操作を削る
+重いblur/glow/常時パーティクルを増やす
+```
+
+詳細は `docs/50-pro-ui-production-quality-checklist.md` にまとめます。
+
 ## 実装スタック方針
 
 MVPは以下で固定します。
@@ -330,9 +359,10 @@ docs/35-mvp-test-cases.md
 docs/47-mvp-implementation-final-gate.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 ```
 
-実装開始時はこの5つを正とします。
+実装開始時はこの6つを正とします。
 
 ## ドキュメント
 
@@ -385,6 +415,7 @@ docs/49-ui-quality-gate-and-codex-design-rules.md
 - [MVP Implementation Final Gate](docs/47-mvp-implementation-final-gate.md)
 - [Responsive Crisp UI System](docs/48-responsive-crisp-ui-system.md)
 - [UI Quality Gate and Codex Design Rules](docs/49-ui-quality-gate-and-codex-design-rules.md)
+- [Pro UI Production Quality Checklist](docs/50-pro-ui-production-quality-checklist.md)
 
 ## 現時点でやらないこと
 
