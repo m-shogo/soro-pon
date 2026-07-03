@@ -32,6 +32,7 @@ docs/45-vampon-reference-gate.md
 docs/46-landscape-first-web-responsive-policy.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
@@ -96,6 +97,20 @@ UIはprimitives/components経由で実装する
 Component Galleryを先に作る
 ```
 
+## Pro UI Production Quality Rule
+
+画面生成・UI分解・UI実装では、`docs/50-pro-ui-production-quality-checklist.md` も正とする。
+
+```text
+主要componentはstate matrixを持つ
+motion / animationは意味がある場所だけに使う
+typographyは分類とtokensで管理する
+touch target / focus-visibleを守る
+compact / normal / wide / desktop のdensity modeを考慮する
+performance budgetを守る
+polish pass checklistを通す
+```
+
 ## Required Screens
 
 ### Landscape-first 844x390 Design Reference
@@ -142,6 +157,8 @@ Component Galleryを先に作る
 34 9-slice Paper Panel Sheet
 35 Texture / Ink / Lantern Overlay Sheet
 36 Component Gallery Reference Sheet
+37 State Matrix Sheet
+38 Motion / Typography / Density Sheet
 ```
 
 ## Generation Order
@@ -168,6 +185,8 @@ SVG Frame / Icon Sheet
 9-slice Paper Panel Sheet
 Texture / Ink / Lantern Overlay Sheet
 Component Gallery Reference Sheet
+State Matrix Sheet
+Motion / Typography / Density Sheet
 ```
 
 確認ポイント:
@@ -182,6 +201,7 @@ SVG化できる枠/アイコン/線が分かる
 9-sliceにすべき紙パネルが分かる
 PNG/WebPにすべき質感素材が分かる
 画面ごとの独自部品ではなく共通Component化できる
+状態差分/motion/typography/densityが説明できる
 ```
 
 ## Batch 2: Entry Screens
@@ -312,6 +332,9 @@ PNG/WebP素材候補
 整数pxで管理すべきUI寸法
 tokensに追加が必要なもの
 Component Galleryに追加すべきもの
+state matrix
+motion / typography / density notes
+performance / polish notes
 ```
 
 ## Design Review Checklist
@@ -330,6 +353,7 @@ Vamp-pon世界内の遊びに見えるか
 SVG/9-slice/PNG/WebPの分解方針が見えるか
 画面ごとの独自デザインを作っていないか
 白い汎用WebアプリUIへ寄っていないか
+state / motion / typography / densityが説明できるか
 ```
 
 ## Final Gate Before Implementation
@@ -344,6 +368,7 @@ Deck Editorが横画面で作りやすそうに見える
 Web responsive方針が見える
 SVG/9-slice/PNG/WebPの使い分けが見える
 Component Galleryで共通部品として確認できる
+state matrix / motion / typography / density 方針が見える
 ```
 
 ## Final Decision
@@ -354,3 +379,4 @@ Component Galleryで共通部品として確認できる
 
 UI実装の鮮明さ・レスポンシブ・素材形式の判断は `docs/48-responsive-crisp-ui-system.md` を正とする。
 UI品質・Codexのデザイン境界・ダサくならないための実装制約は `docs/49-ui-quality-gate-and-codex-design-rules.md` を正とする。
+UIの状態・motion・typography・touch target・density・performance・polishは `docs/50-pro-ui-production-quality-checklist.md` を正とする。
