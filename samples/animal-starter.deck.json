@@ -70,6 +70,16 @@
         "allowKan": false,
         "allowChi": false
       },
+      "scoreBudget": {
+        "expectedBaseMin": 30,
+        "expectedBaseMax": 130,
+        "expectedResultMin": 40,
+        "expectedResultMax": 220,
+        "softResultCap": 300,
+        "hardResultCap": 500,
+        "maxSpecialBonusTotal": 80,
+        "maxScoreBonusTotal": 60
+      },
       "winRoles": [
         { "id": "win_mammal_three_groups", "name": "どうぶつ王国", "kind": "win_role", "family": "groupPattern", "basePoints": 80, "requiredGroups": [{ "groupType": "sameCategory", "categoryId": "mammal", "count": 3 }], "allowWildcard": true, "maxWildcards": 1, "priority": 10, "explanation": "哺乳類の3枚グループを3組そろえる。", "canTsumo": true, "canRon": true },
         { "id": "win_sea_three_groups", "name": "海のパレード", "kind": "win_role", "family": "groupPattern", "basePoints": 90, "requiredGroups": [{ "groupType": "sameCategory", "categoryId": "sea", "count": 3 }], "allowWildcard": true, "maxWildcards": 1, "priority": 20, "explanation": "海の生き物の3枚グループを3組そろえる。", "canTsumo": true, "canRon": true },
@@ -107,6 +117,16 @@
         "allowWildcard": true,
         "allowKan": false,
         "allowChi": false
+      },
+      "scoreBudget": {
+        "expectedBaseMin": 50,
+        "expectedBaseMax": 220,
+        "expectedResultMin": 70,
+        "expectedResultMax": 350,
+        "softResultCap": 500,
+        "hardResultCap": 800,
+        "maxSpecialBonusTotal": 120,
+        "maxScoreBonusTotal": 100
       },
       "winRoles": [],
       "specialBonuses": [],
