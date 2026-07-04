@@ -40,7 +40,7 @@
     { "id": "frog", "name": "カエル", "categories": ["forest", "cute"], "primaryCategoryId": "forest", "emoji": "🐸", "fallbackLabel": "カ", "count": 3 },
     { "id": "butterfly", "name": "チョウ", "categories": ["insect", "cute"], "primaryCategoryId": "insect", "emoji": "🦋", "fallbackLabel": "チ", "count": 3 },
     { "id": "bee", "name": "ハチ", "categories": ["insect", "speed"], "primaryCategoryId": "insect", "emoji": "🐝", "fallbackLabel": "ハ", "count": 3 },
-    { "id": "ladybug", "name": "テントウムシ", "categories": ["insect", "cute"], "primaryCategoryId": "insect", "emoji": "テ", "fallbackLabel": "テ", "count": 3 },
+    { "id": "ladybug", "name": "テントウムシ", "categories": ["insect", "cute"], "primaryCategoryId": "insect", "emoji": "🐞", "fallbackLabel": "テ", "count": 3 },
     { "id": "ant", "name": "アリ", "categories": ["insect", "strong"], "primaryCategoryId": "insect", "emoji": "🐜", "fallbackLabel": "ア", "count": 3 },
     { "id": "fox", "name": "キツネ", "categories": ["mammal", "forest", "speed"], "primaryCategoryId": "mammal", "emoji": "🦊", "fallbackLabel": "キ", "count": 3 },
     { "id": "wolf", "name": "オオカミ", "categories": ["mammal", "forest", "strong"], "primaryCategoryId": "mammal", "emoji": "🐺", "fallbackLabel": "オ", "count": 3 },
