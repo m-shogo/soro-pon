@@ -43,6 +43,7 @@ Claude Code / Codex / Cursor にMVP実装を依頼するためのプロンプト
 - docs/50-pro-ui-production-quality-checklist.md
 - docs/51-role-analysis-and-game-feel-ux.md
 - docs/52-role-analysis-test-minimum.md
+- docs/53-discard-insight-and-beginner-ux.md
 
 画面/UI実装に入る場合は、追加で以下を必ず参照してください。
 
@@ -92,7 +93,10 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 - 手札の並び順は役判定に影響させない
 - ユーザーの狙いを1つに決め打ちしない
 - 候補は全探索し completed / tenpai / near / bonusOnly / invalidButExplainable に分類する
-- UIは「狙っています」と断定しない
+- InsightEngine は盤面事実だけを返し、プレイ指示をしない
+- 捨て牌プレビューは候補維持/破壊/改善を表示し、状態を変更しない
+- 初心者モードは表示モードであり、別ルールにしない
+- UIは「狙っています」「これを捨てるべき」と断定しない
 - 共有JSONに画像情報を入れない
 - 既存IPデータをsrc/public/docs/README/公式サンプル/公式スクショへ入れない
 - 全主要画面は 844x390 landscape-first をデザイン基準にする
@@ -132,19 +136,20 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 8. scoring / MatchResult
 9. deck validation
 10. role analysis: HandAnalyzer / WaitAnalyzer / IntentRanker / ExplainEngine / HandSorter
-11. progression model
-12. match flow
-13. CPU minimum strategy
-14. localStorage保存
-15. JSON import/export
-16. UI foundation: tokens / primitives / responsive metrics / Component Gallery / state matrix
-17. Deck List / Deck Detail
-18. Deck Editor 最小版
-19. Match Setup
-20. Match Landscape UI
-21. Result UI
-22. Collection / Clear Board 最小版
-23. screenshot review / polish pass / performance check
+11. insight analysis: InsightEngine / discard preview / beginner display facts
+12. progression model
+13. match flow
+14. CPU minimum strategy
+15. localStorage保存
+16. JSON import/export
+17. UI foundation: tokens / primitives / responsive metrics / Component Gallery / state matrix
+18. Deck List / Deck Detail
+19. Deck Editor 最小版
+20. Match Setup
+21. Match Landscape UI
+22. Result UI
+23. Collection / Clear Board 最小版
+24. screenshot review / polish pass / performance check
 
 コミット方針:
 
@@ -173,6 +178,8 @@ Phase 2:
 - wait analysis
 - explanation payloads
 - hand sorting proposal
+- insight engine
+- discard preview facts
 - test cases
 
 Phase 3:
@@ -219,6 +226,9 @@ Phase 6:
 - candidate state が completed / tenpai / near / bonusOnly / invalidButExplainable に分かれる
 - WaitAnalyzer が具体的な不足条件を返す
 - ExplainEngine が成立理由/未成立理由を返す
+- InsightEngine がプレイ指示ではなく盤面事実を返す
+- 捨て牌プレビューが状態を変更しない
+- 初心者モードが表示量だけを制御し、ルールを変えない
 - shared JSONに画像fieldが入っていたら拒否する
 - supportedPlayerCounts が [3, 4] でparseできる
 - 2人戦を開始できない
@@ -247,3 +257,5 @@ UI品質・Codexのデザイン境界・ダサくならないための実装制�
 UIの状態・motion・typography・touch target・density・performance・polishで迷った場合は `docs/50-pro-ui-production-quality-checklist.md` を優先する。
 
 役解析・待ち表示・オールマイティ・候補ランキング・手札整理・説明UXで迷った場合は `docs/51-role-analysis-and-game-feel-ux.md` と `docs/52-role-analysis-test-minimum.md` を優先する。
+
+捨て牌UX・盤面インサイト・初心者モード・情報圧縮で迷った場合は `docs/53-discard-insight-and-beginner-ux.md` を優先する。
