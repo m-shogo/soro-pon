@@ -41,6 +41,8 @@ Claude Code / Codex / Cursor にMVP実装を依頼するためのプロンプト
 - docs/48-responsive-crisp-ui-system.md
 - docs/49-ui-quality-gate-and-codex-design-rules.md
 - docs/50-pro-ui-production-quality-checklist.md
+- docs/51-role-analysis-and-game-feel-ux.md
+- docs/52-role-analysis-test-minimum.md
 
 画面/UI実装に入る場合は、追加で以下を必ず参照してください。
 
@@ -84,7 +86,13 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 - ロン/ツモ判定はwin_roleのみ
 - special_bonusとscoreBonusesはロン候補にしない
 - オールマイティは基本自動割当
+- オールマイティは候補ごとに別々に解析する
+- MVP標準では1つのwin_roleに使えるオールマイティは最大1枚
 - 捨てられたオールマイティでロンは原則不可
+- 手札の並び順は役判定に影響させない
+- ユーザーの狙いを1つに決め打ちしない
+- 候補は全探索し completed / tenpai / near / bonusOnly / invalidButExplainable に分類する
+- UIは「狙っています」と断定しない
 - 共有JSONに画像情報を入れない
 - 既存IPデータをsrc/public/docs/README/公式サンプル/公式スクショへ入れない
 - 全主要画面は 844x390 landscape-first をデザイン基準にする
@@ -123,19 +131,20 @@ Next.js、Supabase、Firebase、Unity、Godot、Phaser、Redux、Zustand、TanSt
 7. wildcard assignment
 8. scoring / MatchResult
 9. deck validation
-10. progression model
-11. match flow
-12. CPU minimum strategy
-13. localStorage保存
-14. JSON import/export
-15. UI foundation: tokens / primitives / responsive metrics / Component Gallery / state matrix
-16. Deck List / Deck Detail
-17. Deck Editor 最小版
-18. Match Setup
-19. Match Landscape UI
-20. Result UI
-21. Collection / Clear Board 最小版
-22. screenshot review / polish pass / performance check
+10. role analysis: HandAnalyzer / WaitAnalyzer / IntentRanker / ExplainEngine / HandSorter
+11. progression model
+12. match flow
+13. CPU minimum strategy
+14. localStorage保存
+15. JSON import/export
+16. UI foundation: tokens / primitives / responsive metrics / Component Gallery / state matrix
+17. Deck List / Deck Detail
+18. Deck Editor 最小版
+19. Match Setup
+20. Match Landscape UI
+21. Result UI
+22. Collection / Clear Board 最小版
+23. screenshot review / polish pass / performance check
 
 コミット方針:
 
@@ -160,6 +169,10 @@ Phase 2:
 - wildcard assignment
 - scoring
 - deck validation
+- role analysis candidate classification
+- wait analysis
+- explanation payloads
+- hand sorting proposal
 - test cases
 
 Phase 3:
@@ -201,6 +214,11 @@ Phase 6:
 - special_bonusだけではロンできない
 - ScoreBonus[]だけではロンできない
 - wildcardを使った上がりがResultに表示される
+- 手札順を入れ替えても役判定結果が変わらない
+- オールマイティ2枚保持時も1win_role最大1枚制限を守る
+- candidate state が completed / tenpai / near / bonusOnly / invalidButExplainable に分かれる
+- WaitAnalyzer が具体的な不足条件を返す
+- ExplainEngine が成立理由/未成立理由を返す
 - shared JSONに画像fieldが入っていたら拒否する
 - supportedPlayerCounts が [3, 4] でparseできる
 - 2人戦を開始できない
@@ -227,3 +245,5 @@ UIのレスポンシブ・鮮明さ・9-slice/SVG/PNG/WebP使い分けで迷っ�
 UI品質・Codexのデザイン境界・ダサくならないための実装制約で迷った場合は `docs/49-ui-quality-gate-and-codex-design-rules.md` を優先する。
 
 UIの状態・motion・typography・touch target・density・performance・polishで迷った場合は `docs/50-pro-ui-production-quality-checklist.md` を優先する。
+
+役解析・待ち表示・オールマイティ・候補ランキング・手札整理・説明UXで迷った場合は `docs/51-role-analysis-and-game-feel-ux.md` と `docs/52-role-analysis-test-minimum.md` を優先する。
