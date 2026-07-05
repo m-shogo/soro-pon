@@ -270,6 +270,22 @@ portrait shows rotate prompt or limited utility
 UI must follow existing design targets and component gates.
 Do not make a generic white web app.
 
+## Current Contract Docs
+
+Read these when implementation touches architecture, naming, APIs, errors, state, tests, performance, or migration:
+
+```text
+docs/GLOSSARY.md
+docs/ARCHITECTURE-BOUNDARIES.md
+docs/ENGINE-API.md
+docs/MATCH-STATE-MACHINE.md
+docs/ERROR-CODES.md
+docs/TESTING-STRATEGY.md
+docs/PERFORMANCE-GUARDRAILS.md
+docs/MIGRATIONS.md
+docs/ADR.md
+```
+
 ## Current Detail Docs
 
 Read only the detail docs needed for the task.
