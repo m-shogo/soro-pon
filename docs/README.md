@@ -7,12 +7,29 @@ Read these first:
 ```text
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION.md
+docs/GLOSSARY.md
 ```
 
 `MASTER-SPEC.md` is the current specification.
 `IMPLEMENTATION.md` is the safe implementation order.
+`GLOSSARY.md` fixes core terms.
 
 Do not use numbered docs as the primary entry point.
+
+## Current Contract Docs
+
+Use these when implementation touches boundaries, APIs, state, errors, tests, performance, migrations, or decisions.
+
+```text
+docs/ARCHITECTURE-BOUNDARIES.md
+docs/ENGINE-API.md
+docs/MATCH-STATE-MACHINE.md
+docs/ERROR-CODES.md
+docs/TESTING-STRATEGY.md
+docs/PERFORMANCE-GUARDRAILS.md
+docs/MIGRATIONS.md
+docs/ADR.md
+```
 
 ## Current Detail Docs
 
@@ -95,8 +112,9 @@ Good:
 ```text
 MASTER-SPEC.md
 IMPLEMENTATION.md
-security/import.md
-engine/group-analysis.md
+GLOSSARY.md
+ARCHITECTURE-BOUNDARIES.md
+ENGINE-API.md
 ```
 
 Avoid as entry points:
