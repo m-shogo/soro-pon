@@ -32,6 +32,23 @@ docs/MIGRATIONS.md
 docs/ADR.md
 ```
 
+## Implementation Governance Docs
+
+Use these before creating code, fixtures, CI, QA, demos, or dependencies.
+
+```text
+docs/IMPLEMENTATION-GOVERNANCE.md
+docs/IMPLEMENTATION-STRUCTURE.md
+docs/FIXTURE-STRATEGY.md
+docs/CODING-RULES.md
+docs/DEPENDENCY-POLICY.md
+docs/CI-GATES.md
+docs/ACCEPTANCE-CRITERIA.md
+docs/THREAT-MODEL.md
+docs/MANUAL-QA.md
+docs/RELEASE-DEMO-GATES.md
+```
+
 ## Current Detail Docs
 
 ### Rule / Engine / Schema
@@ -117,6 +134,7 @@ GLOSSARY.md
 ARCHITECTURE-BOUNDARIES.md
 ENGINE-API.md
 TECHNICAL-RISK-REGISTER.md
+IMPLEMENTATION-GOVERNANCE.md
 ```
 
 Avoid as entry points:
