@@ -272,7 +272,7 @@ Do not make a generic white web app.
 
 ## Current Contract Docs
 
-Read these when implementation touches architecture, naming, APIs, errors, state, tests, performance, or migration:
+Read these when implementation touches architecture, naming, APIs, errors, state, tests, performance, migration, risk, or decisions:
 
 ```text
 docs/GLOSSARY.md
@@ -282,6 +282,7 @@ docs/MATCH-STATE-MACHINE.md
 docs/ERROR-CODES.md
 docs/TESTING-STRATEGY.md
 docs/PERFORMANCE-GUARDRAILS.md
+docs/TECHNICAL-RISK-REGISTER.md
 docs/MIGRATIONS.md
 docs/ADR.md
 ```
@@ -385,6 +386,7 @@ ScoreBonus cannot win tests
 scoreBudget validation tests
 score breakdown tests
 custom deck adversarial fixtures
+technical risk register reviewed for current phase
 ```
 
 ## Final Decision
