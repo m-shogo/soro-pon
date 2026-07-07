@@ -96,8 +96,12 @@ primaryCategoryId
 emoji
 fallbackLabel
 count
+tags
 wildcard
 ```
+
+`tags` is optional and exists only for `sameTag` group requirements and tag-based conditions.
+Tags are short plain strings (max 40 chars), not markup or URLs.
 
 Forbidden:
 
