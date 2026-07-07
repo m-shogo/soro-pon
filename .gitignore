@@ -42,3 +42,6 @@ dev-fixtures/ip-local/
 # Keep prompts/scripts in git, but not raw or temporary generated images.
 tools/asset-factory/soro-pon-ui/raw-green/
 tools/asset-factory/soro-pon-ui/processed/
+
+# TypeScript incremental build info
+*.tsbuildinfo
