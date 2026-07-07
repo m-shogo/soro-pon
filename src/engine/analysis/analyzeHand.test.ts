@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { DeckProject } from '../../domain/deck';
-import type { DeckVariant, NormalRuleConfig } from '../../domain/variant';
+import type { DeckVariant } from '../../domain/variant';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { makeInstances } from '../../test-support/builders/handBuilder';
 import { loadSampleText } from '../../test-support/fixtures/loadFixture';
