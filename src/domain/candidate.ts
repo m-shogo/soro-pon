@@ -75,7 +75,7 @@ export type WaitAnalysis = {
   candidateId: string;
   winRoleId?: RoleId;
   incompleteGroupIndex?: number;
-  kind: 'tile' | 'category' | 'tag' | 'specificTile';
+  kind: 'tile' | 'category' | 'tag' | 'any';
   tileIds?: TileId[];
   categoryId?: CategoryId;
   tag?: string;
