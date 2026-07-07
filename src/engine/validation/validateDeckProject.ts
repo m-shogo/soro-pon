@@ -235,16 +235,24 @@ function validateVariant(
     const rolePath = `${path}.winRoles[${roleIndex}]`;
 
     const groupSum = role.requiredGroups.reduce((sum, req) => sum + req.count, 0);
-    if (
-      variant.ruleConfig.evaluationMode === 'normalThreeGroups' &&
-      groupSum > variant.ruleConfig.groupCount
-    ) {
-      issues.push({
-        code: 'R4004',
-        severity: 'error',
-        path: rolePath,
-        message: `requiredGroupsの合計${groupSum}がgroupCount ${variant.ruleConfig.groupCount}を超えています。`,
-      });
+    if (variant.ruleConfig.evaluationMode === 'normalThreeGroups') {
+      if (groupSum > variant.ruleConfig.groupCount) {
+        issues.push({
+          code: 'R4004',
+          severity: 'error',
+          path: rolePath,
+          message: `requiredGroupsの合計${groupSum}がgroupCount ${variant.ruleConfig.groupCount}を超えています。`,
+        });
+      } else if (groupSum < variant.ruleConfig.groupCount) {
+        // あがり形は3グループで全牌を使う。埋まらない役は判定不能なのでブロックする。
+        issues.push({
+          code: 'R4010',
+          severity: 'error',
+          path: rolePath,
+          message: `「${role.name}」のrequiredGroups合計が${groupSum}グループ分しかありません。通常ルールは3グループちょうど必要です。`,
+          fixHint: 'freeSetグループを足して3グループにしてください。',
+        });
+      }
     }
 
     // 参照チェック

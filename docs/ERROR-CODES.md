@@ -89,6 +89,7 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | R4007 | warning | Duplicate role condition |
 | R4008 | warning | Same role pattern with different score |
 | R4009 | warning | Role explanation missing or too vague |
+| R4010 | error | requiredGroups do not fill groupCount (normal win needs exactly 3 groups) |
 
 ## Wildcard Issues
 

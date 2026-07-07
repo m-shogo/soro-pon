@@ -261,4 +261,5 @@ tile.tags を許可フィールドに追加(sameTag役に必要) -> docs/74更�
 エラーコード追加: I2010(JSON深すぎ), V3010(ID重複), V3011(牌名重複), V3012(牌のカテゴリ参照不整合) -> docs/ERROR-CODES.md更新済み
 schemaのwinRolesはmin 0(拡張variantの空配列を許可)、V3001でvalidationが1個以上を強制(docs/65のmin 1はvariant共通schemaとしてはサンプルと矛盾するため)
 DeckValidationStatus: 構造的に遊べない(V3003/E7008)はblocked、内容エラーはdraft
+R4010追加: 通常win_roleのrequiredGroups合計はちょうど3グループ必須(docs/68のblocking条件を明文化) -> docs/ERROR-CODES.md更新済み
 ```

@@ -127,6 +127,18 @@ describe('validateDeckProject: blocking errors', () => {
     expect(codesOf(result)).toContain('V3010');
   });
 
+  it('requiredGroups合計が3未満だとR4010', () => {
+    const deck = buildMinimalDeck();
+    const variants = deck['variants'] as Record<string, unknown>[];
+    const winRoles = variants[0]!['winRoles'] as Record<string, unknown>[];
+    winRoles[0]!['requiredGroups'] = [
+      { groupType: 'sameCategory', categoryId: 'fruit', count: 2 },
+    ];
+    const result = validateDeckProject({ deck: parseDeck(deck) });
+    expect(result.status).toBe('draft');
+    expect(codesOf(result)).toContain('R4010');
+  });
+
   it('拡張variantをactiveにするとE7008でblocked', () => {
     const deck = buildMinimalDeck();
     const variants = deck['variants'] as Record<string, unknown>[];
