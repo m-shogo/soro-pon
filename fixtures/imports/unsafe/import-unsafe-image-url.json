@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "id": "x",
+  "name": "x",
+  "tiles": [
+    {
+      "id": "t",
+      "imageUrl": "https://example.com/a.png"
+    }
+  ]
+}

@@ -57,6 +57,7 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | I2007 | error | Newer unsupported schema version |
 | I2008 | warning | Older schema migrated with notice |
 | I2009 | error | Older schema cannot be safely migrated |
+| I2010 | error | JSON structure too deep |
 
 ## Deck Validation Errors
 
@@ -71,6 +72,9 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | V3007 | warning | Category too small for natural group |
 | V3008 | warning | Category too broad and may make roles too easy |
 | V3009 | info | Category unused by roles |
+| V3010 | error | Duplicate id (category/tile/variant/role/bonus) |
+| V3011 | warning | Duplicate tile display name |
+| V3012 | error | Tile references unknown or inconsistent category |
 
 ## Role / Group Errors
 

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "id": "x",
+  "name": "x",
+  "variants": [
+    {
+      "id": "v",
+      "html": "<b>hi</b>"
+    }
+  ]
+}

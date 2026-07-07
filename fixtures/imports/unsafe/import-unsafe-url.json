@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "id": "x",
+  "name": "x",
+  "categories": [
+    {
+      "id": "c",
+      "url": "https://example.com"
+    }
+  ]
+}

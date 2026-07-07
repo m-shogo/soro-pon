@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "id": "x",
+  "name": "x",
+  "variants": [
+    {
+      "id": "v",
+      "winRoles": [
+        {
+          "id": "r",
+          "condition": {
+            "code": "while(1){}"
+          }
+        }
+      ]
+    }
+  ]
+}
