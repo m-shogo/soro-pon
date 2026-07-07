@@ -37,6 +37,7 @@ docs/ADR.md
 Use these before creating code, fixtures, CI, QA, demos, or dependencies.
 
 ```text
+docs/IMPLEMENTATION-WORKFLOW.md
 docs/IMPLEMENTATION-GOVERNANCE.md
 docs/IMPLEMENTATION-STRUCTURE.md
 docs/FIXTURE-STRATEGY.md
