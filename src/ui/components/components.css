@@ -781,6 +781,51 @@
   padding: var(--sp-space-4) var(--sp-space-8);
 }
 
+/* ================= ClearBoard ================= */
+.sp-clear-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sp-space-6);
+}
+
+.sp-clear-board__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-space-6);
+  border-radius: var(--sp-radius-sm);
+  border: var(--sp-border-ink);
+  background: var(--sp-color-paper-aged);
+  color: var(--sp-color-ink-soft);
+  min-height: 64px;
+  font-size: var(--sp-font-xs);
+  overflow: hidden;
+}
+
+.sp-clear-board__cell--done {
+  background: var(--sp-color-paper-highlight);
+  color: var(--sp-color-ink);
+  box-shadow: var(--sp-shadow-lantern-soft);
+}
+
+.sp-clear-board__mark {
+  line-height: 1;
+}
+
+.sp-clear-board__cell--done .sp-clear-board__mark {
+  color: var(--sp-color-lantern-1);
+}
+
+.sp-clear-board__label {
+  font-weight: 600;
+  line-height: var(--sp-line-tight);
+}
+
+.sp-clear-board__desc {
+  line-height: var(--sp-line-tight);
+  opacity: 0.8;
+}
+
 /* ================= RotatePrompt ================= */
 .sp-rotate-prompt {
   position: fixed;

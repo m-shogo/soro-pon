@@ -33,6 +33,7 @@ export function ResultScreen({
   deck,
   state,
   coinsEarned,
+  newlyUnlocked = [],
   onRematch,
   onBackToTop,
   onCollection,
@@ -40,6 +41,7 @@ export function ResultScreen({
   deck: DeckProject;
   state: MatchState;
   coinsEarned?: number;
+  newlyUnlocked?: { id: string; title: string; description: string }[];
   onRematch: () => void;
   onBackToTop: () => void;
   onCollection: () => void;
@@ -141,6 +143,17 @@ export function ResultScreen({
               ))}
             </ul>
           </PaperPanel>
+          {newlyUnlocked.length > 0 && (
+            <PaperPanel selected title="新しい実績">
+              <ul className="sp-issue-list">
+                {newlyUnlocked.map((achievement) => (
+                  <li key={achievement.id}>
+                    <LanternGlow>★</LanternGlow> {achievement.title} — {achievement.description}
+                  </li>
+                ))}
+              </ul>
+            </PaperPanel>
+          )}
           {coinsEarned !== undefined && (
             <PaperPanel title="獲得した記憶コイン">
               <span

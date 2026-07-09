@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import starterRaw from '../../samples/animal-starter.deck.json';
+import {
+  ACHIEVEMENTS,
+  computeNewAchievements,
+  type AchievementDef,
+  type AchievementEvent,
+} from './achievements';
 import { createDeckTemplate } from './createdDeckTemplate';
 import type { DeckProject } from '../domain/deck';
 import type { MatchState } from '../domain/match';
@@ -55,16 +61,19 @@ function MatchSession({
   onExit: () => void;
   onRematch: () => void;
   onCollection: () => void;
-  onResult: (state: MatchState) => number;
+  onResult: (state: MatchState) => { coinsEarned: number; newlyUnlocked: AchievementDef[] };
 }) {
   const variant = deck.variants.find((v) => v.id === deck.activeVariantId)!;
   const controller = useMatchController({ deck, variant, playerCount, seed, insightMode });
   const recordedRef = useRef(false);
-  const [coinsEarned, setCoinsEarned] = useState<number | null>(null);
+  const [resultReward, setResultReward] = useState<{
+    coinsEarned: number;
+    newlyUnlocked: AchievementDef[];
+  } | null>(null);
   useEffect(() => {
     if (controller.state.phase === 'result' && !recordedRef.current) {
       recordedRef.current = true;
-      setCoinsEarned(onResult(controller.state));
+      setResultReward(onResult(controller.state));
     }
   }, [controller.state, onResult]);
   if (controller.state.phase === 'result') {
@@ -72,7 +81,12 @@ function MatchSession({
       <ResultScreen
         deck={deck}
         state={controller.state}
-        {...(coinsEarned !== null ? { coinsEarned } : {})}
+        {...(resultReward !== null
+          ? {
+              coinsEarned: resultReward.coinsEarned,
+              newlyUnlocked: resultReward.newlyUnlocked,
+            }
+          : {})}
         onRematch={onRematch}
         onBackToTop={onExit}
         onCollection={onCollection}
@@ -115,6 +129,20 @@ export function AppRoot() {
   const settings = useMemo(() => settingsStore.load().settings, [settingsStore]);
   const refreshDecks = useCallback(() => setDecksVersion((v) => v + 1), []);
 
+  // 実績評価: eventを渡して新規解放を保存し、解放された定義を返す
+  const processAchievements = useCallback(
+    (event: AchievementEvent): AchievementDef[] => {
+      const current = recordsStore.load().records;
+      const gained = computeNewAchievements(current.achievements ?? [], event, current);
+      if (gained.length > 0) {
+        recordsStore.unlockAchievements(gained);
+        setRecordsVersion((v) => v + 1);
+      }
+      return ACHIEVEMENTS.filter((a) => gained.includes(a.id));
+    },
+    [recordsStore],
+  );
+
   const validations = useMemo(() => {
     const map = new Map<string, DeckValidationResult>();
     for (const stored of decks) {
@@ -142,6 +170,7 @@ export function AppRoot() {
     const validation = validateDeckProject({ deck: result.deck });
     deckStore.saveDeck(result.deck, 'imported');
     refreshDecks();
+    processAchievements({ type: 'deckImported' });
     setImportOpen(false);
     setImportText('');
     setImportIssues([]);
@@ -164,15 +193,17 @@ export function AppRoot() {
     anchor.download = `${deck.id}.deck.json`;
     anchor.click();
     URL.revokeObjectURL(url);
+    processAchievements({ type: 'deckExported' });
   };
 
   // 対局終了時の記録。人間勝利ならコイン=totalPoints(cap 500)、他は参加報酬。
   const recordMatch = useCallback(
-    (finalState: MatchState): number => {
+    (finalState: MatchState): { coinsEarned: number; newlyUnlocked: AchievementDef[] } => {
       const result = finalState.result;
-      const deck = decks.find((d) => d.deck.id === finalState.deckProjectId)?.deck;
+      const stored = decks.find((d) => d.deck.id === finalState.deckProjectId);
+      const deck = stored?.deck;
       if (!result || !deck) {
-        return 0;
+        return { coinsEarned: 0, newlyUnlocked: [] };
       }
       const winner = finalState.players.find((p) => p.id === result.winnerPlayerId);
       const humanWon = winner?.kind === 'human';
@@ -198,9 +229,24 @@ export function AppRoot() {
           : undefined;
       recordsStore.addRecord(record, roleKey);
       setRecordsVersion((v) => v + 1);
-      return record.coinsEarned;
+      const selectedRoleFamily =
+        breakdown !== undefined
+          ? deck.variants
+              .flatMap((v) => v.winRoles)
+              .find((r) => r.id === breakdown.selectedWinRoleId)?.family
+          : undefined;
+      const newlyUnlocked = processAchievements({
+        type: 'matchEnd',
+        reason: result.reason,
+        humanWon,
+        playerCount: finalState.players.length,
+        deckSource: stored?.source ?? 'official',
+        ...(breakdown !== undefined ? { breakdown } : {}),
+        ...(selectedRoleFamily !== undefined ? { selectedRoleFamily } : {}),
+      });
+      return { coinsEarned: record.coinsEarned, newlyUnlocked };
     },
-    [decks, recordsStore],
+    [decks, recordsStore, processAchievements],
   );
 
   const importModal = (
@@ -309,8 +355,15 @@ export function AppRoot() {
           <DeckEditorScreen
             deck={deck}
             onSave={(updated) => {
-              deckStore.saveDeck(updated, source === 'official' ? 'created' : source);
+              const saveSource = source === 'official' ? 'created' : source;
+              deckStore.saveDeck(updated, saveSource);
               refreshDecks();
+              const savedValidation = validateDeckProject({ deck: updated });
+              processAchievements({
+                type: 'deckSaved',
+                source: saveSource,
+                hasWarnings: savedValidation.issues.length > 0,
+              });
               setScreen({ kind: 'deckDetail', deckId: updated.id });
             }}
             onBack={() => setScreen({ kind: 'deckDetail', deckId: deck.id })}
@@ -328,9 +381,12 @@ export function AppRoot() {
             deck={deck}
             variant={variant}
             onBack={() => setScreen({ kind: 'top' })}
-            onStart={(playerCount) =>
-              setScreen({ kind: 'match', deckId: deck.id, playerCount, seed: newSeed() })
-            }
+            onStart={(playerCount) => {
+              if (decks.find((d) => d.deck.id === deck.id)?.source === 'created') {
+                processAchievements({ type: 'matchStartedWithCreatedDeck' });
+              }
+              setScreen({ kind: 'match', deckId: deck.id, playerCount, seed: newSeed() });
+            }}
           />
         );
       }

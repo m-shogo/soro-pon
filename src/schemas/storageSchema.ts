@@ -70,6 +70,11 @@ export const recordsPayloadSchema = z
     records: z.array(matchRecordSchema).max(100),
     /** 一度でもあがったwin_roleのID(deckId:roleId) */
     roleCollection: z.array(z.string().min(1).max(160)).max(500),
+    // 後方互換のためoptional(既存保存データを破損扱いにしない)
+    /** 解放済み実績ID(クリアボード) */
+    achievements: z.array(z.string().min(1).max(64)).max(100).optional(),
+    /** 通算対局数(recordsは100件でtruncateされるため別に数える) */
+    totalMatches: z.number().int().nonnegative().optional(),
   })
   .strict();
 
@@ -81,4 +86,6 @@ export const EMPTY_RECORDS: RecordsPayload = {
   coins: 0,
   records: [],
   roleCollection: [],
+  achievements: [],
+  totalMatches: 0,
 };

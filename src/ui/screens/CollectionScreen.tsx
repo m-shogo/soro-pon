@@ -1,3 +1,4 @@
+import { ACHIEVEMENTS, titleFor } from '../../app/achievements';
 import type { StoredDeck } from '../../schemas/storageSchema';
 import type { RecordsPayload } from '../../schemas/storageSchema';
 import { Badge } from '../components/Badge';
@@ -33,6 +34,9 @@ export function CollectionScreen({
     })
     .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
+  const unlocked = new Set(records.achievements ?? []);
+  const title = titleFor(unlocked.size);
+
   const topResults = [...records.records]
     .filter((r) => r.humanWon && r.totalPoints !== undefined)
     .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
@@ -43,6 +47,7 @@ export function CollectionScreen({
       <div className="sp-screen__header">
         <h1 className="sp-screen__title">記憶帳</h1>
         <Badge variant="info">記憶コイン {records.coins}</Badge>
+        <Badge variant="info">称号: {title}</Badge>
         <div className="sp-screen__spacer" />
         <Button variant="ghost" onClick={onBack}>
           もどる
@@ -50,6 +55,26 @@ export function CollectionScreen({
       </div>
       <div className="sp-screen__body">
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
+          <PaperPanel title={`クリアボード (${unlocked.size} / ${ACHIEVEMENTS.length})`}>
+            <div className="sp-clear-board">
+              {ACHIEVEMENTS.map((achievement) => {
+                const done = unlocked.has(achievement.id);
+                return (
+                  <div
+                    key={achievement.id}
+                    className={`sp-clear-board__cell${done ? ' sp-clear-board__cell--done' : ''}`}
+                    title={achievement.description}
+                  >
+                    <span className="sp-clear-board__mark" aria-hidden="true">
+                      {done ? '★' : '・'}
+                    </span>
+                    <span className="sp-clear-board__label">{achievement.title}</span>
+                    <span className="sp-clear-board__desc">{achievement.description}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </PaperPanel>
           <PaperPanel title={`あがった役 (${collectedRoles.length})`}>
             {collectedRoles.length === 0 ? (
               <p style={{ margin: 0, fontSize: 'var(--sp-font-sm)' }}>

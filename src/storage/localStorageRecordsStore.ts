@@ -16,6 +16,8 @@ export const COIN_PARTICIPATION = 10;
 export type RecordsStore = {
   load(): { records: RecordsPayload; issues: ValidationIssue[] };
   addRecord(record: MatchRecord, wonRoleKey?: string): RecordsPayload;
+  /** 実績を解放して保存する。既知のIDは重複しない。 */
+  unlockAchievements(ids: string[]): RecordsPayload;
 };
 
 export function createLocalStorageRecordsStore(storage: KeyValueStorage): RecordsStore {
@@ -45,6 +47,11 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     };
   };
 
+  const write = (next: RecordsPayload): RecordsPayload => {
+    storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(next));
+    return next;
+  };
+
   return {
     load: read,
     addRecord(record: MatchRecord, wonRoleKey?: string): RecordsPayload {
@@ -53,14 +60,26 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
         wonRoleKey !== undefined && !current.roleCollection.includes(wonRoleKey)
           ? [...current.roleCollection, wonRoleKey]
           : current.roleCollection;
-      const next: RecordsPayload = {
+      return write({
         version: 1,
         coins: current.coins + record.coinsEarned,
         records: [record, ...current.records].slice(0, 100),
         roleCollection,
-      };
-      storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(next));
-      return next;
+        achievements: current.achievements ?? [],
+        totalMatches: (current.totalMatches ?? 0) + 1,
+      });
+    },
+    unlockAchievements(ids: string[]): RecordsPayload {
+      const { records: current } = read();
+      const known = new Set(current.achievements ?? []);
+      const merged = [...(current.achievements ?? [])];
+      for (const id of ids) {
+        if (!known.has(id)) {
+          known.add(id);
+          merged.push(id);
+        }
+      }
+      return write({ ...current, achievements: merged });
     },
   };
 }
