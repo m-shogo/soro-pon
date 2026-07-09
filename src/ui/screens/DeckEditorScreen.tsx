@@ -1,12 +1,30 @@
 import { useMemo, useState } from 'react';
+import type { CategoryDefinition } from '../../domain/category';
 import type { DeckProject } from '../../domain/deck';
+import type { TileDefinition } from '../../domain/tile';
+import type { WinRole } from '../../domain/role';
 import { validateDeckProject } from '../../engine/validation/validateDeckProject';
+import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
+import { CategoryChip } from '../components/CategoryChip';
+import { Modal } from '../components/Modal';
 import { PaperPanel } from '../components/PaperPanel';
+import { Tabs } from '../components/Tab';
 
-// 最小エディタ: 名前/説明/役の点数のみ編集できる。
-// 構造編集(牌/カテゴリ/役の追加)は今後の安全テンプレートエディタで対応する。
+// 安全テンプレートのみで構造編集する(count-onlyの通常役は作れない)。
+// docs/70 §18 の推奨点数を使う。
+
+const CATEGORY_COLORS = ['#EF4444', '#3B82F6', '#22C55E', '#F59E0B', '#7C3AED', '#06B6D4', '#EC4899', '#84CC16'];
+
+function nextId(prefix: string, existing: string[]): string {
+  let n = existing.length + 1;
+  while (existing.includes(`${prefix}${n}`)) {
+    n += 1;
+  }
+  return `${prefix}${n}`;
+}
+
 export function DeckEditorScreen({
   deck,
   onSave,
@@ -17,89 +35,485 @@ export function DeckEditorScreen({
   onBack: () => void;
 }) {
   const [draft, setDraft] = useState<DeckProject>(() => structuredClone(deck));
+  const [tab, setTab] = useState('basic');
+  const [leaveConfirm, setLeaveConfirm] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // 保存前にschemaを通す。schema不正なデッキを保存するとstore読み込みが
+  // 破損扱いになるため、保存自体をブロックして理由を表示する。
+  const handleSave = () => {
+    const parsed = deckProjectSchema.safeParse(draft);
+    if (!parsed.success) {
+      const first = parsed.error.issues[0];
+      setSaveError(
+        `保存できません: ${first?.path.join('.') ?? ''} ${first?.message ?? '入力を確認してください'}`,
+      );
+      return;
+    }
+    setSaveError(null);
+    onSave(parsed.data);
+  };
   const validation = useMemo(() => validateDeckProject({ deck: draft }), [draft]);
   const activeVariant = draft.variants.find((v) => v.id === draft.activeVariantId);
+  const isDirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(deck), [draft, deck]);
 
-  const updateRolePoints = (roleId: string, basePoints: number) => {
+  const updateVariant = (
+    update: (variant: NonNullable<typeof activeVariant>) => NonNullable<typeof activeVariant>,
+  ) => {
     setDraft((current) => ({
       ...current,
       variants: current.variants.map((variant) =>
-        variant.id !== current.activeVariantId
-          ? variant
-          : {
-              ...variant,
-              winRoles: variant.winRoles.map((role) =>
-                role.id === roleId ? { ...role, basePoints } : role,
-              ),
-            },
+        variant.id === current.activeVariantId ? update(variant) : variant,
       ),
     }));
   };
+
+  // ---- カテゴリ操作 ----
+  const addCategory = () => {
+    const id = nextId('cat', draft.categories.map((c) => c.id));
+    setDraft({
+      ...draft,
+      categories: [
+        ...draft.categories,
+        {
+          id,
+          name: `カテゴリ${draft.categories.length + 1}`,
+          color: CATEGORY_COLORS[draft.categories.length % CATEGORY_COLORS.length]!,
+          priority: 50,
+        },
+      ],
+    });
+  };
+  const updateCategory = (id: string, patch: Partial<CategoryDefinition>) => {
+    setDraft({
+      ...draft,
+      categories: draft.categories.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+    });
+  };
+  const removeCategory = (id: string) => {
+    setDraft({
+      ...draft,
+      categories: draft.categories.filter((c) => c.id !== id),
+    });
+  };
+
+  // ---- 牌操作 ----
+  const addTile = () => {
+    const firstCategory = draft.categories[0];
+    if (!firstCategory) {
+      return;
+    }
+    const id = nextId('tile', draft.tiles.map((t) => t.id));
+    setDraft({
+      ...draft,
+      tiles: [
+        ...draft.tiles,
+        {
+          id,
+          name: `新しい牌${draft.tiles.length + 1}`,
+          categories: [firstCategory.id],
+          primaryCategoryId: firstCategory.id,
+          fallbackLabel: '新',
+          count: 3,
+        },
+      ],
+    });
+  };
+  const updateTile = (id: string, patch: Partial<TileDefinition>) => {
+    setDraft({
+      ...draft,
+      tiles: draft.tiles.map((t) => (t.id === id ? { ...t, ...patch } : t)),
+    });
+  };
+  const toggleTileCategory = (tile: TileDefinition, categoryId: string) => {
+    const has = tile.categories.includes(categoryId);
+    const categories = has
+      ? tile.categories.filter((c) => c !== categoryId)
+      : [...tile.categories, categoryId];
+    if (categories.length === 0) {
+      return; // 牌は最低1カテゴリ必要
+    }
+    const primaryCategoryId = categories.includes(tile.primaryCategoryId)
+      ? tile.primaryCategoryId
+      : categories[0]!;
+    updateTile(tile.id, { categories, primaryCategoryId });
+  };
+  const removeTile = (id: string) => {
+    setDraft({ ...draft, tiles: draft.tiles.filter((t) => t.id !== id) });
+  };
+
+  // ---- 役テンプレート(docs/70 §18) ----
+  const addRoleFromTemplate = (
+    template: 'threeSameCategory' | 'threeDifferentCategories' | 'threeSameTile',
+    categoryId?: string,
+  ) => {
+    updateVariant((variant) => {
+      const id = nextId('role', variant.winRoles.map((r) => r.id));
+      let role: WinRole | null = null;
+      if (template === 'threeSameCategory' && categoryId) {
+        const category = draft.categories.find((c) => c.id === categoryId);
+        role = {
+          id,
+          name: `${category?.name ?? ''}あつめ`,
+          kind: 'win_role',
+          family: 'groupPattern',
+          basePoints: 60,
+          requiredGroups: [{ groupType: 'sameCategory', categoryId, count: 3 }],
+          allowWildcard: true,
+          maxWildcards: 1,
+          priority: 50,
+          explanation: `${category?.name ?? ''}の3枚グループを3組そろえる。`,
+          canTsumo: true,
+          canRon: true,
+        };
+      }
+      if (template === 'threeDifferentCategories') {
+        const categories = draft.categories.slice(0, 3);
+        if (categories.length === 3) {
+          role = {
+            id,
+            name: '三色の記憶',
+            kind: 'win_role',
+            family: 'groupPattern',
+            basePoints: 80,
+            requiredGroups: categories.map((c) => ({
+              groupType: 'sameCategory' as const,
+              categoryId: c.id,
+              count: 1,
+            })),
+            allowWildcard: true,
+            maxWildcards: 1,
+            priority: 60,
+            explanation: `${categories.map((c) => c.name).join('・')}のグループを1組ずつそろえる。`,
+            canTsumo: true,
+            canRon: true,
+          };
+        }
+      }
+      if (template === 'threeSameTile') {
+        role = {
+          id,
+          name: 'ぞろぞろ',
+          kind: 'win_role',
+          family: 'groupPattern',
+          basePoints: 120,
+          requiredGroups: [{ groupType: 'sameTile', count: 3 }],
+          allowWildcard: true,
+          maxWildcards: 1,
+          priority: 70,
+          explanation: '同じ牌3枚のグループを3組そろえる。',
+          canTsumo: true,
+          canRon: true,
+        };
+      }
+      if (!role) {
+        return variant;
+      }
+      return { ...variant, winRoles: [...variant.winRoles, role] };
+    });
+  };
+  const updateRole = (roleId: string, patch: Partial<WinRole>) => {
+    updateVariant((variant) => ({
+      ...variant,
+      winRoles: variant.winRoles.map((role) =>
+        role.id === roleId ? { ...role, ...patch } : role,
+      ),
+    }));
+  };
+  const removeRole = (roleId: string) => {
+    updateVariant((variant) => ({
+      ...variant,
+      winRoles: variant.winRoles.filter((role) => role.id !== roleId),
+    }));
+  };
+
+  const [templateCategoryId, setTemplateCategoryId] = useState('');
 
   return (
     <div className="sp-screen">
       <div className="sp-screen__header">
         <h1 className="sp-screen__title">デッキ編集</h1>
         <Badge variant={validation.status === 'playable' ? 'info' : 'warning'}>
-          {validation.status}
+          {validation.status === 'playable'
+            ? '遊べる'
+            : validation.status === 'playableWithWarnings'
+              ? '注意あり'
+              : '要修正(対局不可)'}
         </Badge>
         <div className="sp-screen__spacer" />
-        <Button variant="primary" onClick={() => onSave(draft)}>
+        <Button variant="primary" onClick={handleSave}>
           保存する
         </Button>
-        <Button variant="ghost" onClick={onBack}>
-          保存せずもどる
+        <Button
+          variant="ghost"
+          onClick={() => (isDirty ? setLeaveConfirm(true) : onBack())}
+        >
+          もどる
         </Button>
       </div>
+      {saveError !== null && (
+        <div className="sp-insight-strip">
+          <span className="sp-insight-strip__item">{saveError}</span>
+        </div>
+      )}
+      <Tabs
+        items={[
+          { id: 'basic', label: '基本' },
+          { id: 'categories', label: `カテゴリ (${draft.categories.length})` },
+          { id: 'tiles', label: `牌 (${draft.tiles.length})` },
+          { id: 'roles', label: `役 (${activeVariant?.winRoles.length ?? 0})` },
+        ]}
+        activeId={tab}
+        onSelect={setTab}
+      />
       <div className="sp-screen__body">
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
-          <PaperPanel title="基本情報">
-            <label className="sp-field">
-              デッキ名
-              <input
-                type="text"
-                value={draft.name}
-                maxLength={80}
-                onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-              />
-            </label>
-            <label className="sp-field" style={{ marginTop: 'var(--sp-space-8)' }}>
-              説明
-              <textarea
-                rows={2}
-                maxLength={500}
-                value={draft.description ?? ''}
-                onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-              />
-            </label>
-          </PaperPanel>
-          <PaperPanel variant="aged" title="役の点数">
-            <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
-              {activeVariant?.winRoles.map((role) => (
-                <label key={role.id} className="sp-field" style={{ flexDirection: 'row', alignItems: 'center', gap: 'var(--sp-space-12)' }}>
-                  <input
-                    type="number"
-                    min={1}
-                    max={999}
-                    value={role.basePoints}
-                    onChange={(e) => {
-                      const value = Number.parseInt(e.target.value, 10);
-                      if (Number.isInteger(value) && value >= 1 && value <= 999) {
-                        updateRolePoints(role.id, value);
+          {tab === 'basic' && (
+            <PaperPanel title="基本情報">
+              <label className="sp-field">
+                デッキ名
+                <input
+                  type="text"
+                  value={draft.name}
+                  maxLength={80}
+                  onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                />
+              </label>
+              <label className="sp-field" style={{ marginTop: 'var(--sp-space-8)' }}>
+                説明
+                <textarea
+                  rows={2}
+                  maxLength={500}
+                  value={draft.description ?? ''}
+                  onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+                />
+              </label>
+            </PaperPanel>
+          )}
+
+          {tab === 'categories' && (
+            <PaperPanel title="カテゴリ">
+              <div className="sp-screen__col" style={{ gap: 'var(--sp-space-8)' }}>
+                {draft.categories.map((category) => (
+                  <div
+                    key={category.id}
+                    style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}
+                  >
+                    <CategoryChip
+                      name={category.name}
+                      color={category.color}
+                      {...(category.icon !== undefined ? { icon: category.icon } : {})}
+                    />
+                    <input
+                      type="text"
+                      aria-label="カテゴリ名"
+                      value={category.name}
+                      maxLength={20}
+                      style={{ width: '9em' }}
+                      onChange={(e) => updateCategory(category.id, { name: e.target.value })}
+                    />
+                    <input
+                      type="color"
+                      aria-label="カテゴリ色"
+                      value={category.color}
+                      onChange={(e) => updateCategory(category.id, { color: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      aria-label="アイコン絵文字"
+                      value={category.icon ?? ''}
+                      maxLength={4}
+                      placeholder="絵文字"
+                      style={{ width: '4em' }}
+                      onChange={(e) =>
+                        updateCategory(
+                          category.id,
+                          e.target.value === '' ? { icon: undefined } : { icon: e.target.value },
+                        )
                       }
+                    />
+                    <Button variant="ghost" onClick={() => removeCategory(category.id)}>
+                      削除
+                    </Button>
+                  </div>
+                ))}
+                <Button variant="ink" onClick={addCategory}>
+                  カテゴリを追加
+                </Button>
+              </div>
+            </PaperPanel>
+          )}
+
+          {tab === 'tiles' && (
+            <PaperPanel title="牌">
+              <div className="sp-screen__col" style={{ gap: 'var(--sp-space-12)' }}>
+                {draft.tiles.map((tile) => (
+                  <div
+                    key={tile.id}
+                    style={{
+                      borderBottom: '1px solid rgba(36,26,16,0.25)',
+                      paddingBottom: 'var(--sp-space-8)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 'var(--sp-space-4)',
                     }}
-                  />
-                  <span>
-                    {role.name}
-                    <span style={{ color: 'var(--sp-color-ink-soft)', fontSize: 'var(--sp-font-xs)' }}>
-                      {' '}
-                      — {role.explanation}
-                    </span>
-                  </span>
-                </label>
-              ))}
-            </div>
-          </PaperPanel>
+                  >
+                    <div style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input
+                        type="text"
+                        aria-label="牌名"
+                        value={tile.name}
+                        maxLength={20}
+                        style={{ width: '8em' }}
+                        onChange={(e) => updateTile(tile.id, { name: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        aria-label="絵文字"
+                        value={tile.emoji ?? ''}
+                        maxLength={4}
+                        placeholder="絵文字"
+                        style={{ width: '4em' }}
+                        onChange={(e) =>
+                          updateTile(
+                            tile.id,
+                            e.target.value === '' ? { emoji: undefined } : { emoji: e.target.value },
+                          )
+                        }
+                      />
+                      <input
+                        type="text"
+                        aria-label="代替1文字"
+                        value={tile.fallbackLabel}
+                        maxLength={4}
+                        style={{ width: '3em' }}
+                        onChange={(e) => updateTile(tile.id, { fallbackLabel: e.target.value })}
+                      />
+                      <label className="sp-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
+                        枚数
+                        <input
+                          type="number"
+                          min={1}
+                          max={10}
+                          value={tile.count}
+                          onChange={(e) => {
+                            const value = Number.parseInt(e.target.value, 10);
+                            if (Number.isInteger(value) && value >= 1 && value <= 10) {
+                              updateTile(tile.id, { count: value });
+                            }
+                          }}
+                        />
+                      </label>
+                      <Button variant="ghost" onClick={() => removeTile(tile.id)}>
+                        削除
+                      </Button>
+                    </div>
+                    <div style={{ display: 'flex', gap: 'var(--sp-space-8)', flexWrap: 'wrap', fontSize: 'var(--sp-font-xs)' }}>
+                      {draft.categories.map((category) => (
+                        <label key={category.id} style={{ display: 'inline-flex', gap: '3px', alignItems: 'center' }}>
+                          <input
+                            type="checkbox"
+                            checked={tile.categories.includes(category.id)}
+                            onChange={() => toggleTileCategory(tile, category.id)}
+                          />
+                          {category.name}
+                        </label>
+                      ))}
+                      <label style={{ display: 'inline-flex', gap: '3px', alignItems: 'center' }}>
+                        主カテゴリ
+                        <select
+                          value={tile.primaryCategoryId}
+                          onChange={(e) => updateTile(tile.id, { primaryCategoryId: e.target.value })}
+                        >
+                          {tile.categories.map((categoryId) => (
+                            <option key={categoryId} value={categoryId}>
+                              {draft.categories.find((c) => c.id === categoryId)?.name ?? categoryId}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  </div>
+                ))}
+                <Button variant="ink" onClick={addTile} disabled={draft.categories.length === 0}>
+                  牌を追加
+                </Button>
+              </div>
+            </PaperPanel>
+          )}
+
+          {tab === 'roles' && (
+            <>
+              <PaperPanel variant="aged" title="役を追加(安全テンプレート)">
+                <div style={{ display: 'flex', gap: 'var(--sp-space-8)', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <select
+                    aria-label="テンプレート用カテゴリ"
+                    value={templateCategoryId}
+                    onChange={(e) => setTemplateCategoryId(e.target.value)}
+                  >
+                    <option value="">カテゴリを選ぶ</option>
+                    {draft.categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="ink"
+                    disabled={templateCategoryId === ''}
+                    onClick={() => addRoleFromTemplate('threeSameCategory', templateCategoryId)}
+                  >
+                    同カテゴリ3組 (60点)
+                  </Button>
+                  <Button
+                    variant="ink"
+                    disabled={draft.categories.length < 3}
+                    onClick={() => addRoleFromTemplate('threeDifferentCategories')}
+                  >
+                    3カテゴリ1組ずつ (80点)
+                  </Button>
+                  <Button variant="ink" onClick={() => addRoleFromTemplate('threeSameTile')}>
+                    同じ牌3枚×3組 (120点)
+                  </Button>
+                </div>
+              </PaperPanel>
+              <PaperPanel title="役の一覧">
+                <div className="sp-screen__col" style={{ gap: 'var(--sp-space-8)' }}>
+                  {activeVariant?.winRoles.map((role) => (
+                    <div key={role.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input
+                        type="text"
+                        aria-label="役名"
+                        value={role.name}
+                        maxLength={30}
+                        style={{ width: '9em' }}
+                        onChange={(e) => updateRole(role.id, { name: e.target.value })}
+                      />
+                      <input
+                        type="number"
+                        aria-label="点数"
+                        min={1}
+                        max={999}
+                        value={role.basePoints}
+                        onChange={(e) => {
+                          const value = Number.parseInt(e.target.value, 10);
+                          if (Number.isInteger(value) && value >= 1 && value <= 999) {
+                            updateRole(role.id, { basePoints: value });
+                          }
+                        }}
+                      />
+                      <span style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', flex: 1, minWidth: '10em' }}>
+                        {role.explanation}
+                      </span>
+                      <Button variant="ghost" onClick={() => removeRole(role.id)}>
+                        削除
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </PaperPanel>
+            </>
+          )}
         </div>
         <div className="sp-screen__col sp-screen__col--side sp-screen__col--scroll">
           <PaperPanel variant="ink" title="検証">
@@ -120,6 +534,19 @@ export function DeckEditorScreen({
           </PaperPanel>
         </div>
       </div>
+      <Modal open={leaveConfirm} title="保存していない変更があります" onClose={() => setLeaveConfirm(false)}>
+        <p style={{ marginTop: 0, fontSize: 'var(--sp-font-sm)' }}>
+          もどると編集内容は失われます。
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--sp-space-8)' }}>
+          <Button variant="primary" onClick={onBack}>
+            破棄してもどる
+          </Button>
+          <Button variant="ghost" onClick={() => setLeaveConfirm(false)}>
+            編集をつづける
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
