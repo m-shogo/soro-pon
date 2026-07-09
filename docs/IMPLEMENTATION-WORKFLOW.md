@@ -12,8 +12,8 @@ MVP完成までの実装ワークフローと現在地を1枚で管理する。
 ## Current Status
 
 ```text
-Phase 1-3: 完了
-Phase 4以降: 未着手
+Phase 1-11: 完了(Phase 11はCollection画面と磨き込みをPhase 12へ持ち越し)
+Phase 12: 進行中
 ```
 
 | Phase | 内容 | 状態 | 完了コミット |
@@ -21,15 +21,24 @@ Phase 4以降: 未着手
 | 1 | package setup (Vite/React/TS/Zod/Vitest, pnpm) | 完了 | 3a50861 |
 | 2 | domain型 + strict Zodスキーマ + parseテスト | 完了 | 0a64f59 |
 | 3 | strict import + unsafe key scan + deck validation + fixtures | 完了 | 4663167 |
-| 4 | group engine (enumerate / partition / wildcard) | 未着手 | - |
-| 5 | role analysis (matchRole / analyzeHand / waits / ranking) | 未着手 | - |
-| 6 | scoring (tsumo / ron / selectedWinRole / breakdown) | 未着手 | - |
-| 7 | insights + discard preview (純関数) | 未着手 | - |
-| 8 | match reducer + CPU + seeded RNG | 未着手 | - |
-| 9 | storage (localStorage schema parse / recovery) | 未着手 | - |
-| 10 | UI foundation (tokens / primitives / Component Gallery) | 未着手 | - |
-| 11 | screens (Deck List / Detail / Editor / Match Setup / Match / Result) | 未着手 | - |
-| 12 | アセット統合 + 磨き込み + QA + release gate | 未着手 | - |
+| 4 | group engine (enumerate / partition / wildcard) | 完了 | cd2d7db |
+| 5 | role analysis (matchRole / analyzeHand / waits / ranking) | 完了 | caca9cd |
+| 6 | scoring (tsumo / ron / selectedWinRole / breakdown) | 完了 | 1ad7dec |
+| 7 | insights + discard preview (純関数) | 完了 | 4eea582 |
+| 8 | match reducer + CPU + seeded RNG(フル対局シミュレーション込み) | 完了 | 1efe9fd |
+| 9 | storage (localStorage schema parse / recovery) | 完了 | 8aa22c7 |
+| 10 | UI foundation (tokens / asset slot方式 / Component Gallery) | 完了 | 452b54f |
+| 11 | screens (TOP / Deck List / Detail / Editor最小 / Setup / Match / Result) | 完了 | 5645471 |
+| 12 | Collection / アセット統合 / 磨き込み / QA / release gate | 進行中 | - |
+
+Phase 10で確定した追加契約:
+
+```text
+UIはasset slot方式必須(画像パス直書き禁止)
+slot一覧: public/assets/ui/soro-pon/asset-slots.json + ASSET-MANIFEST.md
+PNG未作成時はCSS/SVG fallbackで全操作可能
+差し替えはgenerated/final/配置 + manifest更新のみ(DOM/ロジック不変)
+```
 
 ## Verification Commands
 
