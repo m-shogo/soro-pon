@@ -12,8 +12,8 @@ MVP完成までの実装ワークフローと現在地を1枚で管理する。
 ## Current Status
 
 ```text
-Phase 1-11: 完了(Phase 11はCollection画面と磨き込みをPhase 12へ持ち越し)
-Phase 12: 進行中
+Phase 1-13: 完了(MVP機能一式 + 進行要素 + 磨き込み)
+残り: 画像アセット生成(docs/asset-requests/)とRELEASE-DEMO-GATES消化
 ```
 
 | Phase | 内容 | 状態 | 完了コミット |
@@ -29,7 +29,9 @@ Phase 12: 進行中
 | 9 | storage (localStorage schema parse / recovery) | 完了 | 8aa22c7 |
 | 10 | UI foundation (tokens / asset slot方式 / Component Gallery) | 完了 | 452b54f |
 | 11 | screens (TOP / Deck List / Detail / Editor最小 / Setup / Match / Result) | 完了 | 5645471 |
-| 12 | Collection / アセット統合 / 磨き込み / QA / release gate | 進行中 | - |
+| 12 | Collection(記憶帳)/ 構造編集エディタ / アセットリクエスト / 手動QA | 完了 | 9e1b244 |
+| 13 | クリアボード25マス+称号 / ボーナスエディタ / specificSetテンプレート / モーション | 完了 | 6c5c858 |
+| 14 | 画像アセット統合(generated/final/) / RELEASE-DEMO-GATES / デモ公開 | 未着手 | - |
 
 Phase 10で確定した追加契約:
 
@@ -277,14 +279,21 @@ schema不正デッキの保存ブロック(store全消し防止)
 1366x768で間延びなし
 ```
 
-Known issues / 未対応:
+Known issues / 未対応(Phase 13で更新):
 
 ```text
-specificSetテンプレートは未提供(役エディタは3テンプレートのみ)
-special_bonus / scoreBonusのエディタ編集は未対応(import/公式デッキ経由のみ)
-クリアボード(実績25マス)/称号は未実装(docs/29のMVP項目、次フェーズ)
 アセットは全slot placeholder(CSS/SVG fallback)。リクエストはdocs/asset-requests/に5件
-Result count-up演出などのモーション磨き込みは未着手
+extendedRoleSpanエンジンは仕様どおりpending(E7008でブロック)
+Playwright等のスクリーンショット自動化は未導入(手動確認)
+```
+
+Phase 13追加分のQA(2026-07-09, commit 6c5c858):
+
+```text
+クリアボード25マス表示 / export-deck実績の解放と永続化をブラウザで実測
+ボーナスエディタ(特別/スコア)の表示・テンプレート追加
+既存localStorage記録が新フィールド追加後もそのまま読める(optional化)
+count-up/ドロー牌ポップ/ランタンパルスはreduced-motion対応
 ```
 
 Decision: pass(MVPコアフロー成立。上記known issuesは次の磨き込みへ)
