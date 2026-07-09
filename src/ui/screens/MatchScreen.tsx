@@ -173,6 +173,11 @@ export function MatchScreen({
                 selected={tile.instanceId === state.selectedTileInstanceId}
                 dimmed={!canSelect}
                 disabled={!canSelect}
+                className={
+                  controller.isHumanTurn && tile.instanceId === state.lastDrawnTileInstanceId
+                    ? 'sp-tile--drawn'
+                    : undefined
+                }
                 onClick={() => controller.selectTile(tile.instanceId)}
               />
             ))}

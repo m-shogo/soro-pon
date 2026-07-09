@@ -64,7 +64,7 @@ export function ResultScreen({
           夜の帳が下りた。記憶を積み重ねし者が、今宵の勝者となる。
         </span>
       </div>
-      <div className="sp-screen__body">
+      <div className="sp-screen__body sp-result-enter">
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
           <ResultFrame
             title={
@@ -121,7 +121,7 @@ export function ResultScreen({
                     ))}
                   </div>
                   <InkDivider />
-                  <ScoreBreakdown breakdown={breakdown} />
+                  <ScoreBreakdown breakdown={breakdown} animateTotal />
                   {breakdown.warnings.length > 0 && (
                     <p style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)' }}>
                       {breakdown.warnings.map((w) => w.message).join(' / ')}

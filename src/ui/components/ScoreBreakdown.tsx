@@ -1,8 +1,22 @@
 import type { ResultBreakdown } from '../../domain/score';
+import { useCountUp } from '../hooks/useCountUp';
 import './components.css';
 
+function TotalPoints({ value, animate }: { value: number; animate: boolean }) {
+  const shown = useCountUp(animate ? value : 0);
+  return (
+    <span className="sp-score-breakdown__total-points">{animate ? shown : value}</span>
+  );
+}
+
 // 得点内訳の表示。計算はengineのResultBreakdownを描画するだけ。
-export function ScoreBreakdown({ breakdown }: { breakdown: ResultBreakdown }) {
+export function ScoreBreakdown({
+  breakdown,
+  animateTotal = false,
+}: {
+  breakdown: ResultBreakdown;
+  animateTotal?: boolean;
+}) {
   return (
     <div className="sp-score-breakdown">
       <div className="sp-score-breakdown__row">
@@ -32,7 +46,7 @@ export function ScoreBreakdown({ breakdown }: { breakdown: ResultBreakdown }) {
       ))}
       <div className="sp-score-breakdown__total">
         <span>合計得点</span>
-        <span className="sp-score-breakdown__total-points">{breakdown.totalPoints}</span>
+        <TotalPoints value={breakdown.totalPoints} animate={animateTotal} />
       </div>
     </div>
   );
