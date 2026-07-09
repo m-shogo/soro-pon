@@ -32,13 +32,17 @@ function buildInstanceMap(state: MatchState): Map<string, TileInstance> {
 export function ResultScreen({
   deck,
   state,
+  coinsEarned,
   onRematch,
   onBackToTop,
+  onCollection,
 }: {
   deck: DeckProject;
   state: MatchState;
+  coinsEarned?: number;
   onRematch: () => void;
   onBackToTop: () => void;
+  onCollection: () => void;
 }) {
   const result = state.result;
   const breakdown = result?.breakdown;
@@ -137,8 +141,26 @@ export function ResultScreen({
               ))}
             </ul>
           </PaperPanel>
+          {coinsEarned !== undefined && (
+            <PaperPanel title="獲得した記憶コイン">
+              <span
+                style={{
+                  fontFamily: 'var(--sp-font-family-num)',
+                  fontSize: 'var(--sp-font-xl)',
+                }}
+              >
+                +{coinsEarned}
+              </span>
+              <p style={{ margin: 0, fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)' }}>
+                コインは見た目と記録のためのもの。対局は強くなりません。
+              </p>
+            </PaperPanel>
+          )}
           <Button variant="primary" onClick={onRematch} subLabel="同じメンバーで再戦する">
             もう一局
+          </Button>
+          <Button variant="ink" onClick={onCollection}>
+            記憶帳を見る
           </Button>
           <Button variant="ink" onClick={onBackToTop}>
             TOPへ

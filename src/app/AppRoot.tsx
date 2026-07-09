@@ -1,17 +1,23 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import starterRaw from '../../samples/animal-starter.deck.json';
 import { createDeckTemplate } from './createdDeckTemplate';
 import type { DeckProject } from '../domain/deck';
+import type { MatchState } from '../domain/match';
 import type { DeckValidationResult } from '../domain/validation';
 import { parseDeckImport } from '../engine/import/parseDeckImport';
 import { validateDeckProject } from '../engine/validation/validateDeckProject';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
 import { createLocalStorageDeckStore } from '../storage/localStorageDeckStore';
+import {
+  buildMatchRecord,
+  createLocalStorageRecordsStore,
+} from '../storage/localStorageRecordsStore';
 import { createLocalStorageSettingsStore } from '../storage/localStorageSettingsStore';
 import { Badge } from '../ui/components/Badge';
 import { Button } from '../ui/components/Button';
 import { Modal } from '../ui/components/Modal';
 import { useMatchController } from '../ui/hooks/useMatchController';
+import { CollectionScreen } from '../ui/screens/CollectionScreen';
 import { DeckDetailScreen } from '../ui/screens/DeckDetailScreen';
 import { DeckEditorScreen } from '../ui/screens/DeckEditorScreen';
 import { DeckListScreen } from '../ui/screens/DeckListScreen';
@@ -26,6 +32,7 @@ type Screen =
   | { kind: 'deckDetail'; deckId: string }
   | { kind: 'deckEditor'; deckId: string }
   | { kind: 'matchSetup'; deckId: string }
+  | { kind: 'collection' }
   | { kind: 'match'; deckId: string; playerCount: 3 | 4; seed: number };
 
 const OFFICIAL_STARTER_ID = 'official-animal-starter';
@@ -38,6 +45,8 @@ function MatchSession({
   insightMode,
   onExit,
   onRematch,
+  onCollection,
+  onResult,
 }: {
   deck: DeckProject;
   playerCount: 3 | 4;
@@ -45,16 +54,28 @@ function MatchSession({
   insightMode: 'beginner' | 'normal' | 'advanced';
   onExit: () => void;
   onRematch: () => void;
+  onCollection: () => void;
+  onResult: (state: MatchState) => number;
 }) {
   const variant = deck.variants.find((v) => v.id === deck.activeVariantId)!;
   const controller = useMatchController({ deck, variant, playerCount, seed, insightMode });
+  const recordedRef = useRef(false);
+  const [coinsEarned, setCoinsEarned] = useState<number | null>(null);
+  useEffect(() => {
+    if (controller.state.phase === 'result' && !recordedRef.current) {
+      recordedRef.current = true;
+      setCoinsEarned(onResult(controller.state));
+    }
+  }, [controller.state, onResult]);
   if (controller.state.phase === 'result') {
     return (
       <ResultScreen
         deck={deck}
         state={controller.state}
+        {...(coinsEarned !== null ? { coinsEarned } : {})}
         onRematch={onRematch}
         onBackToTop={onExit}
+        onCollection={onCollection}
       />
     );
   }
@@ -70,6 +91,10 @@ export function AppRoot() {
     () => createLocalStorageSettingsStore(window.localStorage),
     [],
   );
+  const recordsStore = useMemo(
+    () => createLocalStorageRecordsStore(window.localStorage),
+    [],
+  );
 
   const [bootNotices] = useState<string[]>(() => {
     // 初回起動: 公式スターターを保存(strict parse経由)
@@ -83,6 +108,8 @@ export function AppRoot() {
     return issues.map((issue) => issue.message);
   });
 
+  const [recordsVersion, setRecordsVersion] = useState(0);
+  const records = useMemo(() => recordsStore.load().records, [recordsStore, recordsVersion]);
   const [decksVersion, setDecksVersion] = useState(0);
   const decks = useMemo(() => deckStore.loadAll().decks, [deckStore, decksVersion]);
   const settings = useMemo(() => settingsStore.load().settings, [settingsStore]);
@@ -139,6 +166,43 @@ export function AppRoot() {
     URL.revokeObjectURL(url);
   };
 
+  // 対局終了時の記録。人間勝利ならコイン=totalPoints(cap 500)、他は参加報酬。
+  const recordMatch = useCallback(
+    (finalState: MatchState): number => {
+      const result = finalState.result;
+      const deck = decks.find((d) => d.deck.id === finalState.deckProjectId)?.deck;
+      if (!result || !deck) {
+        return 0;
+      }
+      const winner = finalState.players.find((p) => p.id === result.winnerPlayerId);
+      const humanWon = winner?.kind === 'human';
+      const breakdown = result.breakdown;
+      const record = buildMatchRecord({
+        dateMs: Date.now(),
+        deckId: deck.id,
+        deckName: deck.name,
+        reason: result.reason,
+        winnerName: winner?.name ?? '',
+        humanWon,
+        ...(breakdown !== undefined
+          ? {
+              selectedWinRoleId: breakdown.selectedWinRoleId,
+              selectedWinRoleName: breakdown.selectedWinRoleName,
+              totalPoints: breakdown.totalPoints,
+            }
+          : {}),
+      });
+      const roleKey =
+        humanWon && breakdown !== undefined
+          ? `${deck.id}:${breakdown.selectedWinRoleId}`
+          : undefined;
+      recordsStore.addRecord(record, roleKey);
+      setRecordsVersion((v) => v + 1);
+      return record.coinsEarned;
+    },
+    [decks, recordsStore],
+  );
+
   const importModal = (
     <Modal
       open={importOpen}
@@ -191,6 +255,9 @@ export function AppRoot() {
             onPlayNow={() => setScreen({ kind: 'matchSetup', deckId: OFFICIAL_STARTER_ID })}
             onDeckList={() => setScreen({ kind: 'deckList' })}
             onImport={() => setImportOpen(true)}
+            onCollection={() => setScreen({ kind: 'collection' })}
+            coins={records.coins}
+            recentRecords={records.records.slice(0, 3)}
           />
         );
       }
@@ -267,6 +334,14 @@ export function AppRoot() {
           />
         );
       }
+      case 'collection':
+        return (
+          <CollectionScreen
+            records={records}
+            decks={decks}
+            onBack={() => setScreen({ kind: 'top' })}
+          />
+        );
       case 'match': {
         const deck = deckOf(screen.deckId);
         if (!deck) {
@@ -279,6 +354,8 @@ export function AppRoot() {
             playerCount={screen.playerCount}
             seed={screen.seed}
             insightMode={settings.insightMode}
+            onResult={recordMatch}
+            onCollection={() => setScreen({ kind: 'collection' })}
             onExit={() => setScreen({ kind: 'top' })}
             onRematch={() =>
               setScreen({

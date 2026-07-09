@@ -46,3 +46,39 @@ export const DEFAULT_SETTINGS: SettingsPayload = {
   insightMode: 'normal',
   preferredPlayerCount: 3,
 };
+
+// 対局記録(docs/29の最小構成)。コインは強さに影響しない。
+export const matchRecordSchema = z
+  .object({
+    dateMs: z.number().int().nonnegative(),
+    deckId: z.string().min(1).max(64),
+    deckName: z.string().min(1).max(80),
+    reason: z.enum(['tsumo', 'ron', 'draw']),
+    winnerName: z.string().max(80),
+    humanWon: z.boolean(),
+    selectedWinRoleId: z.string().max(64).optional(),
+    selectedWinRoleName: z.string().max(80).optional(),
+    totalPoints: z.number().int().nonnegative().optional(),
+    coinsEarned: z.number().int().nonnegative(),
+  })
+  .strict();
+
+export const recordsPayloadSchema = z
+  .object({
+    version: z.literal(1),
+    coins: z.number().int().nonnegative(),
+    records: z.array(matchRecordSchema).max(100),
+    /** 一度でもあがったwin_roleのID(deckId:roleId) */
+    roleCollection: z.array(z.string().min(1).max(160)).max(500),
+  })
+  .strict();
+
+export type MatchRecord = z.infer<typeof matchRecordSchema>;
+export type RecordsPayload = z.infer<typeof recordsPayloadSchema>;
+
+export const EMPTY_RECORDS: RecordsPayload = {
+  version: 1,
+  coins: 0,
+  records: [],
+  roleCollection: [],
+};
