@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './ui/styles/tokens.css';
 import './ui/styles/base.css';
+import { AppRoot } from './app/AppRoot';
 import { AssetProvider } from './ui/assets/AssetProvider';
 import { useResponsiveMetrics } from './ui/layout/useResponsiveMetrics';
 import { RotatePrompt } from './ui/components/RotatePrompt';
@@ -28,7 +29,7 @@ export function App() {
     <AssetProvider>
       <div className="sp-game-shell" data-density={metrics.density}>
         <div className="sp-game-safe-area">
-          {hash === '#/gallery' ? <ComponentGallery /> : <ComponentGallery />}
+          {hash === '#/gallery' ? <ComponentGallery /> : <AppRoot />}
         </div>
       </div>
     </AssetProvider>
