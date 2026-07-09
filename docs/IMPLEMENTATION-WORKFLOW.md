@@ -250,6 +250,45 @@ animal starterで3人/4人対局が最後まで破綻なく遊べる(ツモ/ロ�
 MANUAL-QA / ACCEPTANCE-CRITERIA / RELEASE-DEMO-GATES 全通過
 ```
 
+## Manual QA Report (Phase 12)
+
+```text
+Date: 2026-07-09
+Commit: 7d31224
+Browser/device: Chromium (Claude Preview) / macOS
+Viewport: 844x390 / 852x393 / 932x430 / 1024x600 / 1366x768
+```
+
+Passed:
+
+```text
+TOP -> 対局設定 -> 対局 -> Result の一連フロー(ブラウザ実機)
+牌選択 -> 捨てる -> CPU2人の手番 -> 自分の番のループ
+Result: 勝者/選択役/3グループ/ボーナス内訳/獲得コイン表示
+記憶帳: コイン/あがった役/高得点Top10/最近の記録
+デッキ一覧 -> 詳細(検証結果表示) -> 編集
+エディタ: タブ(基本/カテゴリ/牌/役)、テンプレート役追加、live検証(R4007即検出)
+未保存離脱の確認ダイアログ(U9502)
+unsafe JSON importのUI拒否(I2004コード表示)
+schema不正デッキの保存ブロック(store全消し防止)
+縦画面でrotate prompt
+844x390/852x393でレイアウト・可読性・タップ性OK
+932x430/1024x600はDOMメトリクスでshellフィル確認(スクショツールのキャプチャ領域は要再確認)
+1366x768で間延びなし
+```
+
+Known issues / 未対応:
+
+```text
+specificSetテンプレートは未提供(役エディタは3テンプレートのみ)
+special_bonus / scoreBonusのエディタ編集は未対応(import/公式デッキ経由のみ)
+クリアボード(実績25マス)/称号は未実装(docs/29のMVP項目、次フェーズ)
+アセットは全slot placeholder(CSS/SVG fallback)。リクエストはdocs/asset-requests/に5件
+Result count-up演出などのモーション磨き込みは未着手
+```
+
+Decision: pass(MVPコアフロー成立。上記known issuesは次の磨き込みへ)
+
 ## Standing Rules
 
 ```text
