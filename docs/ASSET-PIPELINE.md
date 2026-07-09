@@ -19,6 +19,20 @@ When the coded UI needs real visuals, implementation should create an asset requ
 8. run screenshot review
 ```
 
+## Asset Slot System (implementation contract)
+
+UI components must not hardcode image paths.
+
+```text
+- Components reference asset slot names only (src/ui/assets/slots.ts)
+- Slot registry: public/assets/ui/soro-pon/asset-slots.json
+- Slot table for humans: public/assets/ui/soro-pon/ASSET-MANIFEST.md
+- Final PNGs live in public/assets/ui/soro-pon/generated/final/
+- Missing PNG -> CSS/SVG fallback keeps UI fully usable
+- Swapping art = place file + update asset-slots.json only (no DOM/logic change)
+- Layout, hit areas, state, and text never depend on images
+```
+
 ## Asset Request Location
 
 Use:

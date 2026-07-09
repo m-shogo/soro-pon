@@ -1,0 +1,515 @@
+/* 共通components: tokensのみ使用。画面ごとの独自ボタン/パネルは禁止。 */
+
+/* ================= Button ================= */
+.sp-button {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: var(--sp-touch-min);
+  padding: var(--sp-space-8) var(--sp-space-16);
+  border: var(--sp-border-ink);
+  border-radius: var(--sp-radius-md);
+  font-family: var(--sp-font-family);
+  font-size: var(--sp-font-md);
+  line-height: var(--sp-line-tight);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform var(--sp-motion-micro) var(--sp-ease-out),
+    box-shadow var(--sp-motion-hover) var(--sp-ease-out),
+    filter var(--sp-motion-hover) var(--sp-ease-out);
+}
+
+.sp-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.sp-button:disabled {
+  cursor: default;
+  filter: grayscale(0.5) brightness(0.7);
+  opacity: 0.6;
+}
+
+.sp-button__sub {
+  font-size: var(--sp-font-xs);
+  opacity: 0.75;
+}
+
+.sp-button--paper {
+  background:
+    linear-gradient(160deg, var(--sp-color-paper-highlight), var(--sp-color-paper) 40%, var(--sp-color-paper-aged));
+  color: var(--sp-color-ink);
+  box-shadow: var(--sp-shadow-panel);
+}
+
+.sp-button--paper:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.sp-button--ink {
+  background: linear-gradient(160deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  color: var(--sp-color-cream);
+  border: var(--sp-border-paper-edge);
+}
+
+.sp-button--ink:hover:not(:disabled) {
+  filter: brightness(1.2);
+}
+
+.sp-button--primary {
+  background: linear-gradient(160deg, var(--sp-color-crimson-bright), var(--sp-color-crimson));
+  color: var(--sp-color-cream);
+  min-height: var(--sp-touch-primary);
+  font-size: var(--sp-font-lg);
+}
+
+.sp-button--primary:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+.sp-button--ghost {
+  background: transparent;
+  color: var(--sp-color-cream-dim);
+  border: 1px solid rgba(233, 220, 188, 0.25);
+}
+
+.sp-button--ghost:hover:not(:disabled) {
+  color: var(--sp-color-cream);
+}
+
+/* ロン/ツモなど勝負どころだけ一段強い光 */
+.sp-button--lantern {
+  box-shadow: var(--sp-shadow-lantern-strong);
+  border: var(--sp-border-lantern);
+}
+
+/* ================= PaperPanel ================= */
+.sp-paper-panel {
+  position: relative;
+  border-radius: var(--sp-radius-lg);
+  box-shadow: var(--sp-shadow-panel);
+  padding: var(--sp-space-12);
+  color: var(--sp-color-ink);
+  background:
+    radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(165deg, var(--sp-color-paper) 60%, var(--sp-color-paper-aged));
+}
+
+.sp-paper-panel--aged {
+  background:
+    radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
+    linear-gradient(165deg, var(--sp-color-paper-aged) 55%, var(--sp-color-paper-dark));
+}
+
+.sp-paper-panel--ink {
+  background: linear-gradient(165deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  color: var(--sp-color-cream);
+  border: var(--sp-border-paper-edge);
+}
+
+.sp-paper-panel--selected {
+  box-shadow: var(--sp-shadow-panel), var(--sp-shadow-lantern-soft);
+}
+
+.sp-paper-panel__title {
+  margin: 0 0 var(--sp-space-8);
+  font-size: var(--sp-font-md);
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: var(--sp-space-4);
+  opacity: 0.9;
+}
+
+/* ================= TileCard ================= */
+.sp-tile {
+  position: relative;
+  width: var(--tile-w, 48px);
+  height: var(--tile-h, 64px);
+  aspect-ratio: 3 / 4;
+  border-radius: var(--sp-radius-sm);
+  border: var(--sp-border-ink);
+  background:
+    linear-gradient(170deg, var(--sp-color-paper-highlight) 0%, var(--sp-color-paper) 55%, var(--sp-color-paper-aged));
+  box-shadow: var(--sp-shadow-tile);
+  color: var(--sp-color-ink);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    transform var(--sp-motion-tile) var(--sp-ease-out),
+    box-shadow var(--sp-motion-tile) var(--sp-ease-out);
+}
+
+.sp-tile:disabled {
+  cursor: default;
+}
+
+.sp-tile--selected {
+  transform: translateY(calc(var(--tile-h, 64px) * -0.18));
+  box-shadow: var(--sp-shadow-tile-raised), var(--sp-shadow-lantern-soft);
+  border: var(--sp-border-lantern);
+}
+
+.sp-tile--dimmed {
+  filter: brightness(0.72) saturate(0.7);
+}
+
+.sp-tile--win {
+  box-shadow: var(--sp-shadow-tile-raised), var(--sp-shadow-lantern-strong);
+  border: var(--sp-border-lantern);
+}
+
+.sp-tile--back {
+  background: linear-gradient(170deg, #2c2115, var(--sp-color-ink-panel));
+  border: var(--sp-border-paper-edge);
+}
+
+.sp-tile__band {
+  height: 22%;
+  min-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--sp-font-xs);
+  line-height: 1;
+  color: var(--sp-color-cream);
+  background: color-mix(in srgb, var(--tile-category-color, #666) 78%, black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 var(--sp-space-2);
+}
+
+.sp-tile__face {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--tile-h, 64px) * 0.34);
+  line-height: 1;
+}
+
+.sp-tile__name {
+  font-size: var(--sp-font-xs);
+  text-align: center;
+  line-height: var(--sp-line-tight);
+  padding: 0 var(--sp-space-2) var(--sp-space-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-tile__back-mark {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sp-color-cream-dim);
+  font-size: calc(var(--tile-h, 64px) * 0.3);
+  opacity: 0.5;
+}
+
+/* ================= CategoryChip ================= */
+.sp-category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-space-4);
+  padding: 2px var(--sp-space-8);
+  border-radius: var(--sp-radius-sm);
+  border: var(--sp-border-ink);
+  background: var(--sp-color-paper-aged);
+  color: var(--sp-color-ink);
+  font-size: var(--sp-font-xs);
+  line-height: var(--sp-line-tight);
+}
+
+.sp-category-chip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  background: var(--chip-color, #666);
+}
+
+/* ================= Badge ================= */
+.sp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-space-4);
+  padding: 2px var(--sp-space-8);
+  border-radius: var(--sp-radius-sm);
+  border: var(--sp-border-ink);
+  font-size: var(--sp-font-xs);
+  line-height: var(--sp-line-tight);
+}
+
+.sp-badge--warning {
+  background: color-mix(in srgb, var(--sp-color-danger) 24%, var(--sp-color-paper));
+  color: var(--sp-color-ink);
+}
+
+.sp-badge--info {
+  background: var(--sp-color-paper-aged);
+  color: var(--sp-color-ink-soft);
+}
+
+/* ================= PlayerPanel ================= */
+.sp-player-panel {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-8);
+  padding: var(--sp-space-6) var(--sp-space-8);
+  border-radius: var(--sp-radius-md);
+  background: linear-gradient(160deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  border: var(--sp-border-paper-edge);
+  color: var(--sp-color-cream);
+  min-width: 0;
+}
+
+.sp-player-panel--active {
+  border: var(--sp-border-lantern);
+  box-shadow: var(--sp-shadow-lantern-soft);
+}
+
+.sp-player-panel__seal {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sp-color-paper-aged);
+  color: var(--sp-color-ink);
+  font-size: var(--sp-font-sm);
+  border: var(--sp-border-ink);
+}
+
+.sp-player-panel__info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-player-panel__name {
+  font-size: var(--sp-font-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-player-panel__meta {
+  font-size: var(--sp-font-xs);
+  color: var(--sp-color-cream-dim);
+  white-space: nowrap;
+}
+
+/* ================= ActionPanel ================= */
+.sp-action-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-8);
+  justify-content: flex-start;
+}
+
+.sp-action-panel .sp-button {
+  width: 100%;
+}
+
+/* ================= RoleCard ================= */
+.sp-role-card {
+  border-radius: var(--sp-radius-md);
+  border: var(--sp-border-ink);
+  background: linear-gradient(165deg, var(--sp-color-paper) 60%, var(--sp-color-paper-aged));
+  color: var(--sp-color-ink);
+  padding: var(--sp-space-8) var(--sp-space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-4);
+}
+
+.sp-role-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-space-8);
+}
+
+.sp-role-card__name {
+  font-size: var(--sp-font-md);
+  font-weight: 600;
+}
+
+.sp-role-card__points {
+  font-family: var(--sp-font-family-num);
+  font-size: var(--sp-font-md);
+  white-space: nowrap;
+}
+
+.sp-role-card__explanation {
+  font-size: var(--sp-font-xs);
+  color: var(--sp-color-ink-soft);
+  line-height: var(--sp-line-normal);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sp-role-card__state {
+  align-self: flex-start;
+  font-size: var(--sp-font-xs);
+  padding: 1px var(--sp-space-6);
+  border-radius: var(--sp-radius-sm);
+  border: var(--sp-border-ink);
+}
+
+.sp-role-card__state--completed {
+  background: var(--sp-color-lantern-0);
+  color: var(--sp-color-ink);
+}
+
+.sp-role-card__state--tenpai {
+  background: var(--sp-color-paper-highlight);
+}
+
+.sp-role-card__state--near {
+  background: transparent;
+  color: var(--sp-color-ink-soft);
+}
+
+.sp-role-card--completed {
+  box-shadow: var(--sp-shadow-lantern-soft);
+  border: var(--sp-border-lantern);
+}
+
+/* ================= ScoreBreakdown ================= */
+.sp-score-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-4);
+  color: inherit;
+}
+
+.sp-score-breakdown__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-space-12);
+  font-size: var(--sp-font-sm);
+  line-height: var(--sp-line-normal);
+}
+
+.sp-score-breakdown__row--sub {
+  font-size: var(--sp-font-xs);
+  opacity: 0.8;
+}
+
+.sp-score-breakdown__points {
+  font-family: var(--sp-font-family-num);
+  white-space: nowrap;
+}
+
+.sp-score-breakdown__total {
+  margin-top: var(--sp-space-6);
+  padding: var(--sp-space-6) var(--sp-space-12);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--sp-color-ink);
+  color: var(--sp-color-cream);
+  border-radius: var(--sp-radius-sm);
+  font-size: var(--sp-font-md);
+}
+
+.sp-score-breakdown__total-points {
+  font-family: var(--sp-font-family-num);
+  font-size: var(--sp-font-xl);
+}
+
+/* ================= Modal ================= */
+.sp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sp-z-modal);
+  background: rgba(10, 7, 4, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-space-16);
+  animation: sp-fade-in var(--sp-motion-modal) var(--sp-ease-out);
+}
+
+.sp-modal {
+  max-width: min(560px, 92svw);
+  max-height: 88svh;
+  overflow: auto;
+  width: 100%;
+}
+
+@keyframes sp-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ================= Tab ================= */
+.sp-tabs {
+  display: flex;
+  gap: var(--sp-space-4);
+  border-bottom: 1px solid rgba(233, 220, 188, 0.25);
+}
+
+.sp-tab {
+  padding: var(--sp-space-6) var(--sp-space-12);
+  min-height: 36px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--sp-color-cream-dim);
+  font-size: var(--sp-font-sm);
+  cursor: pointer;
+}
+
+.sp-tab--active {
+  color: var(--sp-color-cream);
+  border-bottom-color: var(--sp-color-lantern-0);
+}
+
+/* ================= RotatePrompt ================= */
+.sp-rotate-prompt {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sp-z-rotate-prompt);
+  background: var(--sp-color-night);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-space-12);
+  color: var(--sp-color-cream);
+  text-align: center;
+  padding: var(--sp-space-24);
+}
+
+.sp-rotate-prompt__icon {
+  font-size: 44px;
+  animation: sp-rotate-hint 1.6s var(--sp-ease-in-out) infinite;
+}
+
+@keyframes sp-rotate-hint {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(90deg);
+  }
+}
