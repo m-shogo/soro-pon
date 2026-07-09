@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import type { CategoryDefinition } from '../../domain/category';
 import type { DeckProject } from '../../domain/deck';
 import type { TileDefinition } from '../../domain/tile';
-import type { WinRole } from '../../domain/role';
+import type { ScoreBonus, SpecialBonus, WinRole } from '../../domain/role';
 import { validateDeckProject } from '../../engine/validation/validateDeckProject';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
@@ -228,6 +228,98 @@ export function DeckEditorScreen({
   };
 
   const [templateCategoryId, setTemplateCategoryId] = useState('');
+  const [setTileIds, setSetTileIds] = useState<[string, string, string]>(['', '', '']);
+
+  // specificSet + 同カテゴリ2組 (100点) テンプレート
+  const addSpecificSetRole = () => {
+    if (setTileIds.some((id) => id === '') || templateCategoryId === '') {
+      return;
+    }
+    const names = setTileIds.map(
+      (tileId) => draft.tiles.find((t) => t.id === tileId)?.name ?? tileId,
+    );
+    const category = draft.categories.find((c) => c.id === templateCategoryId);
+    updateVariant((variant) => {
+      const id = nextId('role', variant.winRoles.map((r) => r.id));
+      const role: WinRole = {
+        id,
+        name: `${names[0]}たちの記憶`,
+        kind: 'win_role',
+        family: 'specificCollection',
+        basePoints: 100,
+        requiredGroups: [
+          { groupType: 'specificSet', tileIds: [...setTileIds], count: 1 },
+          { groupType: 'sameCategory', categoryId: templateCategoryId, count: 2 },
+        ],
+        allowWildcard: true,
+        maxWildcards: 1,
+        priority: 40,
+        explanation: `${names.join('・')}の組と、${category?.name ?? ''}グループ2組をそろえる。`,
+        canTsumo: true,
+        canRon: true,
+      };
+      return { ...variant, winRoles: [...variant.winRoles, role] };
+    });
+  };
+
+  // ---- ボーナス操作 ----
+  const addSpecialBonus = (categoryId: string) => {
+    const category = draft.categories.find((c) => c.id === categoryId);
+    updateVariant((variant) => {
+      const id = nextId('bonus', variant.specialBonuses.map((b) => b.id));
+      const bonus: SpecialBonus = {
+        id,
+        name: `${category?.name ?? ''}あつめボーナス`,
+        kind: 'special_bonus',
+        points: 20,
+        condition: { type: 'countByCategory', categoryId, minCount: 3 },
+        allowWildcard: true,
+        maxWildcards: 1,
+        explanation: `${category?.name ?? ''}が3枚以上あれば加点。単体ではあがれない。`,
+      };
+      return { ...variant, specialBonuses: [...variant.specialBonuses, bonus] };
+    });
+  };
+  const updateSpecialBonus = (id: string, patch: Partial<SpecialBonus>) => {
+    updateVariant((variant) => ({
+      ...variant,
+      specialBonuses: variant.specialBonuses.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+    }));
+  };
+  const removeSpecialBonus = (id: string) => {
+    updateVariant((variant) => ({
+      ...variant,
+      specialBonuses: variant.specialBonuses.filter((b) => b.id !== id),
+    }));
+  };
+  const addScoreBonus = () => {
+    updateVariant((variant) => {
+      const id = nextId('scorebonus', variant.scoreBonuses.map((b) => b.id));
+      const bonus: ScoreBonus = {
+        id,
+        name: '同じ牌3枚ボーナス',
+        type: 'duplicate_tile',
+        minCount: 3,
+        points: 15,
+        maxPoints: 15,
+        description: '同じ牌を3枚持っている場合に加点。',
+        allowWildcard: false,
+      };
+      return { ...variant, scoreBonuses: [...variant.scoreBonuses, bonus] };
+    });
+  };
+  const updateScoreBonus = (id: string, patch: Partial<ScoreBonus>) => {
+    updateVariant((variant) => ({
+      ...variant,
+      scoreBonuses: variant.scoreBonuses.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+    }));
+  };
+  const removeScoreBonus = (id: string) => {
+    updateVariant((variant) => ({
+      ...variant,
+      scoreBonuses: variant.scoreBonuses.filter((b) => b.id !== id),
+    }));
+  };
 
   return (
     <div className="sp-screen">
@@ -262,6 +354,10 @@ export function DeckEditorScreen({
           { id: 'categories', label: `カテゴリ (${draft.categories.length})` },
           { id: 'tiles', label: `牌 (${draft.tiles.length})` },
           { id: 'roles', label: `役 (${activeVariant?.winRoles.length ?? 0})` },
+          {
+            id: 'bonuses',
+            label: `ボーナス (${(activeVariant?.specialBonuses.length ?? 0) + (activeVariant?.scoreBonuses.length ?? 0)})`,
+          },
         ]}
         activeId={tab}
         onSelect={setTab}
@@ -476,6 +572,45 @@ export function DeckEditorScreen({
                     同じ牌3枚×3組 (120点)
                   </Button>
                 </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 'var(--sp-space-8)',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    marginTop: 'var(--sp-space-8)',
+                  }}
+                >
+                  {([0, 1, 2] as const).map((slot) => (
+                    <select
+                      key={slot}
+                      aria-label={`セット牌${slot + 1}`}
+                      value={setTileIds[slot]}
+                      onChange={(e) => {
+                        const next: [string, string, string] = [...setTileIds];
+                        next[slot] = e.target.value;
+                        setSetTileIds(next);
+                      }}
+                    >
+                      <option value="">牌{slot + 1}を選ぶ</option>
+                      {draft.tiles.map((tile) => (
+                        <option key={tile.id} value={tile.id}>
+                          {tile.name}
+                        </option>
+                      ))}
+                    </select>
+                  ))}
+                  <Button
+                    variant="ink"
+                    disabled={setTileIds.some((id) => id === '') || templateCategoryId === ''}
+                    onClick={addSpecificSetRole}
+                  >
+                    指定3枚+同カテゴリ2組 (100点)
+                  </Button>
+                </div>
+                <p style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', margin: '4px 0 0' }}>
+                  指定セットは上のカテゴリ選択も使います(残り2組のカテゴリ)。
+                </p>
               </PaperPanel>
               <PaperPanel title="役の一覧">
                 <div className="sp-screen__col" style={{ gap: 'var(--sp-space-8)' }}>
@@ -506,6 +641,122 @@ export function DeckEditorScreen({
                         {role.explanation}
                       </span>
                       <Button variant="ghost" onClick={() => removeRole(role.id)}>
+                        削除
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </PaperPanel>
+            </>
+          )}
+          {tab === 'bonuses' && (
+            <>
+              <PaperPanel variant="aged" title="特別ボーナス(単体ではあがれない)">
+                <div style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap', marginBottom: 'var(--sp-space-8)' }}>
+                  <select
+                    aria-label="ボーナス用カテゴリ"
+                    value={templateCategoryId}
+                    onChange={(e) => setTemplateCategoryId(e.target.value)}
+                  >
+                    <option value="">カテゴリを選ぶ</option>
+                    {draft.categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="ink"
+                    disabled={templateCategoryId === ''}
+                    onClick={() => addSpecialBonus(templateCategoryId)}
+                  >
+                    カテゴリ3枚以上で加点 (20点)
+                  </Button>
+                </div>
+                <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
+                  {activeVariant?.specialBonuses.map((bonus) => (
+                    <div key={bonus.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input
+                        type="text"
+                        aria-label="ボーナス名"
+                        value={bonus.name}
+                        maxLength={30}
+                        style={{ width: '11em' }}
+                        onChange={(e) => updateSpecialBonus(bonus.id, { name: e.target.value })}
+                      />
+                      <input
+                        type="number"
+                        aria-label="ボーナス点数"
+                        min={1}
+                        max={300}
+                        value={bonus.points}
+                        onChange={(e) => {
+                          const value = Number.parseInt(e.target.value, 10);
+                          if (Number.isInteger(value) && value >= 1 && value <= 300) {
+                            updateSpecialBonus(bonus.id, { points: value });
+                          }
+                        }}
+                      />
+                      <span style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', flex: 1, minWidth: '10em' }}>
+                        {bonus.explanation}
+                      </span>
+                      <Button variant="ghost" onClick={() => removeSpecialBonus(bonus.id)}>
+                        削除
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </PaperPanel>
+              <PaperPanel title="スコアボーナス(機械的な加点)">
+                <div style={{ marginBottom: 'var(--sp-space-8)' }}>
+                  <Button variant="ink" onClick={addScoreBonus}>
+                    同じ牌3枚ボーナスを追加 (15点)
+                  </Button>
+                </div>
+                <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
+                  {activeVariant?.scoreBonuses.map((bonus) => (
+                    <div key={bonus.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input
+                        type="text"
+                        aria-label="スコアボーナス名"
+                        value={bonus.name}
+                        maxLength={30}
+                        style={{ width: '11em' }}
+                        onChange={(e) => updateScoreBonus(bonus.id, { name: e.target.value })}
+                      />
+                      <label className="sp-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
+                        点数
+                        <input
+                          type="number"
+                          aria-label="スコアボーナス点数"
+                          min={1}
+                          max={300}
+                          value={bonus.points}
+                          onChange={(e) => {
+                            const value = Number.parseInt(e.target.value, 10);
+                            if (Number.isInteger(value) && value >= 1 && value <= 300) {
+                              updateScoreBonus(bonus.id, { points: value });
+                            }
+                          }}
+                        />
+                      </label>
+                      <label className="sp-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
+                        上限
+                        <input
+                          type="number"
+                          aria-label="スコアボーナス上限"
+                          min={1}
+                          max={900}
+                          value={bonus.maxPoints ?? bonus.points}
+                          onChange={(e) => {
+                            const value = Number.parseInt(e.target.value, 10);
+                            if (Number.isInteger(value) && value >= 1 && value <= 900) {
+                              updateScoreBonus(bonus.id, { maxPoints: value });
+                            }
+                          }}
+                        />
+                      </label>
+                      <Button variant="ghost" onClick={() => removeScoreBonus(bonus.id)}>
                         削除
                       </Button>
                     </div>
