@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './ui/styles/tokens.css';
 import './ui/styles/base.css';
 import { AppRoot } from './app/AppRoot';
-import { AssetProvider } from './ui/assets/AssetProvider';
+import { SkinProvider } from './ui/skins/SkinProvider';
 import { useResponsiveMetrics } from './ui/layout/useResponsiveMetrics';
 import { RotatePrompt } from './ui/components/RotatePrompt';
 import { ComponentGallery } from './ui/gallery/ComponentGallery';
@@ -26,12 +26,12 @@ export function App() {
   }
 
   return (
-    <AssetProvider>
+    <SkinProvider>
       <div className="sp-game-shell" data-density={metrics.density}>
         <div className="sp-game-safe-area">
           {hash === '#/gallery' ? <ComponentGallery /> : <AppRoot />}
         </div>
       </div>
-    </AssetProvider>
+    </SkinProvider>
   );
 }

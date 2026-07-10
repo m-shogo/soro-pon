@@ -1,0 +1,87 @@
+/*
+ * Cute Pop skin tokens
+ * 一般向け / 明るい / 可愛い / 親しみやすい / ポップ
+ * 情報量と操作性はヨルノシルベ版と同じ。色・形・質感だけを変える。
+ */
+
+:root {
+  /* ---- color: 明るい背景 ---- */
+  --sp-color-night: #fff3e2;
+  --sp-color-night-soft: #ffe9d0;
+  --sp-color-wood: #ffdfc5;
+  --sp-color-ink-panel: #fff9f0;
+  --sp-color-ink-panel-raised: #ffffff;
+
+  /* ---- color: カード面(紙の代わりの白いカード) ---- */
+  --sp-color-paper: #ffffff;
+  --sp-color-paper-aged: #fff2dd;
+  --sp-color-paper-dark: #f6e2c8;
+  --sp-color-paper-highlight: #ffffff;
+
+  /* ---- color: 文字 ---- */
+  --sp-color-ink: #55402f;
+  --sp-color-ink-soft: #8a7360;
+  --sp-color-cream: #6b4f3f;
+  --sp-color-cream-dim: #a68d79;
+
+  /* ---- color: アクセント(サニーオレンジ) ---- */
+  --sp-color-lantern-0: #ffb347;
+  --sp-color-lantern-1: #ff9d2e;
+  --sp-color-lantern-glow: rgba(255, 179, 71, 0.45);
+
+  /* ---- color: 意味色 ---- */
+  --sp-color-crimson: #ff6f91;
+  --sp-color-crimson-bright: #ff8aa5;
+  --sp-color-danger: #e85d75;
+  --sp-color-success: #6fbf73;
+  --sp-color-focus: #ff9d2e;
+  --sp-color-chip-fallback: #b9a08c;
+
+  /* ---- border ---- */
+  --sp-border-ink: 1px solid rgba(85, 64, 47, 0.35);
+  --sp-border-paper-edge: 1px solid rgba(85, 64, 47, 0.15);
+  --sp-border-lantern: 1px solid rgba(255, 157, 46, 0.85);
+  --sp-border-soft: 1px solid rgba(85, 64, 47, 0.18);
+  --sp-border-dot: 1px solid rgba(85, 64, 47, 0.3);
+
+  /* ---- radius: 柔らかい形 ---- */
+  --sp-radius-sm: 8px;
+  --sp-radius-md: 14px;
+  --sp-radius-lg: 20px;
+
+  /* ---- shadow: 柔らかく軽い ---- */
+  --sp-shadow-panel: 0 4px 14px rgba(214, 148, 89, 0.22);
+  --sp-shadow-tile: 0 2px 5px rgba(214, 148, 89, 0.3);
+  --sp-shadow-tile-raised: 0 8px 16px rgba(214, 148, 89, 0.35);
+  --sp-shadow-lantern-soft: 0 0 12px rgba(255, 179, 71, 0.45);
+  --sp-shadow-lantern-strong: 0 0 22px rgba(255, 157, 46, 0.6);
+  --sp-shadow-lantern-pulse: 0 0 30px rgba(255, 157, 46, 0.7);
+
+  /* ---- 面のグラデーション ---- */
+  --sp-gradient-shell:
+    radial-gradient(ellipse 120% 90% at 82% 15%, rgba(255, 214, 140, 0.5), transparent 55%),
+    radial-gradient(ellipse 100% 100% at 20% 110%, rgba(255, 190, 205, 0.4), transparent 70%),
+    linear-gradient(170deg, #fff8ec, #ffe9d0 70%);
+  --sp-gradient-table:
+    radial-gradient(ellipse 90% 70% at 50% 42%, rgba(255, 255, 255, 0.75), transparent 65%),
+    radial-gradient(ellipse 120% 100% at 85% 8%, rgba(255, 214, 140, 0.45), transparent 55%),
+    linear-gradient(170deg, #ffe9d0, #ffd9b8 70%);
+  --sp-overlay-table-ink: radial-gradient(ellipse 40% 30% at 50% 45%, rgba(255, 190, 205, 0.3), transparent 70%);
+  --sp-overlay-table-light: radial-gradient(ellipse 50% 45% at 88% 10%, rgba(255, 214, 140, 0.4), transparent 60%);
+  --sp-overlay-scrim: rgba(90, 64, 44, 0.4);
+  --sp-overlay-panel: rgba(255, 255, 255, 0.9);
+  --sp-panel-sheen: radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.9), transparent 60%);
+  --sp-panel-sheen-soft: radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.6), transparent 60%);
+  --sp-gradient-button-paper: linear-gradient(160deg, #ffffff, #fff4e0 60%, #ffe9d0);
+  --sp-gradient-button-ink: linear-gradient(160deg, #ffffff, #fff3e2);
+  --sp-gradient-button-primary: linear-gradient(160deg, var(--sp-color-crimson-bright), var(--sp-color-crimson));
+  --sp-gradient-panel-paper: linear-gradient(165deg, #ffffff 60%, #fff2dd);
+  --sp-gradient-panel-aged: linear-gradient(165deg, #fff2dd 55%, #f6e2c8);
+  --sp-gradient-panel-ink: linear-gradient(165deg, #ffffff, #fff9f0);
+  --sp-gradient-tile-face: linear-gradient(170deg, #ffffff 0%, #fffaf2 55%, #fff2dd);
+  --sp-gradient-tile-back: linear-gradient(170deg, #ffd0dc, #ffb2c5);
+
+  /* ---- typography: 丸ゴシック ---- */
+  --sp-font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDGothic', 'Noto Sans JP', sans-serif;
+  --sp-font-family-num: 'Hiragino Maru Gothic ProN', 'BIZ UDGothic', 'Noto Sans JP', sans-serif;
+}

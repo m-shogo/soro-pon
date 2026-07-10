@@ -1,0 +1,11 @@
+{
+  "id": "yorunoshirube",
+  "label": "ヨルノシルベ",
+  "version": 1,
+  "skinContractVersion": 1,
+  "origin": "official",
+  "author": "soro-pon",
+  "inherits": "base",
+  "tokensFile": "tokens.css",
+  "slots": {}
+}

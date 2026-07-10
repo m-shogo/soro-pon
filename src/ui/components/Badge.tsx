@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import { useAssetBackgroundStyle } from '../assets/AssetProvider';
+import { useSkinSurfaceStyle } from '../skins/SkinSurface';
 import './components.css';
 
 export type BadgeVariant = 'warning' | 'info';
 
 // 検証結果などの小さなバッジ。状態は色だけでなく文言でも伝える。
 export function Badge({ variant, children }: { variant: BadgeVariant; children: ReactNode }) {
-  const assetStyle = useAssetBackgroundStyle(
+  const assetStyle = useSkinSurfaceStyle(
     variant === 'warning' ? 'badge.warning.background' : 'badge.info.background',
   );
   return (

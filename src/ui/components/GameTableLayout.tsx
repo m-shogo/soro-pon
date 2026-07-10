@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useAssetBackgroundStyle } from '../assets/AssetProvider';
+import { useSkinSurfaceStyle } from '../skins/SkinSurface';
 import './components.css';
 
 // 対局画面の卓レイアウト。docs/48 §5のgrid契約に従う。
@@ -18,9 +18,9 @@ export function GameTableLayout({
   hand: ReactNode;
   actions: ReactNode;
 }) {
-  const backgroundStyle = useAssetBackgroundStyle('table.background');
-  const inkStyle = useAssetBackgroundStyle('table.overlay.ink');
-  const lightStyle = useAssetBackgroundStyle('table.overlay.light');
+  const backgroundStyle = useSkinSurfaceStyle('table.background');
+  const inkStyle = useSkinSurfaceStyle('table.overlay.ink');
+  const lightStyle = useSkinSurfaceStyle('table.overlay.light');
   return (
     <div className="sp-match-layout sp-fallback-table-bg" style={backgroundStyle}>
       <div className="sp-match-layout__overlay sp-fallback-table-ink" style={inkStyle} />

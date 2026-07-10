@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "skinContractVersion": 1,
+  "defaultSkinId": "yorunoshirube",
+  "skins": [
+    {
+      "id": "base",
+      "label": "ベース(無画像フォールバック)",
+      "selectable": false
+    },
+    {
+      "id": "yorunoshirube",
+      "label": "ヨルノシルベ",
+      "selectable": true
+    },
+    {
+      "id": "cute-pop",
+      "label": "Cute Pop",
+      "selectable": true
+    }
+  ]
+}

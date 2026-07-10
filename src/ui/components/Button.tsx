@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { useAssetBackgroundStyle } from '../assets/AssetProvider';
+import { useSkinSurfaceStyle } from '../skins/SkinSurface';
 import type { AssetSlotName } from '../assets/slots';
 import './components.css';
 
@@ -40,7 +40,7 @@ export function Button({
   disabled,
   ...rest
 }: ButtonProps) {
-  const assetStyle = useAssetBackgroundStyle(slotFor(variant, disabled === true));
+  const assetStyle = useSkinSurfaceStyle(slotFor(variant, disabled === true));
   const cssVariant = variant === 'danger' ? 'primary' : variant;
   const classes = [
     'sp-button',

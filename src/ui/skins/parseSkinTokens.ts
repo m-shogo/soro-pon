@@ -45,15 +45,15 @@ export function parseSkinTokens(cssText: string): ParseSkinTokensResult {
     return { tokens: {}, issues: ['tokensファイルが大きすぎます'] };
   }
 
-  // コメントを除去してから宣言単位で読む
-  const withoutComments = cssText.replace(/\/\*[\s\S]*?\*\//g, '');
+  // コメント・:rootセレクタ・波括弧を除去し、`;`区切りの宣言として読む
+  // (宣言は複数行にまたがってよい。フォントスタック等)
+  const withoutComments = cssText
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/:root\s*\{/g, '')
+    .replace(/[{}]/g, '');
 
-  for (const rawLine of withoutComments.split(/[;\n]/)) {
-    const line = rawLine.trim();
-    if (line === '' || line.startsWith(':root') || line === '{' || line === '}') {
-      continue;
-    }
-    const cleaned = line.replace(/^[{}]+|[{}]+$/g, '').trim();
+  for (const rawDeclaration of withoutComments.split(';')) {
+    const cleaned = rawDeclaration.replace(/\s+/g, ' ').trim();
     if (cleaned === '') {
       continue;
     }

@@ -1,0 +1,97 @@
+/*
+ * soro-pon UI tokens
+ * 正: docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1 の10枚
+ * ルール: 画面CSSに色コードを直書きしない。新色はここに理由コメント付きで追加する。
+ */
+
+:root {
+  /* ---- color: 夜の机 ---- */
+  --sp-color-night: #120d08; /* 最背面の夜机 */
+  --sp-color-night-soft: #1c150d; /* パネル間の背景 */
+  --sp-color-wood: #241a10; /* 机の木目ベース */
+  --sp-color-ink-panel: #17110b; /* 黒インク系パネル(TOPメニュー背景) */
+  --sp-color-ink-panel-raised: #221a11; /* 浮いた黒パネル */
+
+  /* ---- color: 紙 ---- */
+  --sp-color-paper: #d9c9a6; /* 標準の紙 */
+  --sp-color-paper-aged: #c9b890; /* 古い紙(リスト/サブパネル) */
+  --sp-color-paper-dark: #a8946e; /* 影側の紙 */
+  --sp-color-paper-highlight: #efe3c4; /* 選択中の紙(ランタンに照らされた紙) */
+
+  /* ---- color: インクと文字 ---- */
+  --sp-color-ink: #241a10; /* 紙上の黒インク文字 */
+  --sp-color-ink-soft: #4a3a26; /* 紙上の補足文字 */
+  --sp-color-cream: #e9dcbc; /* 夜背景上の文字 */
+  --sp-color-cream-dim: #a89877; /* 夜背景上の補足文字 */
+
+  /* ---- color: ランタン ---- */
+  --sp-color-lantern-0: #e8a23c; /* ランタン光の中心 */
+  --sp-color-lantern-1: #b97a26; /* ランタン光の縁 */
+  --sp-color-lantern-glow: rgba(232, 162, 60, 0.35); /* にじみ */
+
+  /* ---- color: 意味色(最小限) ---- */
+  --sp-color-crimson: #7c2018; /* 主要CTA/勝負どころ(深紅) */
+  --sp-color-crimson-bright: #9c3020; /* 押下/強調時の深紅 */
+  --sp-color-danger: #8a2c1e; /* 危険/警告のみ */
+  --sp-color-success: #4a5f38; /* 成功/完了のみ(苔色) */
+  --sp-color-focus: #e8a23c; /* focus-visible(ランタンと同系) */
+
+  /* ---- border ---- */
+  --sp-border-ink: 1px solid rgba(36, 26, 16, 0.85);
+  --sp-border-paper-edge: 1px solid rgba(233, 220, 188, 0.16);
+  --sp-border-lantern: 1px solid rgba(232, 162, 60, 0.7);
+
+  /* ---- spacing ---- */
+  --sp-space-2: 2px;
+  --sp-space-4: 4px;
+  --sp-space-6: 6px;
+  --sp-space-8: 8px;
+  --sp-space-12: 12px;
+  --sp-space-16: 16px;
+  --sp-space-24: 24px;
+
+  /* ---- radius ---- */
+  --sp-radius-sm: 3px; /* チップ/小要素 */
+  --sp-radius-md: 6px; /* ボタン/カード */
+  --sp-radius-lg: 10px; /* パネル/モーダル */
+
+  /* ---- shadow ---- */
+  --sp-shadow-panel: 0 2px 10px rgba(0, 0, 0, 0.55);
+  --sp-shadow-tile: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --sp-shadow-tile-raised: 0 6px 12px rgba(0, 0, 0, 0.6);
+  --sp-shadow-lantern-soft: 0 0 12px var(--sp-color-lantern-glow);
+  --sp-shadow-lantern-strong: 0 0 22px rgba(232, 162, 60, 0.55);
+
+  /* ---- typography ---- */
+  --sp-font-family:
+    'Hiragino Mincho ProN', 'Yu Mincho', 'BIZ UDMincho', 'Noto Serif JP', serif;
+  --sp-font-family-num: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  --sp-font-xs: clamp(10px, 1.15svh + 0.2rem, 12px);
+  --sp-font-sm: clamp(12px, 1.35svh + 0.25rem, 14px);
+  --sp-font-md: clamp(14px, 1.6svh + 0.3rem, 18px);
+  --sp-font-lg: clamp(18px, 2.2svh + 0.35rem, 24px);
+  --sp-font-xl: clamp(24px, 3.2svh + 0.4rem, 34px);
+  --sp-line-tight: 1.25;
+  --sp-line-normal: 1.5;
+
+  /* ---- z-index ---- */
+  --sp-z-board: 1;
+  --sp-z-hand: 10;
+  --sp-z-actions: 20;
+  --sp-z-overlay: 100;
+  --sp-z-modal: 200;
+  --sp-z-rotate-prompt: 300;
+
+  /* ---- motion ---- */
+  --sp-motion-micro: 100ms;
+  --sp-motion-hover: 150ms;
+  --sp-motion-modal: 200ms;
+  --sp-motion-tile: 220ms;
+  --sp-motion-win: 450ms;
+  --sp-ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --sp-ease-in-out: cubic-bezier(0.5, 0, 0.3, 1);
+
+  /* ---- layout ---- */
+  --sp-touch-min: 44px;
+  --sp-touch-primary: 54px;
+}

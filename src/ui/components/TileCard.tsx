@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, CSSProperties } from 'react';
-import { useAssetBackgroundStyle } from '../assets/AssetProvider';
+import { useSkinSurfaceStyle } from '../skins/SkinSurface';
 import type { AssetSlotName } from '../assets/slots';
 import './components.css';
 
@@ -53,7 +53,7 @@ export function TileCard({
   style,
   ...rest
 }: TileCardProps) {
-  const assetStyle = useAssetBackgroundStyle(slotFor(faceDown, selected, emphasis));
+  const assetStyle = useSkinSurfaceStyle(slotFor(faceDown, selected, emphasis));
   const classes = [
     'sp-tile',
     selected ? 'sp-tile--selected' : '',

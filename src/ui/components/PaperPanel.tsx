@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import { useAssetBackgroundStyle } from '../assets/AssetProvider';
+import { useSkinSurfaceStyle } from '../skins/SkinSurface';
 import type { AssetSlotName } from '../assets/slots';
 import './components.css';
 
@@ -30,7 +30,7 @@ export function PaperPanel({
       : selected
         ? 'panel.paper.emphasis'
         : 'panel.paper.default');
-  const assetStyle = useAssetBackgroundStyle(slot);
+  const assetStyle = useSkinSurfaceStyle(slot);
   const classes = [
     'sp-paper-panel',
     variant !== 'paper' ? `sp-paper-panel--${variant}` : '',

@@ -132,6 +132,18 @@ describe('parseSkinTokens', () => {
     expect(tokens['--sp-color-x']).toBeUndefined();
   });
 
+  it('複数行にまたがる宣言(フォントスタック等)をパースできる', () => {
+    const { tokens, issues } = parseSkinTokens(`:root {
+      --sp-font-family:
+        'Hiragino Mincho ProN', 'Yu Mincho', 'BIZ UDMincho', 'Noto Serif JP', serif;
+      --sp-shadow-panel:
+        0 2px 10px rgba(0, 0, 0, 0.55);
+    }`);
+    expect(issues).toEqual([]);
+    expect(tokens['--sp-font-family']).toContain('Mincho');
+    expect(tokens['--sp-shadow-panel']).toBe('0 2px 10px rgba(0, 0, 0, 0.55)');
+  });
+
   it('フォントは許可済みセットのみ受理する', () => {
     const ok = parseSkinTokens(
       `--sp-font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDGothic', 'Noto Sans JP', sans-serif;`,

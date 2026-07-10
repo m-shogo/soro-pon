@@ -1,0 +1,332 @@
+{
+  "id": "base",
+  "label": "ベース(無画像フォールバック)",
+  "version": 1,
+  "skinContractVersion": 1,
+  "origin": "official",
+  "author": "soro-pon",
+  "tokensFile": "tokens.css",
+  "slots": {
+    "table.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "cover",
+      "intrinsicSize": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "table.overlay.ink": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "overlay",
+      "intrinsicSize": {
+        "width": 1920,
+        "height": 1080
+      },
+      "transparent": true,
+      "opacity": 0.5
+    },
+    "table.overlay.light": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "overlay",
+      "intrinsicSize": {
+        "width": 1920,
+        "height": 1080
+      },
+      "transparent": true,
+      "opacity": 0.6
+    },
+    "panel.paper.default": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 384,
+        "height": 256
+      },
+      "nineSlice": {
+        "top": 24,
+        "right": 24,
+        "bottom": 24,
+        "left": 24
+      },
+      "contentSafeArea": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    "panel.paper.emphasis": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 384,
+        "height": 256
+      },
+      "nineSlice": {
+        "top": 24,
+        "right": 24,
+        "bottom": 24,
+        "left": 24
+      },
+      "contentSafeArea": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    "panel.modal.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 512,
+        "height": 384
+      },
+      "nineSlice": {
+        "top": 24,
+        "right": 24,
+        "bottom": 24,
+        "left": 24
+      },
+      "contentSafeArea": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      }
+    },
+    "panel.result.frame": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 512,
+        "height": 384
+      },
+      "nineSlice": {
+        "top": 32,
+        "right": 32,
+        "bottom": 32,
+        "left": 32
+      },
+      "contentSafeArea": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      }
+    },
+    "button.primary.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 240,
+        "height": 72
+      },
+      "nineSlice": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "contentSafeArea": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      }
+    },
+    "button.secondary.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 240,
+        "height": 72
+      },
+      "nineSlice": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "contentSafeArea": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      }
+    },
+    "button.danger.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 240,
+        "height": 72
+      },
+      "nineSlice": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "contentSafeArea": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      }
+    },
+    "button.disabled.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 240,
+        "height": 72
+      },
+      "nineSlice": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "contentSafeArea": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      }
+    },
+    "tile.face.base": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "stretch",
+      "intrinsicSize": {
+        "width": 300,
+        "height": 400
+      },
+      "transparent": true
+    },
+    "tile.face.selected": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "stretch",
+      "intrinsicSize": {
+        "width": 300,
+        "height": 400
+      },
+      "transparent": true
+    },
+    "tile.face.ronAvailable": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "stretch",
+      "intrinsicSize": {
+        "width": 300,
+        "height": 400
+      },
+      "transparent": true
+    },
+    "tile.face.tsumoAvailable": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "stretch",
+      "intrinsicSize": {
+        "width": 300,
+        "height": 400
+      },
+      "transparent": true
+    },
+    "tile.back.base": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "stretch",
+      "intrinsicSize": {
+        "width": 300,
+        "height": 400
+      },
+      "transparent": true
+    },
+    "badge.warning.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 120,
+        "height": 40
+      },
+      "nineSlice": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      },
+      "contentSafeArea": {
+        "top": 4,
+        "right": 4,
+        "bottom": 4,
+        "left": 4
+      }
+    },
+    "badge.info.background": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 120,
+        "height": 40
+      },
+      "nineSlice": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      },
+      "contentSafeArea": {
+        "top": 4,
+        "right": 4,
+        "bottom": 4,
+        "left": 4
+      }
+    },
+    "effect.result.burst": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "overlay",
+      "intrinsicSize": {
+        "width": 512,
+        "height": 512
+      },
+      "transparent": true
+    },
+    "effect.wildcard.glow": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "overlay",
+      "intrinsicSize": {
+        "width": 256,
+        "height": 256
+      },
+      "transparent": true
+    },
+    "effect.score.pop": {
+      "file": null,
+      "status": "placeholder",
+      "renderMode": "overlay",
+      "intrinsicSize": {
+        "width": 256,
+        "height": 256
+      },
+      "transparent": true
+    }
+  }
+}
