@@ -2,253 +2,111 @@
 
 ## Purpose
 
-Soro-pon is local-first, but custom deck import and future local images still create risk.
-
-This document defines what the MVP protects against.
+Soro-pon is local-first, but custom deck imports, local persistence, future images, and installed/paid skins create trust boundaries.
 
 ## Trust Boundaries
 
 Trusted:
 
 ```text
-app source code
-official sample decks in repository
-app-owned assets
+reviewed application source
+reviewed official sample decks
+reviewed bundled official assets
+reviewed bundled official skin packages
 ```
 
 Untrusted:
 
 ```text
-imported JSON
-user-created deck text
+imported deck JSON
+user-created text and IDs
 future user images
 localStorage payloads
-clipboard/imported files
+clipboard/files
 old migrated data
+future downloaded/paid skin packages
 ```
 
-## Primary Assets To Protect
+A paid skin is still untrusted data. Payment or marketplace approval must not grant code execution.
+
+## Assets To Protect
 
 ```text
-app integrity
+application integrity
+game-rule integrity
 user privacy
 local data stability
-browser performance
-clear user trust around imported decks
+browser responsiveness
+accessible hit areas and focus behavior
+skin/package ownership trust
 ```
 
-## Attack Surface
+## Deck / Import Threats
 
-```text
-JSON import
-localStorage restore
-future image upload
-deck export/import loop
-role/condition data
-large/deep custom decks
-text fields displayed in UI
-```
-
-## Threats and Mitigations
-
-### T1: Giant JSON Denial Of Service
-
-Risk:
-
-```text
-Huge imported file freezes browser.
-```
+### Giant or Deep JSON DoS
 
 Mitigation:
 
 ```text
-file size check before parse
-warn at 256KB
-reject at 512KB for MVP
+byte check before deep validation
+warn/reject limits
+maximum nesting depth
+strict array limits
+expensive validation only after safety gates
 ```
 
-### T2: Deep JSON Denial Of Service
-
-Risk:
-
-```text
-Deeply nested JSON causes recursive scan or parse issues.
-```
+### Prototype Pollution
 
 Mitigation:
 
 ```text
-unsafe scan should have max depth
-reject excessive nesting
-strict schema limits arrays
+reject __proto__/constructor/prototype anywhere
+safe iteration
+no unsafe merge of imported payloads
 ```
 
-### T3: Prototype Pollution
-
-Risk:
-
-```text
-Imported JSON includes __proto__, constructor, or prototype keys.
-```
+### Remote Tracking / URL Loading
 
 Mitigation:
 
 ```text
-unsafe key scan rejects prototype pollution keys anywhere
-use safe object iteration
-avoid object merge of untrusted payloads
+no URL fields in shared deck JSON
+no remote user-deck image loading
+reject imageUrl/src/href/filePath/blobUrl/base64 image fields
 ```
 
-### T4: Remote Tracking Through Images/URLs
-
-Risk:
-
-```text
-Imported deck references remote image URL and tracks users.
-```
-
-Mitigation:
-
-```text
-no URL fields in shared JSON
-no remote image loading
-no imageUrl/src/href fields
-```
-
-### T5: Script/HTML Injection
-
-Risk:
-
-```text
-Imported text contains HTML/script or UI renders unsafely.
-```
+### Script / HTML / Rule Plugin Injection
 
 Mitigation:
 
 ```text
 React text rendering only
-no dangerouslySetInnerHTML for deck content
-reject html/script/code/style keys
-```
-
-### T6: Local File Path Leakage
-
-Risk:
-
-```text
-Deck export includes local file paths or blob URLs.
-```
-
-Mitigation:
-
-```text
-shared export excludes local image data
-filePath/blobUrl rejected
-object URLs never persisted
-```
-
-### T7: Unicode Confusable IDs
-
-Risk:
-
-```text
-Tile/category IDs look identical but differ, causing spoofing or confusion.
-```
-
-Mitigation:
-
-```text
-restrict IDs to safe ASCII pattern
-normalize display names separately
-validate duplicate/confusable display names as warning
-```
-
-### T8: Duplicate IDs
-
-Risk:
-
-```text
-Imported deck defines duplicate tile/category/role IDs.
-```
-
-Mitigation:
-
-```text
-validation rejects duplicate IDs
-fixtures cover duplicates
-```
-
-### T9: Hidden Pay-to-win Or Progression Payload
-
-Risk:
-
-```text
-Imported JSON carries coins/progress/unlock/saveData.
-```
-
-Mitigation:
-
-```text
-shared JSON forbids coins/progress/collection/saveData/settings
-```
-
-### T10: Rule Plugin Injection
-
-Risk:
-
-```text
-Deck includes script/function/formula/plugin fields for custom rules.
-```
-
-Mitigation:
-
-```text
+no dangerouslySetInnerHTML for imported content
+reject html/style/script/code/function/eval/plugin/formula fields
 data-only rule grammar
-reject script/function/code/eval/plugin/formula-like fields
 ```
 
-### T11: Browser Storage Exhaustion
-
-Risk:
-
-```text
-Future images fill storage.
-```
+### Unicode / Duplicate ID Confusion
 
 Mitigation:
 
 ```text
-local images use IndexedDB later
-resize/sanitize images
-quota errors handled
-orphan cleanup
-shared JSON excludes images
+safe ASCII ID contract
+separate normalized display names
+duplicate IDs reject
+confusable display names warn where useful
 ```
 
-### T12: Corrupt Local Data Boot Loop
-
-Risk:
-
-```text
-Bad localStorage payload crashes app every boot.
-```
+### Hidden Progress / Pay-to-win Payload
 
 Mitigation:
 
 ```text
-schema parse on read
-safe fallback
-recoverable error UI
-reset local data option
+shared deck JSON forbids coins/progress/collection/saveData/settings
+imported decks cannot alter achievements or strength
 ```
 
-### T13: Maliciously Expensive Deck
-
-Risk:
-
-```text
-Deck is valid but designed to explode candidate analysis.
-```
+### Expensive But Valid Deck
 
 Mitigation:
 
@@ -259,49 +117,247 @@ warnings when capped
 adversarial fixtures
 ```
 
-### T14: Export Includes Private Local Data
+## Storage Threats
+
+### Corrupt Local Data Boot Loop
+
+Mitigation:
+
+```text
+schema parse on every read
+safe fallback
+AppErrorBoundary and recoverable ErrorState
+visible reset path
+reset scopes and confirmation
+```
+
+### Storage Exhaustion
+
+Mitigation:
+
+```text
+images use IndexedDB later
+resize/sanitize
+quota errors handled
+orphan cleanup
+shared exports exclude images
+```
+
+### Duplicate Match Recording
+
+Current protection prevents immediate duplicate result writes.
+
+Before restore/replay/resend:
+
+```text
+persistent matchSessionId
+recent processed-ID set
+backward-compatible migration
+A -> B -> duplicate A test
+```
+
+Do not rely permanently on only the last match key or an in-memory/time-derived seed.
+
+## Skin Package Threats
+
+### Arbitrary CSS Token Override
 
 Risk:
 
+A syntactically safe `--sp-*` token could change touch size, font size, z-index, spacing, layout, or motion.
+
+Mitigation:
+
 ```text
-Export accidentally includes local images, settings, or progress.
+explicit typed skin-token allowlist
+structural tokens cannot be overridden
+per-token type/range validation
+unknown tokens reject
+skin layer cannot control display/position/size/pointer-events/z-index
+```
+
+### Arbitrary CSS / JavaScript / HTML
+
+Mitigation:
+
+```text
+skin is data only
+no selectors or arbitrary stylesheet execution
+no JS/HTML/script/plugin payload
+validated token declarations only
+```
+
+### External URL / Font Tracking
+
+Mitigation:
+
+```text
+package-local file names only
+no url() / @import / external font
+no remote asset URL
+approved bundled font presets only
+```
+
+### External SVG Active Content
+
+Policy:
+
+```text
+reviewed official SVG may be allowed
+external/paid skin defaults to PNG/WebP only
+```
+
+Do not accept arbitrary external SVG without a proven sanitization pipeline and tests.
+
+### Path Traversal / Unexpected File Types
+
+Mitigation:
+
+```text
+safe skin ID and filename patterns
+no slash/backslash/colon/parent traversal/hidden file
+trust-level file extension allowlist
+resolved asset path remains inside package
+```
+
+### Oversized Skin / Image Decode DoS
+
+Mitigation:
+
+```text
+manifest/tokens byte limits
+per-asset byte limit
+total package byte limit
+maximum image dimensions
+actual file/dimension validation in pnpm skin:validate
+preload only controlled required assets
+```
+
+### Invalid Nine-slice / Geometry
+
+Risk:
+
+Bad slice or safe-area values can hide content, create unusable controls, or trigger layout defects.
+
+Mitigation:
+
+```text
+slice inside source image
+safe area consistency
+minimum render size
+slot-specific render-mode allowlist
+source slice separate from rendered border width
+real proof assets and visual regression
+```
+
+### Opacity / Blend Hides Content
+
+Mitigation:
+
+```text
+skin image/overlay layers separated from content/focus layers
+pointer-events none on skin layers
+opacity/blend never applied to the interactive content container
+```
+
+### Mixed-skin Flash / Partial Load
+
+Mitigation before distribution:
+
+```text
+versioned/content-hashed URLs
+preload required visible assets
+atomic application
+keep previous skin on failure
+actionable failure state
+```
+
+### Package Replacement / Ownership Confusion
+
+Mitigation before sales:
+
+```text
+stable package ID and contract version
+content hash/signature strategy
+source/author metadata
+upgrade/rollback/uninstall policy
+entitlement separated from execution
+```
+
+### Skin Access To Application Data
+
+Mitigation:
+
+```text
+skin package contains tokens/assets only
+no engine/schema/storage/records/network API
+no executable hooks
+no payment or entitlement logic inside skin data
+```
+
+## Accessibility Threats From Skins
+
+Risks:
+
+```text
+low contrast
+invisible focus
+color-only selected/warning state
+visual shape smaller than actual hit area
+excessive motion
 ```
 
 Mitigation:
 
 ```text
-export uses explicit allowlist
-recursive unsafe key scan on output in tests
+semantic foreground/focus tokens
+contrast checks for official skins
+fixed focus/state contract
+fixed minimum hit areas
+reduced-motion behavior controlled by app
+component and visual tests
 ```
 
-## Out Of Scope For MVP
+## Required Security Tests
+
+Deck boundary:
 
 ```text
-server-side account security
+giant/deep JSON rejected
+prototype pollution rejected
+url/image/path fields rejected
+script/html/style/code fields rejected
+unknown fields rejected
+```
+
+Skin boundary:
+
+```text
+unknown token rejected
+structural token override rejected
+forbidden token syntax rejected
+external SVG rejected by default
+remote URL/font rejected
+path traversal rejected
+oversized/missing/wrong-dimension file rejected
+invalid slice/safe area rejected
+status/path mismatch rejected
+inheritance cycle/depth handled
+failed switch keeps usable skin
+```
+
+## Out Of Scope Until Designed
+
+```text
+server account security
 online multiplayer cheating
-payment security
-public deck marketplace moderation
-cloud sync conflict resolution
+payment processing security
+public marketplace moderation
+cloud sync conflicts
 ```
 
-These are not ignored; they are not part of MVP.
-
-## Security Tests
-
-Required:
-
-```text
-giant JSON rejected
-deep JSON rejected
-__proto__/constructor/prototype rejected
-url/src/href rejected
-image fields rejected
-script/html/style/code rejected
-filePath/blobUrl rejected
-coins/progress/saveData rejected
-export output has no unsafe keys
-```
+Marketplace/paid-skin security is not automatically solved by the local skin contract; it requires a separate distribution and entitlement design.
 
 ## Final Decision
 
-Imported decks are creative content, not trusted code.
+Decks and skins are untrusted data. Neither may execute code, fetch remote resources, alter rules, shrink accessibility contracts, or gain application privileges.
