@@ -2,94 +2,130 @@
 
 Claude Code向けの作業指示。
 
-## Read First
+## Current Status
 
-作業前に必ず読む。
+```text
+Gameplay MVP phases 1-14: implemented
+Current next phase: multi-skin design-system foundation
+Official skins: yorunoshirube / cute-pop
+Final image generation: later separate reviewed phase
+```
+
+過去の「Phase 1開始」「まずengineから」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` の最新状態から進めてください。
+
+## Read First
 
 ```text
 README.md
 AGENTS.md
+docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION.md
-docs/README.md
+docs/IMPLEMENTATION-WORKFLOW.md
 ```
 
-`docs/MASTER-SPEC.md` が現在仕様の正本。
+## Mandatory UI / Design / Skin Read
 
-番号付きdocs・古い実装プロンプト・過去案と衝突した場合は、`docs/MASTER-SPEC.md` を優先する。
-
-## Current Status
+UI、CSS、token、component、asset、motion、responsiveを扱う場合は必ず読む。
 
 ```text
-MVP Phase 1 実装開始可能。
-実装は TypeScript + React + Vite + Zod + Vitest。
-最初は UI ではなく domain / schema / engine / tests を固める。
-```
-
-## Implementation Order
-
-実装順は `docs/IMPLEMENTATION.md` を正とする。
-
-```text
-schema -> validation -> engine -> insights -> UI
-```
-
-Full Match UI は、`docs/MASTER-SPEC.md` と `docs/IMPLEMENTATION.md` の hard block を満たすまで開始しない。
-
-## UI / Design Read
-
-画面/UIを扱う場合は追加で必ず読む。
-
-```text
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/UI-COMPONENT-CONTRACT.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/DESIGN-IMPLEMENTATION-POLICY.md
+docs/ASSET-PIPELINE.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
-Claude Codeはデザインを発明しない。
+Claude Codeは画面ごとにデザインを発明しません。
 
 ```text
-採用済みデザインターゲット10枚をUI品質基準にする
-tokens.css以外へ新しい色を勝手に追加しない
-画面ごとの独自ボタン/独自パネルを作らない
-UIはprimitives/components経由で実装する
-Component Galleryを先に作る
+one layout and component system
+multiple validated skins
+no skin-specific screen copies
+shared components before screen-local markup
+Design Tokens before raw visual values
+asset slots before hardcoded image paths
+Component Gallery before broad screen rollout
 ```
 
-## Mandatory Vamp-pon World Read
-
-世界観・キャラ・敵・ステージ・武器・アイテム・ビジュアルルールを扱う場合は、必ず先に以下を読む。
+## Current Skin Rules
 
 ```text
-/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
-/Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
-/Users/m-shogo/Developer/personal/soro-pon/docs/45-vampon-reference-gate.md
+yorunoshirube and cute-pop use the same screens and DOM responsibility
+layout, hit areas, tile ratio, responsive behavior, focus, state meaning are immutable
+skins change validated colors/textures/frames/approved fonts/effects only
+nine-slice/three-slice/repeat/cover/contain/overlay/mask use shared Skin renderers
+installed/paid skins cannot execute arbitrary CSS, JS, HTML, URLs, or fonts
 ```
 
-作業対象は `soro-pon`。
+## Image Generation Boundary
+
+During the current foundation phase:
 
 ```text
-vamp-pon 側は読み取り専用
-vamp-pon 側を変更しない
-Vamp-pon設定をsoro-pon側へ丸コピーしない
+do not invoke image generation
+do not put generated images in final
+build CSS/SVG fallback for both official skins
+record asset slots, geometry contracts, asset requests, and future prompts
 ```
 
-## Fixed Orientation
+Later explicit asset production:
 
 ```text
-soro-ponは横画面固定が正
-All main screens: 844x390 landscape design reference
-Phone landscape: 100svw x 100svh
-Web: responsive layout / adaptive layout
-Portrait: rotate prompt or limited utility only
+generated output -> candidates
+preview and screenshot review
+human approval
+-> final
 ```
 
-過去の `TOP / Editor / Result / Collection は portrait-first` 方針は使わない。
-844x390は実寸固定キャンバスではなく、デザイン基準として扱う。
-画面全体を `transform: scale()` で引き伸ばさない。
+## Shared Component Rule
 
-## Fixed Stack
+Do not add screen-local generic controls.
+
+Use or extend centrally:
+
+```text
+Button / IconButton
+SkinSurface / SkinBackground / SkinOverlay / SkinIcon
+PaperPanel
+Modal / Dialog
+Tabs / Badge / Toast / Tooltip
+TileCard / TileRow
+SectionHeader
+ValidationIssueList
+shared form fields
+EmptyState / ErrorState
+SkinSelector / SkinPreviewCard
+```
+
+Every reusable variant/state goes into Component Gallery and is checked in both official skins.
+
+## Architecture Boundary
+
+```text
+UI does not implement role/scoring/wildcard logic
+engine does not import React/DOM/localStorage/CSS
+skin does not access engine/schema/storage/records/network
+shared deck JSON does not contain images/URLs/executable display data
+```
+
+## Orientation
+
+```text
+844x390 reference
+phone landscape: 100svw x 100svh
+PC: centered table + outer support
+portrait: rotate prompt or limited utility
+```
+
+Do not use whole-screen `transform: scale()`.
+
+## Stack
 
 ```text
 TypeScript
@@ -101,28 +137,32 @@ CSS / CSS Modules
 localStorage first
 ```
 
-MVP初期では以下を入れない。
+Review `docs/DEPENDENCY-POLICY.md` and add ADR before major dependencies.
+
+## Vamp-pon Reference
+
+When using world/visual lore:
 
 ```text
-Next.js
-Supabase
-Firebase
-Unity
-Godot
-Phaser
-Redux
-Zustand
-TanStack Query
-Tailwind
+/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
+docs/42-shared-vampon-source-policy.md
+docs/45-vampon-reference-gate.md
 ```
 
-## Report
+The `vamp-pon` repository is read-only.
 
-作業後は以下を報告する。
+## Work and Report
+
+Use small, testable commits and push each completed purpose.
+
+Report:
 
 ```text
-変更ファイル
-コミットSHA
-実行した検証
-残タスク
+changed files
+commit SHA
+implementation scope
+tests/typecheck/build
+screenshots/manual QA where relevant
+remaining scope and risks
+next step
 ```
