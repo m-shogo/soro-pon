@@ -1,208 +1,467 @@
-# Skin System
+# Soro-pon Skin System
 
 ## Purpose
 
-soro-ponのUIを、ゲーム機能・ルール・操作性を一切変えずに、複数のデザインスキンへ
-切り替えられる構造にする。
+This is the current source of truth for switching Soro-pon between multiple visual skins without changing gameplay, rules, layout, or interaction behavior.
 
-公式スキン:
-
-```text
-yorunoshirube: 夜の机 / 紙 / 黒インク / ランタン光 / 記憶帳(design target 10枚が基準)
-cute-pop:      一般向け / 明るい / 可愛い / 親しみやすい / ポップ
-```
-
-将来、季節スキン・販売スキンを追加できる独立パッケージ構造とする。
-
-## Audit Result (S1, 2026-07-10)
-
-### スキンで変更すべき場所
+Official initial skins:
 
 ```text
-src/ui/styles/tokens.css        -> 全tokenがヨルノシルベ直書き。base + skin別tokensへ分離
-src/ui/components/components.css -> rgba/hex直書き15箇所(境界線/オーバーレイ/グロー)をtokens化
-src/ui/styles/base.css          -> game-shell背景グラデーション直書き1箇所
-src/ui/gallery/gallery.css     -> 区切り線色直書き1箇所
-src/ui/assets/*                 -> flat asset-slots.json方式をskin package方式へ拡張
-src/ui/screens/DeckEditorScreen -> インラインborder色1箇所
-フォント指定                     -> tokens経由だが許可済みセット制約なし -> 許可セット検証を追加
+yorunoshirube
+- night desk / paper / black ink / lantern light / memory book
+
+cute-pop
+- bright / cute / friendly / pop / clear category colors
 ```
 
-### スキンで変更してはいけない場所(固定契約)
+Future seasonal and paid skins must use this same contract.
+
+Read with:
 
 ```text
-src/engine / src/schemas / src/storage / src/domain(スキンから参照不可)
-useResponsiveMetrics(整数px牌メトリクス・density)
-.sp-match-layout のgrid契約(docs/48 §5)
-牌のaspect-ratio 3/4、タッチ最小44px/主要54px
-DOM構造・画面遷移・状態管理・テキスト内容
-focus-visible / disabled / selected / warningの意味
-prefers-reduced-motion対応
+docs/DESIGN-SYSTEM.md
+docs/UI-COMPONENT-CONTRACT.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/ASSET-PIPELINE.md
 ```
 
-### 直書き(修正対象)
+## Current Audit Result
+
+Existing implementation already has an asset-slot base and no direct PNG path use in screens.
+
+Current migration targets:
 
 ```text
-色: components.css 15箇所 / base.css 1 / gallery.css 1 / DeckEditorScreen 1
-画像パス: なし(全てasset slot経由。監査grepで確認済み)
-画像サイズへのレイアウト依存: なし(全てCSS/tokensでサイズ管理)
-クリック判定: 全てbutton要素。画像形状依存なし
+src/ui/styles/tokens.css
+- split raw/current visual choices into base + skin-owned semantic/component tokens
+
+src/ui/components/components.css
+src/ui/styles/base.css
+src/ui/gallery/gallery.css
+src/ui/screens/*
+- remove remaining hardcoded visual values
+- preserve structural layout values
+
+src/ui/assets/*
+- expand flat asset slots into skin packages and shared renderers
+
+repeated UI
+- confirmation dialogs -> Dialog
+- validation issue lists -> ValidationIssueList
+- screen headers -> SectionHeader
+- raw editor fields -> shared FormField/TextField/NumberField/SelectField
+- empty/error states -> shared components
 ```
 
-### 画面固有の重複実装(共通化対象)
+## Immutable Contract
+
+Skins cannot change:
 
 ```text
-確認ダイアログ: MatchScreen(中断)/DeckEditorScreen(離脱)で重複 -> Dialog
-検証issue一覧: DeckDetail/DeckEditorで重複 -> ValidationIssueList
-画面ヘッダ: 全画面で手書き -> SectionHeader
-フォーム: DeckEditorに生input/select/textarea 21箇所 -> TextField/NumberField/SelectField/FormField
-空状態文言: Collection等に散在 -> EmptyState
-importモーダル: AppRoot内に直書き -> Dialog + TextField
+src/engine / src/schemas / src/storage / src/domain
+screen flow
+DOM responsibility
+match/editor state
+responsive metrics and density selection
+match grid contract
+button and tile hit areas
+tile aspect ratio
+hand/discard placement
+text meaning
+focus/disabled/selected/warning semantics
+reduced-motion behavior
 ```
 
-## Architecture
+Images never define layout or click areas.
 
-### 2層分離
-
-```text
-Layout層(スキン不変):
-  width / height / grid / flex / gap / padding / positioning /
-  touch area / aspect-ratio / responsive behavior / DOM構造
-
-Skin層(スキンで変更可):
-  background / image / border / color / texture / ornament /
-  shadow / glow / radius見た目 / font-family(許可セット内) / effect素材
-```
-
-CSSは全てtokens(--sp-*)参照とし、スキンはtokenの値とasset slotの画像だけを差し替える。
-
-### Skin Package構造
+## Package Structure
 
 ```text
 public/assets/ui/soro-pon/
   skins/
     base/
-      skin.json          # slot定義(全slotのfallback契約)
-      tokens.css         # 全tokenの既定値(=操作可能な無画像スキン)
-      generated/final/   # 画像(baseは原則空)
+      skin.json
+      generated/
+        candidates/
+        final/
     yorunoshirube/
       skin.json
-      tokens.css         # 夜の机token(現行tokens.cssから移行)
-      generated/final/
+      generated/
+        candidates/
+        final/
     cute-pop/
       skin.json
-      tokens.css
-      generated/final/
-  SKIN-MANIFEST.json     # 公式スキン一覧 + default + contractVersion
-  SKIN-CONTRACT.json     # slot契約(サイズ/renderMode/safeArea)とtoken許可リスト
+      generated/
+        candidates/
+        final/
+  SKIN-MANIFEST.json
+  SKIN-CONTRACT.json
 ```
 
-### TypeScript構造
+Runtime code target:
 
 ```text
 src/ui/skins/
-  skinTypes.ts            # SkinManifest / SkinAssetDefinition / ResolvedSkin
-  validateSkinManifest.ts # strict検証(純関数)
-  parseSkinTokens.ts      # tokens.cssの安全パース(純関数)
-  resolveSkin.ts          # 継承merge・循環検出(純関数)
-  getSkinAssetUrl.ts      # slot -> URL解決(パス検証込み、純関数)
-  skinRegistry.ts         # 公式スキン定数 + manifest fetch
-  SkinProvider.tsx        # context / tokens適用 / localStorage永続化
-  useSkin.ts              # useSkin() / useSkinAsset(slot)
-  SkinSurface.tsx         # renderMode描画の集約(nine-slice等はここだけ)
+  skinTypes.ts
+  skinRegistry.ts
+  validateSkinManifest.ts
+  resolveSkin.ts
+  getSkinAssetUrl.ts
+  SkinProvider.tsx
+  useSkin.ts
+  SkinSurface.tsx
+  SkinBackground.tsx
+  SkinOverlay.tsx
+  SkinIcon.tsx
 ```
 
-## Skin Manifest
+## Trust Levels
+
+```text
+official
+- shipped and reviewed with the app
+- may use app-owned CSS modules and token definitions
+
+installed
+- future downloaded/paid skin
+- validated data and image assets only
+- no arbitrary CSS, JavaScript, HTML, external URL, or external font
+```
+
+Installed skins may change only allowlisted design tokens and registered asset slots.
+
+## Manifest Model
 
 ```ts
+type SkinTrustLevel = 'official' | 'installed';
+
 type SkinManifest = {
-  id: string;                 // [a-z0-9-]
+  id: string;
   label: string;
   version: number;
-  skinContractVersion: number; // アプリのSKIN_CONTRACT_VERSION以下のみ受理
-  origin: 'official' | 'external'; // 公式同梱 / 将来の販売・外部
+  contractVersion: number;
+  minAppSkinContractVersion: number;
+  maxAppSkinContractVersion?: number;
+  trustLevel: SkinTrustLevel;
   author?: string;
-  inherits?: string;          // 省略時はbaseへfallback
-  tokensFile: string;         // パッケージ内相対ファイル名のみ
+  inherits?: string;
+  tokens: ValidatedSkinTokens;
   slots: Partial<Record<AssetSlotName, SkinAssetDefinition>>;
+  capabilities?: SkinCapabilities;
 };
+```
 
+Asset definition responsibilities:
+
+```ts
 type SkinAssetDefinition = {
-  file: string | null;        // パッケージ内ファイル名のみ(パス区切り/../URL拒否)
-  status: 'placeholder' | 'final';
-  renderMode: 'cover' | 'contain' | 'stretch' | 'repeat' | 'nine-slice' | 'overlay';
+  file: string | null;
+  status: 'placeholder' | 'candidate' | 'final';
+  renderMode:
+    | 'nine-slice-stretch'
+    | 'nine-slice-tile'
+    | 'three-slice-x'
+    | 'three-slice-y'
+    | 'stretch'
+    | 'repeat'
+    | 'repeat-x'
+    | 'repeat-y'
+    | 'cover'
+    | 'contain'
+    | 'overlay'
+    | 'mask';
   intrinsicSize?: { width: number; height: number };
+  pixelDensity?: 1 | 2;
   transparent?: boolean;
-  nineSlice?: { top: number; right: number; bottom: number; left: number };
+  slice?: { top: number; right: number; bottom: number; left: number };
+  borderWidth?: { top: number; right: number; bottom: number; left: number };
+  stretchModeX?: 'stretch' | 'tile' | 'tile-fit';
+  stretchModeY?: 'stretch' | 'tile' | 'tile-fit';
+  fillCenter?: boolean;
   contentSafeArea?: { top: number; right: number; bottom: number; left: number };
-  opacity?: number;           // 0..1
-  blendMode?: string;         // 許可リスト内のみ
+  cropSafeArea?: { top: number; right: number; bottom: number; left: number };
+  focalPoint?: { x: number; y: number };
+  minimumRenderSize?: { width: number; height: number };
+  maximumRenderSize?: { width: number; height: number };
+  opacity?: number;
+  colorToken?: string;
 };
 ```
 
-## 安全要件
+The production schema may start narrower, but it must preserve these responsibilities and be versioned.
+
+## Render Modes
+
+Rendering is centralized in shared renderers.
 
 ```text
-- tokens.cssは行単位で厳格パース: `--sp-<name>: <value>;` のみ受理。
-  url() / @import / expression / javascript: / 外部参照を含む値は拒否
-- --sp-font-family は許可済みフォントセット(APPROVED_FONT_STACKS)からのみ選択可
-- slot fileはファイル名のみ(`/` `\\` `..` `:` を含むと拒否)-> 外部URL実行不可
-- blendModeは許可リスト(normal/multiply/screen/overlay/soft-light)のみ
-- 画像上限: 1ファイル2MB / intrinsicSize最大2048px / skin全体16MB(契約に記載)
-- 継承: 循環・存在しない親・自分自身継承は拒否しbaseへfallback
-- contractVersionがアプリより新しいスキンは拒否しdefaultへfallback
-- 不正manifest/壊れたlocalStorage skinId -> defaultスキンへ安全復旧(起動不能にしない)
-- スキンはengine/game state/score/save dataへアクセス不可(データのみ、コード実行なし)
+SkinSurface
+- nine-slice stretch/tile
+- three-slice x/y
+- stretch/repeat surfaces
+
+SkinBackground
+- cover/contain and focal-point handling
+
+SkinOverlay
+- effects and state decoration
+
+SkinIcon
+- SVG/currentColor or mask/tint handling
 ```
 
-## パーツ契約(抜粋。正本はSKIN-CONTRACT.json)
+Screens must not implement `border-image`, masks, or skin URL resolution directly.
+
+## Inheritance and Fallback
+
+Resolution order:
 
 ```text
-Button:  最小高44px/主要54px。nine-slice可。文字はHTML text。文字安全領域8px
-Panel:   サイズは親が管理。nine-slice/repeat可。本文safeArea 12px
-Tile:    aspect-ratio 3/4固定。帯22%/フェイス/名前領域固定。状態はCSS/透過overlay。
-         クリック領域はスキンで不変
-Table:   cover。中央60%に重要コントラストを置かない
-Effect:  overlayのみ。レイアウト非干渉。常時発光禁止。reduced-motionでも意味を保持
+1. active skin component slot/token
+2. active skin general slot/token
+3. parent skin
+4. base skin
+5. CSS/SVG fallback
 ```
 
-## Skin切り替え
+Rules:
+
+```text
+maximum inheritance depth: 3
+cycle/self-inheritance: reject
+missing parent: base fallback
+missing slot: inherited/base/code fallback
+invalid manifest: reject and use default/base
+missing image: fallback without app failure
+```
+
+A bad skin must never prevent startup.
+
+## Token Contract
+
+Use three token layers:
+
+```text
+Primitive -> Semantic -> Component
+```
+
+Installed skins may set only strict allowlisted semantic/component values.
+
+Allowed examples:
+
+```text
+approved color values
+approved shadow range
+approved visual radius range
+approved font preset ID
+approved motion visual range
+registered component tokens
+```
+
+Forbidden:
+
+```text
+arbitrary selector or CSS text
+url()
+@import
+external font
+custom JavaScript
+HTML fragment
+layout properties
+pointer-events
+z-index
+network request
+```
+
+Font choice uses app-owned presets only:
+
+```text
+serif
+rounded
+gothic
+display
+```
+
+## State Overlay Contract
+
+Do not create a complete replacement image for each state.
+
+```text
+base surface
++ selected overlay
++ hover/pressed response
++ focus overlay
++ ron/tsumo overlay
++ disabled treatment
++ content
+```
+
+State meaning remains semantic and cannot depend only on color, image, or animation.
+
+## Runtime Switching
+
+Target API:
 
 ```ts
 const { activeSkinId, setActiveSkin } = useSkin();
-setActiveSkin('cute-pop'); // reload不要。tokens<style>とdata-skinを差し替えるだけ
+setActiveSkin('cute-pop');
 ```
 
+Rules:
+
 ```text
-- activeSkinIdはsettings(localStorage)へ保存
-- 未知ID/壊れた値はdefault skinへ復旧
-- defaultはSKIN-MANIFEST.jsonのdefaultSkinIdで管理(現在: yorunoshirube)
+no page reload required
+selection may persist in localStorage
+unknown/corrupt skin ID -> configured default
+skin switch must not reset match/editor/records/achievements/coins
 ```
 
-## 新機能追加時の手順(必須)
+## Path and Network Safety
+
+Only simple package-local file names are allowed.
+
+Reject:
 
 ```text
-1. 既存の共通コンポーネントで構成できるか確認
-2. 不足があれば共通コンポーネントへvariant追加(画面独自ボタン/パネル禁止)
-3. 新しい視覚パーツが必要ならasset slot追加(slots.ts + SKIN-CONTRACT.json)
-4. slotへサイズ・safeArea・renderModeを定義
-5. base / yorunoshirube / cute-pop のfallback(token/CSS)を用意
-6. Component Galleryへ状態追加
-7. 両スキン×5サイズで確認
-8. その後、実画面へ導入
+/
+\
+..
+:
+http:
+https:
+data:
+blob:
 ```
 
-## 禁止事項
+No runtime remote skin asset loading.
+
+## Capability Declaration
+
+Optional capability metadata:
+
+```ts
+type SkinCapabilities = {
+  textures?: boolean;
+  nineSlice?: boolean;
+  customIcons?: boolean;
+  resultEffects?: boolean;
+  customFontPreset?: boolean;
+};
+```
+
+Capabilities never grant code execution. Missing capabilities fall back to base.
+
+## Contract Versioning
 
 ```text
-画面CSSへの色コード直書き / コンポーネントへのPNGパス直書き
-画像サイズをDOMサイズとして使用 / 画像透明部分をクリック判定に使用
-文字の画像焼き込み / skinごとの画面コンポーネント分岐(cute-pop専用MatchScreen等)
-skinからengine/schema/storageへのアクセス / manifestでの外部URL・JS許可
-tokensを使わない一時色 / 既存IP素材
+old skin missing new slot -> base fallback
+new unsupported contract -> do not apply; show explanation
+slot lifecycle -> active -> deprecated -> removed
+skin ID cannot be reused for an unrelated skin
+compatible updates preserve user selection
+```
+
+## Asset Budgets
+
+Initial guidance:
+
+```text
+whole skin recommended <= 5 MB
+single background <= 2 MB
+normal UI asset <= 512 KB
+maximum image dimension normally <= 2048x2048
+```
+
+Warn first; convert to hard limits after real-device measurement.
+
+## Validation Command
+
+Provide:
+
+```bash
+pnpm skin:validate
+```
+
+Validator responsibilities:
+
+```text
+strict manifest schema
+known contract version
+known token/slot IDs
+inheritance cycle/depth
+file-name/path safety
+file existence
+image dimensions and byte budget
+slice values inside bounds
+minimum size compatible with borders
+content/crop safe-area validity
+no remote URL
+all official manifests valid
+```
+
+## Official Skin Requirements
+
+Both `yorunoshirube` and `cute-pop` must:
+
+```text
+work without final PNG assets
+provide CSS/token/SVG fallback
+pass skin validation
+appear in Component Gallery
+support all shared component states
+work in compact and regular density
+```
+
+## New Feature Gate
+
+```text
+1. reuse a shared component
+2. add a reusable shared variant if needed
+3. add a slot only for a real new visual responsibility
+4. define render mode, geometry, safe area, and fallback
+5. update base/yorunoshirube/cute-pop
+6. add Component Gallery states
+7. verify both skins and required sizes
+8. then integrate the screen
+```
+
+Screen-local generic buttons/panels are forbidden.
+
+## Foundation Phase Boundary
+
+Current work builds the receiving system only:
+
+```text
+contracts
+registry/provider/runtime switching
+inheritance/fallback
+shared renderers
+shared components
+yorunoshirube and cute-pop fallback themes
+validator/tests
+future asset request and prompt lists
+```
+
+Do not invoke image generation or place generated output in `final` during this phase.
+
+## Tests
+
+Minimum:
+
+```text
+unknown ID -> default
+invalid manifest -> base
+missing parent -> base
+inheritance cycle/depth rejection
+missing slot -> fallback
+unsafe path/external URL rejection
+unknown token rejection
+skin switch preserves game state
+skin switch preserves disabled/selected component state
+local selection recovery
+all official manifests validate
 ```
 
 ## Final Decision
 
-スキンは「検証済みtoken + 検証済みasset slot」だけを差し替えるデータパッケージである。
-コードも、レイアウトも、ルールも、判定も持たない。
+A skin is validated presentation data. It never contains game code and never controls layout, hit areas, engine behavior, records, or network access.
