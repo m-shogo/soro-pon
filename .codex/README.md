@@ -1,19 +1,37 @@
 # .codex
 
-Codex用の補助メモ。
+Codex用の補助ディレクトリ。
 
-実際の正本はrootの以下。
+仕様をここへ重複管理しない。
+
+作業開始時の正本:
 
 ```text
 CODEX.md
 AGENTS.md
 README.md
+docs/README.md
+docs/MASTER-SPEC.md
+docs/IMPLEMENTATION-WORKFLOW.md
 ```
 
-作業開始時は `CODEX.md` を読んでから、`docs/34-mvp-implementation-prompt.md` と `docs/35-mvp-test-cases.md` を確認する。
+UI、CSS、component、asset、motion、responsiveを扱う場合は、プロンプトに書かれていなくても必ず読む:
 
-Vamp-pon世界に関係する作業では、rootの `CODEX.md` / `AGENTS.md` に従い、Vamp-pon側の `docs/shared-vampon-master-index.md` を先に読む。
+```text
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/UI-COMPONENT-CONTRACT.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/DESIGN-IMPLEMENTATION-POLICY.md
+docs/ASSET-PIPELINE.md
+```
 
-このdirectoryには、将来Codex用の小タスクpromptやreview checklistを追加してよい。
+現在はGameplay MVP Phase 1-14実装済みで、次はmulti-skin design-system foundation。
 
-ただし、仕様の正本をここに重複管理しない。
+過去の `docs/34-mvp-implementation-prompt.md` や番号付きtest docsを入口にしない。
+
+現在のfoundation phaseでは画像生成を実行しない。Codexはskin contract、shared renderer、fallback、asset request、将来のslot別生成promptを整備する。
+
+後の明示的なasset-production phaseでのみ、生成物をcandidateへ置き、人間レビュー後にfinalへ昇格する。
+
+Vamp-pon資料を扱う場合はrootの指示に従い、Vamp-pon側は読み取り専用とする。
