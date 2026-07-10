@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import type { MatchRecord } from '../../schemas/storageSchema';
 import { Button } from '../components/Button';
+import { Modal } from '../components/Modal';
 import { PaperPanel } from '../components/PaperPanel';
+import { SkinSelector } from '../components/SkinSelector';
 import { InkDivider } from '../primitives/InkDivider';
 
 function formatDate(ms: number): string {
@@ -26,6 +29,7 @@ export function TopScreen({
   coins: number;
   recentRecords: MatchRecord[];
 }) {
+  const [skinModalOpen, setSkinModalOpen] = useState(false);
   return (
     <div className="sp-screen">
       <div className="sp-screen__header">
@@ -55,6 +59,13 @@ export function TopScreen({
           >
             記憶帳
           </Button>
+          <Button
+            variant="ink"
+            subLabel="見た目のスキンを切り替えます"
+            onClick={() => setSkinModalOpen(true)}
+          >
+            きせかえ
+          </Button>
           <InkDivider />
           <p className="sp-top-tagline">
             記憶の札を集め、役を作って競う遊びです。
@@ -83,6 +94,14 @@ export function TopScreen({
           </div>
         )}
       </div>
+      <Modal open={skinModalOpen} title="きせかえ" onClose={() => setSkinModalOpen(false)}>
+        <SkinSelector />
+        <div style={{ marginTop: 'var(--sp-space-12)' }}>
+          <Button variant="ghost" onClick={() => setSkinModalOpen(false)}>
+            とじる
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

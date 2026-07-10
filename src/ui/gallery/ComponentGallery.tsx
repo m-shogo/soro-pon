@@ -14,6 +14,7 @@ import { RoleCard } from '../components/RoleCard';
 import { ScoreBreakdown } from '../components/ScoreBreakdown';
 import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
+import { SkinSelector } from '../components/SkinSelector';
 import './gallery.css';
 
 const SAMPLE_BREAKDOWN: ResultBreakdown = {
@@ -47,6 +48,11 @@ export function ComponentGallery() {
   return (
     <div className="sp-gallery">
       <h1 className="sp-gallery__title">soro-pon Component Gallery</h1>
+
+      <section className="sp-gallery__section">
+        <h2>Skin切り替え(全部品を両スキンで確認する)</h2>
+        <SkinSelector />
+      </section>
 
       <section className="sp-gallery__section">
         <h2>Button variants</h2>

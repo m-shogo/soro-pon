@@ -13,13 +13,19 @@ import {
 } from './skinRegistry';
 import type { ResolvedSkin } from './skinTypes';
 
+export type SkinStatus = 'loading' | 'ready';
+
 export type SkinContextValue = {
   activeSkinId: string;
   availableSkins: SkinRegistryEntry[];
   /** nullの間はbundled tokens.css(=base相当)のfallbackで表示される */
   resolvedSkin: ResolvedSkin | null;
   skinIssues: string[];
+  /** 切り替え/初期読み込み中はloading(表示はfallbackのまま操作可能) */
+  skinStatus: SkinStatus;
   setActiveSkin: (skinId: string) => void;
+  /** 読み込み失敗時などにdefaultスキンへ戻す */
+  resetToDefaultSkin: () => void;
 };
 
 export const SkinContext = createContext<SkinContextValue>({
@@ -27,7 +33,9 @@ export const SkinContext = createContext<SkinContextValue>({
   availableSkins: BUILTIN_SKIN_REGISTRY.skins,
   resolvedSkin: null,
   skinIssues: [],
+  skinStatus: 'loading',
   setActiveSkin: () => {},
+  resetToDefaultSkin: () => {},
 });
 
 // アプリ全体のスキン状態。
@@ -41,12 +49,14 @@ export function SkinProvider({ children }: { children: ReactNode }) {
   );
   const [resolvedSkin, setResolvedSkin] = useState<ResolvedSkin | null>(null);
   const [skinIssues, setSkinIssues] = useState<string[]>([]);
+  const [skinStatus, setSkinStatus] = useState<SkinStatus>('loading');
   const loaderRef = useRef(createSkinLoader(createFetchSkinIo()));
   const requestSeqRef = useRef(0);
 
   const applySkin = useCallback(
     async (skinId: string, currentRegistry: SkinRegistry) => {
       const seq = ++requestSeqRef.current;
+      setSkinStatus('loading');
       const targetId = sanitizeSkinId(skinId, currentRegistry);
       const { resolved, issues } = await loaderRef.current.loadResolvedSkin(targetId);
       if (seq !== requestSeqRef.current) {
@@ -67,6 +77,7 @@ export function SkinProvider({ children }: { children: ReactNode }) {
       setActiveSkinId(finalId);
       setResolvedSkin(finalResolved);
       setSkinIssues(finalIssues);
+      setSkinStatus('ready');
       applyDocumentSkin(finalId, finalResolved.tokens);
       try {
         window.localStorage.setItem(SKIN_STORAGE_KEY, finalId);
@@ -107,15 +118,29 @@ export function SkinProvider({ children }: { children: ReactNode }) {
     [applySkin, registry],
   );
 
+  const resetToDefaultSkin = useCallback(() => {
+    void applySkin(registry.defaultSkinId, registry);
+  }, [applySkin, registry]);
+
   const value = useMemo<SkinContextValue>(
     () => ({
       activeSkinId,
       availableSkins: registry.skins,
       resolvedSkin,
       skinIssues,
+      skinStatus,
       setActiveSkin,
+      resetToDefaultSkin,
     }),
-    [activeSkinId, registry.skins, resolvedSkin, skinIssues, setActiveSkin],
+    [
+      activeSkinId,
+      registry.skins,
+      resolvedSkin,
+      skinIssues,
+      skinStatus,
+      setActiveSkin,
+      resetToDefaultSkin,
+    ],
   );
 
   return <SkinContext.Provider value={value}>{children}</SkinContext.Provider>;
