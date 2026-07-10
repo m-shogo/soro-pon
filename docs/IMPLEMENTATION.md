@@ -15,11 +15,13 @@ docs/IMPLEMENTATION-WORKFLOW.md
 
 ```text
 Gameplay MVP phases 1-14: implemented
-Current next phase: multi-skin design-system foundation
+Multi-skin foundation: in progress
+Already implemented: package manifests/contracts, loader/validation/fallback, SkinProvider runtime switch, basic SkinSurface, three official package entries
+Remaining: renderer expansion, token/component migration, Gallery/user selector, validator CLI, full-screen regression
 Final PNG generation: later separate reviewed phase
 ```
 
-Do not restart from package/schema/engine setup unless fixing an identified defect.
+Do not restart from project/schema/engine setup unless fixing an identified defect.
 
 ## Current Stack
 
@@ -35,9 +37,7 @@ localStorage first
 
 Major dependencies require `docs/DEPENDENCY-POLICY.md` review and ADR.
 
-## Existing Core Direction
-
-The implemented dependency direction remains:
+## Architecture Direction
 
 ```text
 schemas/domain
@@ -46,11 +46,9 @@ schemas/domain
 -> UI
 ```
 
-UI must not reimplement game rules.
+UI and skins must not reimplement game rules.
 
 ## Mandatory UI Read
-
-Before current-phase work:
 
 ```text
 docs/DESIGN-SYSTEM.md
@@ -64,154 +62,105 @@ docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md
 ```
 
-## Current Phase Plan
+## Existing Skin Baseline — Preserve and Extend
 
-### S0: Audit and Baseline
+Already present:
 
 ```text
-inventory screens/components/styles/tokens/assets
-record hardcoded visual values
-record duplicated generic UI
+public/assets/ui/soro-pon/SKIN-MANIFEST.json
+public/assets/ui/soro-pon/SKIN-CONTRACT.json
+public/assets/ui/soro-pon/skins/base
+public/assets/ui/soro-pon/skins/yorunoshirube
+public/assets/ui/soro-pon/skins/cute-pop
+src/ui/skins/*
+SkinProvider in App.tsx
+basic core-component asset-slot connections
+skin core/package tests
+```
+
+Do not replace this with a second parallel theme system.
+
+## Next Implementation Order
+
+### 1. Re-audit Current Baseline
+
+```text
+run tests/typecheck/build
+inventory remaining hardcoded visual values
+inventory repeated generic UI
+confirm current package/manifest validation behavior
 capture current screenshots
-confirm tests/typecheck/build baseline
 ```
 
-Gate:
+### 2. Complete Render Contract
+
+Current renderer supports:
 
 ```text
-no gameplay change
-baseline verification recorded
-migration list documented
-```
-
-### S1: Skin Contract and Package Structure
-
-Create/complete:
-
-```text
-SKIN-MANIFEST.json
-SKIN-CONTRACT.json
-base/yorunoshirube/cute-pop packages
-strict manifest schemas
-contract versioning
-inheritance and fallback rules
-```
-
-Gate:
-
-```text
-unknown/invalid skin safely falls back
-inheritance cycle/depth tests
-external URL/path rejection
-all official manifests validate
-```
-
-### S2: Runtime Switching
-
-Create/complete:
-
-```text
-skinRegistry
-SkinProvider
-useSkin
-local selection persistence/recovery
-runtime token application
-```
-
-Gate:
-
-```text
-switch without reload
-match/editor state preserved
-unknown stored skin recovers safely
-```
-
-### S3: Shared Renderers
-
-Create/complete:
-
-```text
-SkinSurface
-SkinBackground
-SkinOverlay
-SkinIcon
-```
-
-Supported render modes:
-
-```text
-nine-slice-stretch
-nine-slice-tile
-three-slice-x
-three-slice-y
-stretch
-repeat / repeat-x / repeat-y
 cover
 contain
+stretch
+repeat
+nine-slice stretch
 overlay
-mask
 ```
 
-Gate:
+Add centrally, only when tested:
 
 ```text
-screens do not directly implement border-image/mask/asset URL logic
-missing asset uses fallback
-geometry contract validation passes
+nine-slice tile
+three-slice-x
+three-slice-y
+repeat-x / repeat-y
+mask/tint
+separate source slice from rendered borderWidth
+candidate asset status/path
 ```
 
-### S4: Token Migration
+Do not implement these independently in screens.
 
-Use:
+### 3. Complete Token Architecture
+
+Migrate toward:
 
 ```text
 Primitive -> Semantic -> Component tokens
-CSS cascade layers
-approved font presets
 ```
 
-Gate:
+Add cascade-layer protection and separate structural/layout values from skin-changeable values.
 
-```text
-no screen hardcoded visual colors/images
-skin layer cannot change layout/hit-area properties
-both official fallback themes readable
-```
+Installed/paid skins may use only allowlisted semantic/component token data, never arbitrary CSS.
 
-### S5: Shared Component Migration
+### 4. Complete Shared Component Migration
 
 Priorities:
 
 ```text
-Button/IconButton
-Dialog/Modal
-SkinSurface/PaperPanel
+IconButton
+Dialog
 ValidationIssueList
 SectionHeader
-shared form fields
-Empty/Error states
-TileCard state overlays
+FormField/TextField/NumberField/SelectField/Toggle
+EmptyState/ErrorState
 SkinSelector/SkinPreviewCard
+normalized Tile/state overlays
 ```
 
-Gate:
+Remove repeated generic screen-local markup only after shared replacements are tested.
 
-```text
-screen-local generic duplicates removed
-all variants/states in Component Gallery
-long-text and input-modality cases included
-```
+### 5. Expand Component Gallery
 
-### S6: Component Gallery and Skin Preview
+Add:
 
 ```text
 instant yorunoshirube/cute-pop switching
-all common component states
-compact/regular density
-long Japanese/English/score/emoji cases
+all variants and semantic states
+long Japanese/English strings
+large scores and long names
+compact and regular density
 ```
 
-Gate:
+Review sizes:
 
 ```text
 844x390
@@ -221,100 +170,106 @@ Gate:
 1366x768
 ```
 
-### S7: Screen Migration
+### 6. Define User-facing Skin Selection
 
-Migrate all existing screens without creating skin-specific screen copies.
+Provide a normal application path to select a skin without reload.
 
-```text
-TOP
-Deck List/Detail/Editor
-Tile/Role/Bonus Editor
-Match Setup/Match/Result
-Collection/Clear Board/Achievement
-Import/Export
-Dialogs/Rotate Prompt
-```
-
-Gate:
+Requirements:
 
 ```text
-same DOM responsibility and behavior in both skins
-no image-dependent layout/hit areas
-all gameplay flows still work
+safe local persistence
+unknown/corrupt ID recovery
+no gameplay/editor state mutation
+clear preview and selected state
 ```
 
-### S8: Skin Validator and Regression Tests
+### 7. Complete Skin Validation Command
 
-Provide:
+Expose:
 
 ```bash
 pnpm skin:validate
 ```
 
-Add tests for:
+It must check:
 
 ```text
-manifest/schema/version
-inheritance/fallback
-unsafe path/URL/token
-state preservation during switching
+manifest/contract schema
+known version/token/slot IDs
+inheritance cycles/depth
+safe file names
+file existence and byte budget
+image dimensions
+slice/safe-area geometry
+candidate/final path rules
 all official packages
 ```
 
-Add Playwright screenshot regression when dependency/ADR decision is approved.
+### 8. Full-screen Migration and Regression
 
-### S9: Foundation Completion
+Connect every existing screen through shared components/tokens/skin resolver without changing behavior.
+
+Verify both skins on major screens and required sizes.
+
+Add visual screenshot regression after the dependency/ADR decision.
+
+### 9. Foundation Completion
 
 ```text
 all tests green
 typecheck green
 build green
+skin validation green
+both official skins work without final PNGs
+all reusable UI represented in Gallery
 manual QA updated
-both official skins usable without final PNGs
-asset request/generation prompt list complete
-no image generation performed
+future asset requests and prompts complete
 ```
 
 ## Later Asset Production Phase
 
-Only after S0-S9 completion and explicit instruction:
+Only after foundation completion and explicit instruction:
 
 ```text
-generate/draw asset
+generate/draw
 -> generated/candidates
--> preview/screenshots
--> human review
+-> preview and screenshot review
+-> human approval
 -> generated/final
 -> manifest update
 ```
 
-Never generate directly into final.
+Never generate directly into `final`.
 
 ## New Feature Rule
 
-After the skin foundation, every new UI feature follows:
-
 ```text
-shared component check
--> central variant/component
--> tokens
--> optional slot and geometry contract
--> base + both official skins
--> Gallery
+reuse shared component
+-> add central reusable variant/component
+-> add semantic/component tokens
+-> add asset slot only for a new visual responsibility
+-> define render/geometry/safe-area/fallback
+-> support base + both official skins
+-> add Gallery coverage
 -> responsive/visual verification
--> screen use
+-> screen integration
 ```
 
 ## Verification Commands
+
+Currently:
 
 ```bash
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm skin:validate
 ```
 
-Use repository scripts as the source of exact command names.
+Target after validator implementation:
+
+```bash
+pnpm skin:validate
+```
 
 ## Commit Policy
 
@@ -327,4 +282,4 @@ docs and implementation together
 
 ## Final Decision
 
-Current implementation work is not a greenfield MVP build. It is a controlled migration from one working UI to a shared, validated, multi-skin design system without changing game behavior.
+Continue the existing multi-skin foundation. Do not create another theming system, do not begin final image generation, and do not change game behavior while migrating UI presentation.
