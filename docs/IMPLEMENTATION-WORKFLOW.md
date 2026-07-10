@@ -2,35 +2,28 @@
 
 ## Purpose
 
-This file tracks the real implementation state, completed phases, current next work, and completion gates.
-
-Implementation guidance:
+This file tracks the real repository state, completed phases, current next work, and completion gates.
 
 ```text
-docs/IMPLEMENTATION.md
-```
-
-Product/spec truth:
-
-```text
-docs/MASTER-SPEC.md
+Product/spec truth: docs/MASTER-SPEC.md
+Implementation guide: docs/IMPLEMENTATION.md
 ```
 
 ## Current Status
 
 ```text
 Gameplay MVP phases 1-14: complete
-Current next phase: Soro-pon multi-skin design-system foundation
-Final image generation: not started and intentionally separate
-Release/demo gates: after skin foundation and reviewed final assets
+Multi-skin foundation: in progress; core package/runtime baseline already implemented
+Final PNG/WebP production: not started
+Release/demo gates: after skin foundation and reviewed assets
 ```
 
-## Completed Phases
+## Completed Gameplay Phases
 
 | Phase | Scope | Status | Representative commit |
 |---|---|---|---|
 | 1 | package setup | complete | `3a50861` |
-| 2 | domain types + strict Zod schemas | complete | `0a64f59` |
+| 2 | domain types + strict schemas | complete | `0a64f59` |
 | 3 | strict import + validation + fixtures | complete | `4663167` |
 | 4 | group engine + wildcard partition | complete | `cd2d7db` |
 | 5 | role analysis + waits + ranking | complete | `caca9cd` |
@@ -38,28 +31,13 @@ Release/demo gates: after skin foundation and reviewed final assets
 | 7 | insights + pure discard preview | complete | `4eea582` |
 | 8 | match reducer + CPU + seeded RNG | complete | `1efe9fd` |
 | 9 | localStorage parsing/recovery | complete | `8aa22c7` |
-| 10 | UI foundation + asset slots + Component Gallery | complete | `452b54f` |
+| 10 | first UI foundation + asset slots + Gallery | complete | `452b54f` |
 | 11 | main screens and playable flow | complete | `5645471` |
 | 12 | Collection/editor expansion/asset requests/manual QA | complete | `9e1b244` |
 | 13 | achievements/titles/bonus editor/specificSet/motion | complete | `6c5c858` |
-| 14 | hardening: idempotent records, seed collision, specificSet feasibility, rapid-action tests | complete | `5f44ff4` |
+| 14 | record/seed/specificSet/reducer hardening | complete | `5f44ff4` |
 
-## Phase 14 Hardening Summary
-
-Implemented and verified:
-
-```text
-storage-level matchKey idempotency
-newSeed collision protection
-old records payload normalization
-specificSet duplicate-tile feasibility fix
-pure editor template builders
-rapid double-dispatch reducer tests
-engine independence from achievements/coins/records
-asset-slot-only image contract retained
-```
-
-Last recorded verification:
+Last recorded gameplay hardening:
 
 ```text
 218 tests green
@@ -68,151 +46,204 @@ build green
 browser flow and reload/idempotency QA passed
 ```
 
-## Current Design Direction
+## Multi-skin Foundation — Actual Repository State
 
-Official skins:
+### SF1 — Design Audit and Skin Contract
+
+Status: **baseline complete**
+
+Present:
 
 ```text
+docs/SKIN-SYSTEM.md
+public/assets/ui/soro-pon/SKIN-MANIFEST.json
+public/assets/ui/soro-pon/SKIN-CONTRACT.json
+```
+
+Registered official packages:
+
+```text
+base
 yorunoshirube
 cute-pop
 ```
 
-Current contract:
+### SF2 — Package Loading, Validation, Inheritance and Fallback
+
+Status: **baseline implemented**
+
+Present under `src/ui/skins/`:
 
 ```text
-one screen/component/layout implementation
-multiple validated skins
-no skin-specific screens
-layout and hit areas are skin-invariant
-shared reusable components
-Unity/Godot-style nine-slice through shared SkinSurface
-future paid skins are data/assets only, never code
+skinTypes
+skinRegistry
+validateSkinManifest
+parseSkinTokens
+resolveSkin
+getSkinAssetUrl
 ```
 
-Mandatory docs:
+Existing tests cover the core skin/package path.
+
+### SF3 — Runtime Skin Switching
+
+Status: **implemented baseline**
+
+Present:
 
 ```text
-docs/DESIGN-SYSTEM.md
-docs/SKIN-SYSTEM.md
-docs/UI-COMPONENT-CONTRACT.md
-docs/SKIN-AUTHORING-GUIDE.md
-docs/DESIGN-IMPLEMENTATION-POLICY.md
-docs/ASSET-PIPELINE.md
+SkinProvider
+useSkin
+skinDom/apply tokens
+localStorage selection/recovery
+no-reload asynchronous switching
+stale-request protection
 ```
 
-## Next Work: Skin Foundation S0-S9
+`App.tsx` already wraps the application with `SkinProvider`.
 
-### S0 — Audit and Baseline
+### SF4 — Initial Shared Skin Rendering
 
-```text
-capture current screenshots
-inventory hardcoded visual values
-inventory duplicated generic UI
-record test/typecheck/build baseline
-```
+Status: **partially complete**
 
-### S1 — Skin Contract and Packages
+Current `SkinSurface` baseline supports:
 
 ```text
-base/yorunoshirube/cute-pop package structure
-SKIN-MANIFEST and SKIN-CONTRACT
-strict schema/version/inheritance/fallback
-```
-
-### S2 — Runtime Switching
-
-```text
-SkinProvider/useSkin/registry
-no-reload switching
-local selection and safe recovery
-state-preservation tests
-```
-
-### S3 — Shared Skin Renderers
-
-```text
-SkinSurface
-SkinBackground
-SkinOverlay
-SkinIcon
-```
-
-Supported modes:
-
-```text
-nine-slice-stretch
-nine-slice-tile
-three-slice-x
-three-slice-y
-stretch
-repeat / repeat-x / repeat-y
 cover
 contain
+stretch
+repeat
+nine-slice stretch
 overlay
-mask
 ```
 
-### S4 — Token Migration
+Core components already reference skin slots.
+
+Remaining renderer contract:
 
 ```text
-Primitive -> Semantic -> Component tokens
-CSS cascade layers
-remove remaining screen visual hardcoding
-approved font presets
+nine-slice tile
+three-slice-x
+three-slice-y
+repeat-x / repeat-y
+mask/tint renderer
+separate source slice from rendered borderWidth
+candidate asset status/path validation
 ```
 
-### S5 — Shared Component Migration
+### SF5 — Token Migration
 
-Priority:
+Status: **started / partial**
+
+Already present:
 
 ```text
-Button/IconButton
-Dialog/Modal
-PaperPanel/SkinSurface
+base skin tokens
+yorunoshirube tokens
+cute-pop tokens
+several previous hardcoded values moved to tokens
+```
+
+Still required:
+
+```text
+Primitive -> Semantic -> Component token structure
+cascade-layer enforcement
+remaining visual hardcode audit
+layout-token vs skin-token enforcement
+approved external-skin token allowlist alignment
+```
+
+### SF6 — Shared Component Migration
+
+Status: **pending / partial**
+
+Core `Button`, `PaperPanel`, `TileCard`, `Badge`, and table assets are connected to the skin resolver.
+
+Still required:
+
+```text
+IconButton
+Dialog abstraction for repeated confirmations
 ValidationIssueList
 SectionHeader
 shared form fields
-Empty/Error states
-Tile state overlays
-SkinSelector/SkinPreviewCard
+EmptyState / ErrorState
+SkinSelector / SkinPreviewCard
+state overlay normalization
+remove remaining screen-local generic UI
 ```
 
-### S6 — Component Gallery and Preview
+### SF7 — Component Gallery and User-facing Skin Selection
+
+Status: **pending**
+
+Current Gallery does not yet provide the required instant skin selector or the full expanded state/long-text matrix.
+
+Required:
 
 ```text
-instant official-skin switch
-all common variants/states
-long-text cases
+yorunoshirube / cute-pop switch in Gallery
+all shared states and variants
+long Japanese/English/score/emoji cases
 compact and regular density
 five review sizes
 ```
 
-### S7 — Screen Migration
+A normal user-facing skin selection path must also be defined before completion.
 
-Connect all screens to shared components/tokens/skins without changing gameplay behavior.
+### SF8 — Skin Validator Command and Regression
 
-### S8 — Validator and Regression
+Status: **pending**
 
-```text
+Core validation functions/tests exist, but `package.json` does not yet expose:
+
+```bash
 pnpm skin:validate
-strict manifest/slot/token/path/version tests
-both official packages validate
-visual screenshot regression when approved
 ```
 
-### S9 — Foundation Completion
+Still required:
 
 ```text
-both official skins usable with CSS/SVG fallback
-all tests/typecheck/build green
-no final PNG generation
-future image slots/prompts/requests complete
-manual QA updated
+filesystem package validation command
+file existence/byte/dimension checks
+slice and safe-area checks
+candidate/final path checks
+visual screenshot regression decision and implementation
 ```
+
+### SF9 — Full Screen Migration and Foundation Completion
+
+Status: **pending**
+
+Completion gate:
+
+```text
+all existing screens use shared components/tokens/skin resolver
+skin switch preserves gameplay/editor state
+both official skins usable without final artwork
+all tests/typecheck/build green
+manual five-size QA updated
+future image requests/prompts complete
+```
+
+## Official Design Direction
+
+```text
+yorunoshirube
+- night desk / paper / black ink / lantern light / memory book
+
+cute-pop
+- bright / cute / friendly / pop / readable category colors
+```
+
+Both use the same screen, DOM responsibility, layout, hit areas, state meaning, and game logic.
 
 ## Image Production — Later Separate Phase
 
-Image generation is intentionally after S0-S9.
+No final artwork is produced during the foundation.
+
+Before production, create candidate directories and validation.
 
 ```text
 generate/draw
@@ -223,30 +254,25 @@ generate/draw
 -> manifest update
 ```
 
-Do not generate directly into `final`.
-
-## Release Phase — After Assets
-
-```text
-reviewed final skin assets
-RELEASE-DEMO-GATES
-README limitations/reset path
-manual QA on target devices
-production screenshots
-```
+Never generate directly into `final`.
 
 ## Verification Commands
+
+Currently available:
 
 ```bash
 pnpm typecheck
 pnpm test
 pnpm build
+```
+
+Required before SF8 completion:
+
+```bash
 pnpm skin:validate
 ```
 
-Use only scripts that exist in the current repository; add `skin:validate` during S8.
-
-## Required Review Sizes
+## Review Sizes
 
 ```text
 844x390
@@ -256,7 +282,7 @@ Use only scripts that exist in the current repository; add `skin:validate` durin
 1366x768
 ```
 
-Minimum visual matrix:
+Minimum matrix:
 
 ```text
 all screens: 844x390
@@ -268,33 +294,35 @@ TOP / Deck Editor / Match / Result / Collection: both official skins
 ## Known Pending Areas
 
 ```text
-extendedRoleSpan engine remains pending and blocked by E7008
-final Yorunoshirube/Cute Pop PNG assets are not produced
-Playwright screenshot automation is not yet guaranteed
-release/demo gates remain after skin foundation/assets
+extendedRoleSpan remains pending and blocked by E7008
+multi-skin foundation back half remains unfinished
+final official skin images are all placeholder/null
+candidate directories and candidate status are not fully implemented
+Playwright screenshot regression is not yet implemented
+release/demo gates remain pending
 ```
 
 ## Standing Rules
 
 ```text
-one commit per purpose
+one purpose per commit
 push after commit
-docs and implementation updated together
-no game-rule logic in UI
-no UI/React/storage dependencies in engine
-no image paths or generic visual components duplicated in screens
-no image generation during foundation
+docs and implementation together
+no rule/scoring logic in UI
+no UI dependencies in engine
+no skin-specific screen copies
+no final image generation during foundation
 ```
 
 ## Final Completion Definition
 
 ```text
-gameplay flow remains green
-skin switch does not alter game/editor state
-both official skins work without final images
+gameplay stays green
+skin switching does not mutate app state
 shared components replace generic screen-local UI
-all skin manifests validate
+all official packages and files validate
+both official skins work without final images
 five-size visual QA passes
-reviewed assets are integrated through slots only
+reviewed candidate assets later integrate through slots only
 release/demo gates pass
 ```
