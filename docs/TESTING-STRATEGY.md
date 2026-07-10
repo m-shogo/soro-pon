@@ -2,225 +2,265 @@
 
 ## Purpose
 
-This document defines what must be tested before implementation can move from schema/engine to full UI.
+Soro-pon combines a custom-deck rules engine with a multi-skin UI. Tests must prove both rule correctness and presentation-contract stability.
 
-Soro-pon is custom-deck driven, so tests must cover normal paths and adversarial decks.
-
-## Test Pyramid
+## Test Layers
 
 ```text
-unit tests: pure functions
-integration tests: schema + validation + engine flows
-golden deck tests: official sample behavior
-adversarial deck tests: broken/custom deck patterns
-UI/component tests: later, after component gallery
-visual screenshots: later, after UI foundation
+pure unit tests: schemas, validation, engine, storage, skin pure functions
+integration tests: import -> validation -> engine, skin package -> resolution
+DOM/component tests: interaction, accessibility, skin switching, recovery
+browser flow tests: playable/editor/import/reset flows
+visual regression: official skins and required viewports
+manual QA: human comprehension, touch, visual quality
 ```
 
-## Required Test Groups
+Do not use browser tests to replace pure engine tests.
 
-### 1. Schema Tests
+## Core Rule Test Groups
+
+### Schema / Import
 
 ```text
 animal starter strict parse
-unknown fields rejected
-scoreBudget required in current schema
-normalThreeGroups fields fixed
-normal winRole requiredGroups required
-special_bonus cannot have canRon/canTsumo
-ScoreBonus is not Role.kind
+unknown top-level/nested fields rejected
+unsafe image/path/url/html/style/script/code/function fields rejected
+prototype pollution keys rejected
+scoreBudget and normalThreeGroups contracts enforced
+old safe schema migration accepted with notice
+unsafe old payload rejected or blocked
 ```
 
-### 2. Import Security Tests
+### Deck Validation
 
 ```text
-imageUrl rejected
-imageBase64 rejected
-filePath rejected
-blobUrl rejected
-url rejected
-src rejected
-html rejected
-style rejected
-script/code/function rejected
-unknown top-level field rejected
-unknown nested field rejected
-unsafe field does not get preserved
+valid minimal and animal starter
+no win role
+bonus only
+impossible role
+wildcard heavy
+duplicate IDs/roles
+candidate explosion
+category too small
+score explosion
+large valid deck
+specificSet repeated/unknown/unavailable tile demand
 ```
 
-### 3. Deck Validation Tests
-
-Fixtures:
+### Group / Role Analysis
 
 ```text
-valid-minimal
-animal-starter
-no-win-role
-bonus-only
-impossible-role
-wildcard-heavy
-duplicate-role
-candidate-explosion
-category-too-small
-score-explosion
-large-valid
-old-schema-safe-migration
-old-schema-unsafe-reject
-corrupt-import
-```
-
-### 4. Group Engine Tests
-
-```text
-sameTile group detected
-sameCategory group detected
-sameTag group detected
-specificSet group detected
-wildcard-assisted group detected
+sameTile / sameCategory / sameTag / specificSet
+wildcard-assisted groups
 one group max one wildcard
 9 tiles partition into 3 groups
-8 tiles cannot be normal completed win
-10 tiles cannot be normal completed win
-one tileInstanceId cannot be reused in two groups
-```
-
-### 5. Role Analysis Tests
-
-```text
-completed candidate includes 3 groups
-tenpai candidate includes incomplete group
-near candidate includes missing requirement count
+no tileInstanceId reuse
+completed/tenpai/near/blocked explanation
 bonusOnly cannot win
-invalidButExplainable has blocked reason
-primaryCandidates capped at normal display limit
-hiddenCandidateCount returned when compressed
 candidate ranking deterministic
-hand order does not change result
+hand order invariant
+caps return warnings
 ```
 
-### 6. Ron / Tsumo Tests
+### Ron / Tsumo / Scoring
 
 ```text
-tsumo uses 9-tile hand after draw
-ron uses 8 hand tiles + discarded tile
-special_bonus alone cannot tsumo
-special_bonus alone cannot ron
-ScoreBonus alone cannot tsumo
-ScoreBonus alone cannot ron
-discarded wildcard cannot ron by default
-own drawn wildcard can complete if allowed
-multiple ron follows MVP seat-order rule
-```
-
-### 7. Scoring Tests
-
-```text
-selectedWinRole provides basePoints
-multiple winRoles do not stack basePoints
-specialBonuses apply only after selectedWinRole
-ScoreBonuses apply only after selectedWinRole
-scoreBudget warnings emitted
-totalPoints is additive
-ResultBreakdown includes groups/wildcards/bonuses/total
+tsumo uses 9-tile hand
+ron uses 8 hand + discard
+bonus-only and ScoreBonus-only cannot win
+discarded wildcard ron rule
+multiple ron seat-order rule
+one selectedWinRole provides basePoints
+bonuses apply only after selectedWinRole
+ResultBreakdown reconstructs total
 no hidden score modifier
 ```
 
-### 8. Discard Preview / Insight Tests
+### Insight / Preview
 
 ```text
-discard preview does not mutate state
-preview distinguishes current 9-tile shape from resulting 8-tile wait
-breaks candidate insight
-keeps candidate insight
-wildcard used as insight
-bonusOnly explanation
-insights do not contain best/correct/should wording
-beginner mode limits output
-normal mode limits output
-advanced mode can expose details
+preview does not mutate state
+9-tile shape vs resulting 8-tile wait
+keeps/breaks candidate facts
+wildcard explanation
+no best/correct/should advice wording
+beginner/normal/advanced output limits
 ```
 
-### 9. Match Reducer Tests
+### Match Reducer / CPU
 
 ```text
-setup -> deal -> turnStart -> draw path
-draw gives 9 tiles to current player
-invalid action returns ok:false and original state
-discard outside discardSelect rejected
-tsumo without win rejected
-ron outside reactionRon rejected
-PASS_RON advances reaction order
-all pass advances turn
-empty draw pile ends round
+setup -> deal -> turn path
+draw gives 9 tiles
+invalid actions preserve state
+double dispatch is safe
+ron/tsumo/pass windows
+empty draw pile result
+seeded deterministic replay
+CPU deterministic tie break
 ```
 
-### 10. Storage / Migration Tests
+### Storage / Migration / Progress
 
 ```text
-localStorage parsed through schema
-corrupt localStorage recovers
-older safe deck applies scoreBudget default with notice
-unsafe older deck rejected or imported as blocked draft
-local image map is not included in shared export
-missing local image falls back to text/emoji
+all localStorage payloads schema-parse on read
+corrupt data recovers
+old records normalize optional fields
+record/coin/achievement duplicate immediate write is prevented
+export excludes local/private data
+missing local images fall back
 ```
 
-## Golden Deck Tests
+Before restore/replay/resend, add persistent matchSessionId and recent processed-ID tests. The current last-key defense is not the final idempotency contract.
 
-The official animal starter deck should prove:
+## Skin Pure-function Tests
+
+Required:
 
 ```text
-strict parse succeeds
-normal variant is playable
-extended variant is engine pending
-sample winRoles are group-backed
-sample scoreBudget is valid
-sample has no image fields
+registry and manifest strict parse
+contract version compatibility
+unknown skin ID fallback
+inheritance and missing parent fallback
+inheritance cycle/depth handling
+safe file names
+asset URL construction
+token parser rejects forbidden syntax
+approved font policy
+all official package files parse and resolve
 ```
 
-## Adversarial Deck Matrix
+## Skin Hardening Tests
 
-Every pattern in `docs/69-adversarial-custom-deck-patterns.md` should become:
+After H1/H2 add:
 
 ```text
-validation test
-engine test
-or explicit not-yet-supported pending test
+unknown token ID rejected
+external structural token override rejected
+per-token type/range checked
+status=final with null file rejected
+trust-level file type checked
+file existence checked
+actual file bytes checked
+skin total bytes checked
+image dimensions checked
+intrinsic size checked
+slice inside source image
+safe area valid
+minimum render size valid
+slot-specific render mode valid
+candidate/final directory rule valid
+contract and package geometry fully aligned
 ```
 
-Do not ignore a pattern silently.
+## Contrast Tests
 
-## UI Test Gate
-
-Full screen UI starts only after:
+Official skins must test:
 
 ```text
-schema tests pass
-import security tests pass
-group engine tests pass
-ron/tsumo tests pass
-score tests pass
-match reducer tests pass
+text on primary CTA
+text on common surfaces
+focus ring on light and dark surfaces
+warning/info/success text
+category foreground selection for representative light/dark colors
 ```
 
-## Snapshot / Visual Tests Later
+Automated contrast checks do not replace visual review.
 
-After Component Gallery:
+## DOM / Component Tests
+
+Use a browser-like environment selected through ADR.
+
+Minimum:
 
 ```text
-844x390
-932x430
-852x393
-1024x600
-1366x768
+Button default/disabled/loading semantics
+Tile selected/emphasis ARIA state
+Modal initial focus, trap, Escape, return focus, labeling
+Tabs roving tabindex and keyboard navigation
+SkinSelector loading/failure/default/select behavior
+skin switch preserves current screen and draft state
+skin switch preserves selected tile/match state
+ErrorBoundary/ErrorState recovery
+local-data reset confirmation and scope
 ```
 
-Screenshots should be saved under:
+## Browser Flow Tests
+
+Minimum:
 
 ```text
-docs/design-targets/generated/implementation-screenshots/<phase>/
+fresh boot and official starter
+import valid/invalid JSON
+create/edit/save deck
+3-player and 4-player match start
+round result and record
+collection/achievement persistence
+skin switch from user path
+unknown/corrupt skin recovery
+reset local data and reboot
 ```
+
+## Visual Regression
+
+Use Playwright or the approved equivalent after ADR.
+
+Required matrix:
+
+```text
+all screens at 844x390
+TOP / Deck Editor / Match / Result / Collection at:
+  844x390
+  852x393
+  932x430
+  1024x600
+  1366x768
+Component Gallery in yorunoshirube and cute-pop
+```
+
+Include states:
+
+```text
+short and long Japanese
+long English
+large score
+emoji/fallback tile
+disabled/focused/selected/warning/error
+Modal and Tabs
+nine-slice minimum and expanded sizes
+```
+
+Control dynamic content, timestamps, fonts, and motion before recording baselines.
+
+## Manual QA
+
+Manual QA verifies:
+
+```text
+the game is understandable
+both skins feel intentional
+contrast is comfortable
+hit areas match visuals
+no mixed-skin flash
+no layout shift during switching
+real touch/browser behavior
+```
+
+Use `docs/MANUAL-QA.md` and save the report with commit/browser/device/viewport/screenshots.
+
+## CI Mapping
+
+```text
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm skin:validate     # after H2
+component test command # after H8 ADR
+Playwright command     # after H9 ADR
+```
+
+Local success and CI success must be reported separately.
 
 ## Final Decision
 
-Tests should prove the rules before UI makes the game look finished.
+Rules, persistence, skin safety, interactions, and appearance all require their own proof. A large passing pure-function test count does not prove UI or visual stability.
