@@ -5,8 +5,8 @@ import type { PlayerState } from '../../domain/match';
 import type { TileInstance } from '../../domain/tile';
 import { Button } from '../components/Button';
 import { ActionPanel } from '../components/ActionPanel';
+import { Dialog } from '../components/Dialog';
 import { GameTableLayout } from '../components/GameTableLayout';
-import { Modal } from '../components/Modal';
 import { PaperPanel } from '../components/PaperPanel';
 import { PlayerPanel } from '../components/PlayerPanel';
 import { TileCard } from '../components/TileCard';
@@ -216,19 +216,16 @@ export function MatchScreen({
           </ActionPanel>
         }
       />
-      <Modal open={exitConfirm} title="対戦を中断しますか?" onClose={() => setExitConfirm(false)}>
-        <p style={{ marginTop: 0, fontSize: 'var(--sp-font-sm)' }}>
-          TOPへ戻ると現在の対戦は失われます。
-        </p>
-        <div style={{ display: 'flex', gap: 'var(--sp-space-8)' }}>
-          <Button variant="primary" onClick={onExit}>
-            中断してTOPへ
-          </Button>
-          <Button variant="ghost" onClick={() => setExitConfirm(false)}>
-            つづける
-          </Button>
-        </div>
-      </Modal>
+      <Dialog
+        open={exitConfirm}
+        title="対戦を中断しますか?"
+        message="TOPへ戻ると現在の対戦は失われます。"
+        confirmLabel="中断してTOPへ"
+        cancelLabel="つづける"
+        danger
+        onConfirm={onExit}
+        onCancel={() => setExitConfirm(false)}
+      />
     </div>
   );
 }

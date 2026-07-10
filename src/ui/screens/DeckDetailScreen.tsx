@@ -5,6 +5,8 @@ import { Button } from '../components/Button';
 import { CategoryChip } from '../components/CategoryChip';
 import { PaperPanel } from '../components/PaperPanel';
 import { RoleCard } from '../components/RoleCard';
+import { SectionHeader } from '../components/SectionHeader';
+import { ValidationIssueList } from '../components/ValidationIssueList';
 import { TileCard } from '../components/TileCard';
 
 export function DeckDetailScreen({
@@ -30,28 +32,33 @@ export function DeckDetailScreen({
 
   return (
     <div className="sp-screen">
-      <div className="sp-screen__header">
-        <h1 className="sp-screen__title">{deck.name}</h1>
-        <Badge variant={canPlay ? 'info' : 'warning'}>
-          {canPlay ? '対局できます' : '対局できません(要修正)'}
-        </Badge>
-        <div className="sp-screen__spacer" />
-        <Button variant="primary" onClick={onStartSetup} disabled={!canPlay}>
-          対局へ
-        </Button>
-        <Button variant="ink" onClick={onEdit}>
-          編集
-        </Button>
-        <Button variant="ink" onClick={onExport}>
-          エクスポート
-        </Button>
-        <Button variant="ghost" onClick={onDelete}>
-          削除
-        </Button>
-        <Button variant="ghost" onClick={onBack}>
-          もどる
-        </Button>
-      </div>
+      <SectionHeader
+        title={deck.name}
+        badges={
+          <Badge variant={canPlay ? 'info' : 'warning'}>
+            {canPlay ? '対局できます' : '対局できません(要修正)'}
+          </Badge>
+        }
+        actions={
+          <>
+            <Button variant="primary" onClick={onStartSetup} disabled={!canPlay}>
+              対局へ
+            </Button>
+            <Button variant="ink" onClick={onEdit}>
+              編集
+            </Button>
+            <Button variant="ink" onClick={onExport}>
+              エクスポート
+            </Button>
+            <Button variant="ghost" onClick={onDelete}>
+              削除
+            </Button>
+            <Button variant="ghost" onClick={onBack}>
+              もどる
+            </Button>
+          </>
+        }
+      />
       <div className="sp-screen__body">
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
           <PaperPanel variant="aged" title="デッキ情報">
@@ -108,20 +115,7 @@ export function DeckDetailScreen({
         </div>
         <div className="sp-screen__col sp-screen__col--side sp-screen__col--scroll">
           <PaperPanel variant="ink" title="検証結果">
-            {validation.issues.length === 0 ? (
-              <span style={{ fontSize: 'var(--sp-font-xs)' }}>問題は見つかりませんでした。</span>
-            ) : (
-              <ul className="sp-issue-list">
-                {validation.issues.map((issue, i) => (
-                  <li key={`${issue.code}-${i}`}>
-                    <Badge variant={issue.severity === 'info' ? 'info' : 'warning'}>
-                      {issue.code}
-                    </Badge>{' '}
-                    {issue.message}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <ValidationIssueList issues={validation.issues} />
           </PaperPanel>
         </div>
       </div>
