@@ -75,6 +75,11 @@ export const recordsPayloadSchema = z
     achievements: z.array(z.string().min(1).max(64)).max(100).optional(),
     /** 通算対局数(recordsは100件でtruncateされるため別に数える) */
     totalMatches: z.number().int().nonnegative().optional(),
+    /**
+     * 直前に記録したmatchの一意キー(deckId:variantId:seed:reason:winner)。
+     * 同じキーでのaddRecord呼び出しはno-opにする(結果確定イベント単位の冪等性)。
+     */
+    lastMatchKey: z.string().min(1).max(160).optional(),
   })
   .strict();
 
@@ -89,3 +94,13 @@ export const EMPTY_RECORDS: RecordsPayload = {
   achievements: [],
   totalMatches: 0,
 };
+
+// 読み込んだRecordsPayloadを常に具体値へ正規化する(旧データのoptional欠落を吸収)。
+// 呼び出し側が `?? []` / `?? 0` を散らさなくてよいようにする。
+export function normalizeRecordsPayload(payload: RecordsPayload): RecordsPayload {
+  return {
+    ...payload,
+    achievements: payload.achievements ?? [],
+    totalMatches: payload.totalMatches ?? payload.records.length,
+  };
+}

@@ -1,6 +1,7 @@
 import type { ValidationIssue } from '../domain/validation';
 import {
   EMPTY_RECORDS,
+  normalizeRecordsPayload,
   recordsPayloadSchema,
   type MatchRecord,
   type RecordsPayload,
@@ -15,7 +16,12 @@ export const COIN_PARTICIPATION = 10;
 
 export type RecordsStore = {
   load(): { records: RecordsPayload; issues: ValidationIssue[] };
-  addRecord(record: MatchRecord, wonRoleKey?: string): RecordsPayload;
+  /**
+   * matchKeyは1つの対局結果を一意に指す識別子(結果確定イベント単位)。
+   * 直前に記録したmatchKeyと同じ場合はno-op(コイン/records/totalMatchesを増やさない)。
+   * これにより、呼び出し側が同じ結果を誤って2回記録してもstorageは二重加算しない。
+   */
+  addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload;
   /** 実績を解放して保存する。既知のIDは重複しない。 */
   unlockAchievements(ids: string[]): RecordsPayload;
 };
@@ -29,7 +35,8 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     try {
       const parsed = recordsPayloadSchema.safeParse(JSON.parse(raw) as unknown);
       if (parsed.success) {
-        return { records: parsed.data, issues: [] };
+        // 旧データのoptionalフィールド欠落を安全なdefaultへ正規化する
+        return { records: normalizeRecordsPayload(parsed.data), issues: [] };
       }
     } catch {
       // 回復処理へ
@@ -54,8 +61,12 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
 
   return {
     load: read,
-    addRecord(record: MatchRecord, wonRoleKey?: string): RecordsPayload {
+    addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload {
       const { records: current } = read();
+      // 同じ結果確定イベントを二重記録しない(冪等)。
+      if (matchKey === current.lastMatchKey) {
+        return current;
+      }
       const roleCollection =
         wonRoleKey !== undefined && !current.roleCollection.includes(wonRoleKey)
           ? [...current.roleCollection, wonRoleKey]
@@ -67,6 +78,7 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
         roleCollection,
         achievements: current.achievements ?? [],
         totalMatches: (current.totalMatches ?? 0) + 1,
+        lastMatchKey: matchKey,
       });
     },
     unlockAchievements(ids: string[]): RecordsPayload {

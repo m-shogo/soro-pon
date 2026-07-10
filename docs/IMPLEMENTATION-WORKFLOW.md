@@ -298,6 +298,35 @@ count-up/ドロー牌ポップ/ランタンパルスはreduced-motion対応
 
 Decision: pass(MVPコアフロー成立。上記known issuesは次の磨き込みへ)
 
+## Safety Hardening (Phase 14, 2026-07-10)
+
+ユーザーレビュー指摘への対応。破綻防止の恒久修正とテストを追加。
+
+```text
+1. 記録の二重加算防止をReactのref頼みからstorage層のmatchKey冪等性へ格上げ
+   (recordsPayload.lastMatchKey、addRecordは同一matchKeyでno-op)
+2. newSeed()をセッション内カウンタ併用に変更
+   (同一ミリ秒でのMatchSession key衝突→記録漏れの経路を修正)
+3. achievements/totalMatchesをstore read()で常に具体値へ正規化(normalizeRecordsPayload)
+4. specificSet feasibility(R4005)の多重tileIdバグを修正(engine層、import経路も保護)
+5. エディタのrole/bonus構築ロジックをsrc/app/editorTemplates.tsへ純関数抽出しテスト化
+   (specificSetの重複tileId/未選択/カテゴリ未選択はnullを返しUIボタンを無効化)
+6. reducerの連打(DISCARD_TILE/DECLARE_TSUMO/DECLARE_RON二重dispatch)耐性テストを追加
+7. engineがrecords/achievements/coinsを一切参照しないことをgrepで確認(architecture不変)
+8. UIに画像直参照(<img>/.png等)がないことをgrepで確認(asset slot契約維持)
+```
+
+ブラウザ実機で追加確認:
+
+```text
+対局完走(流局)→Result表示→reload→TOPに戻り、coins/totalMatches/recordsが変化しないこと
+記憶帳クリアボードに新規実績が正しく永続化されること
+specificSetテンプレートで牌を重複選択するとボタン無効化+警告文言が出ること
+重複解消後は正しくwinRole(requiredGroups合計3)が生成されvalidateDeckProjectがerrorなしを返すこと
+```
+
+テスト218件(Phase 13から+33件: matchRecording 6 / localStorageRecordsStore冪等性 5 / editorTemplates 16 / validateDeckProject specificSet多重tileId 2 / applyMatchAction連打耐性 4)。
+
 ## Standing Rules
 
 ```text
@@ -319,4 +348,7 @@ tile.tags を許可フィールドに追加(sameTag役に必要) -> docs/74更�
 schemaのwinRolesはmin 0(拡張variantの空配列を許可)、V3001でvalidationが1個以上を強制(docs/65のmin 1はvariant共通schemaとしてはサンプルと矛盾するため)
 DeckValidationStatus: 構造的に遊べない(V3003/E7008)はblocked、内容エラーはdraft
 R4010追加: 通常win_roleのrequiredGroups合計はちょうど3グループ必須(docs/68のblocking条件を明文化) -> docs/ERROR-CODES.md更新済み
+specificSet feasibility(R4005)のバグ修正: tileIds内の同一tileId重複を正しく多重需要として計算するよう変更(旧実装は重複を無視していた)
+対局記録の冪等性: recordsPayloadにlastMatchKeyを追加し、addRecordは同一matchKeyでno-opになる(結果確定イベント単位で一度だけ記録)
+newSeed()をセッション内カウンタ併用に変更(Date.now()単独では同一ミリ秒でのMatchSession key衝突により記録漏れが起こり得たため)
 ```

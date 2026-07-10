@@ -122,11 +122,17 @@ function requirementFeasible(
     }
     case 'specificSet': {
       const tileIds = requirement.tileIds ?? [];
-      let missing = 0;
+      // 同じtileIdがtileIds内で複数回指定された場合、その回数分だけ同時所持が必要。
+      // (例: ['apple','apple','banana'] は apple 2枚 + banana 1枚を同時に要求する)
+      const neededByTile = new Map<TileId, number>();
       for (const tileId of tileIds) {
+        neededByTile.set(tileId, (neededByTile.get(tileId) ?? 0) + requirement.count);
+      }
+      let missing = 0;
+      for (const [tileId, needed] of neededByTile) {
         const copies = index.tileCopiesById.get(tileId) ?? 0;
-        if (copies < requirement.count) {
-          missing += requirement.count - copies;
+        if (copies < needed) {
+          missing += needed - copies;
         }
       }
       return missing <= wildcardAllowance;

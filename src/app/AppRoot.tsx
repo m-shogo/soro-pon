@@ -7,6 +7,7 @@ import {
   type AchievementEvent,
 } from './achievements';
 import { createDeckTemplate } from './createdDeckTemplate';
+import { buildMatchRecordingResult } from './matchRecording';
 import type { DeckProject } from '../domain/deck';
 import type { MatchState } from '../domain/match';
 import type { DeckValidationResult } from '../domain/validation';
@@ -14,10 +15,7 @@ import { parseDeckImport } from '../engine/import/parseDeckImport';
 import { validateDeckProject } from '../engine/validation/validateDeckProject';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
 import { createLocalStorageDeckStore } from '../storage/localStorageDeckStore';
-import {
-  buildMatchRecord,
-  createLocalStorageRecordsStore,
-} from '../storage/localStorageRecordsStore';
+import { createLocalStorageRecordsStore } from '../storage/localStorageRecordsStore';
 import { createLocalStorageSettingsStore } from '../storage/localStorageSettingsStore';
 import { Badge } from '../ui/components/Badge';
 import { Button } from '../ui/components/Button';
@@ -159,7 +157,14 @@ export function AppRoot() {
   const deckOf = (deckId: string): DeckProject | undefined =>
     decks.find((d) => d.deck.id === deckId)?.deck;
 
-  const newSeed = () => Math.floor(Date.now() % 2147483647);
+  // MatchSessionはkey={seed}でマウント管理されるため、seedは対局ごとに一意である必要がある。
+  // Date.now()だけだと同一ミリ秒(高速な「もう一局」連打)で衝突しうるため、
+  // セッション内で単調増加するカウンタを混ぜて衝突を防ぐ。
+  const seedCounterRef = useRef(0);
+  const newSeed = useCallback(() => {
+    seedCounterRef.current += 1;
+    return (Math.floor(Date.now() % 1000000) * 1000 + (seedCounterRef.current % 1000)) % 2147483647;
+  }, []);
 
   const handleImport = () => {
     const result = parseDeckImport({ rawText: importText });
@@ -196,55 +201,26 @@ export function AppRoot() {
     processAchievements({ type: 'deckExported' });
   };
 
-  // 対局終了時の記録。人間勝利ならコイン=totalPoints(cap 500)、他は参加報酬。
+  // 対局終了時の記録。決着の組み立ては純関数(matchRecording.ts)に委譲し、
+  // storage層のmatchKey冪等性で同じ結果の二重加算を防ぐ(結果確定イベント単位で一度だけ)。
   const recordMatch = useCallback(
     (finalState: MatchState): { coinsEarned: number; newlyUnlocked: AchievementDef[] } => {
-      const result = finalState.result;
       const stored = decks.find((d) => d.deck.id === finalState.deckProjectId);
-      const deck = stored?.deck;
-      if (!result || !deck) {
+      if (!stored) {
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
-      const winner = finalState.players.find((p) => p.id === result.winnerPlayerId);
-      const humanWon = winner?.kind === 'human';
-      const breakdown = result.breakdown;
-      const record = buildMatchRecord({
-        dateMs: Date.now(),
-        deckId: deck.id,
-        deckName: deck.name,
-        reason: result.reason,
-        winnerName: winner?.name ?? '',
-        humanWon,
-        ...(breakdown !== undefined
-          ? {
-              selectedWinRoleId: breakdown.selectedWinRoleId,
-              selectedWinRoleName: breakdown.selectedWinRoleName,
-              totalPoints: breakdown.totalPoints,
-            }
-          : {}),
+      const built = buildMatchRecordingResult({
+        finalState,
+        deck: stored.deck,
+        deckSource: stored.source,
       });
-      const roleKey =
-        humanWon && breakdown !== undefined
-          ? `${deck.id}:${breakdown.selectedWinRoleId}`
-          : undefined;
-      recordsStore.addRecord(record, roleKey);
+      if (!built) {
+        return { coinsEarned: 0, newlyUnlocked: [] };
+      }
+      recordsStore.addRecord(built.record, built.matchKey, built.roleKey);
       setRecordsVersion((v) => v + 1);
-      const selectedRoleFamily =
-        breakdown !== undefined
-          ? deck.variants
-              .flatMap((v) => v.winRoles)
-              .find((r) => r.id === breakdown.selectedWinRoleId)?.family
-          : undefined;
-      const newlyUnlocked = processAchievements({
-        type: 'matchEnd',
-        reason: result.reason,
-        humanWon,
-        playerCount: finalState.players.length,
-        deckSource: stored?.source ?? 'official',
-        ...(breakdown !== undefined ? { breakdown } : {}),
-        ...(selectedRoleFamily !== undefined ? { selectedRoleFamily } : {}),
-      });
-      return { coinsEarned: record.coinsEarned, newlyUnlocked };
+      const newlyUnlocked = processAchievements(built.achievementEvent);
+      return { coinsEarned: built.record.coinsEarned, newlyUnlocked };
     },
     [decks, recordsStore, processAchievements],
   );

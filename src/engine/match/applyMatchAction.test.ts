@@ -285,3 +285,104 @@ describe('applyMatchAction: 流局', () => {
     expect(renew.state.seed).toBe(state.seed + 1);
   });
 });
+
+function riggedTsumoState(context: MatchContext): MatchState {
+  const p1Hand = makeInstances([
+    'lion', 'lion', 'lion', 'elephant', 'elephant', 'elephant', 'zebra', 'zebra', 'zebra',
+  ]).map((t) => ({ ...t, ownerPlayerId: 'p1' }));
+  const p2Hand = makeInstances([
+    'penguin', 'owl', 'fish', 'bee', 'frog', 'ant', 'duck', 'octopus',
+  ]).map((t) => ({ ...t, ownerPlayerId: 'p2' }));
+  const p3Hand = makeInstances([
+    'whale', 'whale', 'turtle', 'snake', 'butterfly', 'ladybug', 'fox', 'wolf',
+  ]).map((t) => ({ ...t, ownerPlayerId: 'p3' }));
+  return {
+    deckProjectId: context.deck.id,
+    variantId: context.variant.id,
+    seed: 1,
+    players: [
+      { id: 'p1', name: 'あなた', kind: 'human', seatIndex: 0, hand: p1Hand, discards: [] },
+      { id: 'p2', name: 'CPU壱', kind: 'cpu', seatIndex: 1, hand: p2Hand, discards: [] },
+      { id: 'p3', name: 'CPU弐', kind: 'cpu', seatIndex: 2, hand: p3Hand, discards: [] },
+    ],
+    drawPile: makeInstances(['monkey', 'monkey']).map((t) => ({ ...t, location: 'drawPile' as const })),
+    currentPlayerIndex: 0,
+    turnCount: 3,
+    phase: 'afterDrawAction',
+  };
+}
+
+// 連打・重複dispatch耐性: reducerはphaseガードにより2回目以降を必ず拒否し、
+// 1回目で確定したresultを壊さない(item 9: モーション中の連打で状態が壊れないこと)。
+describe('applyMatchAction: 連打・重複dispatch耐性', () => {
+  it('DISCARD_TILEを連続dispatchしても2回目はE7001で拒否され、1回目の結果は変わらない', () => {
+    const context = animalContext();
+    const state = riggedRonState(context, 'zebra');
+    const first = applyMatchAction(state, { type: 'DISCARD_TILE', playerId: 'p1' }, context);
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    const second = applyMatchAction(first.state, { type: 'DISCARD_TILE', playerId: 'p1' }, context);
+    expect(second.ok).toBe(false);
+    if (second.ok) return;
+    expect(second.error.code).toBe('E7001');
+    // 2回目の捨て牌は起きていない(手牌がさらに減っていない)
+    expect(second.state).toBe(first.state);
+    expect(second.state.players[0]!.hand).toHaveLength(8);
+  });
+
+  it('DECLARE_TSUMOを連続dispatchしても2回目は元のresultを変更しない', () => {
+    const context = animalContext();
+    const state = riggedTsumoState(context);
+    const first = applyMatchAction(state, { type: 'DECLARE_TSUMO', playerId: 'p1' }, context);
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    expect(first.state.phase).toBe('roundEnd');
+    const firstTotal = first.state.result?.breakdown?.totalPoints;
+
+    const second = applyMatchAction(first.state, { type: 'DECLARE_TSUMO', playerId: 'p1' }, context);
+    expect(second.ok).toBe(false);
+    if (second.ok) return;
+    expect(second.error.code).toBe('E7001');
+    expect(second.state).toBe(first.state);
+    expect(second.state.result?.breakdown?.totalPoints).toBe(firstTotal);
+  });
+
+  it('DECLARE_RONを連続dispatchしても2回目はE7001で拒否され、勝者は変わらない', () => {
+    const context = animalContext();
+    let state = riggedRonState(context, 'zebra');
+    state = applyMatchAction(state, { type: 'DISCARD_TILE', playerId: 'p1' }, context).state;
+    const first = applyMatchAction(state, { type: 'DECLARE_RON', playerId: 'p2' }, context);
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    expect(first.state.result?.winnerPlayerId).toBe('p2');
+
+    const second = applyMatchAction(first.state, { type: 'DECLARE_RON', playerId: 'p2' }, context);
+    expect(second.ok).toBe(false);
+    if (second.ok) return;
+    expect(second.error.code).toBe('E7001');
+    expect(second.state.result?.winnerPlayerId).toBe('p2');
+  });
+
+  it('SELECT_TILEを連打しても最後に選ばれた牌だけが有効(状態は破綻しない)', () => {
+    const context = animalContext();
+    const state = riggedTsumoState(context);
+    const tileA = state.players[0]!.hand[0]!.instanceId;
+    const tileB = state.players[0]!.hand[1]!.instanceId;
+    const selectA = applyMatchAction(
+      state,
+      { type: 'SELECT_TILE', playerId: 'p1', tileInstanceId: tileA },
+      context,
+    );
+    expect(selectA.ok).toBe(true);
+    if (!selectA.ok) return;
+    const selectB = applyMatchAction(
+      selectA.state,
+      { type: 'CHANGE_SELECTED_TILE', playerId: 'p1', tileInstanceId: tileB },
+      context,
+    );
+    expect(selectB.ok).toBe(true);
+    if (!selectB.ok) return;
+    expect(selectB.state.selectedTileInstanceId).toBe(tileB);
+    expect(selectB.state.phase).toBe('discardSelect');
+  });
+});

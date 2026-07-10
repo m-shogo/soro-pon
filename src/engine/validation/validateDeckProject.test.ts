@@ -243,6 +243,33 @@ describe('validateDeckProject: warnings', () => {
     expect(codesOf(result)).toContain('B6008');
   });
 
+  it('specificSet内で同じtileIdを繰り返すと、その回数分の同時所持を要求する(R4005)', () => {
+    // appleはcount 3。tileIds内で3回×count2組=6枚同時所持が必要になり、成立不可能。
+    const deck = buildMinimalDeck();
+    const variants = deck['variants'] as Record<string, unknown>[];
+    const winRoles = variants[0]!['winRoles'] as Record<string, unknown>[];
+    winRoles[0]!['requiredGroups'] = [
+      { groupType: 'specificSet', tileIds: ['apple', 'apple', 'apple'], count: 2 },
+      { groupType: 'sameCategory', categoryId: 'veg', count: 1 },
+    ];
+    const result = validateDeckProject({ deck: parseDeck(deck) });
+    expect(result.status).toBe('draft');
+    expect(codesOf(result)).toContain('R4005');
+  });
+
+  it('specificSet内の同一tileId重複でも、十分な枚数があれば成立可能と判定する', () => {
+    // appleはcount 3。同じtileIdを2回指定(2枚同時所持)は残り1枚あるので可能。
+    const deck = buildMinimalDeck();
+    const variants = deck['variants'] as Record<string, unknown>[];
+    const winRoles = variants[0]!['winRoles'] as Record<string, unknown>[];
+    winRoles[0]!['requiredGroups'] = [
+      { groupType: 'specificSet', tileIds: ['apple', 'apple', 'banana'], count: 1 },
+      { groupType: 'sameCategory', categoryId: 'veg', count: 2 },
+    ];
+    const result = validateDeckProject({ deck: parseDeck(deck) });
+    expect(codesOf(result)).not.toContain('R4005');
+  });
+
   it('wildcardなしでは成立しない役はR4006 warning', () => {
     const deck = buildDeckWithWildcard();
     const categories = deck['categories'] as Record<string, unknown>[];

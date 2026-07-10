@@ -2,7 +2,15 @@ import { useMemo, useState } from 'react';
 import type { CategoryDefinition } from '../../domain/category';
 import type { DeckProject } from '../../domain/deck';
 import type { TileDefinition } from '../../domain/tile';
-import type { ScoreBonus, SpecialBonus, WinRole } from '../../domain/role';
+import type { WinRole } from '../../domain/role';
+import {
+  buildSameCategoryRoleTemplate,
+  buildSameTileRoleTemplate,
+  buildScoreBonusTemplate,
+  buildSpecialBonusTemplate,
+  buildSpecificSetRoleTemplate,
+  buildThreeDifferentCategoriesRoleTemplate,
+} from '../../app/editorTemplates';
 import { validateDeckProject } from '../../engine/validation/validateDeckProject';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
@@ -142,69 +150,25 @@ export function DeckEditorScreen({
     setDraft({ ...draft, tiles: draft.tiles.filter((t) => t.id !== id) });
   };
 
-  // ---- 役テンプレート(docs/70 §18) ----
+  // ---- 役テンプレート(docs/70 §18): 構築ロジックはsrc/app/editorTemplates.tsの純関数 ----
   const addRoleFromTemplate = (
     template: 'threeSameCategory' | 'threeDifferentCategories' | 'threeSameTile',
     categoryId?: string,
   ) => {
     updateVariant((variant) => {
-      const id = nextId('role', variant.winRoles.map((r) => r.id));
+      const existingIds = variant.winRoles.map((r) => r.id);
       let role: WinRole | null = null;
       if (template === 'threeSameCategory' && categoryId) {
         const category = draft.categories.find((c) => c.id === categoryId);
-        role = {
-          id,
-          name: `${category?.name ?? ''}あつめ`,
-          kind: 'win_role',
-          family: 'groupPattern',
-          basePoints: 60,
-          requiredGroups: [{ groupType: 'sameCategory', categoryId, count: 3 }],
-          allowWildcard: true,
-          maxWildcards: 1,
-          priority: 50,
-          explanation: `${category?.name ?? ''}の3枚グループを3組そろえる。`,
-          canTsumo: true,
-          canRon: true,
-        };
-      }
-      if (template === 'threeDifferentCategories') {
-        const categories = draft.categories.slice(0, 3);
-        if (categories.length === 3) {
-          role = {
-            id,
-            name: '三色の記憶',
-            kind: 'win_role',
-            family: 'groupPattern',
-            basePoints: 80,
-            requiredGroups: categories.map((c) => ({
-              groupType: 'sameCategory' as const,
-              categoryId: c.id,
-              count: 1,
-            })),
-            allowWildcard: true,
-            maxWildcards: 1,
-            priority: 60,
-            explanation: `${categories.map((c) => c.name).join('・')}のグループを1組ずつそろえる。`,
-            canTsumo: true,
-            canRon: true,
-          };
+        if (category) {
+          role = buildSameCategoryRoleTemplate(category, existingIds);
         }
       }
+      if (template === 'threeDifferentCategories') {
+        role = buildThreeDifferentCategoriesRoleTemplate(draft.categories.slice(0, 3), existingIds);
+      }
       if (template === 'threeSameTile') {
-        role = {
-          id,
-          name: 'ぞろぞろ',
-          kind: 'win_role',
-          family: 'groupPattern',
-          basePoints: 120,
-          requiredGroups: [{ groupType: 'sameTile', count: 3 }],
-          allowWildcard: true,
-          maxWildcards: 1,
-          priority: 70,
-          explanation: '同じ牌3枚のグループを3組そろえる。',
-          canTsumo: true,
-          canRon: true,
-        };
+        role = buildSameTileRoleTemplate(existingIds);
       }
       if (!role) {
         return variant;
@@ -229,58 +193,52 @@ export function DeckEditorScreen({
 
   const [templateCategoryId, setTemplateCategoryId] = useState('');
   const [setTileIds, setSetTileIds] = useState<[string, string, string]>(['', '', '']);
+  // 同じ牌を複数スロットで選んでいないか(重複はテンプレート生成を許可しない)
+  const setTileIdsHaveDuplicate =
+    setTileIds.some((id) => id !== '') &&
+    new Set(setTileIds.filter((id) => id !== '')).size !== setTileIds.filter((id) => id !== '').length;
+  const canAddSpecificSetRole =
+    setTileIds.every((id) => id !== '') &&
+    new Set(setTileIds).size === 3 &&
+    templateCategoryId !== '';
 
   // specificSet + 同カテゴリ2組 (100点) テンプレート
   const addSpecificSetRole = () => {
-    if (setTileIds.some((id) => id === '') || templateCategoryId === '') {
+    const category = draft.categories.find((c) => c.id === templateCategoryId);
+    if (!category) {
       return;
     }
-    const names = setTileIds.map(
-      (tileId) => draft.tiles.find((t) => t.id === tileId)?.name ?? tileId,
-    );
-    const category = draft.categories.find((c) => c.id === templateCategoryId);
+    const tiles = setTileIds.map((tileId) => {
+      const tile = draft.tiles.find((t) => t.id === tileId);
+      return { id: tileId, name: tile?.name ?? tileId };
+    });
     updateVariant((variant) => {
-      const id = nextId('role', variant.winRoles.map((r) => r.id));
-      const role: WinRole = {
-        id,
-        name: `${names[0]}たちの記憶`,
-        kind: 'win_role',
-        family: 'specificCollection',
-        basePoints: 100,
-        requiredGroups: [
-          { groupType: 'specificSet', tileIds: [...setTileIds], count: 1 },
-          { groupType: 'sameCategory', categoryId: templateCategoryId, count: 2 },
-        ],
-        allowWildcard: true,
-        maxWildcards: 1,
-        priority: 40,
-        explanation: `${names.join('・')}の組と、${category?.name ?? ''}グループ2組をそろえる。`,
-        canTsumo: true,
-        canRon: true,
-      };
+      const role = buildSpecificSetRoleTemplate(
+        { tiles, category },
+        variant.winRoles.map((r) => r.id),
+      );
+      if (!role) {
+        return variant;
+      }
       return { ...variant, winRoles: [...variant.winRoles, role] };
     });
   };
 
-  // ---- ボーナス操作 ----
+  // ---- ボーナス操作(構築ロジックはsrc/app/editorTemplates.ts) ----
   const addSpecialBonus = (categoryId: string) => {
     const category = draft.categories.find((c) => c.id === categoryId);
+    if (!category) {
+      return;
+    }
     updateVariant((variant) => {
-      const id = nextId('bonus', variant.specialBonuses.map((b) => b.id));
-      const bonus: SpecialBonus = {
-        id,
-        name: `${category?.name ?? ''}あつめボーナス`,
-        kind: 'special_bonus',
-        points: 20,
-        condition: { type: 'countByCategory', categoryId, minCount: 3 },
-        allowWildcard: true,
-        maxWildcards: 1,
-        explanation: `${category?.name ?? ''}が3枚以上あれば加点。単体ではあがれない。`,
-      };
+      const bonus = buildSpecialBonusTemplate(
+        category,
+        variant.specialBonuses.map((b) => b.id),
+      );
       return { ...variant, specialBonuses: [...variant.specialBonuses, bonus] };
     });
   };
-  const updateSpecialBonus = (id: string, patch: Partial<SpecialBonus>) => {
+  const updateSpecialBonus = (id: string, patch: Partial<ReturnType<typeof buildSpecialBonusTemplate>>) => {
     updateVariant((variant) => ({
       ...variant,
       specialBonuses: variant.specialBonuses.map((b) => (b.id === id ? { ...b, ...patch } : b)),
@@ -294,21 +252,11 @@ export function DeckEditorScreen({
   };
   const addScoreBonus = () => {
     updateVariant((variant) => {
-      const id = nextId('scorebonus', variant.scoreBonuses.map((b) => b.id));
-      const bonus: ScoreBonus = {
-        id,
-        name: '同じ牌3枚ボーナス',
-        type: 'duplicate_tile',
-        minCount: 3,
-        points: 15,
-        maxPoints: 15,
-        description: '同じ牌を3枚持っている場合に加点。',
-        allowWildcard: false,
-      };
+      const bonus = buildScoreBonusTemplate(variant.scoreBonuses.map((b) => b.id));
       return { ...variant, scoreBonuses: [...variant.scoreBonuses, bonus] };
     });
   };
-  const updateScoreBonus = (id: string, patch: Partial<ScoreBonus>) => {
+  const updateScoreBonus = (id: string, patch: Partial<ReturnType<typeof buildScoreBonusTemplate>>) => {
     updateVariant((variant) => ({
       ...variant,
       scoreBonuses: variant.scoreBonuses.map((b) => (b.id === id ? { ...b, ...patch } : b)),
@@ -602,12 +550,17 @@ export function DeckEditorScreen({
                   ))}
                   <Button
                     variant="ink"
-                    disabled={setTileIds.some((id) => id === '') || templateCategoryId === ''}
+                    disabled={!canAddSpecificSetRole}
                     onClick={addSpecificSetRole}
                   >
                     指定3枚+同カテゴリ2組 (100点)
                   </Button>
                 </div>
+                {setTileIdsHaveDuplicate && (
+                  <p style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-danger)', margin: '4px 0 0' }}>
+                    同じ牌が複数のスロットで選ばれています。3枚とも別の牌を選んでください。
+                  </p>
+                )}
                 <p style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', margin: '4px 0 0' }}>
                   指定セットは上のカテゴリ選択も使います(残り2組のカテゴリ)。
                 </p>
