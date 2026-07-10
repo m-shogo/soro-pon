@@ -117,7 +117,10 @@ export function createSkinLoader(io: SkinPackageIo) {
       issues.push(`スキン ${skinId} のtokensを読み込めません(tokenなしで続行)`);
       return { manifest: validated.manifest, tokens: {}, issues };
     }
-    const parsedTokens = parseSkinTokens(tokensText);
+    const parsedTokens = parseSkinTokens(
+      tokensText,
+      validated.manifest.origin === 'external' ? 'external' : 'official',
+    );
     issues.push(...parsedTokens.issues.map((i) => `スキン ${skinId}: ${i}`));
     return { manifest: validated.manifest, tokens: parsedTokens.tokens, issues };
   }

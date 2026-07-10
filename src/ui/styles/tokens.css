@@ -36,6 +36,15 @@
   --sp-color-success: #4a5f38; /* 成功/完了のみ(苔色) */
   --sp-color-focus: #e8a23c; /* focus-visible(ランタンと同系) */
 
+  /* ---- semantic text/contrast(面の上の文字色。スキンが面と一緒に差し替える) ---- */
+  --sp-text-on-primary: #f4ead2; /* 深紅CTAの上の文字 */
+  --sp-text-on-surface: #241a10; /* 紙面の上の文字 */
+  --sp-text-on-dark: #e9dcbc; /* 夜面の上の文字 */
+  --sp-text-muted: #a89877; /* 補足文字 */
+  --sp-text-on-category-light: #241a10; /* 明るいカテゴリ帯の上 */
+  --sp-text-on-category-dark: #f4ead2; /* 暗いカテゴリ帯の上 */
+  --sp-focus-ring-color: #e8a23c; /* focusリング(スキンで消せない) */
+
   /* ---- border ---- */
   --sp-border-ink: 1px solid rgba(36, 26, 16, 0.85);
   --sp-border-paper-edge: 1px solid rgba(233, 220, 188, 0.16);

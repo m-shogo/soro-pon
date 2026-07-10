@@ -43,6 +43,17 @@ describe('公式skinパッケージ(実ファイル)', () => {
   it.each(OFFICIAL_IDS)('%s のtokens.cssが安全パースを通る(issueゼロ)', (skinId) => {
     const { tokens, issues } = parseSkinTokens(readText(`skins/${skinId}/tokens.css`));
     expect(issues, issues.join(' / ')).toEqual([]);
+    // baseはbundled fallbackを使うため上書きゼロ。他スキンはskinable tokenを持つ
+    if (skinId === 'base') {
+      expect(Object.keys(tokens)).toHaveLength(0);
+    } else {
+      expect(Object.keys(tokens).length).toBeGreaterThan(10);
+    }
+  });
+
+  it('cute-popのtokensは外部(販売)スキン相当のtrustでも全て通る', () => {
+    const { tokens, issues } = parseSkinTokens(readText('skins/cute-pop/tokens.css'), 'external');
+    expect(issues, issues.join(' / ')).toEqual([]);
     expect(Object.keys(tokens).length).toBeGreaterThan(10);
   });
 

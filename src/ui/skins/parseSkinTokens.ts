@@ -1,14 +1,18 @@
+import { validateSkinTokenValue } from './skinTokenRegistry';
 import { APPROVED_FONT_STACKS, SKIN_LIMITS } from './skinTypes';
 
-// tokens.cssを「安全なtoken宣言の集合」として厳格にパースする。
-// 任意CSSの注入は許可しない: 受理するのは `--sp-<name>: <value>;` 行のみで、
-// 値にurl()/@import/expression/javascript:等を含むものは拒否する。
+// tokens.cssを「安全なtoken宣言の集合」として厳格にパースする(P0-1)。
+// 1. 構文の安全性: `--sp-<name>: <value>;` のみ受理、url()/@import等を拒否
+// 2. 型付きallowlist: skinTokenRegistryの定義テーブルで
+//    未知token/structural token/種別・範囲外の値を拒否
 // 外部スキンでも安全に読めるよう、公式スキンにも同じ制約を適用する。
 
 export type ParseSkinTokensResult = {
   tokens: Record<string, string>;
   issues: string[];
 };
+
+export type SkinTokenTrust = 'official' | 'external';
 
 const TOKEN_NAME_PATTERN = /^--sp-[a-z0-9-]+$/;
 
@@ -37,7 +41,10 @@ export function isApprovedFontStack(value: string): boolean {
   return APPROVED_FONTS_NORMALIZED.has(normalizeFontStack(value));
 }
 
-export function parseSkinTokens(cssText: string): ParseSkinTokensResult {
+export function parseSkinTokens(
+  cssText: string,
+  trust: SkinTokenTrust = 'official',
+): ParseSkinTokensResult {
   const tokens: Record<string, string> = {};
   const issues: string[] = [];
 
@@ -89,6 +96,12 @@ export function parseSkinTokens(cssText: string): ParseSkinTokensResult {
         issues.push(`token ${name} は許可済みフォントセット以外を指定できません`);
         continue;
       }
+    }
+    // 型付きallowlist検証(未知/structural/種別・範囲外を拒否)
+    const validation = validateSkinTokenValue(name, value, trust);
+    if (!validation.ok) {
+      issues.push(validation.reason);
+      continue;
     }
     tokens[name] = value;
   }
