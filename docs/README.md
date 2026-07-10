@@ -4,8 +4,9 @@
 
 ```text
 Gameplay MVP phases 1-14: implemented
-Current next work: multi-skin design-system foundation
-Final PNG generation: later separate reviewed phase
+Multi-skin runtime baseline: implemented / partial
+Current next work: skin-foundation hardening P0 -> P1 -> P2
+Final PNG/WebP generation: blocked until all P0 gates pass
 Official skins: yorunoshirube / cute-pop
 ```
 
@@ -22,6 +23,7 @@ CODEX.md or CLAUDE.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION.md
 docs/IMPLEMENTATION-WORKFLOW.md
+docs/SKIN-FOUNDATION-HARDENING.md
 docs/GLOSSARY.md
 ```
 
@@ -35,15 +37,17 @@ Current implementation state and next phase:
 
 ```text
 docs/IMPLEMENTATION-WORKFLOW.md
+docs/SKIN-FOUNDATION-HARDENING.md
 ```
 
 ## UI / Design / Skin — Mandatory for Any UI Work
 
-Read all of these before changing screens, components, styles, tokens, assets, motion, or responsive behavior:
+Read all of these before changing screens, components, styles, tokens, assets, motion, responsive behavior, or skin loading:
 
 ```text
 docs/DESIGN-SYSTEM.md
 docs/SKIN-SYSTEM.md
+docs/SKIN-FOUNDATION-HARDENING.md
 docs/UI-COMPONENT-CONTRACT.md
 docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
@@ -61,12 +65,36 @@ one layout and component system
 multiple validated skins
 no skin-specific screens
 shared Button/Panel/Dialog/Form/Tile components
-Unity/Godot-style nine-slice through shared SkinSurface
-three-slice/repeat/cover/contain/overlay/mask through shared renderers
+Unity/Godot-style slice rendering only through shared Skin renderers
 layout/hit areas/game state never controlled by skin
+external skins use an explicit typed token allowlist
 both official skins must work without final PNGs
-no final image generation during foundation phase
+no final image generation until all hardening P0 gates pass
 future generated images go to candidates before human-reviewed final
+```
+
+## Current Hardening Priority
+
+```text
+P0 before image production:
+- explicit skin-token allowlist and range validation
+- full skin contract / filesystem validator
+- semantic contrast and Cute Pop correction
+- Gallery and user-facing SkinSelector
+- layered SkinSurface and real nine-slice proof
+
+P1 before public demo:
+- DOM/component and visual regression tests
+- accessibility completion
+- ErrorBoundary/ErrorState/data reset
+- dynamic light/dark browser color scheme
+- common-component/CSS responsibility completion
+
+P2 before installed/paid skins:
+- external file trust policy
+- versioned/preloaded/atomic skin switching
+- package integrity/entitlement boundary
+- complete match-record idempotency before replay/restore
 ```
 
 ## Architecture / API / Rule Contracts
@@ -140,9 +168,10 @@ Priority:
 ```text
 1. docs/MASTER-SPEC.md
 2. current non-numbered contract docs
-3. docs/IMPLEMENTATION-WORKFLOW.md for status
-4. current numbered detail docs
-5. historical/compatibility docs
+3. docs/SKIN-FOUNDATION-HARDENING.md for the current UI hardening order
+4. docs/IMPLEMENTATION-WORKFLOW.md for status
+5. current numbered detail docs
+6. historical/compatibility docs
 ```
 
-For UI conflicts, `DESIGN-SYSTEM.md` and `SKIN-SYSTEM.md` define the current design contract unless MASTER-SPEC is explicitly updated otherwise.
+For UI conflicts, `DESIGN-SYSTEM.md`, `SKIN-SYSTEM.md`, and `SKIN-FOUNDATION-HARDENING.md` define the current design contract unless MASTER-SPEC is explicitly updated otherwise.
