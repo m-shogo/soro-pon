@@ -17,7 +17,10 @@ export function ValidationIssueList({
     <ul className="sp-issue-list">
       {issues.map((issue, i) => (
         <li key={`${issue.code}-${i}`}>
-          <Badge variant={issue.severity === 'info' ? 'info' : 'warning'}>{issue.code}</Badge>{' '}
+          {/* severityは色だけでなくラベル文字でも区別する(H3) */}
+          <Badge variant={issue.severity === 'info' ? 'info' : 'warning'}>
+            {issue.severity === 'info' ? 'INFO' : 'WARN'} {issue.code}
+          </Badge>{' '}
           {issue.message}
         </li>
       ))}

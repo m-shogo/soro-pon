@@ -1,7 +1,7 @@
 /*
  * yorunoshirube skin tokens
  * このファイルはbundled tokens(src/ui/styles/tokens.css)のskinable subsetから
- * 生成される。手動編集せず、同期テスト(skinPackages.test)を維持すること。
+ * 生成される。手動編集せず、同期テスト(skinTokenRegistry.test)を維持すること。
  */
 :root {
   --sp-color-night: #120d08;
@@ -24,7 +24,7 @@
   --sp-color-crimson-bright: #9c3020;
   --sp-color-danger: #8a2c1e;
   --sp-color-success: #4a5f38;
-  --sp-color-focus: #e8a23c;
+  --sp-color-focus: var(--sp-focus-ring-color);
   --sp-text-on-primary: #f4ead2;
   --sp-text-on-surface: #241a10;
   --sp-text-on-dark: #e9dcbc;
@@ -32,6 +32,7 @@
   --sp-text-on-category-light: #241a10;
   --sp-text-on-category-dark: #f4ead2;
   --sp-focus-ring-color: #e8a23c;
+  --sp-focus-ring-halo: rgba(18, 13, 8, 0.9);
   --sp-border-ink: 1px solid rgba(36, 26, 16, 0.85);
   --sp-border-paper-edge: 1px solid rgba(233, 220, 188, 0.16);
   --sp-border-lantern: 1px solid rgba(232, 162, 60, 0.7);

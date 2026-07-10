@@ -60,7 +60,7 @@
 
 .sp-button--primary {
   background: var(--sp-gradient-button-primary);
-  color: var(--sp-color-cream);
+  color: var(--sp-text-on-primary);
   min-height: var(--sp-touch-primary);
   font-size: var(--sp-font-lg);
 }
@@ -171,7 +171,9 @@
   justify-content: center;
   font-size: var(--sp-font-xs);
   line-height: 1;
-  color: var(--sp-color-cream);
+  /* 帯の明暗はTileCardがcolorContrast.categoryBandToneで判定して--tile-band-textを渡す。
+     混合比78%はcolorContrast.CATEGORY_BAND_MIX_RATIOと同期していること。 */
+  color: var(--tile-band-text, var(--sp-text-on-category-dark));
   background: color-mix(in srgb, var(--tile-category-color, var(--sp-color-chip-fallback)) 78%, black);
   white-space: nowrap;
   overflow: hidden;

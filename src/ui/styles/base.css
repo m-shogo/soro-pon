@@ -43,9 +43,17 @@ button {
   flex-direction: column;
 }
 
-:focus-visible {
-  outline: 2px solid var(--sp-color-focus);
+/*
+ * focusリングは二重リング(ring + halo)。単色リングは明るい面か暗い面の
+ * どちらかで沈むため、リングとhaloのどちらかが必ず面とコントラストを持つ。
+ * skinはこの2色を差し替えられるが、消すことはできない。
+ */
+/* 疑似クラスを重ねて詳細度(0,2,0)にし、後から読み込まれる
+   コンポーネント側のbox-shadow(0,1,0)に常に勝つようにする */
+:focus-visible:focus-visible {
+  outline: 2px solid var(--sp-focus-ring-color);
   outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--sp-focus-ring-halo);
 }
 
 @media (prefers-reduced-motion: reduce) {

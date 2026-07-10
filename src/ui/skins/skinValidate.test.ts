@@ -1,6 +1,14 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import {
+  CATEGORY_BAND_MIX_RATIO,
+  categoryBandTone,
+  contrastRatio,
+  mixTowardBlack,
+  parseHexColor,
+  type Rgb,
+} from './colorContrast';
 import { readPngDimensions } from './imageDimensions';
 import { validateSkinPackages, type SkinPackageFs } from './validateSkinPackages';
 
@@ -188,5 +196,144 @@ describe('skin:validate(異常系)', () => {
     const report = validateSkinPackages(io);
     expect(report.ok).toBe(false);
     expect(report.issues[0]).toContain('SKIN-MANIFEST.json');
+  });
+});
+
+// ================= 公式スキンのコントラスト検証(H3/P0-3) =================
+// bundled tokens(fallback既定値)にスキンパッケージのtokensを重ねた
+// 「実際に画面へ出る値」でWCAGコントラスト比を検証する。
+
+const BUNDLED_TOKENS_PATH = join(__dirname, '..', 'styles', 'tokens.css');
+
+function extractDeclarations(cssText: string): Map<string, string> {
+  const map = new Map<string, string>();
+  const noComments = cssText
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/:root\s*\{/g, '')
+    .replace(/[{}]/g, '');
+  for (const chunk of noComments.split(';')) {
+    const cleaned = chunk.replace(/\s+/g, ' ').trim();
+    const colonAt = cleaned.indexOf(':');
+    if (colonAt === -1) {
+      continue;
+    }
+    const name = cleaned.slice(0, colonAt).trim();
+    if (name.startsWith('--sp-')) {
+      map.set(name, cleaned.slice(colonAt + 1).trim());
+    }
+  }
+  return map;
+}
+
+function loadResolvedTokens(skinId: string): Map<string, string> {
+  const bundled = extractDeclarations(readFileSync(BUNDLED_TOKENS_PATH, 'utf-8'));
+  const pkg = extractDeclarations(
+    readFileSync(join(PUBLIC_ROOT, 'skins', skinId, 'tokens.css'), 'utf-8'),
+  );
+  return new Map([...bundled, ...pkg]);
+}
+
+// hex / rgba() を「背景に重ねた実効色」として解決する(半透明はbg上に合成)
+function effectiveColor(tokens: Map<string, string>, name: string, background: Rgb): Rgb {
+  let value = tokens.get(name);
+  // var(--sp-x) 参照を有限回まで辿る
+  for (let i = 0; i < 4 && value !== undefined; i += 1) {
+    const ref = value.match(/^var\((--sp-[a-z0-9-]+)\)$/);
+    if (!ref) {
+      break;
+    }
+    value = tokens.get(ref[1]!);
+  }
+  if (value === undefined) {
+    throw new Error(`token未定義: ${name}`);
+  }
+  const hex = parseHexColor(value);
+  if (hex) {
+    return hex;
+  }
+  const rgba = value.match(
+    /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(0|1|0?\.\d{1,3})\s*)?\)$/,
+  );
+  if (rgba) {
+    const alpha = rgba[4] === undefined ? 1 : Number.parseFloat(rgba[4]);
+    const over = (fg: number, bg: number) => Math.round(fg * alpha + bg * (1 - alpha));
+    return {
+      r: over(Number(rgba[1]), background.r),
+      g: over(Number(rgba[2]), background.g),
+      b: over(Number(rgba[3]), background.b),
+    };
+  }
+  throw new Error(`色として解決できません: ${name} = ${value}`);
+}
+
+describe.each(['yorunoshirube', 'cute-pop'])('コントラスト契約: %s', (skinId) => {
+  const tokens = loadResolvedTokens(skinId);
+  const solid = (name: string) => effectiveColor(tokens, name, { r: 0, g: 0, b: 0 });
+  const expectContrast = (textName: string, surfaceName: string, min: number) => {
+    const surface = solid(surfaceName);
+    const text = effectiveColor(tokens, textName, surface);
+    const ratio = contrastRatio(text, surface);
+    expect(
+      ratio,
+      `${skinId}: ${textName} on ${surfaceName} = ${ratio.toFixed(2)} < ${min}`,
+    ).toBeGreaterThanOrEqual(min);
+  };
+
+  it('主要CTAの文字はAA(4.5:1)を満たす', () => {
+    expectContrast('--sp-text-on-primary', '--sp-color-crimson', 4.5);
+    expectContrast('--sp-text-on-primary', '--sp-color-crimson-bright', 4.5);
+  });
+
+  it('紙面/暗面/補足文字はAA(4.5:1)を満たす', () => {
+    expectContrast('--sp-text-on-surface', '--sp-color-paper', 4.5);
+    expectContrast('--sp-text-on-surface', '--sp-color-paper-aged', 4.5);
+    expectContrast('--sp-text-on-dark', '--sp-color-night', 4.5);
+    expectContrast('--sp-text-on-dark', '--sp-color-ink-panel', 4.5);
+    expectContrast('--sp-text-muted', '--sp-color-night', 4.5);
+    // dangerは紙面上の警告文字としても使う
+    expectContrast('--sp-color-danger', '--sp-color-paper', 4.5);
+  });
+
+  it('focusリングはring+haloの二重構成で明暗どちらの面でも3:1以上', () => {
+    for (const surfaceName of ['--sp-color-night', '--sp-color-paper'] as const) {
+      const surface = solid(surfaceName);
+      const ring = effectiveColor(tokens, '--sp-focus-ring-color', surface);
+      const halo = effectiveColor(tokens, '--sp-focus-ring-halo', surface);
+      const best = Math.max(contrastRatio(ring, surface), contrastRatio(halo, surface));
+      expect(
+        best,
+        `${skinId}: focus ring/halo on ${surfaceName} = ${best.toFixed(2)} < 3`,
+      ).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('カテゴリ帯は明暗自動選択で読める文字色になる', () => {
+    // カテゴリ色はデッキデータ由来(任意)なので代表色でメカニズムを検証する。
+    // 輝度境界付近の色は理論上どちらの文字色でも~4.4が上限のため閾値は4.0。
+    const samples = [
+      '#ffffff', '#000000', '#ff0000', '#00cc44', '#3366ff',
+      '#ffff00', '#ff9d2e', '#808080', '#b06fc9', '#00cccc',
+    ];
+    for (const sample of samples) {
+      const band = mixTowardBlack(parseHexColor(sample)!, CATEGORY_BAND_MIX_RATIO);
+      const tone = categoryBandTone(sample);
+      const chosen = effectiveColor(
+        tokens,
+        tone === 'light' ? '--sp-text-on-category-light' : '--sp-text-on-category-dark',
+        band,
+      );
+      const other = effectiveColor(
+        tokens,
+        tone === 'light' ? '--sp-text-on-category-dark' : '--sp-text-on-category-light',
+        band,
+      );
+      const chosenRatio = contrastRatio(chosen, band);
+      expect(
+        chosenRatio,
+        `${skinId}: band ${sample}(tone=${tone}) = ${chosenRatio.toFixed(2)} < 4.0`,
+      ).toBeGreaterThanOrEqual(4.0);
+      // 自動選択は常に「逆toneより悪くない」こと
+      expect(chosenRatio).toBeGreaterThanOrEqual(contrastRatio(other, band) - 0.01);
+    }
   });
 });

@@ -22,19 +22,29 @@
   --sp-color-ink: #55402f;
   --sp-color-ink-soft: #8a7360;
   --sp-color-cream: #6b4f3f;
-  --sp-color-cream-dim: #a68d79;
+  --sp-color-cream-dim: #7d6753;
+
+  /* ---- semantic text/contrast(H3: 白背景でもWCAG AAを満たす) ---- */
+  --sp-text-on-primary: #ffffff;
+  --sp-text-on-surface: #55402f;
+  --sp-text-on-dark: #5b4636;
+  --sp-text-muted: #7d6753;
+  --sp-text-on-category-light: #241a10; /* 明帯上でも4:1以上を確保する濃ブラウン */
+  --sp-text-on-category-dark: #ffffff;
+  --sp-focus-ring-color: #b35c00; /* 白面で4.7:1 */
+  --sp-focus-ring-halo: rgba(255, 255, 255, 0.95); /* 濃い帯・写真上での分離用 */
 
   /* ---- color: アクセント(サニーオレンジ) ---- */
   --sp-color-lantern-0: #ffb347;
   --sp-color-lantern-1: #ff9d2e;
   --sp-color-lantern-glow: rgba(255, 179, 71, 0.45);
 
-  /* ---- color: 意味色 ---- */
-  --sp-color-crimson: #ff6f91;
-  --sp-color-crimson-bright: #ff8aa5;
-  --sp-color-danger: #e85d75;
-  --sp-color-success: #6fbf73;
-  --sp-color-focus: #ff9d2e;
+  /* ---- color: 意味色(CTAは白文字で4.5:1以上になる濃いピンクに補正 / H3) ---- */
+  --sp-color-crimson: #c22f57;
+  --sp-color-crimson-bright: #cf4166;
+  --sp-color-danger: #c73650;
+  --sp-color-success: #3e8a4b;
+  --sp-color-focus: var(--sp-focus-ring-color); /* 旧名alias */
   --sp-color-chip-fallback: #b9a08c;
 
   /* ---- border ---- */

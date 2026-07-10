@@ -34,7 +34,7 @@
   --sp-color-crimson-bright: #9c3020; /* 押下/強調時の深紅 */
   --sp-color-danger: #8a2c1e; /* 危険/警告のみ */
   --sp-color-success: #4a5f38; /* 成功/完了のみ(苔色) */
-  --sp-color-focus: #e8a23c; /* focus-visible(ランタンと同系) */
+  --sp-color-focus: var(--sp-focus-ring-color); /* 旧名。--sp-focus-ring-colorへ移行済み(H3) */
 
   /* ---- semantic text/contrast(面の上の文字色。スキンが面と一緒に差し替える) ---- */
   --sp-text-on-primary: #f4ead2; /* 深紅CTAの上の文字 */
@@ -44,6 +44,7 @@
   --sp-text-on-category-light: #241a10; /* 明るいカテゴリ帯の上 */
   --sp-text-on-category-dark: #f4ead2; /* 暗いカテゴリ帯の上 */
   --sp-focus-ring-color: #e8a23c; /* focusリング(スキンで消せない) */
+  --sp-focus-ring-halo: rgba(18, 13, 8, 0.9); /* リングの外側halo。明るい面ではhaloが、暗い面ではリングがコントラストを担保する */
 
   /* ---- border ---- */
   --sp-border-ink: 1px solid rgba(36, 26, 16, 0.85);

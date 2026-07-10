@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, CSSProperties } from 'react';
 import { useSkinSurfaceStyle } from '../skins/SkinSurface';
+import { categoryBandTone } from '../skins/colorContrast';
 import type { AssetSlotName } from '../assets/slots';
 import './components.css';
 
@@ -67,7 +68,16 @@ export function TileCard({
   const mergedStyle: CSSProperties = {
     ...style,
     ...assetStyle,
-    ...(categoryColor ? ({ '--tile-category-color': categoryColor } as CSSProperties) : {}),
+    ...(categoryColor
+      ? ({
+          '--tile-category-color': categoryColor,
+          // 帯背景の明暗に応じて読める文字色を自動選択する(H3)
+          '--tile-band-text':
+            categoryBandTone(categoryColor) === 'light'
+              ? 'var(--sp-text-on-category-light)'
+              : 'var(--sp-text-on-category-dark)',
+        } as CSSProperties)
+      : {}),
   };
   if (faceDown) {
     return (

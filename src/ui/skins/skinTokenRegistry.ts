@@ -60,6 +60,7 @@ const COLOR_TOKENS = [
   '--sp-text-on-category-light',
   '--sp-text-on-category-dark',
   '--sp-focus-ring-color',
+  '--sp-focus-ring-halo',
   '--sp-overlay-scrim',
   '--sp-overlay-panel',
 ];
