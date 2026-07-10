@@ -6,12 +6,13 @@ Claude Code向けの作業指示。
 
 ```text
 Gameplay MVP phases 1-14: implemented
-Current next phase: multi-skin design-system foundation
+Multi-skin runtime baseline: implemented / partial
+Current next phase: docs/SKIN-FOUNDATION-HARDENING.md のH1から順に実装
 Official skins: yorunoshirube / cute-pop
-Final image generation: later separate reviewed phase
+Final image generation: all P0 gates completion後の別工程
 ```
 
-過去の「Phase 1開始」「まずengineから」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` の最新状態から進めてください。
+過去の「Phase 1開始」「まずengineから」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` から進めてください。
 
 ## Read First
 
@@ -22,15 +23,17 @@ docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION.md
 docs/IMPLEMENTATION-WORKFLOW.md
+docs/SKIN-FOUNDATION-HARDENING.md
 ```
 
 ## Mandatory UI / Design / Skin Read
 
-UI、CSS、token、component、asset、motion、responsiveを扱う場合は必ず読む。
+UI、CSS、token、component、asset、motion、responsive、skin loadingを扱う場合は必ず読む。
 
 ```text
 docs/DESIGN-SYSTEM.md
 docs/SKIN-SYSTEM.md
+docs/SKIN-FOUNDATION-HARDENING.md
 docs/UI-COMPONENT-CONTRACT.md
 docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
@@ -53,41 +56,59 @@ asset slots before hardcoded image paths
 Component Gallery before broad screen rollout
 ```
 
+## Hardening Order
+
+Do not skip ahead or combine all work into one change.
+
+```text
+H1 explicit typed skin-token allowlist
+H2 full contract validator and pnpm skin:validate / CI
+H3 semantic contrast and Cute Pop correction
+H4 user-facing and Gallery SkinSelector
+H5 layered SkinSurface and real nine-slice proof
+H6 additional renderer modes only with tests and examples
+H7 shared component and CSS responsibility migration
+H8 DOM/accessibility/recovery tests and implementation
+H9 Playwright visual regression and five-size QA
+H10 installed/paid skin trust, versioned preload, atomic switching
+H11 persistent matchSessionId idempotency before replay/restore
+```
+
+Each H item must finish tests, docs, commit, and push before moving on.
+
 ## Current Skin Rules
 
 ```text
 yorunoshirube and cute-pop use the same screens and DOM responsibility
-layout, hit areas, tile ratio, responsive behavior, focus, state meaning are immutable
-skins change validated colors/textures/frames/approved fonts/effects only
-nine-slice/three-slice/repeat/cover/contain/overlay/mask use shared Skin renderers
-installed/paid skins cannot execute arbitrary CSS, JS, HTML, URLs, or fonts
+layout, hit areas, touch size, z-index, responsive behavior, focus, state meaning are immutable
+skins change only explicit allowlisted typed presentation values
+nine-slice/three-slice/repeat/cover/contain/overlay/mask use shared renderers
+installed/paid skins cannot execute arbitrary CSS, JS, HTML, URLs, SVG by default, or external fonts
 ```
 
 ## Image Generation Boundary
 
-During the current foundation phase:
+During the current hardening phase:
 
 ```text
 do not invoke image generation
-do not put generated images in final
-build CSS/SVG fallback for both official skins
-record asset slots, geometry contracts, asset requests, and future prompts
+do not create final PNG/WebP
+do not write generated output into generated/final
+build fallbacks, contracts, validators, shared components, and candidates workflow
 ```
 
-Later explicit asset production:
+Only after all P0 gates pass and an explicit asset-production task begins:
 
 ```text
-generated output -> candidates
+generated output -> generated/candidates
 preview and screenshot review
 human approval
--> final
+-> generated/final
 ```
 
 ## Shared Component Rule
 
-Do not add screen-local generic controls.
-
-Use or extend centrally:
+Do not add screen-local generic controls. Use or extend centrally:
 
 ```text
 Button / IconButton
@@ -137,7 +158,7 @@ CSS / CSS Modules
 localStorage first
 ```
 
-Review `docs/DEPENDENCY-POLICY.md` and add ADR before major dependencies.
+Review `docs/DEPENDENCY-POLICY.md` and add ADR before major dependencies, including DOM-test and visual-regression tools.
 
 ## Vamp-pon Reference
 
@@ -161,8 +182,10 @@ Report:
 changed files
 commit SHA
 implementation scope
-tests/typecheck/build
+commands and local results
+CI status or unavailable
+skin/screen impact
 screenshots/manual QA where relevant
-remaining scope and risks
-next step
+remaining risks
+next hardening item
 ```
