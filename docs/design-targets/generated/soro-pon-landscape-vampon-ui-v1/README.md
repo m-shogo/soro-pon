@@ -1,63 +1,55 @@
-# soro-pon Landscape Vamp-pon UI v1
+# Soro-pon Landscape UI — Yorunoshirube Reference v1
 
 ## Purpose
 
-このディレクトリは、soro-pon の横画面固定UIデザイン画像の置き場。
-
-基準:
+This directory is the official visual reference set for the `yorunoshirube` skin.
 
 ```text
 844x390 landscape-first
-Vamp-pon世界内の記憶札遊び
-夜の机 / 紙UI / 黒インク / ランタン光 / 記憶帳
+Vamp-pon world memory-tile game
+night desk / paper / black ink / lantern light / memory book
 ```
+
+It is not the only future design of Soro-pon.
+
+Official skin plan:
+
+```text
+yorunoshirube: this directory is the current reference
+cute-pop: separate reviewed design-target set must be created before final art production
+```
+
+## Mandatory Contract Read
+
+Before implementing from these references, read:
+
+```text
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/UI-COMPONENT-CONTRACT.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/DESIGN-IMPLEMENTATION-POLICY.md
+docs/ASSET-PIPELINE.md
+```
+
+These images do not override layout, hit-area, accessibility, component, or skin contracts.
 
 ## Use As
 
 ```text
-実装前のデザインターゲット
-AI画像生成の参照先
-Claude Code / Codex / Cursor に見せるUI品質基準
-画面ごとの差を出さないためのビジュアル基準
+composition reference
+spacing and hierarchy reference
+mood and material reference
+screen-to-screen visual consistency reference
+future image-generation reference
+screenshot comparison target
 ```
 
-画面デザインを新しく作る時は、このREADMEと下記の採用画像を先に参照する。
+Do not use these screenshots directly as production backgrounds or sprites without explicit review.
+
+## Adopted Screens
 
 ```text
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/01-top.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/02-deck-list.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/03-deck-detail.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/04-match-setup.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/05-deck-editor.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/06-tile-editor.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/07-match-discard-phase.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/08-match-win-or-ron-phase.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/09-result.png
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
-```
-
-## Adopted References
-
-```text
-01-top.png: TOP。入口CTA、最近の記録、夜机の全体トーン。
-02-deck-list.png: Deck List。デッキ一覧、左フィルタ、右詳細プレビュー。
-03-deck-detail.png: Deck Detail。デッキ情報、検証結果、開始/編集導線。
-04-match-setup.png: Match Setup。対局設定、プレイヤー人数、開始前確認。
-05-deck-editor.png: Deck Editor。左ナビ、中央フォーム、右プレビュー/検証。
-06-tile-editor.png: Tile Editor。牌編集フォーム、画像/emoji/カテゴリ色プレビュー。
-07-match-discard-phase.png: Match Discard Phase。全員の捨て牌、自分の手牌、右アクション。
-08-match-win-or-ron-phase.png: Match Win/Ron Phase。あがり/ロン直前の強調演出。
-09-result.png: Result。勝者、役内訳、報酬、次アクション。
-10-collection.png: Collection。収集一覧、フィルタ、右詳細。
-```
-
-## Naming
-
-採用画像は以下の名前で置く。
-
-```text
-00-ui-system.png
 01-top.png
 02-deck-list.png
 03-deck-detail.png
@@ -70,72 +62,107 @@ docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/10-collection.png
 10-collection.png
 ```
 
-追加する場合:
+Screen intent:
+
+```text
+01 TOP: entry CTA, recent records, overall night-desk tone
+02 Deck List: list/filter/detail preview
+03 Deck Detail: information, validation, start/edit paths
+04 Match Setup: player count and pre-match confirmation
+05 Deck Editor: navigation, form, preview/validation
+06 Tile Editor: tile fields, emoji/category preview
+07 Match Discard: all discards, player hand, actions
+08 Win/Ron: focused decision/emphasis state
+09 Result: winner, groups, bonuses, reward, next action
+10 Collection: records/collection/filter/detail
+```
+
+## Additional Target Names
+
+When reviewed target images are added, use stable names such as:
 
 ```text
 11-clear-board.png
-12-confirm-dialog.png
-13-error-dialog.png
-14-rotate-prompt.png
+12-achievement-unlock.png
+13-confirm-dialog.png
+14-error-dialog.png
 15-role-editor.png
 16-category-editor.png
 17-balance-check.png
 18-import-export.png
+19-bonus-editor.png
+20-specific-set-template.png
 ```
+
+Cute Pop targets should live in a separate clearly named directory, not inside this Yorunoshirube directory.
 
 ## Quality Bar
 
-このディレクトリに置く画像は、以下を満たすこと。
+```text
+landscape-first
+strong Yorunoshirube identity
+paper / ink / lantern-light hierarchy
+Donjara/mahjong-table information clarity
+player hand remains primary
+all discards remain readable
+tile names and category indications remain readable
+shared UI language across screens
+```
+
+## Implementation Boundary
+
+The runtime uses one shared layout and component system for every skin.
 
 ```text
-横画面固定である
-Vamp-pon踏襲が強い
-紙UI / 黒インク / ランタン光がある
-麻雀/ドンジャラベースの情報配置が分かる
-自分の手牌が主役になっている
-全員の捨て牌が見える
-牌の名前が読める
-カテゴリ色が分かる
-画面ごとのUI言語に差がない
+this reference may change presentation
+it may not create Yorunoshirube-only screens
+it may not change hit areas or layout contracts
+it may not bake dynamic text or semantic state into images
 ```
+
+Nine-slice, three-slice, repeat, cover, overlay, and mask behavior must use shared Skin renderers.
+
+## Foundation Phase
+
+During current skin-system foundation work:
+
+```text
+do not generate final PNG assets
+implement CSS/token/SVG fallback
+register future asset slots and geometry contracts
+write candidate-generation prompts for later use
+```
+
+Later generated/drawn assets enter `generated/candidates`, receive human review, then move to `generated/final`.
 
 ## Do Not Store Officially
 
-以下を含む画像は、この `docs/` 配下にコミットしない。
-
 ```text
-既存IPキャラ画像
-既存IP名が中心に見える画像
-個人写真
-未許諾素材
-ローカル検証専用素材
+existing IP character art
+existing IP names as the visual focus
+personal photos
+unlicensed material
+local-only test assets
 ```
 
-既存IP入りの検証画像は、ローカル専用に置く。
+Local-only raw references belong outside official docs, for example:
 
 ```text
-.local-design/soro-pon-landscape-vampon-ui-v1/
+/Users/m-shogo/Developer/personal/soro-pon/.local-design/
 ```
 
-## Local-only Raw References
+## Vamp-pon Source Policy
 
-今回のように、ユーザー自由デッキの例として既存IP風の牌画像が混ざる場合は、公式docsには入れず、ローカル専用参照にする。
-
-```text
-/Users/m-shogo/Developer/personal/soro-pon/.local-design/soro-pon-landscape-vampon-ui-v1/
-```
-
-## Source Policy
-
-Vamp-pon由来の世界観・キャラ・敵・ステージ・武器・アイテム・Visual Rulesを使う場合は、必ず以下を読む。
+When using Vamp-pon world/character/enemy/stage/item/visual rules, read:
 
 ```text
 /Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
-/Users/m-shogo/Developer/personal/soro-pon/docs/45-vampon-reference-gate.md
+docs/42-shared-vampon-source-policy.md
+docs/45-vampon-reference-gate.md
 ```
+
+The `vamp-pon` repository is read-only.
 
 ## Final Decision
 
-このディレクトリを、soro-pon横画面UIデザイン画像の公式置き場にする。
-
-既存IP入りの検証画像は公式置き場に入れず、`.local-design/` に分離する。
+This directory defines the Yorunoshirube visual target only. Soro-pon itself is a multi-skin application with one stable component/layout implementation.
