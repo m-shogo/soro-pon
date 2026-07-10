@@ -1,35 +1,42 @@
 # soro-pon
 
-`soro-pon` は、プレイヤーが **デッキ・牌・役・得点** を自由に作れる、3〜4人用のカスタム牌ゲームです。
+`soro-pon` は、プレイヤーがデッキ・牌・役・得点を自由に作れる、3〜4人用のローカルファーストなカスタム牌ゲームです。
 
 Vamp-pon世界の中で遊ばれている「記憶札遊び」として扱います。
 
 ## Current Status
 
 ```text
-MVP Phase 1 implementation-ready.
-Design/spec docs are intentionally heavy because custom decks, import safety, and rule clarity are core product risks.
+Gameplay MVP phases 1-14: implemented
+Tests at last recorded hardening: 218 green
+Current next work: multi-skin design-system foundation
+Final PNG generation: later separate reviewed phase
 ```
 
-ただし、実装はすぐFull UIへ入りません。
-
-最初は以下を固めます。
+現在は、機能追加を先行する段階ではなく、次の基盤を整える段階です。
 
 ```text
-domain
-schema
-validation
-engine
-tests
+one stable layout/component system
+multiple validated visual skins
+shared reusable UI components
+safe skin switching
+nine-slice and other shared render modes
+future paid-skin compatibility
 ```
 
-Full Match UI は、engine/schema/tests が通ってから進めます。
+公式初期スキン:
+
+```text
+yorunoshirube
+- 夜の机 / 紙 / 黒インク / ランタン光 / 記憶帳
+
+cute-pop
+- 一般向け / 明るい / 可愛い / 親しみやすい / ポップ
+```
 
 ## Product Core
 
-このアプリは「麻雀そのもの」ではありません。
-
-ルールは **ドンジャラ構造** です。
+このアプリは麻雀そのものではありません。ルールはドンジャラ構造です。
 
 ```text
 3〜4人用
@@ -42,13 +49,11 @@ Full Match UI は、engine/schema/tests が通ってから進めます。
 ツモ = 引いた後の9枚
 ```
 
-UIの雰囲気・卓の触り心地は麻雀卓に寄せます。
+UIの卓上感や操作の気持ちよさは麻雀を参考にしますが、ルールは麻雀化しません。
 
-ただし、ルールを麻雀化しません。
+## First Read for AI Agents
 
-## First Read For AI Agents
-
-作業前に必ず以下を読むこと。
+作業前に必ず読むこと。
 
 ```text
 README.md
@@ -57,105 +62,147 @@ CODEX.md or CLAUDE.md
 docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION.md
+docs/IMPLEMENTATION-WORKFLOW.md
 docs/GLOSSARY.md
-docs/IMPLEMENTATION-GOVERNANCE.md
 ```
 
-現在仕様の正本は以下です。
+仕様の正本:
 
 ```text
 docs/MASTER-SPEC.md
 ```
 
-実装順序の正本は以下です。
+現在地・完了Phase・次の作業:
 
 ```text
-docs/IMPLEMENTATION.md
+docs/IMPLEMENTATION-WORKFLOW.md
 ```
 
-番号付きdocsに古い仕様が残っている場合は、`docs/MASTER-SPEC.md` を優先します。
+番号付きdocsが衝突する場合は、非番号の現行契約docsを優先します。
 
-## Required Governance Docs
+## Mandatory UI / Design / Skin Read
 
-実装を始める前に、関係する領域のdocsを読むこと。
-
-### Architecture / API / Rule Contracts
+画面、コンポーネント、CSS、token、asset、motion、responsiveを触る場合は、プロンプトに書かれていなくても必ず以下を読んでください。
 
 ```text
-docs/ARCHITECTURE-BOUNDARIES.md
-docs/ENGINE-API.md
-docs/MATCH-STATE-MACHINE.md
-docs/ERROR-CODES.md
-docs/TESTING-STRATEGY.md
-docs/PERFORMANCE-GUARDRAILS.md
-docs/TECHNICAL-RISK-REGISTER.md
-docs/MIGRATIONS.md
-docs/ADR.md
-```
-
-### Implementation Governance
-
-```text
-docs/IMPLEMENTATION-STRUCTURE.md
-docs/FIXTURE-STRATEGY.md
-docs/CODING-RULES.md
-docs/DEPENDENCY-POLICY.md
-docs/CI-GATES.md
-docs/ACCEPTANCE-CRITERIA.md
-docs/THREAT-MODEL.md
-docs/MANUAL-QA.md
-docs/RELEASE-DEMO-GATES.md
-```
-
-## UI / Design Read
-
-UI実装に入る前は、必ず以下を読むこと。
-
-```text
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/UI-COMPONENT-CONTRACT.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/DESIGN-IMPLEMENTATION-POLICY.md
+docs/ASSET-PIPELINE.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
-デザイン基準画像:
+## Current Design Contract
+
+```text
+one MatchScreen / one Button / one TileCard implementation
+skin-specific screen copies are forbidden
+layout, hit areas, DOM responsibility, state meaning are skin-invariant
+skin changes colors, textures, frames, approved fonts, ornaments, and effects
+both official skins work without final images
+screen-local generic buttons/panels/dialogs are forbidden
+new reusable UI goes through shared components and Component Gallery
+```
+
+### Shared render modes
+
+```text
+nine-slice-stretch
+nine-slice-tile
+three-slice-x
+three-slice-y
+stretch
+repeat / repeat-x / repeat-y
+cover
+contain
+overlay
+mask
+```
+
+Nine-slice is implemented through shared `SkinSurface`-type renderers, not separately inside each screen.
+
+### Shared components
+
+Common UI must use shared components such as:
+
+```text
+Button / IconButton
+SkinSurface / SkinBackground / SkinOverlay / SkinIcon
+PaperPanel
+Modal / Dialog
+Tabs / Badge / Toast / Tooltip
+TileCard / TileRow
+RoleCard / ScoreBreakdown
+SectionHeader
+ValidationIssueList
+FormField / TextField / NumberField / SelectField / Toggle
+EmptyState / ErrorState
+SkinSelector / SkinPreviewCard
+```
+
+## Image Generation Boundary
+
+The current skin-system foundation phase does not generate final images.
+
+Current work creates:
+
+```text
+skin switching
+shared components
+asset slots
+size/safe-area/render contracts
+CSS/SVG fallback
+future image lists and generation prompts
+candidate/final directories
+skin validation
+```
+
+Later image production flow:
+
+```text
+generate/draw
+-> generated/candidates
+-> preview and screenshot review
+-> human approval
+-> generated/final
+-> manifest update
+```
+
+Do not generate directly into `final`.
+
+## Design Targets
+
+Yorunoshirube reference folder:
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
+```
+
+Local absolute path:
 
 ```text
 /Users/m-shogo/Developer/personal/soro-pon/docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1
 ```
 
-## Visual Direction
-
-```text
-Vamp-pon世界の夜の机
-紙札
-黒インク
-小さな灯り
-記憶の欠片
-手帳
-静かな通常画面
-勝負どころだけ少し漫画的
-麻雀卓のような触り心地
-```
-
-Genericな白いWebアプリにしないこと。
+These are references for composition, spacing, hierarchy, and mood. They are not automatically runtime assets.
 
 ## Layout Policy
 
 ```text
 844x390 reference
 phone landscape = 100svw x 100svh
-PC = centered game table + outer support / night desk background
+PC = centered game table + outer support
 portrait = rotate prompt or limited utility
 ```
 
-844x390は実寸固定キャンバスではなく、デザイン基準です。
+844x390 is a design reference, not a fixed canvas. Do not stretch the whole screen with `transform: scale()`.
 
-画面全体を `transform: scale()` で引き伸ばしません。
-
-## Stack Policy
-
-MVP初期の固定stack:
+## Stack
 
 ```text
 TypeScript
@@ -167,190 +214,73 @@ CSS / CSS Modules
 localStorage first
 ```
 
-MVP初期では入れない:
-
-```text
-Next.js
-Supabase
-Firebase
-Unity
-Godot
-Phaser
-Redux
-Zustand
-TanStack Query
-Tailwind
-```
-
-新しい依存を追加する場合は、先に以下を確認すること。
+Do not add major dependencies without reviewing:
 
 ```text
 docs/DEPENDENCY-POLICY.md
 docs/ADR.md
 ```
 
-## Three.js Policy
+Normal UI remains HTML/CSS. Three.js is optional only for isolated future effects with fallback and ADR approval.
 
-「気持ち良さ」は Three.js 的な奥行き・光・牌の滑り・卓上感を目指してよい。
-
-ただし、Three.jsはMVP初期の必須依存ではありません。
-
-導入する場合は:
+## Coding Boundaries
 
 ```text
-docs/DEPENDENCY-POLICY.md を確認する
-ADRに導入理由を書く
-UI演出層に隔離する
-engine/schema/domainには入れない
-Three.jsなしでもゲームが動くfallbackを持つ
+UI does not judge roles, calculate score, or assign wildcards
+engine does not import React/DOM/localStorage/CSS
+import uses strict allowlist
+unknown fields are rejected
+shared deck JSON contains no image/URL/base64/path/html/script/style fields
+localStorage is schema-parsed before use
+engine does not directly use Math.random or Date.now
+skin never accesses engine/game records/network/code execution
 ```
-
-最初からThree.jsありきでルールやUI全体を作らないこと。
-
-## Implementation Order
-
-必ずこの順番で進めること。
-
-```text
-1. package setup
-2. domain ID/tile/category/variant types
-3. strict Zod schemas
-4. samples/animal-starter.deck.json parse test
-5. import unsafe key scan tests
-6. deck validation tests
-7. group enumeration
-8. 9-tile partitioning
-9. wildcard group resolution
-10. normal win role matching
-11. tsumo 9-tile check
-12. ron 8+discard check
-13. wait context
-14. selectedWinRole and scoreBudget validation
-15. score breakdown
-16. discard preview purity
-17. match state reducer
-18. CPU minimum policy
-19. localStorage recovery
-20. UI foundation / Component Gallery
-21. full screens
-```
-
-## Hard Blocks Before Full Match UI
-
-Full Match UIを始める前に、少なくとも以下を通すこと。
-
-```text
-animal starter strict parse
-unsafe import fields rejected
-normalThreeGroups schema tests
-3-group partition tests
-sameCategory/specificSet group tests
-wildcard max tests
-tsumo 9-tile tests
-ron 8+discard tests
-special_bonus cannot win tests
-ScoreBonus cannot win tests
-scoreBudget validation tests
-score breakdown tests
-discard preview does not mutate state
-match reducer invalid action preserves state
-custom deck adversarial fixtures
-```
-
-## Coding Rules Summary
-
-```text
-UIは役判定しない
-UIは点数計算しない
-UIはwildcard割当しない
-engineはReact/DOM/localStorage/CSSを知らない
-importはstrict allowlist
-unknown fieldsは拒否
-shared JSONに画像/URL/base64/path/blobUrl/html/script/styleを入れない
-localStorageはschema parseしてから使う
-Math.randomをengineで直接使わない
-Date.nowをengineで直接使わない
-src/utilsに何でも入れない
-```
-
-詳細は以下。
-
-```text
-docs/CODING-RULES.md
-docs/ARCHITECTURE-BOUNDARIES.md
-docs/ENGINE-API.md
-```
-
-## Current Sample
-
-```text
-samples/animal-starter.deck.json
-```
-
-このsampleは current group-backed schema の基準です。
 
 ## Vamp-pon Reference Policy
 
-`soro-pon` 側へ Vamp-pon本体の世界観・キャラ・敵・ステージ・武器・アイテム資料を丸コピーしません。
-
-参照元:
+When using Vamp-pon world/visual material, read:
 
 ```text
 /Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
-/Users/m-shogo/Developer/personal/soro-pon/docs/42-shared-vampon-source-policy.md
-/Users/m-shogo/Developer/personal/soro-pon/docs/45-vampon-reference-gate.md
+docs/42-shared-vampon-source-policy.md
+docs/45-vampon-reference-gate.md
 ```
 
-`vamp-pon` 側は読み取り専用です。
+The `vamp-pon` repository is read-only from this project.
 
 ## IP / Asset Safety
 
-開発中のローカル検証で既存IP題材を使う場合も、以下には入れません。
+Official assets and screenshots must not contain:
 
 ```text
-src/
-public/
-docs/
-README.md
-build成果物
-公式サンプル
-公式スクリーンショット
-production export payload
+existing IP art
+unlicensed downloads
+personal photos
+remote hotlinked assets
+user-deck images promoted into official UI
+text baked into runtime UI images
 ```
-
-公式サンプルは、動物・国・歴史人物・旅行・オリジナルテーマなどの安全テーマで作ります。
 
 ## Commit / Report Policy
 
-こまめにコミットすること。
-
 ```text
-1コミット1目的
-大きすぎる差分にしない
-docsと実装がズレる場合はdocsも同時に更新
-テストが通る単位で区切る
+one commit per purpose
+small testable changes
+push after commit
+docs and implementation updated together
 ```
 
-作業後は以下を報告すること。
+Report:
 
 ```text
-変更ファイル
+changed files
 commit SHA
-実装した範囲
-実行した検証
-未対応範囲
-次にやること
+implemented scope
+verification
+remaining scope
+next step
 ```
 
 ## Final Decision
 
-最優先は、バグなく、破綻なく、長期運用できる実装にすること。
-
-迷ったら、まず以下を読む。
-
-```text
-docs/MASTER-SPEC.md
-docs/IMPLEMENTATION.md
-docs/IMPLEMENTATION-GOVERNANCE.md
-docs/TECHNICAL-RISK-REGISTER.md
-```
+The priority is a stable, reusable game UI that can switch between Yorunoshirube, Cute Pop, and future skins without changing game logic, layout, or interaction behavior.
