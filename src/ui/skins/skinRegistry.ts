@@ -77,7 +77,8 @@ export type SkinPackageIo = {
   loadTokens(skinId: string, tokensFile: string): Promise<string | null>;
 };
 
-const MAX_INHERITANCE_DEPTH = 5;
+// docs/SKIN-SYSTEM.md: maximum inheritance depth: 3
+const MAX_INHERITANCE_DEPTH = 3;
 
 export type LoadResolvedSkinResult = {
   resolved: ResolvedSkin;
