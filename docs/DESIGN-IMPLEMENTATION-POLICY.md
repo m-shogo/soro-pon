@@ -2,296 +2,281 @@
 
 ## Purpose
 
-Claude Code and Fable cannot create final image assets by themselves.
+This document defines how Codex, Claude Code, Fable, and human contributors implement Soro-pon design without needing a task-specific prompt.
 
-Therefore, Soro-pon design must be implemented as a clear pipeline:
-
-```text
-design target images -> coded UI system -> asset request list -> asset integration -> screenshot review
-```
-
-The design target images are visual references, not implementation assets.
-
-## Source Of Visual Truth
-
-Current design target folder:
+Read first:
 
 ```text
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/UI-COMPONENT-CONTRACT.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/ASSET-PIPELINE.md
 ```
 
-Use these images to match:
+## Current Status
+
+```text
+Gameplay MVP phases 1-14: implemented
+Next: multi-skin design-system foundation
+Final image generation: later separate phase
+```
+
+Official skins:
+
+```text
+yorunoshirube
+cute-pop
+```
+
+## Design Pipeline
+
+```text
+design targets
+-> coded layout and shared components
+-> skin contracts and CSS/SVG fallback
+-> asset request/generation prompt list
+-> candidate assets
+-> human review
+-> final assets
+-> screenshot regression
+```
+
+Design targets are references, not production sprites.
+
+## Source of Visual Truth
+
+Yorunoshirube targets:
+
+```text
+docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
+```
+
+Use them for:
 
 ```text
 composition
 spacing
+hierarchy
 mood
-surface hierarchy
-panel shape
-lighting direction
+surface shape
 paper/tile feeling
-night desk atmosphere
+lighting direction
+night-desk atmosphere
 ```
 
-Do not copy them as production sprites unless explicitly approved.
+Cute Pop requires its own reviewed targets before final image production.
 
-## What Claude Code / Fable Should Implement Directly
+## What Agents Implement Directly
 
-These should be implemented in code first:
+Code-first responsibilities:
 
 ```text
-layout
-responsive metrics
-screen composition
-panels
-buttons
-tile cards
-discard area
-hand area
-score/result blocks
-hover/selected/disabled/focus states
-small glows and shadows
-text hierarchy
-component state matrix
+layout and responsive behavior
+shared component structure
+interaction and hit areas
+semantic states
+Design Tokens
+SkinProvider and skin switching
+SkinSurface/SkinBackground/SkinOverlay/SkinIcon
+nine-slice and other render modes
+CSS/SVG fallback
+Component Gallery
+skin validator
+visual regression setup
 ```
 
-Preferred tools:
+Preferred technologies:
 
 ```text
 HTML
+React
 CSS / CSS Modules
-CSS variables / tokens
-inline SVG or SVG components
-simple gradients
-box-shadow / filter used carefully
-React components
+CSS variables and cascade layers
+inline/app-owned SVG
+simple gradients and shadows
 ```
 
-## What Needs Real Assets Later
+## What Agents Must Not Invent During Foundation
 
-These should not be invented poorly by Claude Code.
+Do not generate or fake final artwork during skin-system foundation.
 
-Create an asset request instead:
+Instead create:
 
 ```text
-night desk background texture
-paper grain texture
-ink stain overlays
-small lantern/light texture
-special win burst texture
-optional tile back ornament
-optional hand-drawn frame slice
-optional particle sprites
+asset slot
+geometry/render contract
+asset request
+slot-specific generation prompt
+candidate/final directory
+fallback appearance
 ```
 
-These can be produced later by:
+Final art is produced in a later explicit asset-production phase.
+
+## Immutable vs Skinable
+
+Immutable:
 
 ```text
-human design work
-Figma export
-Aseprite
-image generation reviewed by human
-manual SVG drawing
+engine/schema/reducer/storage
+DOM responsibility
+layout contract
+hit areas
+tile aspect ratio
+responsive behavior
+state semantics
+focus/accessibility
+text meaning
 ```
 
-## Asset Classes
-
-### Class A: Code-drawn UI
-
-Use code only.
-
-Examples:
+Skinable within validation:
 
 ```text
-buttons
-cards
-panels
-modals
-tab bars
-badges
-glow rings
-focus outlines
-selection borders
+color
+surface image
+texture
+border/ornament
+shadow/glow
+approved font preset
+effect texture
 ```
 
-### Class B: SVG UI Assets
+## Shared Component Requirement
 
-Use committed SVG files or React SVG components.
-
-Examples:
+Do not create screen-local generic UI.
 
 ```text
-simple icons
-small ornaments
-corner brackets
-tile suit/category marks
-line dividers
-frame accents
+buttons -> Button/IconButton
+surfaces -> SkinSurface/PaperPanel
+confirmations -> Dialog
+validation lists -> ValidationIssueList
+headers -> SectionHeader
+editor fields -> shared form components
+empty/error states -> shared components
 ```
 
-SVG rules:
+New variants are added centrally and shown in Component Gallery before screen use.
+
+## Render Modes
+
+Use shared renderers only:
 
 ```text
-app-owned SVG only
-no user-uploaded SVG
-no SVG from imported decks
-prefer currentColor or CSS variables
-avoid heavy filters
+nine-slice-stretch
+nine-slice-tile
+three-slice-x
+three-slice-y
+stretch
+repeat / repeat-x / repeat-y
+cover
+contain
+overlay
+mask
 ```
 
-### Class C: Raster Atmosphere Assets
+Screens must not implement `border-image`, mask, or asset URL resolution directly.
 
-Use PNG/WebP.
+## State Layers
 
-Examples:
+Base art and state indication are separate.
 
 ```text
-desk background
-paper texture
-ink overlay
-light bloom
-win effect texture
+base
++ hover/pressed
++ selected
++ focus
++ ron/tsumo
++ disabled
++ content
 ```
 
-Raster rules:
+Never bake dynamic text or semantic states into final raster assets.
 
-```text
-commit only reviewed assets
-include source note in asset manifest
-keep file size reasonable
-no existing IP assets
-no remote runtime loading
-```
+## Component Gallery
 
-### Class D: Future Local User Images
+Every reusable component must show relevant states in both official skins.
 
-Not MVP shared JSON.
-
-Rules:
-
-```text
-local-only
-not exported
-not imported from JSON
-sanitized before storage
-fallback to emoji/text
-```
-
-## MVP Design Strategy
-
-MVP should not wait for perfect images.
-
-Priority order:
-
-```text
-1. layout accuracy
-2. component hierarchy
-3. readable typography
-4. tile/table touch feel
-5. coded shadows/glows
-6. simple SVG accents
-7. raster atmosphere assets
-8. advanced animation / Three.js-style depth
-```
-
-## Three.js-style Feeling Without Three.js First
-
-Before adding Three.js, approximate the feeling with:
-
-```text
-perspective-like CSS transforms on tiles
-subtle translate/scale on draw/discard
-layered shadows
-radial gradients for lantern light
-small CSS particle elements for win emphasis
-requestAnimationFrame only where needed
-reduced-motion support
-```
-
-Do not add Three.js unless:
-
-```text
-DEPENDENCY-POLICY allows it through ADR
-it is isolated to UI effects
-engine/domain/schema do not import it
-fallback exists without WebGL
-performance budget is still met
-```
-
-## Component Gallery Requirement
-
-Before full screens, create Component Gallery with:
-
-```text
-button states
-panel states
-tile states
-hand row
-discard tile
-candidate/insight chip
-result score block
-modal/import error block
-rotate prompt
-```
-
-Each component must show:
+Minimum states:
 
 ```text
 default
-hover where applicable
-pressed/active
-selected
+hover
+pressed
 focused
+selected
 disabled
-warning/error if applicable
+loading
+warning/error where relevant
+long-text variants
 compact landscape fit
 ```
 
-## Screenshot Review Sizes
-
-Use these sizes for review:
+Review sizes:
 
 ```text
 844x390
-932x430
 852x393
+932x430
 1024x600
 1366x768
 ```
 
-## Asset Manifest
-
-When real assets are added, create/update:
+## Image and Asset Safety
 
 ```text
-public/assets/ASSET-MANIFEST.md
+app-owned SVG only
+no user SVG
+no remote runtime assets
+no text baked into images
+no existing IP art
+no shared-deck image fields
+no external fonts from skins
 ```
 
-Each entry should include:
+## Three.js Policy
+
+Three.js is not required for normal UI.
+
+Use HTML/CSS first for depth, tile movement, shadows, glows, and particles.
+
+Three.js may be introduced only through ADR when:
 
 ```text
-file path
-purpose
-source / created by
-license / ownership note
-safe for production: yes/no
-used by components/screens
+isolated to optional UI effects
+fallback exists without WebGL
+engine/domain/schema remain independent
+performance budget is met
+```
+
+## New Feature Rule
+
+Every new visual feature must follow:
+
+```text
+shared component check
+-> shared variant/component
+-> semantic/component tokens
+-> optional asset slot and geometry contract
+-> base + two official skin fallback
+-> Component Gallery
+-> both-skin/responsive verification
+-> screen integration
 ```
 
 ## Forbidden
 
 ```text
-asking Claude Code to invent final art assets
-using generated target image screenshots as production backgrounds without approval
-adding remote image URLs
-using existing IP artwork
-baking text into images
-putting user images into shared deck JSON
-adding Three.js before ADR/fallback/performance review
+final image generation during foundation
+skin-specific screen copies
+screen-local generic buttons/panels
+hardcoded PNG paths
+hardcoded visual colors in screens
+layout controlled by skin
+image-controlled click area
+arbitrary CSS/JS/external URL in installed skins
 ```
 
 ## Final Decision
 
-Claude Code / Fable implements the design system and layout.
-
-Real artwork is a separate reviewed asset pipeline.
+Codex/Claude implement one stable UI system and multiple validated skins. Artwork is replaceable presentation material and is never allowed to own layout, behavior, or game logic.
