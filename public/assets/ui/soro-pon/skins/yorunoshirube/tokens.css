@@ -40,6 +40,10 @@
   --sp-border-ink: 1px solid rgba(36, 26, 16, 0.85);
   --sp-border-paper-edge: 1px solid rgba(233, 220, 188, 0.16);
   --sp-border-lantern: 1px solid rgba(232, 162, 60, 0.7);
+  --sp-border-soft: 1px solid rgba(233, 220, 188, 0.25); /* 夜面上の弱い区切り */
+  --sp-border-divider-ink: 1px solid rgba(36, 26, 16, 0.25); /* 紙面上の弱い区切り */
+  --sp-border-dot: 1px solid rgba(0, 0, 0, 0.4); /* カテゴリ色ドットの縁 */
+  --sp-color-chip-fallback: #666666; /* カテゴリ色未指定時 */
 
   /* ---- spacing ---- */
   --sp-space-2: 2px;
@@ -61,6 +65,31 @@
   --sp-shadow-tile-raised: 0 6px 12px rgba(0, 0, 0, 0.6);
   --sp-shadow-lantern-soft: 0 0 12px var(--sp-color-lantern-glow);
   --sp-shadow-lantern-strong: 0 0 22px rgba(232, 162, 60, 0.55);
+  --sp-shadow-lantern-pulse: 0 0 30px rgba(232, 162, 60, 0.75);
+
+  /* ---- 面のグラデーション(スキンが差し替える見た目の面) ---- */
+  --sp-gradient-shell:
+    radial-gradient(ellipse 120% 90% at 82% 20%, rgba(232, 162, 60, 0.1), transparent 55%),
+    radial-gradient(ellipse 100% 100% at 50% 120%, var(--sp-color-wood), transparent 70%),
+    var(--sp-color-night);
+  --sp-gradient-table:
+    radial-gradient(ellipse 90% 70% at 50% 42%, rgba(217, 201, 166, 0.16), transparent 65%),
+    radial-gradient(ellipse 120% 100% at 85% 8%, rgba(232, 162, 60, 0.12), transparent 55%),
+    linear-gradient(170deg, var(--sp-color-wood), var(--sp-color-night) 70%);
+  --sp-overlay-table-ink: radial-gradient(ellipse 40% 30% at 50% 45%, rgba(10, 7, 4, 0.5), transparent 70%);
+  --sp-overlay-table-light: radial-gradient(ellipse 50% 45% at 88% 10%, rgba(232, 162, 60, 0.14), transparent 60%);
+  --sp-overlay-scrim: rgba(10, 7, 4, 0.72); /* モーダル背面 */
+  --sp-overlay-panel: rgba(23, 17, 11, 0.85); /* insight strip等の小さな帯 */
+  --sp-panel-sheen: radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.14), transparent 60%);
+  --sp-panel-sheen-soft: radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.08), transparent 60%);
+  --sp-gradient-button-paper: linear-gradient(160deg, var(--sp-color-paper-highlight), var(--sp-color-paper) 40%, var(--sp-color-paper-aged));
+  --sp-gradient-button-ink: linear-gradient(160deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  --sp-gradient-button-primary: linear-gradient(160deg, var(--sp-color-crimson-bright), var(--sp-color-crimson));
+  --sp-gradient-panel-paper: linear-gradient(165deg, var(--sp-color-paper) 60%, var(--sp-color-paper-aged));
+  --sp-gradient-panel-aged: linear-gradient(165deg, var(--sp-color-paper-aged) 55%, var(--sp-color-paper-dark));
+  --sp-gradient-panel-ink: linear-gradient(165deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  --sp-gradient-tile-face: linear-gradient(170deg, var(--sp-color-paper-highlight) 0%, var(--sp-color-paper) 55%, var(--sp-color-paper-aged));
+  --sp-gradient-tile-back: linear-gradient(170deg, #2c2115, var(--sp-color-ink-panel));
 
   /* ---- typography ---- */
   --sp-font-family:

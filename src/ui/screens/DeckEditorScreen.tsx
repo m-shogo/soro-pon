@@ -395,7 +395,7 @@ export function DeckEditorScreen({
                   <div
                     key={tile.id}
                     style={{
-                      borderBottom: '1px solid rgba(36,26,16,0.25)',
+                      borderBottom: 'var(--sp-border-divider-ink)',
                       paddingBottom: 'var(--sp-space-8)',
                       display: 'flex',
                       flexDirection: 'column',

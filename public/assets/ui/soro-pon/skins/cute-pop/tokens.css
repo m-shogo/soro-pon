@@ -43,6 +43,7 @@
   --sp-border-lantern: 1px solid rgba(255, 157, 46, 0.85);
   --sp-border-soft: 1px solid rgba(85, 64, 47, 0.18);
   --sp-border-dot: 1px solid rgba(85, 64, 47, 0.3);
+  --sp-border-divider-ink: 1px solid rgba(85, 64, 47, 0.15);
 
   /* ---- radius: 柔らかい形 ---- */
   --sp-radius-sm: 8px;

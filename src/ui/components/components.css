@@ -39,8 +39,7 @@
 }
 
 .sp-button--paper {
-  background:
-    linear-gradient(160deg, var(--sp-color-paper-highlight), var(--sp-color-paper) 40%, var(--sp-color-paper-aged));
+  background: var(--sp-gradient-button-paper);
   color: var(--sp-color-ink);
   box-shadow: var(--sp-shadow-panel);
 }
@@ -50,7 +49,7 @@
 }
 
 .sp-button--ink {
-  background: linear-gradient(160deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  background: var(--sp-gradient-button-ink);
   color: var(--sp-color-cream);
   border: var(--sp-border-paper-edge);
 }
@@ -60,7 +59,7 @@
 }
 
 .sp-button--primary {
-  background: linear-gradient(160deg, var(--sp-color-crimson-bright), var(--sp-color-crimson));
+  background: var(--sp-gradient-button-primary);
   color: var(--sp-color-cream);
   min-height: var(--sp-touch-primary);
   font-size: var(--sp-font-lg);
@@ -73,7 +72,7 @@
 .sp-button--ghost {
   background: transparent;
   color: var(--sp-color-cream-dim);
-  border: 1px solid rgba(233, 220, 188, 0.25);
+  border: var(--sp-border-soft);
 }
 
 .sp-button--ghost:hover:not(:disabled) {
@@ -93,19 +92,15 @@
   box-shadow: var(--sp-shadow-panel);
   padding: var(--sp-space-12);
   color: var(--sp-color-ink);
-  background:
-    radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
-    linear-gradient(165deg, var(--sp-color-paper) 60%, var(--sp-color-paper-aged));
+  background: var(--sp-panel-sheen), var(--sp-gradient-panel-paper);
 }
 
 .sp-paper-panel--aged {
-  background:
-    radial-gradient(ellipse 140% 120% at 20% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
-    linear-gradient(165deg, var(--sp-color-paper-aged) 55%, var(--sp-color-paper-dark));
+  background: var(--sp-panel-sheen-soft), var(--sp-gradient-panel-aged);
 }
 
 .sp-paper-panel--ink {
-  background: linear-gradient(165deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  background: var(--sp-gradient-panel-ink);
   color: var(--sp-color-cream);
   border: var(--sp-border-paper-edge);
 }
@@ -131,8 +126,7 @@
   aspect-ratio: 3 / 4;
   border-radius: var(--sp-radius-sm);
   border: var(--sp-border-ink);
-  background:
-    linear-gradient(170deg, var(--sp-color-paper-highlight) 0%, var(--sp-color-paper) 55%, var(--sp-color-paper-aged));
+  background: var(--sp-gradient-tile-face);
   box-shadow: var(--sp-shadow-tile);
   color: var(--sp-color-ink);
   display: flex;
@@ -165,7 +159,7 @@
 }
 
 .sp-tile--back {
-  background: linear-gradient(170deg, #2c2115, var(--sp-color-ink-panel));
+  background: var(--sp-gradient-tile-back);
   border: var(--sp-border-paper-edge);
 }
 
@@ -178,7 +172,7 @@
   font-size: var(--sp-font-xs);
   line-height: 1;
   color: var(--sp-color-cream);
-  background: color-mix(in srgb, var(--tile-category-color, #666) 78%, black);
+  background: color-mix(in srgb, var(--tile-category-color, var(--sp-color-chip-fallback)) 78%, black);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -232,8 +226,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.4);
-  background: var(--chip-color, #666);
+  border: var(--sp-border-dot);
+  background: var(--chip-color, var(--sp-color-chip-fallback));
 }
 
 /* ================= Badge ================= */
@@ -265,7 +259,7 @@
   gap: var(--sp-space-8);
   padding: var(--sp-space-6) var(--sp-space-8);
   border-radius: var(--sp-radius-md);
-  background: linear-gradient(160deg, var(--sp-color-ink-panel-raised), var(--sp-color-ink-panel));
+  background: var(--sp-gradient-button-ink);
   border: var(--sp-border-paper-edge);
   color: var(--sp-color-cream);
   min-width: 0;
@@ -325,7 +319,7 @@
 .sp-role-card {
   border-radius: var(--sp-radius-md);
   border: var(--sp-border-ink);
-  background: linear-gradient(165deg, var(--sp-color-paper) 60%, var(--sp-color-paper-aged));
+  background: var(--sp-gradient-panel-paper);
   color: var(--sp-color-ink);
   padding: var(--sp-space-8) var(--sp-space-12);
   display: flex;
@@ -436,7 +430,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--sp-z-modal);
-  background: rgba(10, 7, 4, 0.72);
+  background: var(--sp-overlay-scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,7 +458,7 @@
 .sp-tabs {
   display: flex;
   gap: var(--sp-space-4);
-  border-bottom: 1px solid rgba(233, 220, 188, 0.25);
+  border-bottom: var(--sp-border-soft);
 }
 
 .sp-tab {
@@ -502,10 +496,7 @@
 
 /* table.background fallback: 夜机の色面 */
 .sp-fallback-table-bg {
-  background:
-    radial-gradient(ellipse 90% 70% at 50% 42%, rgba(217, 201, 166, 0.16), transparent 65%),
-    radial-gradient(ellipse 120% 100% at 85% 8%, rgba(232, 162, 60, 0.12), transparent 55%),
-    linear-gradient(170deg, var(--sp-color-wood), var(--sp-color-night) 70%);
+  background: var(--sp-gradient-table);
 }
 
 .sp-match-layout__overlay {
@@ -516,12 +507,12 @@
 
 /* table.overlay.ink fallback: うっすら黒インク */
 .sp-fallback-table-ink {
-  background: radial-gradient(ellipse 40% 30% at 50% 45%, rgba(10, 7, 4, 0.5), transparent 70%);
+  background: var(--sp-overlay-table-ink);
 }
 
 /* table.overlay.light fallback: ランタンのにじみ */
 .sp-fallback-table-light {
-  background: radial-gradient(ellipse 50% 45% at 88% 10%, rgba(232, 162, 60, 0.14), transparent 60%);
+  background: var(--sp-overlay-table-light);
 }
 
 .sp-match-layout__area {
@@ -775,7 +766,7 @@
 }
 
 .sp-insight-strip__item {
-  background: rgba(23, 17, 11, 0.85);
+  background: var(--sp-overlay-panel);
   border: var(--sp-border-paper-edge);
   border-radius: var(--sp-radius-sm);
   padding: var(--sp-space-4) var(--sp-space-8);
@@ -810,7 +801,7 @@
     box-shadow: var(--sp-shadow-lantern-strong);
   }
   50% {
-    box-shadow: 0 0 30px rgba(232, 162, 60, 0.75);
+    box-shadow: var(--sp-shadow-lantern-pulse);
   }
 }
 

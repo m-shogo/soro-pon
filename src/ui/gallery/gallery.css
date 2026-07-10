@@ -20,7 +20,7 @@
   font-size: var(--sp-font-sm);
   color: var(--sp-color-cream-dim);
   letter-spacing: 0.1em;
-  border-bottom: 1px solid rgba(233, 220, 188, 0.2);
+  border-bottom: var(--sp-border-soft);
   padding-bottom: var(--sp-space-4);
 }
 

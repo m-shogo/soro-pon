@@ -31,14 +31,7 @@ button {
   height: 100svh;
   overflow: hidden;
   position: relative;
-  background:
-    radial-gradient(
-      ellipse 120% 90% at 82% 20%,
-      rgba(232, 162, 60, 0.1),
-      transparent 55%
-    ),
-    radial-gradient(ellipse 100% 100% at 50% 120%, var(--sp-color-wood), transparent 70%),
-    var(--sp-color-night);
+  background: var(--sp-gradient-shell);
 }
 
 .sp-game-safe-area {
