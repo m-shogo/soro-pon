@@ -9,19 +9,31 @@ Always read first:
 ```text
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
+docs/SKIN-FOUNDATION-HARDENING.md
 ```
 
 ## Current State
 
 ```text
 Gameplay MVP phases 1-14: implemented
-Multi-skin foundation: in progress
-Already implemented: package manifests/contracts, loader/validation/fallback, SkinProvider runtime switch, basic SkinSurface, three official package entries
-Remaining: renderer expansion, token/component migration, Gallery/user selector, validator CLI, full-screen regression
-Final PNG generation: later separate reviewed phase
+Multi-skin runtime baseline: implemented / partial
+Current work: skin-foundation hardening H1 -> H11
+Final PNG/WebP generation: blocked until every P0 gate passes
 ```
 
-Do not restart from project/schema/engine setup unless fixing an identified defect.
+Already implemented:
+
+```text
+skin package registry and contract baseline
+base / yorunoshirube / cute-pop packages
+manifest/token parsing and inheritance/fallback
+SkinProvider reload-free runtime switch
+basic SkinSurface render modes
+initial shared component slot integration
+pure skin/package tests
+```
+
+Do not restart project/schema/engine setup and do not create a second theme system.
 
 ## Current Stack
 
@@ -44,6 +56,7 @@ schemas/domain
 -> validation/engine
 -> app orchestration/storage
 -> UI
+-> validated skin presentation
 ```
 
 UI and skins must not reimplement game rules.
@@ -53,6 +66,7 @@ UI and skins must not reimplement game rules.
 ```text
 docs/DESIGN-SYSTEM.md
 docs/SKIN-SYSTEM.md
+docs/SKIN-FOUNDATION-HARDENING.md
 docs/UI-COMPONENT-CONTRACT.md
 docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
@@ -63,8 +77,6 @@ docs/50-pro-ui-production-quality-checklist.md
 ```
 
 ## Existing Skin Baseline — Preserve and Extend
-
-Already present:
 
 ```text
 public/assets/ui/soro-pon/SKIN-MANIFEST.json
@@ -78,86 +90,140 @@ basic core-component asset-slot connections
 skin core/package tests
 ```
 
-Do not replace this with a second parallel theme system.
+Do not replace this with a parallel theme library or skin-specific screens.
 
-## Next Implementation Order
+## Required Implementation Order
 
-### 1. Re-audit Current Baseline
+### H1 — Explicit typed token allowlist
+
+Replace broad `--sp-*` acceptance with a token-definition table.
+
+Separate:
 
 ```text
-run tests/typecheck/build
-inventory remaining hardcoded visual values
-inventory repeated generic UI
-confirm current package/manifest validation behavior
-capture current screenshots
+immutable structural tokens
+skinable semantic/component presentation tokens
 ```
 
-### 2. Complete Render Contract
+External skins must not control spacing, touch size, typography size, line height, z-index, layout, pointer behavior, or arbitrary motion duration.
 
-Current renderer supports:
+Validate values by type/range, not only character pattern.
 
-```text
-cover
-contain
-stretch
-repeat
-nine-slice stretch
-overlay
+### H2 — Full skin contract validator and CI
+
+Expose:
+
+```bash
+pnpm skin:validate
 ```
 
-Add centrally, only when tested:
+Validate schema, version, IDs, inheritance, trust-level file type, file existence, byte budgets, actual image dimensions, slice/safe-area geometry, minimum render size, render-mode permission, and candidate/final status rules.
+
+Add it to CI after implementation.
+
+### H3 — Semantic contrast and Cute Pop correction
+
+Add explicit semantic foreground/focus tokens.
+
+Fix:
 
 ```text
-nine-slice tile
-three-slice-x
-three-slice-y
+primary CTA contrast
+focus ring contrast
+category-band text contrast
+warning/info/success readability
+```
+
+Use light/dark category foreground selection rather than one fixed text color.
+
+### H4 — Skin selection
+
+Implement shared:
+
+```text
+SkinSelector
+SkinPreviewCard
+loading/failure/default states
+```
+
+Add both Component Gallery and normal user-facing selection paths.
+
+Switch without reload and preserve gameplay/editor/UI state.
+
+### H5 — Layered SkinSurface and real nine-slice proof
+
+Separate:
+
+```text
+fallback
+skin image
+visual overlay
+content
+state overlay
+focus
+```
+
+Never apply opacity/blend to the content layer.
+
+Separate source slice from rendered border width.
+
+Prove `panel.paper.default` and `button.primary.background` using reviewed test assets before broad image production.
+
+### H6 — Complete only proven render modes
+
+Central renderers may add with tests and Gallery examples:
+
+```text
 repeat-x / repeat-y
+nine-slice-tile
+three-slice-x / three-slice-y
 mask/tint
-separate source slice from rendered borderWidth
-candidate asset status/path
 ```
 
-Do not implement these independently in screens.
+Do not implement them in individual screens.
 
-### 3. Complete Token Architecture
-
-Migrate toward:
-
-```text
-Primitive -> Semantic -> Component tokens
-```
-
-Add cascade-layer protection and separate structural/layout values from skin-changeable values.
-
-Installed/paid skins may use only allowlisted semantic/component token data, never arbitrary CSS.
-
-### 4. Complete Shared Component Migration
+### H7 — Shared component and CSS responsibility migration
 
 Priorities:
 
 ```text
 IconButton
 Dialog
-ValidationIssueList
 SectionHeader
+ValidationIssueList
 FormField/TextField/NumberField/SelectField/Toggle
 EmptyState/ErrorState
 SkinSelector/SkinPreviewCard
-normalized Tile/state overlays
+normalized state overlays
 ```
 
-Remove repeated generic screen-local markup only after shared replacements are tested.
+Split mixed CSS into foundations/components/layouts/screens/motion and use cascade layers to block skin-to-layout leakage.
 
-### 5. Expand Component Gallery
+### H8 — DOM, accessibility, and recovery
 
-Add:
+Add component/interaction tests after dependency/ADR decision.
+
+Complete:
 
 ```text
-instant yorunoshirube/cute-pop switching
-all variants and semantic states
-long Japanese/English strings
-large scores and long names
-compact and regular density
+Modal focus entry/trap/return and labeling
+Tabs keyboard model and panel relationships
+Tile selected/emphasis ARIA state
+AppErrorBoundary
+recoverable ErrorState
+invalid/missing entity fallback
+visible local data reset with confirmation
+light/dark browser color-scheme switching
+```
+
+### H9 — Playwright visual regression and five-size QA
+
+Minimum:
+
+```text
+all screens at 844x390
+major screens at all five sizes
+Component Gallery in both official skins
 ```
 
 Review sizes:
@@ -170,65 +236,36 @@ Review sizes:
 1366x768
 ```
 
-### 6. Define User-facing Skin Selection
+### H10 — Installed/paid skin hardening
 
-Provide a normal application path to select a skin without reload.
-
-Requirements:
+Before distribution:
 
 ```text
-safe local persistence
-unknown/corrupt ID recovery
-no gameplay/editor state mutation
-clear preview and selected state
+external PNG/WebP-only default
+reviewed official SVG only
+versioned/content-hashed asset URLs
+preload required assets
+atomic switch or keep previous skin
+package identity/integrity/upgrade/rollback/uninstall rules
+no execution privileges
 ```
 
-### 7. Complete Skin Validation Command
+### H11 — Match record idempotency before restore/replay
 
-Expose:
-
-```bash
-pnpm skin:validate
-```
-
-It must check:
+Before adding restore/replay/resend:
 
 ```text
-manifest/contract schema
-known version/token/slot IDs
-inheritance cycles/depth
-safe file names
-file existence and byte budget
-image dimensions
-slice/safe-area geometry
-candidate/final path rules
-all official packages
+persistent matchSessionId
+recent processed ID set
+injected timestamp/ID for pure recording builder
+backward-compatible storage migration
 ```
 
-### 8. Full-screen Migration and Regression
+## Image Production Boundary
 
-Connect every existing screen through shared components/tokens/skin resolver without changing behavior.
+Do not generate final images during H1-H9.
 
-Verify both skins on major screens and required sizes.
-
-Add visual screenshot regression after the dependency/ADR decision.
-
-### 9. Foundation Completion
-
-```text
-all tests green
-typecheck green
-build green
-skin validation green
-both official skins work without final PNGs
-all reusable UI represented in Gallery
-manual QA updated
-future asset requests and prompts complete
-```
-
-## Later Asset Production Phase
-
-Only after foundation completion and explicit instruction:
+After all P0 gates pass and the user explicitly starts asset production:
 
 ```text
 generate/draw
@@ -247,17 +284,19 @@ Never generate directly into `final`.
 reuse shared component
 -> add central reusable variant/component
 -> add semantic/component tokens
--> add asset slot only for a new visual responsibility
+-> add slot only for new visual responsibility
 -> define render/geometry/safe-area/fallback
 -> support base + both official skins
--> add Gallery coverage
+-> add Gallery and tests
 -> responsive/visual verification
 -> screen integration
 ```
 
+A feature working in one skin only is incomplete.
+
 ## Verification Commands
 
-Currently:
+Current:
 
 ```bash
 pnpm typecheck
@@ -265,10 +304,17 @@ pnpm test
 pnpm build
 ```
 
-Target after validator implementation:
+Required after H2:
 
 ```bash
 pnpm skin:validate
+```
+
+Required after H8/H9 according to ADR:
+
+```text
+component/DOM tests
+Playwright flow and screenshot tests
 ```
 
 ## Commit Policy
@@ -278,8 +324,21 @@ one purpose per commit
 small testable changes
 push after commit
 docs and implementation together
+finish one H item before moving to the next
+```
+
+## Completion Before Image Production
+
+```text
+all P0 items in SKIN-FOUNDATION-HARDENING complete
+typecheck/test/build/skin:validate green
+both official skins selectable without reload
+state preserved during switch
+contrast accepted
+real nine-slice proof accepted at five sizes
+candidate-first asset workflow ready
 ```
 
 ## Final Decision
 
-Continue the existing multi-skin foundation. Do not create another theming system, do not begin final image generation, and do not change game behavior while migrating UI presentation.
+Continue the existing skin foundation from H1. Do not create another theming system, do not begin broad/final image generation, and do not change game behavior while migrating presentation.
