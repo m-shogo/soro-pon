@@ -2,20 +2,22 @@
 
 ## Purpose
 
-This file tracks the real repository state, completed phases, current next work, and completion gates.
+This file tracks the real repository state, completed phases, active work, and completion gates.
 
 ```text
 Product/spec truth: docs/MASTER-SPEC.md
 Implementation guide: docs/IMPLEMENTATION.md
+Active hardening plan: docs/SKIN-FOUNDATION-HARDENING.md
 ```
 
 ## Current Status
 
 ```text
 Gameplay MVP phases 1-14: complete
-Multi-skin foundation: in progress; core package/runtime baseline already implemented
-Final PNG/WebP production: not started
-Release/demo gates: after skin foundation and reviewed assets
+Multi-skin runtime baseline: implemented / partial
+Active work: H1 -> H11 skin-foundation hardening
+Final PNG/WebP production: blocked until all P0 gates pass
+Release/demo gates: after P0/P1 completion and reviewed assets where required
 ```
 
 ## Completed Gameplay Phases
@@ -46,204 +48,196 @@ build green
 browser flow and reload/idempotency QA passed
 ```
 
-## Multi-skin Foundation — Actual Repository State
+Later skin work added additional tests, but every implementation report must state its own exact current count and commands.
 
-### SF1 — Design Audit and Skin Contract
-
-Status: **baseline complete**
+## Existing Multi-skin Baseline
 
 Present:
 
 ```text
+docs/DESIGN-SYSTEM.md
 docs/SKIN-SYSTEM.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/UI-COMPONENT-CONTRACT.md
 public/assets/ui/soro-pon/SKIN-MANIFEST.json
 public/assets/ui/soro-pon/SKIN-CONTRACT.json
+public/assets/ui/soro-pon/skins/base
+public/assets/ui/soro-pon/skins/yorunoshirube
+public/assets/ui/soro-pon/skins/cute-pop
+src/ui/skins/*
+SkinProvider runtime switching
+basic SkinSurface
+initial shared component slot integration
+core/package skin tests
 ```
 
-Registered official packages:
+This baseline must be preserved and hardened, not replaced.
 
-```text
-base
-yorunoshirube
-cute-pop
-```
+## Active Workflow
 
-### SF2 — Package Loading, Validation, Inheritance and Fallback
+### H1 — Token allowlist and typed validation
 
-Status: **baseline implemented**
-
-Present under `src/ui/skins/`:
-
-```text
-skinTypes
-skinRegistry
-validateSkinManifest
-parseSkinTokens
-resolveSkin
-getSkinAssetUrl
-```
-
-Existing tests cover the core skin/package path.
-
-### SF3 — Runtime Skin Switching
-
-Status: **implemented baseline**
-
-Present:
-
-```text
-SkinProvider
-useSkin
-skinDom/apply tokens
-localStorage selection/recovery
-no-reload asynchronous switching
-stale-request protection
-```
-
-`App.tsx` already wraps the application with `SkinProvider`.
-
-### SF4 — Initial Shared Skin Rendering
-
-Status: **partially complete**
-
-Current `SkinSurface` baseline supports:
-
-```text
-cover
-contain
-stretch
-repeat
-nine-slice stretch
-overlay
-```
-
-Core components already reference skin slots.
-
-Remaining renderer contract:
-
-```text
-nine-slice tile
-three-slice-x
-three-slice-y
-repeat-x / repeat-y
-mask/tint renderer
-separate source slice from rendered borderWidth
-candidate asset status/path validation
-```
-
-### SF5 — Token Migration
-
-Status: **started / partial**
-
-Already present:
-
-```text
-base skin tokens
-yorunoshirube tokens
-cute-pop tokens
-several previous hardcoded values moved to tokens
-```
-
-Still required:
-
-```text
-Primitive -> Semantic -> Component token structure
-cascade-layer enforcement
-remaining visual hardcode audit
-layout-token vs skin-token enforcement
-approved external-skin token allowlist alignment
-```
-
-### SF6 — Shared Component Migration
-
-Status: **pending / partial**
-
-Core `Button`, `PaperPanel`, `TileCard`, `Badge`, and table assets are connected to the skin resolver.
-
-Still required:
-
-```text
-IconButton
-Dialog abstraction for repeated confirmations
-ValidationIssueList
-SectionHeader
-shared form fields
-EmptyState / ErrorState
-SkinSelector / SkinPreviewCard
-state overlay normalization
-remove remaining screen-local generic UI
-```
-
-### SF7 — Component Gallery and User-facing Skin Selection
-
-Status: **pending**
-
-Current Gallery does not yet provide the required instant skin selector or the full expanded state/long-text matrix.
+Status: **next / not complete**
 
 Required:
 
 ```text
-yorunoshirube / cute-pop switch in Gallery
-all shared states and variants
-long Japanese/English/score/emoji cases
-compact and regular density
-five review sizes
+explicit skinable token registry
+structural vs skinable separation
+per-token type/range validation
+external skins cannot override spacing/font-size/line-height/z-index/touch/layout/pointer behavior
 ```
 
-A normal user-facing skin selection path must also be defined before completion.
-
-### SF8 — Skin Validator Command and Regression
+### H2 — Contract validator and CI
 
 Status: **pending**
 
-Core validation functions/tests exist, but `package.json` does not yet expose:
+Required:
 
 ```bash
 pnpm skin:validate
 ```
 
-Still required:
+Must validate actual files, bytes, dimensions, slice/safe-area geometry, trust-level file type, render-mode permission, status/path consistency, and all official packages.
 
-```text
-filesystem package validation command
-file existence/byte/dimension checks
-slice and safe-area checks
-candidate/final path checks
-visual screenshot regression decision and implementation
-```
-
-### SF9 — Full Screen Migration and Foundation Completion
+### H3 — Semantic contrast
 
 Status: **pending**
 
-Completion gate:
+Required:
 
 ```text
-all existing screens use shared components/tokens/skin resolver
-skin switch preserves gameplay/editor state
-both official skins usable without final artwork
-all tests/typecheck/build green
-manual five-size QA updated
-future image requests/prompts complete
+on-primary/on-surface/on-category semantic text tokens
+Cute Pop CTA correction
+focus contrast correction
+category foreground selection
+contrast validation where practical
 ```
 
-## Official Design Direction
+### H4 — Skin selection
+
+Status: **pending**
+
+Required:
 
 ```text
-yorunoshirube
-- night desk / paper / black ink / lantern light / memory book
-
-cute-pop
-- bright / cute / friendly / pop / readable category colors
+SkinSelector
+SkinPreviewCard
+Gallery instant switch
+normal user-facing switch
+loading/failure/default states
+no reload
+no match/editor/UI state loss
 ```
 
-Both use the same screen, DOM responsibility, layout, hit areas, state meaning, and game logic.
+### H5 — Layered SkinSurface and nine-slice proof
 
-## Image Production — Later Separate Phase
+Status: **pending**
 
-No final artwork is produced during the foundation.
+Required:
 
-Before production, create candidate directories and validation.
+```text
+skin image and opacity never affect content
+separate source slice and rendered border width
+panel.paper.default proof
+button.primary.background proof
+five-size and long-text verification
+```
+
+### H6 — Central render-mode completion
+
+Status: **pending / only as proven necessary**
+
+Candidate modes:
+
+```text
+repeat-x / repeat-y
+nine-slice-tile
+three-slice-x / three-slice-y
+mask/tint
+```
+
+No screen-local implementations.
+
+### H7 — Shared component and CSS responsibility migration
+
+Status: **partial / pending**
+
+Required shared components:
+
+```text
+IconButton
+Dialog
+SectionHeader
+ValidationIssueList
+FormField/TextField/NumberField/SelectField/Toggle
+EmptyState/ErrorState
+SkinSelector/SkinPreviewCard
+```
+
+Split mixed CSS into foundations/components/layouts/screens/motion with cascade-layer protection.
+
+### H8 — DOM/accessibility/recovery
+
+Status: **pending**
+
+Required:
+
+```text
+component/interaction test environment
+Modal focus trap and return
+Tabs keyboard model
+Tile selected/emphasis ARIA
+AppErrorBoundary
+recoverable ErrorState
+missing entity fallback
+visible local-data reset
+skin-driven browser color scheme
+```
+
+### H9 — Visual regression and five-size QA
+
+Status: **pending**
+
+Required after ADR/dependency decision:
+
+```text
+Playwright user flows
+both official skins
+all screens at 844x390
+major screens at five sizes
+stable screenshot baselines
+```
+
+### H10 — Installed/paid skin hardening
+
+Status: **future / required before distribution**
+
+```text
+external PNG/WebP-only default
+official reviewed SVG policy
+versioned or content-hashed asset URLs
+preload and atomic switching
+package identity/integrity/upgrade/rollback/uninstall
+no execution privileges
+```
+
+### H11 — Match recording idempotency
+
+Status: **future / required before match restore, replay, or resend**
+
+```text
+persistent matchSessionId
+recent processed ID set
+pure recording builder with injected timestamp/ID
+backward-compatible storage migration
+```
+
+## Image Production — Separate Later Phase
+
+Do not generate final images during H1-H9.
+
+After every P0 gate in `SKIN-FOUNDATION-HARDENING.md` passes and the user explicitly starts asset production:
 
 ```text
 generate/draw
@@ -266,10 +260,17 @@ pnpm test
 pnpm build
 ```
 
-Required before SF8 completion:
+Required after H2:
 
 ```bash
 pnpm skin:validate
+```
+
+Required after H8/H9 according to ADR:
+
+```text
+component/DOM tests
+Playwright flow and screenshot tests
 ```
 
 ## Review Sizes
@@ -291,38 +292,55 @@ Component Gallery: both official skins
 TOP / Deck Editor / Match / Result / Collection: both official skins
 ```
 
+## Completion Gates
+
+### Before image production
+
+```text
+all P0 items complete
+typecheck/test/build/skin:validate green
+both skins selectable without reload
+state preserved through switch
+contrast accepted
+real nine-slice proof accepted
+candidate-first workflow ready
+```
+
+### Before public demo
+
+```text
+all applicable P1 items complete
+component/DOM tests green
+visual regression accepted
+accessibility/recovery/reset path accepted
+release/demo checklist passed
+```
+
+### Before installed/paid skins
+
+```text
+all P2 skin-distribution items complete
+trust-level policy enforced
+atomic/versioned loading accepted
+integrity and lifecycle rules documented/tested
+```
+
 ## Known Pending Areas
 
 ```text
 extendedRoleSpan remains pending and blocked by E7008
-multi-skin foundation back half remains unfinished
-final official skin images are all placeholder/null
-candidate directories and candidate status are not fully implemented
-Playwright screenshot regression is not yet implemented
-release/demo gates remain pending
+skin hardening H1-H10 remains unfinished
+final official skin images remain placeholder/null
+candidate/final validation is unfinished
+complete match-record idempotency is required before restore/replay
 ```
 
-## Standing Rules
+## Work Rule
 
 ```text
+one H item at a time
 one purpose per commit
-push after commit
-docs and implementation together
-no rule/scoring logic in UI
-no UI dependencies in engine
-no skin-specific screen copies
-no final image generation during foundation
-```
-
-## Final Completion Definition
-
-```text
-gameplay stays green
-skin switching does not mutate app state
-shared components replace generic screen-local UI
-all official packages and files validate
-both official skins work without final images
-five-size visual QA passes
-reviewed candidate assets later integrate through slots only
-release/demo gates pass
+relevant tests and docs in the same change
+commit and push before moving on
+report local results separately from CI status
 ```
