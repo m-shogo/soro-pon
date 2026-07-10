@@ -2,28 +2,22 @@
 
 ## Purpose
 
-Custom decks can create many roles, groups, wildcard branches, and candidate explanations.
+Soro-pon must remain responsive with custom decks, mobile landscape UI, and future image-based skins.
 
-This document defines limits so Soro-pon remains responsive and does not silently lie when analysis is capped.
-
-## MVP Targets
-
-Normal match analysis should feel instant on common phones.
+## Engine Targets
 
 Development targets:
 
 ```text
-single hand analyze target: <= 50ms typical
-single discard preview target: <= 80ms typical
-import validation target: <= 300ms typical for normal decks
-UI frame target during match: 60fps where possible
+single hand analyze: <= 50ms typical
+single discard preview: <= 80ms typical
+normal import validation: <= 300ms typical
+match UI: 60fps where possible
 ```
 
-These are development targets, not guaranteed production benchmarks yet.
+These are development targets, not guaranteed production benchmarks.
 
 ## Engine Limits
-
-Recommended constants:
 
 ```ts
 export const ENGINE_LIMITS = {
@@ -42,104 +36,125 @@ export const ENGINE_LIMITS = {
 } as const;
 ```
 
-## Capping Rule
+If analysis is capped, return an explicit warning. Never silently pretend no candidates exist.
 
-If the engine caps analysis, it must return a warning.
-
-Forbidden:
+## Analysis Controls
 
 ```text
-silently drop candidates
-pretend no candidates exist
-hide analyzer cap from advanced/debug info
+natural groups before wildcard-heavy groups
+candidate/wildcard/partition caps
+primaryCandidates and hiddenCandidateCount separated
+normal UI output remains small
+advanced/debug output may show cap metrics
 ```
-
-Required warning codes:
-
-```text
-P8001 candidate output capped
-P8002 wildcard branch count capped
-P8003 role count above warning threshold
-P8004 analysis exceeded target time in dev/test
-```
-
-## Candidate Explosion Control
-
-Candidate output should be separated into:
-
-```text
-all computed candidates within cap
-primaryCandidates for normal UI
-hiddenCandidateCount
-analyzerWarnings
-```
-
-Normal UI displays only:
-
-```text
-primaryCandidates <= 3
-primaryInsights <= 2
-```
-
-Advanced/debug panel may show capped warning and details.
-
-## Wildcard Branch Control
-
-Wildcard resolution order:
-
-```text
-natural groups first
-one-wildcard groups second
-reject groups needing more wildcard than policy
-cap branches at maxWildcardBranches
-return warning if capped
-```
-
-Ranking should prefer natural groups over wildcard-heavy candidates.
-
-## Partition Control
-
-For normal 9-tile hands:
-
-```text
-enumerate valid groups
-partition into 3 non-overlapping groups
-stop if maxPartitions exceeded
-return warning if capped
-```
-
-MVP should not attempt unbounded exhaustive search for large experimental modes.
 
 ## Import Performance
 
-Before deep validation:
+Before expensive feasibility analysis:
 
 ```text
-check file size
-parse JSON
-unsafe key scan
+byte check
+JSON parse
+unsafe-key/depth scan
 strict schema parse
 ```
 
-Do not run expensive role feasibility analysis on huge unsafe JSON.
+Do not deeply validate huge unsafe input.
 
 ## UI Performance
 
-During match:
-
 ```text
 no heavy blur on every tile
-no constant glow on all buttons
-no large SVG filters on many tiles
+no constant glow on all controls
+no large SVG filters across many items
 no uncompressed huge background images
-no analysis call on every mousemove without throttle
+no analysis on continuous pointer movement without throttle
+no whole-app transform scale
 ```
 
-Discard preview may be triggered by selection/long press, not continuous pointer movement.
+## Skin Package Budgets
+
+The contract/validator is the final source for exact values. Initial limits include:
+
+```text
+manifest and token byte limits
+per-asset byte limit
+whole-skin byte limit
+maximum intrinsic image dimensions
+maximum slice values
+```
+
+`pnpm skin:validate` must use actual filesystem bytes and actual image dimensions, not manifest declarations alone.
+
+## Skin Rendering Performance
+
+Required:
+
+```text
+skin decoration uses pointer-events:none layers
+state/content/focus remain ordinary HTML/CSS
+nine-slice renderer is centralized
+avoid duplicate decoded versions of the same asset
+avoid large transparent padding
+avoid animating background-size/filter on many tiles
+reduced-motion disables nonessential animation
+```
+
+Use PNG for small crisp transparent assets and WebP where it materially reduces larger atmosphere assets without harming required quality.
+
+## Skin Switching Performance
+
+Before installed/paid skin distribution:
+
+```text
+versioned or content-hashed asset URLs
+preload only required visible assets
+avoid downloading every future effect at startup
+apply tokens/assets atomically
+keep previous skin if required preload fails
+prevent stale request from replacing newer selection
+avoid repeated uncontrolled fetch loops
+```
+
+Target behavior:
+
+```text
+no blank screen
+no mixed-skin flash
+no large layout shift
+no gameplay/editor state reset
+```
+
+## Image Production Performance Rules
+
+Before final approval:
+
+```text
+crop unused transparent area
+respect slot intrinsic size
+avoid assets larger than contract requires
+verify both standard and high-density proof where needed
+measure total package budget
+review low-end/common phone behavior
+```
+
+Do not create 1x/2x variants for every image without measured need.
+
+## Visual Regression Stability
+
+For screenshot tests:
+
+```text
+fix deterministic data and viewport
+reduce/disable motion
+stabilize fonts
+delay until required skin assets load
+mask timestamps and other dynamic content
+```
 
 ## Dev Instrumentation
 
-During development, engine may expose debug metrics:
+Engine may expose:
 
 ```ts
 type AnalyzerMetrics = {
@@ -153,24 +168,37 @@ type AnalyzerMetrics = {
 };
 ```
 
+Skin loader may expose development-only metrics:
+
+```text
+manifest/token load duration
+required asset preload duration
+asset count and bytes
+fallback count
+failed asset count
+stale request cancellation
+```
+
 Do not show noisy metrics in normal player UI.
 
 ## Tests
 
-Required tests:
+Required structural tests:
 
 ```text
-candidate output cap returns P8001
-wildcard branch cap returns P8002
-too many roles returns P8003
+candidate output cap warning
+wildcard branch cap warning
+too many roles warning
 large unsafe import rejects before deep validation
-primaryCandidates remains <= 3
-hiddenCandidateCount is correct when compressed
-capped analysis does not return empty primary output without warning
+primaryCandidates maximum
+skin file/total byte budgets
+skin dimension limits
+stale skin load cannot overwrite newer selection
+failed required asset keeps previous/fallback skin
 ```
+
+Avoid flaky strict wall-clock CI assertions unless the environment is controlled.
 
 ## Final Decision
 
-Fast and honest beats complete but frozen.
-
-If analysis is capped, tell the UI.
+Fast and honest beats exhaustive but frozen. For skins, visually rich must not mean heavy, flashing, state-resetting, or unrecoverable.
