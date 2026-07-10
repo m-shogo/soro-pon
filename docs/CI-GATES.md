@@ -2,31 +2,11 @@
 
 ## Purpose
 
-CI prevents implementation drift after the docs are settled.
+CI prevents schema, engine, import, UI, and skin-contract drift.
 
-MVP should not rely on manual memory to keep schema, engine, and import safety intact.
+Local command success and GitHub Actions success are separate facts. Reports must not claim CI passed when no workflow run is available.
 
-## Required CI Jobs
-
-After package setup exists, add CI with:
-
-```text
-install
-typecheck
-test
-build
-```
-
-Recommended command shape:
-
-```text
-npm ci
-npm run typecheck
-npm test
-npm run build
-```
-
-If pnpm is chosen later:
+## Required Base Job
 
 ```text
 pnpm install --frozen-lockfile
@@ -37,104 +17,180 @@ pnpm build
 
 Use one package manager consistently.
 
-## Required Test Suites Before UI-heavy Work
+Required repository declarations:
+
+```text
+packageManager version
+supported Node version/engine policy
+committed lockfile
+```
+
+## Required Test Groups
 
 ```text
 schema tests
 import security tests
 deck validation tests
-group engine tests
-wildcard tests
-ron/tsumo tests
-scoring tests
+group/wildcard/ron/tsumo/scoring tests
 discard preview purity tests
-match reducer tests
-localStorage recovery tests
+match reducer and deterministic CPU tests
+localStorage/migration/recovery tests
+achievement/record idempotency tests
+skin core/package tests
 ```
+
+## Skin Hardening Gate
+
+After H2, CI must run:
+
+```bash
+pnpm skin:validate
+```
+
+It must check:
+
+```text
+registry/manifest/contract schema
+contract version
+known skin/token/slot IDs
+explicit skin-token allowlist and per-token range/type
+inheritance cycles/depth
+safe package-local filenames
+trust-level file types
+actual file existence
+individual and total byte budgets
+actual image dimensions
+intrinsicSize consistency
+slice and safe-area geometry
+minimum render size
+slot-specific render-mode permission
+status/file consistency
+candidate/final path rules
+all official packages
+```
+
+A skin contract is not validated by checking slot names alone.
+
+## Component / DOM Gate
+
+After H8, run component/interaction tests selected through ADR.
+
+Minimum:
+
+```text
+Button disabled/loading/state semantics
+Tile selected/emphasis accessibility semantics
+Modal focus entry/trap/return
+Tabs keyboard navigation
+SkinSelector loading/failure/default behavior
+skin switch preserves screen/editor/match state
+ErrorState and reset confirmation
+```
+
+Keep pure engine tests in node environment. Use a separate browser-like test environment for DOM behavior.
+
+## Visual Regression Gate
+
+After H9, run Playwright or the approved equivalent.
+
+Minimum matrix:
+
+```text
+all screens at 844x390
+TOP / Deck Editor / Match / Result / Collection at all five review sizes
+Component Gallery in yorunoshirube and cute-pop
+```
+
+Required controls:
+
+```text
+deterministic data
+fixed timestamps or masked dynamic text
+disabled/reduced motion
+stable font policy
+accepted baseline review
+```
+
+Screenshot changes require human review; do not auto-approve broad visual diffs.
 
 ## Golden Tests
 
-CI should include:
+CI includes:
 
 ```text
 samples/animal-starter.deck.json strict parse
 animal starter validation
 animal starter basic analysis smoke
+all official skin packages load and resolve
+base fallback remains operational
 ```
 
 ## Security Tests
 
-CI must reject:
+Deck imports must reject:
 
 ```text
-imageUrl
-imageBase64
-filePath
-blobUrl
-url
-src
-href
-html
-style
-script
-code
-function
+imageUrl / imageBase64 / filePath / blobUrl
+url / src / href
+html / style / script / code / function
 prototype pollution keys
 unknown fields
 ```
 
-## Performance Smoke Tests
+Skin packages must reject:
 
-Do not make CI flaky with strict device timing.
+```text
+unknown token IDs
+structural token override by external skin
+arbitrary CSS/JS/HTML
+external URLs and fonts
+path traversal
+unapproved external SVG
+unknown slots/render modes
+invalid geometry and over-budget files
+```
 
-Use structural performance assertions:
+## Performance Smoke
+
+Use structural assertions rather than flaky device timings:
 
 ```text
 candidate cap returns warning
 wildcard branch cap returns warning
 large unsafe import rejects before deep validation
-primaryCandidates <= maxPrimaryCandidates
+primaryCandidates <= configured maximum
+skin package byte/dimension limits enforced
+skin switch does not perform repeated uncontrolled fetch loops
 ```
-
-Optional dev-only timing logs may exist but should not fail CI unless stable.
 
 ## Lint / Format
 
-Lint can be added after initial implementation.
+Decide and record through dependency policy/ADR.
 
-Recommended gate:
+Once adopted, CI must run the configured commands. Do not leave formatting/lint rules as undocumented local conventions.
+
+## Workflow Policy
 
 ```text
-npm run lint
+require CI before large UI merges when branch protection is enabled
+avoid direct main commits for large implementation batches
+small docs-only commits may remain direct while solo-developing
 ```
-
-But avoid blocking early progress on style-only tooling before domain/schema tests exist.
 
 ## CI Report Requirements
 
-Every work report should state:
+Every work report states:
 
 ```text
-commands run
-pass/fail
+commands run locally
+local pass/fail
+GitHub Actions run status or unavailable
 known skipped commands
 reason skipped
+skin/screens affected
+visual baseline changed: yes/no
 ```
-
-Do not claim tests passed if CI has not run.
-
-## Branch Protection Later
-
-When repository is actively implemented:
-
-```text
-require CI on main
-require tests before merge
-avoid direct main commits for large UI changes
-```
-
-For small docs-only commits, direct main commits are acceptable while solo-developing.
 
 ## Final Decision
 
-CI must prove the engine and import boundary before the UI looks finished.
+CI must prove engine/import safety and the skin/UI contract. A visually correct local screen is not sufficient proof.
