@@ -163,7 +163,7 @@ describe('resolveSkin / 継承', () => {
     ['base', base],
     ['yorunoshirube', yoru],
   ]);
-  const tokensBySkin = new Map([
+  const tokensBySkin = new Map<string, Record<string, string>>([
     ['base', { '--sp-color-night': '#111111', '--sp-color-paper': '#eeeeee' }],
     ['yorunoshirube', { '--sp-color-night': '#120d08' }],
   ]);
