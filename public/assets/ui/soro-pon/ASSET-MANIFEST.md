@@ -1,50 +1,119 @@
-# Asset Manifest (soro-pon UI)
+# Asset Manifest — Soro-pon Skin Packages
 
-UIコンポーネントは **asset slot名** だけを知る。画像パスの直書きは禁止。
+## Current Implementation
 
-## Skin Package方式(現行)
-
-アセットはスキン単位で管理する。正本は以下。
+The flat `asset-slots.json` system has already been replaced by skin packages.
 
 ```text
-skins/<skinId>/skin.json     … slotごとの画像と描画契約(renderMode/nineSlice/safeArea)
-skins/<skinId>/tokens.css    … 検証済みdesign token(--sp-*のみ)
-skins/<skinId>/generated/final/ … 画像本体
-SKIN-MANIFEST.json           … 公式スキン一覧とdefault
-SKIN-CONTRACT.json           … slot契約・token制約・容量上限の正本
+public/assets/ui/soro-pon/
+  SKIN-MANIFEST.json
+  SKIN-CONTRACT.json
+  skins/base/
+  skins/yorunoshirube/
+  skins/cute-pop/
 ```
 
-設計と安全要件は `docs/SKIN-SYSTEM.md` を参照。
-
-## 画像差し替え手順
+Current implemented foundation includes:
 
 ```text
-1. Codex画像生成などでPNG/WebPを作る(文字焼き込み禁止 / 透過推奨)
-2. skins/<skinId>/generated/final/ に置く
-3. skins/<skinId>/skin.json の該当slotを status: "final" / file: "<ファイル名>" に更新
-4. DOM構造・ロジック・レイアウトは変更しない(背景として重なるだけ)
+versioned official skin registry
+base / yorunoshirube / cute-pop manifests and token files
+runtime SkinProvider and fallback resolution
+slot-based asset URL resolution
+basic SkinSurface rendering
+CSS/SVG fallback with all asset files still null/placeholder
 ```
 
-fileがnullの間は、tokens + CSS/SVG fallbackで表示される(base skinは常に完全動作)。
-
-## Codex画像生成の対象(placeholder一覧)
-
-各スキンの `skin.json` で `status: "placeholder"` のslotが生成対象。
-slotの推奨サイズ・nine-slice・safeAreaは `SKIN-CONTRACT.json` の `slots` を正とする。
+## Source of Truth
 
 ```text
-yorunoshirube: 全21slot(視覚方向は docs/asset-requests/ の5件を正とする)
-cute-pop:      全21slot(明るい/可愛い/ポップ。docs/SKIN-SYSTEM.md参照)
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/ASSET-PIPELINE.md
+public/assets/ui/soro-pon/SKIN-CONTRACT.json
 ```
 
-## Rules
+## Current Placeholder State
+
+All registered asset slots currently remain placeholders. The application must remain fully usable through tokens and CSS/SVG fallback.
+
+Future image targets are the `status: "placeholder"` slots in each skin manifest, constrained by `SKIN-CONTRACT.json`.
+
+## Reviewed Asset Flow
+
+Before image production begins, each skin package must have:
 
 ```text
-- デザインターゲット画像(docs/design-targets/)は参照専用。runtime素材にしない
-- クリック判定/状態管理/レイアウトは画像に依存しない
-- 文字は画像に焼き込まない
-- shared deck JSONに画像情報を入れない
-- user import由来の画像/URLを公式UI assetにしない
-- 既存IP素材を置かない
-- スキンにJavaScript/任意CSS/外部URL/外部フォントを含めない
+generated/candidates/
+generated/final/
 ```
+
+Production flow:
+
+```text
+1. create/generate an asset for a registered slot
+2. save it under generated/candidates
+3. connect it in preview/Component Gallery
+4. check target screens and required viewport sizes
+5. obtain human approval
+6. move the approved file to generated/final
+7. set the skin slot file and status to final
+8. run validation, tests, typecheck, build, and screenshots
+```
+
+Never generate directly into `generated/final`.
+
+## Current Foundation Boundary
+
+During the current multi-skin foundation phase:
+
+```text
+do not generate final PNG/WebP assets
+do not fill placeholder slots with unreviewed art
+complete shared components/renderers/contracts/validation first
+prepare slot-specific asset requests and future prompts
+```
+
+## Permanent Rules
+
+```text
+components know slot IDs, not image paths
+screens do not resolve files or implement nine-slice directly
+layout, hit areas, state, and text never depend on images
+text is not baked into images
+shared deck JSON contains no skin/image fields
+future installed skins cannot execute code or load external URLs/fonts
+existing IP and unclear-license material are forbidden
+```
+
+## Current Render Support vs Target
+
+Currently implemented in `SkinSurface`:
+
+```text
+cover
+contain
+stretch
+repeat
+nine-slice stretch
+overlay
+```
+
+Required next contract expansion:
+
+```text
+nine-slice tile
+three-slice-x
+three-slice-y
+repeat-x / repeat-y
+mask/tint renderer
+separate borderWidth from source slice
+candidate status and directory validation
+```
+
+Do not describe these next modes as implemented until code and tests are added.
+
+## Final Decision
+
+The multi-skin package system is active, but artwork is intentionally still placeholder-only. Finish the reusable skin foundation before beginning reviewed candidate asset production.
