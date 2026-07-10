@@ -1,176 +1,277 @@
-# Asset Pipeline
+# Soro-pon Asset Pipeline
 
 ## Purpose
 
-Soro-pon should not depend on Claude Code generating artwork.
+This document defines how assets move from a registered skin slot to a reviewed production file.
 
-When the coded UI needs real visuals, implementation should create an asset request instead of inventing low-quality assets.
-
-## Asset Workflow
+Read first:
 
 ```text
-1. implement coded component/layout first
-2. identify visual gap
-3. create asset request
-4. produce/review asset outside Claude Code if needed
-5. commit optimized asset
-6. update asset manifest
-7. integrate through component tokens/classes
-8. run screenshot review
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/SKIN-AUTHORING-GUIDE.md
 ```
 
-## Asset Slot System (implementation contract)
+## Current Rule
 
-UI components must not hardcode image paths.
+The current skin-system foundation phase does not generate final artwork.
+
+It creates:
 
 ```text
-- Components reference asset slot names only (src/ui/assets/slots.ts)
-- Slot registry: public/assets/ui/soro-pon/asset-slots.json
-- Slot table for humans: public/assets/ui/soro-pon/ASSET-MANIFEST.md
-- Final PNGs live in public/assets/ui/soro-pon/generated/final/
-- Missing PNG -> CSS/SVG fallback keeps UI fully usable
-- Swapping art = place file + update asset-slots.json only (no DOM/logic change)
-- Layout, hit areas, state, and text never depend on images
+skin packages
+asset slots
+geometry/render contracts
+CSS/SVG fallback
+asset requests
+future generation prompts
+candidate/final acceptance flow
 ```
 
-## Asset Request Location
+## Workflow
 
-Use:
+```text
+1. implement shared component and layout with fallback
+2. register asset slot in the skin contract
+3. define geometry, render mode, safe area, and budget
+4. write asset request and generation prompt
+5. generate/draw only in a later explicit production phase
+6. save output to generated/candidates
+7. connect in Component Gallery/preview
+8. review states and screen screenshots
+9. approve and move to generated/final
+10. update skin manifest and ownership record
+11. run skin validation, tests, typecheck, build, and screenshots
+12. commit and push
+```
+
+Never generate directly into `final`.
+
+## Package Locations
+
+```text
+public/assets/ui/soro-pon/skins/<skin-id>/generated/candidates/
+public/assets/ui/soro-pon/skins/<skin-id>/generated/final/
+```
+
+Official initial skin IDs:
+
+```text
+yorunoshirube
+cute-pop
+```
+
+## Slot Contract
+
+Components reference registered slot names only.
+
+```text
+no hardcoded image paths
+no screen-owned file resolution
+no image-dependent layout
+no image-dependent hit area
+missing file -> inherited/base/CSS/SVG fallback
+```
+
+Slot and geometry contracts belong in the skin system manifest/contract files and TypeScript slot registry.
+
+Each slot records:
+
+```text
+purpose
+used components/screens
+target file
+status
+render mode
+intrinsic size and pixel density
+transparency
+slice/border/repeat settings when relevant
+content/crop safe area
+minimum/maximum render size
+focal point when relevant
+file-size budget
+fallback behavior
+```
+
+## Render Classes
+
+```text
+nine-slice/three-slice surfaces
+- buttons, panels, dialogs, cards, frames
+
+cover/contain backgrounds
+- table and screen atmosphere
+
+overlays
+- ink, lantern light, result burst, state decoration
+
+mask/tint assets
+- simple reusable icons and ornaments
+
+repeat textures
+- paper, wood, dots, small patterns
+```
+
+Rendering is centralized in shared Skin renderers.
+
+## Asset Requests
+
+Location:
 
 ```text
 docs/asset-requests/
 ```
 
-Suggested names:
+Each request must include:
 
 ```text
-001-night-desk-background.md
-002-paper-texture.md
-003-ink-stain-overlays.md
-004-win-burst-texture.md
-005-tile-back-ornament.md
+skin ID
+slot ID
+target file
+purpose
+used by
+render mode
+size/format/transparency
+slice/safe-area/crop contract
+visual direction
+must avoid
+fallback
+acceptance checklist
+generation prompt for later use
 ```
 
-## Asset Request Template
+## Manifest and Ownership
+
+Every final asset records:
 
 ```text
-# Asset Request: <name>
-
-## Purpose
-
-## Used By
-
-## Required Size / Format
-
-## Visual Direction
-
-## Must Avoid
-
-## Fallback If Missing
-
-## Acceptance Checklist
+file path
+skin ID
+slot ID
+purpose
+source/author/tool
+license/ownership
+production-safe status
+review date
+used components/screens
 ```
 
-## Required Asset Manifest
-
-When assets are committed, create/update:
-
-```text
-public/assets/ASSET-MANIFEST.md
-```
-
-Template:
-
-```text
-# Asset Manifest
-
-| File | Purpose | Source | License/Ownership | Production Safe | Used By |
-|---|---|---|---|---|---|
-```
+Candidate files are not production-approved assets.
 
 ## Formats
 
 Preferred:
 
 ```text
-SVG for icons, frames, ornaments, lines
-PNG/WebP for textures, backgrounds, atmosphere, effect sprites
-HTML text for all readable text
+SVG: simple icons, ornaments, lines
+PNG: transparent frames and crisp effects
+WebP: large backgrounds/atmosphere when suitable
+HTML/CSS: readable text and semantic state
 ```
 
-Avoid:
+Forbidden:
 
 ```text
 text baked into images
 remote runtime assets
-large uncompressed PNGs
-SVG from user uploads
+external URL references
 base64 blobs in JSON/CSS
+user-uploaded SVG
+unclear-license files
+existing IP art
 ```
 
-## Fallback Rule
+## Fallback
 
-Every asset-dependent component needs fallback.
+Every slot must work without an image.
 
 Examples:
 
 ```text
-missing paper texture -> solid token background + subtle CSS noise/gradient
-missing tile icon -> emoji/fallbackLabel
-missing win burst -> CSS glow and scale animation
-missing desk background -> gradient night desk background
+missing panel frame -> token surface + CSS border/shadow
+missing table image -> gradient background
+missing tile ornament -> code-drawn tile
+missing result burst -> CSS glow/static emphasis
+missing icon -> app-owned SVG or text/emoji fallback
 ```
 
-## Optimization Rule
+Fallback must preserve all interaction and state meaning.
 
-Before committing raster assets:
+## Optimization and Budgets
+
+Initial guidance:
+
+```text
+whole skin recommended <= 5 MB
+single background <= 2 MB
+normal UI image <= 512 KB
+maximum image dimensions normally <= 2048x2048
+```
+
+Before final approval:
 
 ```text
 crop unused transparent area
-export at practical size
-prefer WebP for large atmosphere images
-keep PNG for crisp small transparent effects
-avoid huge multi-megabyte files
+remove unnecessary metadata
+choose practical dimensions
+prefer WebP for large opaque/atmosphere art
+keep PNG for crisp transparency
+verify phone memory and decoding cost
 ```
 
 ## Source Safety
 
-Allowed sources:
+Allowed:
 
 ```text
-original handmade assets
-approved generated assets
-Figma exports created for this project
-Aseprite assets created for this project
+original project assets
+approved generated candidates after human review
+Figma/Aseprite exports for this project
+licensed assets with recorded proof
 ```
 
-Forbidden sources:
+Forbidden:
 
 ```text
+random web downloads
+unclear-license material
 existing IP art
-random web image downloads
-remote hotlinked images
-unclear-license assets
-user imported deck images in official assets
+remote hotlinks
+personal photos
+user-deck images promoted into official skin art
 ```
 
-## Design Target Images
+## Design Targets
 
-Design target images are references.
+Design target screenshots are reference material only.
 
-They may be used for:
+They may guide:
 
 ```text
-layout matching
-spacing matching
-mood matching
+composition
+spacing
+hierarchy
+mood
 screenshot comparison
 ```
 
-They should not be used as production image assets without explicit approval.
+They are not automatically approved runtime backgrounds or sprites.
+
+## Validation
+
+The skin validator must check at least:
+
+```text
+known slot and render mode
+safe file name
+file existence
+image size/bytes
+slice values inside image bounds
+safe areas and minimum render size
+no external URL
+manifest/contract compatibility
+```
 
 ## Final Decision
 
-If an asset is missing, build a good fallback and create an asset request.
-
-Do not let missing art block schema/engine/tests.
+Missing artwork never blocks a functional UI. New artwork enters through a registered slot, is tested as a candidate, and becomes final only after human review.
