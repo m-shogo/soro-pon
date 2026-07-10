@@ -2,9 +2,24 @@
 
 ## Purpose
 
-This guide tells implementation agents how to proceed without reading every historical document.
+This guide tells implementation agents how to proceed from the current repository state.
 
-Always read `docs/MASTER-SPEC.md` first.
+Always read first:
+
+```text
+docs/MASTER-SPEC.md
+docs/IMPLEMENTATION-WORKFLOW.md
+```
+
+## Current State
+
+```text
+Gameplay MVP phases 1-14: implemented
+Current next phase: multi-skin design-system foundation
+Final PNG generation: later separate reviewed phase
+```
+
+Do not restart from package/schema/engine setup unless fixing an identified defect.
 
 ## Current Stack
 
@@ -18,339 +33,298 @@ CSS / CSS Modules
 localStorage first
 ```
 
-Do not add in MVP initial implementation:
+Major dependencies require `docs/DEPENDENCY-POLICY.md` review and ADR.
+
+## Existing Core Direction
+
+The implemented dependency direction remains:
 
 ```text
-Next.js
-Supabase
-Firebase
-Unity
-Godot
-Phaser
-Redux
-Zustand
-TanStack Query
-Tailwind
+schemas/domain
+-> validation/engine
+-> app orchestration/storage
+-> UI
 ```
 
-## Implementation Rule
+UI must not reimplement game rules.
 
-Build from domain facts outward.
+## Mandatory UI Read
 
-Correct direction:
+Before current-phase work:
 
 ```text
-schema -> validation -> engine -> insights -> UI
+docs/DESIGN-SYSTEM.md
+docs/SKIN-SYSTEM.md
+docs/UI-COMPONENT-CONTRACT.md
+docs/SKIN-AUTHORING-GUIDE.md
+docs/DESIGN-IMPLEMENTATION-POLICY.md
+docs/ASSET-PIPELINE.md
+docs/48-responsive-crisp-ui-system.md
+docs/49-ui-quality-gate-and-codex-design-rules.md
+docs/50-pro-ui-production-quality-checklist.md
 ```
 
-Wrong direction:
+## Current Phase Plan
+
+### S0: Audit and Baseline
 
 ```text
-pretty UI -> patch rules later
+inventory screens/components/styles/tokens/assets
+record hardcoded visual values
+record duplicated generic UI
+capture current screenshots
+confirm tests/typecheck/build baseline
 ```
 
-## Phase 1: Project Setup
-
-Create:
+Gate:
 
 ```text
-package.json
-vite config
-tsconfig
-vitest config
-src/main.tsx
-src/App.tsx minimal
+no gameplay change
+baseline verification recorded
+migration list documented
 ```
 
-Validation:
+### S1: Skin Contract and Package Structure
+
+Create/complete:
 
 ```text
-npm test
-npm run build
+SKIN-MANIFEST.json
+SKIN-CONTRACT.json
+base/yorunoshirube/cute-pop packages
+strict manifest schemas
+contract versioning
+inheritance and fallback rules
 ```
 
-## Phase 2: Domain and Schema
-
-Create:
+Gate:
 
 ```text
-src/domain/ids.ts
-src/domain/tile.ts
-src/domain/deck.ts
-src/domain/role.ts
-src/domain/group.ts
-src/domain/candidate.ts
-src/domain/score.ts
-src/domain/match.ts
-src/domain/validation.ts
-
-src/schemas/deckProjectSchema.ts
-src/schemas/roleConditionSchema.ts
-src/schemas/importSchema.ts
+unknown/invalid skin safely falls back
+inheritance cycle/depth tests
+external URL/path rejection
+all official manifests validate
 ```
 
-Required tests:
+### S2: Runtime Switching
+
+Create/complete:
 
 ```text
-animal starter strict parse
-scoreBudget required in current schema
-unknown fields rejected
-image/url/script/html fields rejected
-normal win_role without requiredGroups rejected
+skinRegistry
+SkinProvider
+useSkin
+local selection persistence/recovery
+runtime token application
 ```
 
-## Phase 3: Deck Validation
-
-Create:
+Gate:
 
 ```text
-src/engine/validation/validateDeckProject.ts
+switch without reload
+match/editor state preserved
+unknown stored skin recovers safely
 ```
 
-Validation must include:
+### S3: Shared Renderers
+
+Create/complete:
 
 ```text
-schema validity
-reference validity
-rule feasibility
-score budget checks
-custom deck warnings
-import safety
+SkinSurface
+SkinBackground
+SkinOverlay
+SkinIcon
 ```
 
-Required fixtures:
+Supported render modes:
 
 ```text
-valid-minimal
-no-win-role
-bonus-only
-impossible-role
-wildcard-heavy
-duplicate-role
-candidate-explosion
-category-too-small
-score-explosion
-large-valid
-corrupt-import
+nine-slice-stretch
+nine-slice-tile
+three-slice-x
+three-slice-y
+stretch
+repeat / repeat-x / repeat-y
+cover
+contain
+overlay
+mask
 ```
 
-## Phase 4: Group Engine
-
-Create:
+Gate:
 
 ```text
-src/engine/groups/enumerateGroups.ts
-src/engine/groups/partitionHand.ts
-src/engine/wildcards/resolveWildcards.ts
+screens do not directly implement border-image/mask/asset URL logic
+missing asset uses fallback
+geometry contract validation passes
 ```
 
-Required tests:
+### S4: Token Migration
+
+Use:
 
 ```text
-sameTile group
-sameCategory group
-sameTag group
-specificSet group
-9 tiles -> 3 complete groups
-8 tiles cannot be completed normal win
-10 tiles cannot be completed normal win
-same tile instance cannot be used twice
-wildcard fills one missing tile
-one group max one wildcard
+Primitive -> Semantic -> Component tokens
+CSS cascade layers
+approved font presets
 ```
 
-## Phase 5: Role Analysis
-
-Create:
+Gate:
 
 ```text
-src/engine/roles/matchRole.ts
-src/engine/analysis/analyzeHand.ts
-src/engine/analysis/analyzeWaits.ts
-src/engine/analysis/rankCandidates.ts
-src/engine/analysis/explainCandidate.ts
+no screen hardcoded visual colors/images
+skin layer cannot change layout/hit-area properties
+both official fallback themes readable
 ```
 
-Required tests:
+### S5: Shared Component Migration
+
+Priorities:
 
 ```text
-completed candidate includes groups
-tenpai candidate includes incomplete group
-near candidate includes missing group count
-bonusOnly cannot win
-invalidButExplainable has blocked reason
-primaryCandidates capped
-hiddenCandidateCount returned
+Button/IconButton
+Dialog/Modal
+SkinSurface/PaperPanel
+ValidationIssueList
+SectionHeader
+shared form fields
+Empty/Error states
+TileCard state overlays
+SkinSelector/SkinPreviewCard
 ```
 
-## Phase 6: Ron / Tsumo / Scoring
-
-Create:
+Gate:
 
 ```text
-src/engine/scoring/calculateScore.ts
+screen-local generic duplicates removed
+all variants/states in Component Gallery
+long-text and input-modality cases included
 ```
 
-Rules:
+### S6: Component Gallery and Skin Preview
 
 ```text
-tsumo = 9-tile hand after draw
-ron = 8 hand tiles + discarded tile
-special_bonus cannot win
-ScoreBonus cannot win
-selectedWinRole is one base role only
+instant yorunoshirube/cute-pop switching
+all common component states
+compact/regular density
+long Japanese/English/score/emoji cases
 ```
 
-Required tests:
-
-```text
-tsumo 9-tile win
-ron 8+discard win
-discarded wildcard ron blocked
-multiple win roles do not stack
-scoreBudget warnings
-result breakdown includes selectedWinRole/groups/wildcards/bonuses
-```
-
-## Phase 7: Insights and Discard Preview
-
-Create:
-
-```text
-src/engine/analysis/analyzeDiscardImpact.ts
-src/engine/analysis/buildBoardInsights.ts
-```
-
-Rules:
-
-```text
-preview does not mutate match state
-insights show facts, not commands
-normal mode compresses output
-beginner mode reduces output
-```
-
-Required tests:
-
-```text
-discard preview keeps state immutable
-breaks candidate insight
-keeps wait insight
-wildcard used as insight
-no best-move wording in insight kinds
-```
-
-## Phase 8: Match State Reducer
-
-Create:
-
-```text
-src/engine/match/createInitialMatchState.ts
-src/engine/match/applyMatchAction.ts
-src/engine/cpu/chooseCpuAction.ts
-```
-
-Rules:
-
-```text
-invalid actions return ok:false and do not mutate
-CPU uses same analyzer data as UI
-CPU does not use hidden opponent information
-```
-
-Required tests:
-
-```text
-state transition happy path
-invalid discard rejected
-invalid ron rejected
-CPU deterministic tie-break
-round draw when draw pile empty
-```
-
-## Phase 9: Storage and Import
-
-Create:
-
-```text
-src/engine/import/parseDeckImport.ts
-src/storage/*
-```
-
-Rules:
-
-```text
-strict import allowlist
-recursive unsafe key scan
-localStorage parsed through Zod
-corrupt localStorage recovers safely
-```
-
-Required tests:
-
-```text
-unsafe fields rejected
-unknown fields rejected
-current schema missing scoreBudget fails
-older safe schema may migrate with notice
-corrupt localStorage does not crash
-```
-
-## Phase 10: UI Foundation
-
-Before screens, create:
-
-```text
-src/ui/styles/tokens.css
-src/ui/layout/useResponsiveMetrics.ts
-src/ui/primitives/*
-src/ui/components/*
-src/ui/gallery/ComponentGallery.tsx
-```
-
-Do not implement full screens before component gallery.
-
-## Phase 11: Screens
-
-Recommended order:
-
-```text
-Deck List
-Deck Detail
-Deck Editor minimal
-Match Setup
-Match UI
-Result
-Collection
-```
-
-UI changes require screenshot review sizes:
+Gate:
 
 ```text
 844x390
-932x430
 852x393
+932x430
 1024x600
 1366x768
 ```
 
-## Reporting Format
+### S7: Screen Migration
 
-Every implementation commit report should include:
+Migrate all existing screens without creating skin-specific screen copies.
 
 ```text
-changed files
-commit SHA
-tests run
-build run
-remaining risks
+TOP
+Deck List/Detail/Editor
+Tile/Role/Bonus Editor
+Match Setup/Match/Result
+Collection/Clear Board/Achievement
+Import/Export
+Dialogs/Rotate Prompt
+```
+
+Gate:
+
+```text
+same DOM responsibility and behavior in both skins
+no image-dependent layout/hit areas
+all gameplay flows still work
+```
+
+### S8: Skin Validator and Regression Tests
+
+Provide:
+
+```bash
+pnpm skin:validate
+```
+
+Add tests for:
+
+```text
+manifest/schema/version
+inheritance/fallback
+unsafe path/URL/token
+state preservation during switching
+all official packages
+```
+
+Add Playwright screenshot regression when dependency/ADR decision is approved.
+
+### S9: Foundation Completion
+
+```text
+all tests green
+typecheck green
+build green
+manual QA updated
+both official skins usable without final PNGs
+asset request/generation prompt list complete
+no image generation performed
+```
+
+## Later Asset Production Phase
+
+Only after S0-S9 completion and explicit instruction:
+
+```text
+generate/draw asset
+-> generated/candidates
+-> preview/screenshots
+-> human review
+-> generated/final
+-> manifest update
+```
+
+Never generate directly into final.
+
+## New Feature Rule
+
+After the skin foundation, every new UI feature follows:
+
+```text
+shared component check
+-> central variant/component
+-> tokens
+-> optional slot and geometry contract
+-> base + both official skins
+-> Gallery
+-> responsive/visual verification
+-> screen use
+```
+
+## Verification Commands
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm skin:validate
+```
+
+Use repository scripts as the source of exact command names.
+
+## Commit Policy
+
+```text
+one purpose per commit
+small testable changes
+push after commit
+docs and implementation together
 ```
 
 ## Final Decision
 
-If implementation discovers conflict:
-
-```text
-update docs/MASTER-SPEC.md or detail doc first
-then change code
-```
+Current implementation work is not a greenfield MVP build. It is a controlled migration from one working UI to a shared, validated, multi-skin design system without changing game behavior.
