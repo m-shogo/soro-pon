@@ -8,30 +8,17 @@ Vamp-pon世界の中で遊ばれている「記憶札遊び」として扱いま
 
 ```text
 Gameplay MVP phases 1-14: implemented
-Tests at last recorded hardening: 218 green
-Current next work: multi-skin design-system foundation
-Final PNG generation: later separate reviewed phase
+Tests at last recorded gameplay hardening: 218 green
+Multi-skin foundation: in progress
+Already implemented: base/yorunoshirube/cute-pop packages, manifest/contract, loader/validation/fallback, runtime SkinProvider, basic SkinSurface
+Remaining: renderer expansion, token/component migration, Gallery and user selector, skin:validate CLI, full visual regression
+Final PNG/WebP production: later separate reviewed phase
 ```
 
-現在は、機能追加を先行する段階ではなく、次の基盤を整える段階です。
+正確な現在地は以下を正とします。
 
 ```text
-one stable layout/component system
-multiple validated visual skins
-shared reusable UI components
-safe skin switching
-nine-slice and other shared render modes
-future paid-skin compatibility
-```
-
-公式初期スキン:
-
-```text
-yorunoshirube
-- 夜の机 / 紙 / 黒インク / ランタン光 / 記憶帳
-
-cute-pop
-- 一般向け / 明るい / 可愛い / 親しみやすい / ポップ
+docs/IMPLEMENTATION-WORKFLOW.md
 ```
 
 ## Product Core
@@ -50,6 +37,18 @@ cute-pop
 ```
 
 UIの卓上感や操作の気持ちよさは麻雀を参考にしますが、ルールは麻雀化しません。
+
+## Official Skins
+
+```text
+yorunoshirube
+- 夜の机 / 紙 / 黒インク / ランタン光 / 記憶帳
+
+cute-pop
+- 一般向け / 明るい / 可愛い / 親しみやすい / ポップ
+```
+
+将来の季節・販売スキンも、同じscreen/component/layout実装を使います。
 
 ## First Read for AI Agents
 
@@ -72,17 +71,11 @@ docs/GLOSSARY.md
 docs/MASTER-SPEC.md
 ```
 
-現在地・完了Phase・次の作業:
-
-```text
-docs/IMPLEMENTATION-WORKFLOW.md
-```
-
 番号付きdocsが衝突する場合は、非番号の現行契約docsを優先します。
 
 ## Mandatory UI / Design / Skin Read
 
-画面、コンポーネント、CSS、token、asset、motion、responsiveを触る場合は、プロンプトに書かれていなくても必ず以下を読んでください。
+画面、コンポーネント、CSS、token、asset、motion、responsiveを触る場合は、プロンプトに書かれていなくても必ず読む。
 
 ```text
 docs/DESIGN-SYSTEM.md
@@ -102,33 +95,41 @@ docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```text
 one MatchScreen / one Button / one TileCard implementation
 skin-specific screen copies are forbidden
-layout, hit areas, DOM responsibility, state meaning are skin-invariant
-skin changes colors, textures, frames, approved fonts, ornaments, and effects
-both official skins work without final images
+layout, hit areas, DOM responsibility, and semantic states are skin-invariant
+skins change validated colors, textures, frames, approved fonts, ornaments, and effects
+both official skins must work without final images
 screen-local generic buttons/panels/dialogs are forbidden
 new reusable UI goes through shared components and Component Gallery
 ```
 
-### Shared render modes
+### Current renderer baseline
+
+Implemented now:
 
 ```text
-nine-slice-stretch
-nine-slice-tile
-three-slice-x
-three-slice-y
-stretch
-repeat / repeat-x / repeat-y
 cover
 contain
+stretch
+repeat
+nine-slice stretch
 overlay
-mask
 ```
 
-Nine-slice is implemented through shared `SkinSurface`-type renderers, not separately inside each screen.
+Required next extensions:
 
-### Shared components
+```text
+nine-slice tile
+three-slice-x
+three-slice-y
+repeat-x / repeat-y
+mask/tint
+separate source slice from rendered borderWidth
+candidate asset status/path validation
+```
 
-Common UI must use shared components such as:
+All render modes must be centralized in shared Skin renderers, never reimplemented in individual screens.
+
+### Shared component direction
 
 ```text
 Button / IconButton
@@ -145,21 +146,30 @@ EmptyState / ErrorState
 SkinSelector / SkinPreviewCard
 ```
 
+Some of this inventory is already connected; the remaining commonization is tracked in `docs/IMPLEMENTATION-WORKFLOW.md`.
+
 ## Image Generation Boundary
 
-The current skin-system foundation phase does not generate final images.
+The current multi-skin foundation does not generate final images.
 
-Current work creates:
+Already present:
 
 ```text
-skin switching
-shared components
-asset slots
-size/safe-area/render contracts
-CSS/SVG fallback
-future image lists and generation prompts
-candidate/final directories
-skin validation
+skin packages and registry
+skin contract
+runtime switching and fallback
+placeholder slots
+CSS/token fallback
+```
+
+Current remaining foundation work:
+
+```text
+complete shared render/component contracts
+complete token migration
+add Gallery and user-facing skin selector
+add filesystem skin validation command
+prepare candidate directories, asset requests, and future generation prompts
 ```
 
 Later image production flow:
@@ -173,7 +183,7 @@ generate/draw
 -> manifest update
 ```
 
-Do not generate directly into `final`.
+Never generate directly into `final`.
 
 ## Design Targets
 
@@ -183,7 +193,7 @@ Yorunoshirube reference folder:
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
 ```
 
-Local absolute path:
+Local path:
 
 ```text
 /Users/m-shogo/Developer/personal/soro-pon/docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1
@@ -238,8 +248,6 @@ skin never accesses engine/game records/network/code execution
 
 ## Vamp-pon Reference Policy
 
-When using Vamp-pon world/visual material, read:
-
 ```text
 /Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
 docs/42-shared-vampon-source-policy.md
@@ -270,17 +278,8 @@ push after commit
 docs and implementation updated together
 ```
 
-Report:
-
-```text
-changed files
-commit SHA
-implemented scope
-verification
-remaining scope
-next step
-```
+Report changed files, commit SHA, verification, remaining scope, and next step.
 
 ## Final Decision
 
-The priority is a stable, reusable game UI that can switch between Yorunoshirube, Cute Pop, and future skins without changing game logic, layout, or interaction behavior.
+Continue the existing multi-skin foundation. The goal is a reusable game UI that can switch between Yorunoshirube, Cute Pop, and future skins without changing game logic, layout, hit areas, or interaction behavior.
