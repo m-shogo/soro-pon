@@ -1,0 +1,99 @@
+import type { AssetSlotName } from '../assets/slots';
+
+// スキン契約バージョン。slot追加などの互換性が壊れる変更で上げる。
+// これより新しいcontractVersionを要求するスキンは受理しない。
+export const SKIN_CONTRACT_VERSION = 1;
+
+export const BASE_SKIN_ID = 'base';
+
+// アプリ側の許可済みフォントセット。スキンはこの中からのみ選択できる
+// (外部フォント読み込み・任意フォント指定は不可)。
+export const APPROVED_FONT_STACKS: readonly string[] = [
+  // 明朝(ヨルノシルベ系)
+  "'Hiragino Mincho ProN', 'Yu Mincho', 'BIZ UDMincho', 'Noto Serif JP', serif",
+  "'Hiragino Mincho ProN', 'Yu Mincho', serif",
+  // 丸ゴシック(Cute Pop系)
+  "'Hiragino Maru Gothic ProN', 'BIZ UDGothic', 'Noto Sans JP', sans-serif",
+  // 標準ゴシック
+  "'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', sans-serif",
+];
+
+export const ALLOWED_BLEND_MODES = [
+  'normal',
+  'multiply',
+  'screen',
+  'overlay',
+  'soft-light',
+] as const;
+
+export type SkinBlendMode = (typeof ALLOWED_BLEND_MODES)[number];
+
+export type SkinRenderMode =
+  | 'cover'
+  | 'contain'
+  | 'stretch'
+  | 'repeat'
+  | 'nine-slice'
+  | 'overlay';
+
+export type SkinEdgeInsets = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
+// 各assetの描画契約。単なるファイル名ではなく描画方法まで持つ。
+export type SkinAssetDefinition = {
+  file: string | null;
+  status: 'placeholder' | 'final';
+  renderMode: SkinRenderMode;
+  intrinsicSize?: { width: number; height: number };
+  transparent?: boolean;
+  nineSlice?: SkinEdgeInsets;
+  contentSafeArea?: SkinEdgeInsets;
+  opacity?: number;
+  blendMode?: SkinBlendMode;
+};
+
+export type SkinOrigin = 'official' | 'external';
+
+export type SkinManifest = {
+  id: string;
+  label: string;
+  version: number;
+  skinContractVersion: number;
+  origin: SkinOrigin;
+  author?: string;
+  inherits?: string;
+  tokensFile: string;
+  slots: Partial<Record<AssetSlotName, SkinAssetDefinition>>;
+};
+
+// 継承をmergeし終えた実行時スキン。
+export type ResolvedSkinSlot = {
+  def: SkinAssetDefinition;
+  /** 画像URLの起点になるスキン(fileはこのスキンのパッケージ内にある) */
+  sourceSkinId: string;
+};
+
+export type ResolvedSkin = {
+  id: string;
+  label: string;
+  /** base -> ... -> id の順の継承チェーン */
+  chain: string[];
+  tokens: Record<string, string>;
+  slots: Partial<Record<AssetSlotName, ResolvedSkinSlot>>;
+  /** 解決中に発生した非致命の問題(fallback理由の説明用) */
+  issues: string[];
+};
+
+// サイズ/容量の上限(SKIN-CONTRACT.jsonにも記載)
+export const SKIN_LIMITS = {
+  maxAssetFileBytes: 2 * 1024 * 1024,
+  maxSkinTotalBytes: 16 * 1024 * 1024,
+  maxIntrinsicSizePx: 2048,
+  maxNineSlicePx: 256,
+  maxTokensFileBytes: 32 * 1024,
+  maxManifestBytes: 64 * 1024,
+} as const;
