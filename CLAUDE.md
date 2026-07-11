@@ -6,13 +6,17 @@ Claude Code向けの作業指示。
 
 ```text
 Gameplay MVP phases 1-14: implemented
-Multi-skin runtime baseline: implemented / partial
-Current next phase: docs/SKIN-FOUNDATION-HARDENING.md のH1から順に実装
+Multi-skin runtime baseline: implemented
+Skin foundation hardening H1-H11: implemented
+  (H6 render-mode追加は必要性が証明されたときのみ / visual regressionはローカル実行のみ)
+All P0 gates: passed
 Official skins: yorunoshirube / cute-pop
-Final image generation: all P0 gates completion後の別工程
+Current next phase: アセット生産(candidates -> 人のレビュー -> final)を
+  明示タスクとして開始可能。着手前にdocs/ASSET-PIPELINE.mdと
+  docs/SKIN-DISTRIBUTION.mdを読むこと
 ```
 
-過去の「Phase 1開始」「まずengineから」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` から進めてください。
+過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
 
 ## Read First
 
