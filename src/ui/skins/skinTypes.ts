@@ -78,6 +78,10 @@ export type SkinManifest = {
   author?: string;
   inherits?: string;
   tokensFile: string;
+  /** ブラウザネイティブUI(フォーム/スクロールバー)の明暗(P1-5) */
+  colorScheme?: 'dark' | 'light';
+  /** ブラウザUI(meta theme-color)へ渡す代表色(P1-5) */
+  themeColor?: string;
   slots: Partial<Record<AssetSlotName, SkinAssetDefinition>>;
 };
 
@@ -95,6 +99,9 @@ export type ResolvedSkin = {
   chain: string[];
   tokens: Record<string, string>;
   slots: Partial<Record<AssetSlotName, ResolvedSkinSlot>>;
+  /** 継承チェーンをmergeしたブラウザ配色(未指定はdark既定) */
+  colorScheme: 'dark' | 'light';
+  themeColor?: string;
   /** 解決中に発生した非致命の問題(fallback理由の説明用) */
   issues: string[];
 };

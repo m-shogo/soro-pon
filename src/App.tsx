@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './ui/styles/tokens.css';
 import './ui/styles/base.css';
 import { AppRoot } from './app/AppRoot';
+import { AppErrorBoundary } from './ui/components/AppErrorBoundary';
 import { SkinProvider } from './ui/skins/SkinProvider';
 import { useResponsiveMetrics } from './ui/layout/useResponsiveMetrics';
 import { RotatePrompt } from './ui/components/RotatePrompt';
@@ -29,7 +30,9 @@ export function App() {
     <SkinProvider>
       <div className="sp-game-shell" data-density={metrics.density}>
         <div className="sp-game-safe-area">
-          {hash === '#/gallery' ? <ComponentGallery /> : <AppRoot />}
+          <AppErrorBoundary>
+            {hash === '#/gallery' ? <ComponentGallery /> : <AppRoot />}
+          </AppErrorBoundary>
         </div>
       </div>
     </SkinProvider>

@@ -88,6 +88,11 @@ const skinManifestSchema = z
     author: z.string().max(80).optional(),
     inherits: skinIdSchema.optional(),
     tokensFile: z.string().min(1).max(120),
+    colorScheme: z.enum(['dark', 'light']).optional(),
+    themeColor: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/, 'themeColorは#rrggbbのみ')
+      .optional(),
     slots: z.record(z.string(), skinAssetDefinitionSchema),
   })
   .strict();
@@ -164,6 +169,8 @@ export function validateSkinManifest(raw: unknown): ValidateSkinManifestResult {
       ...(data.author !== undefined ? { author: data.author } : {}),
       ...(data.inherits !== undefined ? { inherits: data.inherits } : {}),
       tokensFile: data.tokensFile,
+      ...(data.colorScheme !== undefined ? { colorScheme: data.colorScheme } : {}),
+      ...(data.themeColor !== undefined ? { themeColor: data.themeColor } : {}),
       slots,
     },
   };

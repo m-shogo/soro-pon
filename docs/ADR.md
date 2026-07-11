@@ -192,6 +192,25 @@ Reason:
 Preventing broken deck creation is better than only warning after the deck is broken.
 ```
 
+## ADR-013: DOM Component Test Layer
+
+Decision:
+
+```text
+Add jsdom + @testing-library/react + @testing-library/user-event as devDependencies.
+Component tests opt in per-file with "// @vitest-environment jsdom".
+Engine/schema/storage tests stay in the default node environment.
+```
+
+Reason:
+
+```text
+P1-1/P1-3 require testing focus traps, keyboard navigation, aria states, and
+skin switching without state loss. These cannot be verified without a DOM.
+Testing Library is the de facto standard, tests behavior not implementation,
+and adds no runtime dependency.
+```
+
 ## Final Decision
 
 Add new ADR entries when a decision changes architecture, rules, import/security, scoring, or implementation order.

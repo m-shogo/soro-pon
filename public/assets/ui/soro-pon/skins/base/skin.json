@@ -6,6 +6,8 @@
   "origin": "official",
   "author": "soro-pon",
   "tokensFile": "tokens.css",
+  "colorScheme": "dark",
+  "themeColor": "#120d08",
   "slots": {
     "table.background": {
       "file": null,

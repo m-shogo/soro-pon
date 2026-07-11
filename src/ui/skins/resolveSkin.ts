@@ -65,6 +65,8 @@ export function resolveSkin(input: ResolveSkinInput): ResolvedSkin {
 
   const tokens: Record<string, string> = {};
   const slots: Partial<Record<AssetSlotName, ResolvedSkinSlot>> = {};
+  let colorScheme: 'dark' | 'light' = 'dark';
+  let themeColor: string | undefined;
 
   for (const skinIdInChain of chain) {
     const manifest = input.manifests.get(skinIdInChain);
@@ -78,6 +80,12 @@ export function resolveSkin(input: ResolveSkinInput): ResolvedSkin {
           slots[slotName as AssetSlotName] = { def, sourceSkinId: skinIdInChain };
         }
       }
+      if (manifest.colorScheme !== undefined) {
+        colorScheme = manifest.colorScheme;
+      }
+      if (manifest.themeColor !== undefined) {
+        themeColor = manifest.themeColor;
+      }
     }
   }
 
@@ -88,6 +96,8 @@ export function resolveSkin(input: ResolveSkinInput): ResolvedSkin {
     chain,
     tokens,
     slots,
+    colorScheme,
+    ...(themeColor !== undefined ? { themeColor } : {}),
     issues,
   };
 }

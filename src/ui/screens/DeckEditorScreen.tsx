@@ -320,7 +320,11 @@ export function DeckEditorScreen({
         onSelect={setTab}
       />
       <div className="sp-screen__body">
-        <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
+        <div
+          className="sp-screen__col sp-screen__col--main sp-screen__col--scroll"
+          role="tabpanel"
+          id={`sp-tabpanel-${tab}`}
+        >
           {tab === 'basic' && (
             <PaperPanel title="基本情報">
               <FormField label="デッキ名">

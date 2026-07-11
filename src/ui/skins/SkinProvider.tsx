@@ -78,7 +78,12 @@ export function SkinProvider({ children }: { children: ReactNode }) {
       setResolvedSkin(finalResolved);
       setSkinIssues(finalIssues);
       setSkinStatus('ready');
-      applyDocumentSkin(finalId, finalResolved.tokens);
+      applyDocumentSkin(finalId, finalResolved.tokens, {
+        colorScheme: finalResolved.colorScheme,
+        ...(finalResolved.themeColor !== undefined
+          ? { themeColor: finalResolved.themeColor }
+          : {}),
+      });
       try {
         window.localStorage.setItem(SKIN_STORAGE_KEY, finalId);
       } catch {

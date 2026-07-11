@@ -87,8 +87,22 @@ export function TileCard({
       </button>
     );
   }
+  // 選択・勝負どころは色や画像だけでなくaria状態と文言でも伝える(P1-3)
+  const accessibleName =
+    emphasis === 'ron'
+      ? `${name}(ロンできる)`
+      : emphasis === 'tsumo'
+        ? `${name}(ツモできる)`
+        : name;
   return (
-    <button type="button" className={classes} style={mergedStyle} aria-label={name} {...rest}>
+    <button
+      type="button"
+      className={classes}
+      style={mergedStyle}
+      aria-label={accessibleName}
+      aria-pressed={selected}
+      {...rest}
+    >
       {/* スキン画像はfallback背景の上・文字の下の独立レイヤー(P0-6) */}
       <SkinLayer slot={slot} />
       <span className="sp-tile__band" title={categoryName}>

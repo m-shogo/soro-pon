@@ -7,5 +7,7 @@
   "author": "soro-pon",
   "inherits": "base",
   "tokensFile": "tokens.css",
+  "colorScheme": "dark",
+  "themeColor": "#120d08",
   "slots": {}
 }
