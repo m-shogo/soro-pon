@@ -211,6 +211,29 @@ Testing Library is the de facto standard, tests behavior not implementation,
 and adds no runtime dependency.
 ```
 
+## ADR-014: Playwright Visual Regression
+
+Decision:
+
+```text
+Add @playwright/test as a devDependency (Chromium only).
+Visual specs live in tests/visual and run with `pnpm test:visual`
+against the built app (vite preview). Baselines are committed and
+recorded on macOS (darwin suffix). CI does not run visual tests yet;
+adding a Linux baseline job is a separate decision when CI-time
+font rendering is pinned.
+```
+
+Reason:
+
+```text
+P1-2 requires screenshot comparison of major screens in both official
+skins at five sizes. Playwright is the referenced tool in
+docs/SKIN-FOUNDATION-HARDENING.md. Japanese system fonts differ across
+OSes, so cross-OS baselines would produce false diffs; local darwin
+baselines give deterministic results now without blocking CI.
+```
+
 ## Final Decision
 
 Add new ADR entries when a decision changes architecture, rules, import/security, scoring, or implementation order.

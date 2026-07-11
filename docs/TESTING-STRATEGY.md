@@ -261,6 +261,18 @@ Playwright command     # after H9 ADR
 
 Local success and CI success must be reported separately.
 
+## Visual Regression (H9 / ADR-014)
+
+```text
+command: pnpm test:visual (update: pnpm test:visual:update)
+matrix: TOP / Component Gallery / MatchSetup x yorunoshirube / cute-pop x 5 sizes
+baselines: tests/visual/**-snapshots/*-darwin.png (recorded on macOS)
+determinism: localStorage cleared, reduced-motion, animations disabled, fonts awaited
+CI: not run in CI yet. Japanese font rendering differs per OS; a Linux
+baseline job is a separate future decision. Report visual results as
+local-only until then.
+```
+
 ## Final Decision
 
 Rules, persistence, skin safety, interactions, and appearance all require their own proof. A large passing pure-function test count does not prove UI or visual stability.

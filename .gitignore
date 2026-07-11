@@ -45,3 +45,5 @@ tools/asset-factory/soro-pon-ui/processed/
 
 # TypeScript incremental build info
 *.tsbuildinfo
+playwright-report/
+test-results/
