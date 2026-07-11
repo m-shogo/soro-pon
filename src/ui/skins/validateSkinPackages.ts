@@ -1,5 +1,6 @@
 import { ASSET_SLOTS } from '../assets/slots';
 import { readImageDimensions } from './imageDimensions';
+import { nineSliceRenderWidths } from './SkinSurface';
 import { parseSkinTokens } from './parseSkinTokens';
 import { resolveInheritanceChain } from './resolveSkin';
 import { parseSkinRegistry } from './skinRegistry';
@@ -75,6 +76,34 @@ function validateSlotGeometry(
   }
 }
 
+// 画像の有無に関わらないslot定義自体の契約検証(P0-5)
+function validateSlotDefinition(
+  skinId: string,
+  slotName: string,
+  def: SkinAssetDefinition,
+  issues: string[],
+): void {
+  if (def.renderMode !== 'nine-slice') {
+    return;
+  }
+  if (!def.minRenderSize) {
+    issues.push(
+      `${skinId}/${slotName}: nine-slice slotはminRenderSize(枠潰れ防止の最小描画サイズ)が必要です`,
+    );
+    return;
+  }
+  // 描画borderWidth(CSS px)が最小描画サイズ内に収まること
+  const render = nineSliceRenderWidths(def);
+  if (
+    render.left + render.right >= def.minRenderSize.width ||
+    render.top + render.bottom >= def.minRenderSize.height
+  ) {
+    issues.push(
+      `${skinId}/${slotName}: nine-sliceの描画幅(${render.top}/${render.right}/${render.bottom}/${render.left})がminRenderSize(${def.minRenderSize.width}x${def.minRenderSize.height})に収まりません`,
+    );
+  }
+}
+
 // 1スキンのslot定義とパッケージ実体を検証する
 function validateSkinAssets(
   io: SkinPackageFs,
@@ -90,6 +119,7 @@ function validateSkinAssets(
     if (!def) {
       continue;
     }
+    validateSlotDefinition(skinId, slotName, def, issues);
     // status/file整合(P0-2: finalでfile:nullは不正)
     if (def.status === 'final' && def.file === null) {
       issues.push(`${skinId}/${slotName}: status finalなのにfileがありません`);

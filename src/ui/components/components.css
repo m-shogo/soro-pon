@@ -1127,3 +1127,11 @@
   border-radius: var(--sp-radius-sm);
   padding: 0 var(--sp-space-4);
 }
+
+/* ================= SkinLayer host (P0-6) ================= */
+/* isolation でstacking contextを作り、z-index:-1のSkinLayerを
+   「fallback背景の上・内容の下」に固定する。当たり判定・文字は常に不透明。 */
+.sp-skin-host {
+  position: relative;
+  isolation: isolate;
+}

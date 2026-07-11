@@ -49,6 +49,23 @@ const skinAssetDefinitionSchema = z
       .optional(),
     transparent: z.boolean().optional(),
     nineSlice: edgeInsetsSchema.optional(),
+    nineSliceRender: z
+      .object({
+        top: z.number().int().min(0).max(SKIN_LIMITS.maxNineSliceRenderPx),
+        right: z.number().int().min(0).max(SKIN_LIMITS.maxNineSliceRenderPx),
+        bottom: z.number().int().min(0).max(SKIN_LIMITS.maxNineSliceRenderPx),
+        left: z.number().int().min(0).max(SKIN_LIMITS.maxNineSliceRenderPx),
+      })
+      .strict()
+      .optional(),
+    pixelDensity: z.number().int().min(1).max(SKIN_LIMITS.maxPixelDensity).optional(),
+    minRenderSize: z
+      .object({
+        width: z.number().int().min(1).max(SKIN_LIMITS.maxIntrinsicSizePx),
+        height: z.number().int().min(1).max(SKIN_LIMITS.maxIntrinsicSizePx),
+      })
+      .strict()
+      .optional(),
     contentSafeArea: edgeInsetsSchema.optional(),
     opacity: z.number().min(0).max(1).optional(),
     blendMode: z.enum(ALLOWED_BLEND_MODES).optional(),
@@ -123,6 +140,10 @@ export function validateSkinManifest(raw: unknown): ValidateSkinManifestResult {
     }
     if (def.renderMode === 'nine-slice' && !def.nineSlice) {
       issues.push(`slot ${slotName} はnine-sliceですがnineSlice指定がありません`);
+      continue;
+    }
+    if (def.renderMode !== 'nine-slice' && def.nineSliceRender) {
+      issues.push(`slot ${slotName} はnine-slice以外なのでnineSliceRenderを持てません`);
       continue;
     }
     slots[slotName as AssetSlotName] = def;

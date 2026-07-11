@@ -94,6 +94,18 @@ fileSizeLimit
 
 Only fields relevant to the render mode are required.
 
+現在の実装スキーマ(`SkinAssetDefinition`)との対応:
+
+```text
+slice            -> nineSlice          (source px)
+borderWidth      -> nineSliceRender    (CSS px。未指定はnineSlice / pixelDensityから導出)
+pixelDensity     -> pixelDensity       (1-3。高密度ソース対応)
+minimumRenderSize -> minRenderSize     (これ未満ではSkinLayerが画像を描かずfallback)
+contentSafeArea  -> contentSafeArea    (レイアウトpaddingとは別契約)
+```
+
+nine-slice slotは`minRenderSize`必須(`pnpm skin:validate`が検証する)。
+
 ## Nine-slice Authoring
 
 Use nine-slice for scalable frames and surfaces.

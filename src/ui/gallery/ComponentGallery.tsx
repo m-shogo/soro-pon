@@ -15,6 +15,7 @@ import { ScoreBreakdown } from '../components/ScoreBreakdown';
 import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
+import { NineSliceProof } from './NineSliceProof';
 import './gallery.css';
 
 const SAMPLE_BREAKDOWN: ResultBreakdown = {
@@ -52,6 +53,11 @@ export function ComponentGallery() {
       <section className="sp-gallery__section">
         <h2>Skin切り替え(全部品を両スキンで確認する)</h2>
         <SkinSelector />
+      </section>
+
+      <section className="sp-gallery__section">
+        <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>
+        <NineSliceProof />
       </section>
 
       <section className="sp-gallery__section">

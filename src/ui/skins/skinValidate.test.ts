@@ -183,6 +183,37 @@ describe('skin:validate(異常系)', () => {
     expect(report.issues.some((i) => i.includes('許可されないファイル形式'))).toBe(true);
   });
 
+  it('nine-slice slotのminRenderSize欠落を検出する(P0-5)', () => {
+    const io = createFakeFs({
+      'skins/base/skin.json': baseManifestWith({
+        'panel.paper.default': {
+          file: null,
+          status: 'placeholder',
+          renderMode: 'nine-slice',
+          nineSlice: { top: 24, right: 24, bottom: 24, left: 24 },
+        },
+      }),
+    });
+    const report = validateSkinPackages(io);
+    expect(report.issues.some((i) => i.includes('minRenderSize'))).toBe(true);
+  });
+
+  it('描画幅がminRenderSizeに収まらないと検出する(P0-5)', () => {
+    const io = createFakeFs({
+      'skins/base/skin.json': baseManifestWith({
+        'panel.paper.default': {
+          file: null,
+          status: 'placeholder',
+          renderMode: 'nine-slice',
+          nineSlice: { top: 40, right: 40, bottom: 40, left: 40 },
+          minRenderSize: { width: 64, height: 64 },
+        },
+      }),
+    });
+    const report = validateSkinPackages(io);
+    expect(report.issues.some((i) => i.includes('収まりません'))).toBe(true);
+  });
+
   it('final/にmanifest未参照の孤児ファイルがあると検出する', () => {
     const io = createFakeFs({
       'list:skins/base/generated/final': ['orphan.png'],

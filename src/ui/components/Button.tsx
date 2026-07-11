@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { useSkinSurfaceStyle } from '../skins/SkinSurface';
+import { SkinLayer } from '../skins/SkinSurface';
 import type { AssetSlotName } from '../assets/slots';
 import './components.css';
 
@@ -40,10 +40,11 @@ export function Button({
   disabled,
   ...rest
 }: ButtonProps) {
-  const assetStyle = useSkinSurfaceStyle(slotFor(variant, disabled === true));
+  const slot = slotFor(variant, disabled === true);
   const cssVariant = variant === 'danger' ? 'primary' : variant;
   const classes = [
     'sp-button',
+    'sp-skin-host',
     `sp-button--${cssVariant}`,
     lantern ? 'sp-button--lantern' : '',
     className ?? '',
@@ -51,13 +52,9 @@ export function Button({
     .filter(Boolean)
     .join(' ');
   return (
-    <button
-      type="button"
-      className={classes}
-      disabled={disabled}
-      style={{ ...style, ...assetStyle }}
-      {...rest}
-    >
+    <button type="button" className={classes} disabled={disabled} style={style} {...rest}>
+      {/* スキン画像はfallback背景の上・文字の下の独立レイヤー(P0-6) */}
+      <SkinLayer slot={slot} />
       <span>{children}</span>
       {subLabel !== undefined && <span className="sp-button__sub">{subLabel}</span>}
     </button>

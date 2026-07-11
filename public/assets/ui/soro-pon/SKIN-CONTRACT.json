@@ -75,6 +75,10 @@
         "right": 12,
         "bottom": 12,
         "left": 12
+      },
+      "minRenderSize": {
+        "width": 64,
+        "height": 64
       }
     },
     "panel.paper.emphasis": {
@@ -96,6 +100,10 @@
         "right": 12,
         "bottom": 12,
         "left": 12
+      },
+      "minRenderSize": {
+        "width": 64,
+        "height": 64
       }
     },
     "panel.modal.background": {
@@ -117,6 +125,10 @@
         "right": 16,
         "bottom": 16,
         "left": 16
+      },
+      "minRenderSize": {
+        "width": 96,
+        "height": 96
       }
     },
     "panel.result.frame": {
@@ -138,6 +150,10 @@
         "right": 16,
         "bottom": 16,
         "left": 16
+      },
+      "minRenderSize": {
+        "width": 96,
+        "height": 96
       }
     },
     "button.primary.background": {
@@ -159,6 +175,10 @@
         "right": 8,
         "bottom": 8,
         "left": 8
+      },
+      "minRenderSize": {
+        "width": 72,
+        "height": 44
       }
     },
     "button.secondary.background": {
@@ -180,6 +200,10 @@
         "right": 8,
         "bottom": 8,
         "left": 8
+      },
+      "minRenderSize": {
+        "width": 72,
+        "height": 44
       }
     },
     "button.danger.background": {
@@ -201,6 +225,10 @@
         "right": 8,
         "bottom": 8,
         "left": 8
+      },
+      "minRenderSize": {
+        "width": 72,
+        "height": 44
       }
     },
     "button.disabled.background": {
@@ -222,6 +250,10 @@
         "right": 8,
         "bottom": 8,
         "left": 8
+      },
+      "minRenderSize": {
+        "width": 72,
+        "height": 44
       }
     },
     "tile.face.base": {
@@ -293,6 +325,10 @@
         "right": 4,
         "bottom": 4,
         "left": 4
+      },
+      "minRenderSize": {
+        "width": 24,
+        "height": 20
       }
     },
     "badge.info.background": {
@@ -314,6 +350,10 @@
         "right": 4,
         "bottom": 4,
         "left": 4
+      },
+      "minRenderSize": {
+        "width": 24,
+        "height": 20
       }
     },
     "effect.result.burst": {

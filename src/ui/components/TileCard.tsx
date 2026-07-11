@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, CSSProperties } from 'react';
-import { useSkinSurfaceStyle } from '../skins/SkinSurface';
+import { SkinLayer } from '../skins/SkinSurface';
 import { categoryBandTone } from '../skins/colorContrast';
 import type { AssetSlotName } from '../assets/slots';
 import './components.css';
@@ -54,9 +54,10 @@ export function TileCard({
   style,
   ...rest
 }: TileCardProps) {
-  const assetStyle = useSkinSurfaceStyle(slotFor(faceDown, selected, emphasis));
+  const slot = slotFor(faceDown, selected, emphasis);
   const classes = [
     'sp-tile',
+    'sp-skin-host',
     selected ? 'sp-tile--selected' : '',
     dimmed ? 'sp-tile--dimmed' : '',
     emphasis !== undefined ? 'sp-tile--win' : '',
@@ -67,7 +68,6 @@ export function TileCard({
     .join(' ');
   const mergedStyle: CSSProperties = {
     ...style,
-    ...assetStyle,
     ...(categoryColor
       ? ({
           '--tile-category-color': categoryColor,
@@ -82,12 +82,15 @@ export function TileCard({
   if (faceDown) {
     return (
       <button type="button" className={classes} style={mergedStyle} aria-label="伏せ牌" {...rest}>
+        <SkinLayer slot={slot} />
         <span className="sp-tile__back-mark">◆</span>
       </button>
     );
   }
   return (
     <button type="button" className={classes} style={mergedStyle} aria-label={name} {...rest}>
+      {/* スキン画像はfallback背景の上・文字の下の独立レイヤー(P0-6) */}
+      <SkinLayer slot={slot} />
       <span className="sp-tile__band" title={categoryName}>
         {categoryName ?? ''}
       </span>

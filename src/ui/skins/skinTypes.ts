@@ -50,7 +50,18 @@ export type SkinAssetDefinition = {
   renderMode: SkinRenderMode;
   intrinsicSize?: { width: number; height: number };
   transparent?: boolean;
+  /** nine-sliceのソース画像側スライス(source px) */
   nineSlice?: SkinEdgeInsets;
+  /**
+   * nine-sliceの描画borderWidth(CSS px)。ソースslice(source px)とは独立(P0-5)。
+   * 未指定時は nineSlice / pixelDensity で導出する。
+   */
+  nineSliceRender?: SkinEdgeInsets;
+  /** 高密度ソース画像の倍率(source px / CSS px)。既定1 */
+  pixelDensity?: number;
+  /** これ未満のCSSサイズでは画像を描かずfallbackに落とす(枠潰れ防止) */
+  minRenderSize?: { width: number; height: number };
+  /** 文字・子要素を置ける安全領域(source px)。レイアウトpaddingとは別契約 */
   contentSafeArea?: SkinEdgeInsets;
   opacity?: number;
   blendMode?: SkinBlendMode;
@@ -94,6 +105,9 @@ export const SKIN_LIMITS = {
   maxSkinTotalBytes: 16 * 1024 * 1024,
   maxIntrinsicSizePx: 2048,
   maxNineSlicePx: 256,
+  /** 描画borderWidth(CSS px)の上限。タッチ領域を覆い潰す枠を防ぐ */
+  maxNineSliceRenderPx: 128,
+  maxPixelDensity: 3,
   maxTokensFileBytes: 32 * 1024,
   maxManifestBytes: 64 * 1024,
 } as const;

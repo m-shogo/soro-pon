@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import { useSkinSurfaceStyle } from '../skins/SkinSurface';
+import { SkinLayer } from '../skins/SkinSurface';
 import type { AssetSlotName } from '../assets/slots';
 import './components.css';
 
@@ -30,9 +30,9 @@ export function PaperPanel({
       : selected
         ? 'panel.paper.emphasis'
         : 'panel.paper.default');
-  const assetStyle = useSkinSurfaceStyle(slot);
   const classes = [
     'sp-paper-panel',
+    'sp-skin-host',
     variant !== 'paper' ? `sp-paper-panel--${variant}` : '',
     selected ? 'sp-paper-panel--selected' : '',
     className ?? '',
@@ -40,7 +40,9 @@ export function PaperPanel({
     .filter(Boolean)
     .join(' ');
   return (
-    <div className={classes} style={{ ...style, ...assetStyle }} {...rest}>
+    <div className={classes} style={style} {...rest}>
+      {/* スキン画像はfallback背景の上・内容の下の独立レイヤー(P0-6) */}
+      <SkinLayer slot={slot} />
       {title !== undefined && <h2 className="sp-paper-panel__title">{title}</h2>}
       {children}
     </div>
