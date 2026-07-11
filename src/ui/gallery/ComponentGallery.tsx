@@ -15,6 +15,7 @@ import { ScoreBreakdown } from '../components/ScoreBreakdown';
 import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
+import { CandidateReview } from './CandidateReview';
 import { NineSliceProof } from './NineSliceProof';
 import './gallery.css';
 
@@ -53,6 +54,11 @@ export function ComponentGallery() {
       <section className="sp-gallery__section">
         <h2>Skin切り替え(全部品を両スキンで確認する)</h2>
         <SkinSelector />
+      </section>
+
+      <section className="sp-gallery__section">
+        <h2>候補アセットレビュー(request 006 / Cute Pop)</h2>
+        <CandidateReview />
       </section>
 
       <section className="sp-gallery__section">
