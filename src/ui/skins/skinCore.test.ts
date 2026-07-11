@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getSkinAssetUrl } from './getSkinAssetUrl';
+import { collectSkinAssetUrls } from './skinPreload';
 import { parseSkinTokens } from './parseSkinTokens';
 import { resolveInheritanceChain, resolveSkin } from './resolveSkin';
 import { SKIN_CONTRACT_VERSION, type SkinManifest } from './skinTypes';
@@ -265,9 +266,9 @@ describe('getSkinAssetUrl', () => {
     tokensBySkin: new Map(),
   });
 
-  it('fileありのslotは所属スキンのパッケージURLになる', () => {
+  it('fileありのslotは所属スキンのversion付きパッケージURLになる(P2-2)', () => {
     expect(getSkinAssetUrl(resolved, 'table.background')).toBe(
-      '/assets/ui/soro-pon/skins/cute-pop/generated/final/bg.png',
+      '/assets/ui/soro-pon/skins/cute-pop/generated/final/bg.png?v=1',
     );
   });
 
@@ -277,5 +278,26 @@ describe('getSkinAssetUrl', () => {
 
   it('未定義slotはnull', () => {
     expect(getSkinAssetUrl(resolved, 'effect.score.pop')).toBeNull();
+  });
+});
+
+describe('collectSkinAssetUrls(P2-2 preload)', () => {
+  it('fileを持つslotのURLだけを重複なしで集める', () => {
+    const base = manifest({
+      id: 'base',
+      slots: {
+        'tile.face.base': { file: null, status: 'placeholder', renderMode: 'stretch' },
+        'table.background': { file: 'bg.png', status: 'final', renderMode: 'cover' },
+        'table.overlay.ink': { file: 'bg.png', status: 'final', renderMode: 'overlay' },
+      },
+    });
+    const resolved = resolveSkin({
+      skinId: 'base',
+      manifests: new Map([['base', base]]),
+      tokensBySkin: new Map(),
+    });
+    expect(collectSkinAssetUrls(resolved)).toEqual([
+      '/assets/ui/soro-pon/skins/base/generated/final/bg.png?v=1',
+    ]);
   });
 });

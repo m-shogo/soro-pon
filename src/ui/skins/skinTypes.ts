@@ -90,6 +90,8 @@ export type ResolvedSkinSlot = {
   def: SkinAssetDefinition;
   /** 画像URLの起点になるスキン(fileはこのスキンのパッケージ内にある) */
   sourceSkinId: string;
+  /** 由来スキンのmanifest version。URLのcache-bust(?v=)に使う(P2-2) */
+  sourceSkinVersion: number;
 };
 
 export type ResolvedSkin = {

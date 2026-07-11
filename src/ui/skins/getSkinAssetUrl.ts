@@ -18,7 +18,7 @@ export function getSkinAssetUrl(
 }
 
 export function skinSlotUrl(resolved: ResolvedSkinSlot): string | null {
-  const { def, sourceSkinId } = resolved;
+  const { def, sourceSkinId, sourceSkinVersion } = resolved;
   if (def.file === null || def.file === '') {
     return null;
   }
@@ -28,5 +28,9 @@ export function skinSlotUrl(resolved: ResolvedSkinSlot): string | null {
   if (!/^[a-z0-9][a-z0-9-]*$/.test(sourceSkinId)) {
     return null;
   }
-  return `${SKINS_BASE_PATH}/${sourceSkinId}/generated/final/${def.file}`;
+  // versionをURLへ含める(P2-2): スキン更新時に古いキャッシュ画像が混ざらない
+  const version = Number.isInteger(sourceSkinVersion) && sourceSkinVersion >= 1
+    ? sourceSkinVersion
+    : 1;
+  return `${SKINS_BASE_PATH}/${sourceSkinId}/generated/final/${def.file}?v=${version}`;
 }

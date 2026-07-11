@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { applyDocumentSkin } from './skinDom';
+import { collectSkinAssetUrls, preloadImages } from './skinPreload';
 import {
   BUILTIN_SKIN_REGISTRY,
   createFetchSkinIo,
@@ -52,6 +53,8 @@ export function SkinProvider({ children }: { children: ReactNode }) {
   const [skinStatus, setSkinStatus] = useState<SkinStatus>('loading');
   const loaderRef = useRef(createSkinLoader(createFetchSkinIo()));
   const requestSeqRef = useRef(0);
+  // 実際にdocumentへ適用済みのskinId(preload失敗時に「前のスキンを維持」する判定用)
+  const appliedSkinIdRef = useRef<string | null>(null);
 
   const applySkin = useCallback(
     async (skinId: string, currentRegistry: SkinRegistry) => {
@@ -74,10 +77,27 @@ export function SkinProvider({ children }: { children: ReactNode }) {
         finalId = currentRegistry.defaultSkinId;
         finalIssues.push(...fallback.issues, `defaultスキンへ復旧しました: ${finalId}`);
       }
+      // P2-2: 可視アセットを先に読み込み、tokensとassetsを一括で適用する。
+      // 途中失敗で新旧スキンが混ざって表示されるのを防ぐ。
+      const assetUrls = collectSkinAssetUrls(finalResolved);
+      const preloaded = await preloadImages(assetUrls);
+      if (seq !== requestSeqRef.current) {
+        return;
+      }
+      if (!preloaded && appliedSkinIdRef.current !== null) {
+        // 前のスキンを維持し、状態だけ知らせる(初回起動時はfallbackで続行)
+        setSkinIssues([
+          ...finalIssues,
+          `スキン ${finalId} の画像を読み込めなかったため切り替えを中止しました`,
+        ]);
+        setSkinStatus('ready');
+        return;
+      }
       setActiveSkinId(finalId);
       setResolvedSkin(finalResolved);
       setSkinIssues(finalIssues);
       setSkinStatus('ready');
+      appliedSkinIdRef.current = finalId;
       applyDocumentSkin(finalId, finalResolved.tokens, {
         colorScheme: finalResolved.colorScheme,
         ...(finalResolved.themeColor !== undefined

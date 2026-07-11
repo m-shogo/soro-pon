@@ -77,7 +77,11 @@ export function resolveSkin(input: ResolveSkinInput): ResolvedSkin {
     if (manifest) {
       for (const [slotName, def] of Object.entries(manifest.slots)) {
         if (def) {
-          slots[slotName as AssetSlotName] = { def, sourceSkinId: skinIdInChain };
+          slots[slotName as AssetSlotName] = {
+            def,
+            sourceSkinId: skinIdInChain,
+            sourceSkinVersion: manifest.version,
+          };
         }
       }
       if (manifest.colorScheme !== undefined) {
