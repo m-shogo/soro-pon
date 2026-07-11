@@ -128,6 +128,26 @@ export function SelectField({
   );
 }
 
+// カテゴリ色などのカラーピッカー。値は#rrggbbのみ。
+export function ColorField({
+  value,
+  onChange,
+  label,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  label: string;
+}) {
+  return (
+    <input
+      type="color"
+      aria-label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+}
+
 export function Toggle({
   checked,
   onChange,

@@ -19,7 +19,9 @@ import { createLocalStorageRecordsStore } from '../storage/localStorageRecordsSt
 import { createLocalStorageSettingsStore } from '../storage/localStorageSettingsStore';
 import { Badge } from '../ui/components/Badge';
 import { Button } from '../ui/components/Button';
+import { TextField } from '../ui/components/FormField';
 import { Modal } from '../ui/components/Modal';
+import { Toast } from '../ui/components/Toast';
 import { useMatchController } from '../ui/hooks/useMatchController';
 import { CollectionScreen } from '../ui/screens/CollectionScreen';
 import { DeckDetailScreen } from '../ui/screens/DeckDetailScreen';
@@ -237,11 +239,14 @@ export function AppRoot() {
       <p style={{ marginTop: 0, fontSize: 'var(--sp-font-xs)' }}>
         共有デッキJSONを貼り付けてください。画像・URL・不明なフィールドを含むJSONは拒否されます。
       </p>
-      <textarea
+      <TextField
+        label="デッキJSON"
+        multiline
         rows={8}
-        style={{ width: '100%', fontFamily: 'monospace', fontSize: '12px' }}
+        width="100%"
+        monospace
         value={importText}
-        onChange={(e) => setImportText(e.target.value)}
+        onChange={setImportText}
         placeholder='{"version": 1, "id": "...", ...}'
       />
       {importIssues.length > 0 && (
@@ -253,7 +258,7 @@ export function AppRoot() {
           ))}
         </ul>
       )}
-      <div style={{ display: 'flex', gap: 'var(--sp-space-8)', marginTop: 'var(--sp-space-12)' }}>
+      <div className="sp-dialog__actions">
         <Button variant="primary" onClick={handleImport} disabled={importText.trim() === ''}>
           読み込む
         </Button>
@@ -407,15 +412,7 @@ export function AppRoot() {
     <>
       {renderScreen()}
       {importModal}
-      {bootNotices.length > 0 && (
-        <div className="sp-insight-strip" style={{ position: 'fixed', bottom: 8, left: 8 }}>
-          {bootNotices.map((message, i) => (
-            <span key={i} className="sp-insight-strip__item">
-              {message}
-            </span>
-          ))}
-        </div>
-      )}
+      <Toast messages={bootNotices} tone="warning" />
     </>
   );
 }

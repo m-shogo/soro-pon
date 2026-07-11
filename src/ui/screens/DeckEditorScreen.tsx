@@ -16,9 +16,18 @@ import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { CategoryChip } from '../components/CategoryChip';
-import { Modal } from '../components/Modal';
+import { Dialog } from '../components/Dialog';
+import {
+  ColorField,
+  FormField,
+  NumberField,
+  SelectField,
+  TextField,
+  Toggle,
+} from '../components/FormField';
 import { PaperPanel } from '../components/PaperPanel';
 import { Tabs } from '../components/Tab';
+import { ValidationIssueList } from '../components/ValidationIssueList';
 
 // 安全テンプレートのみで構造編集する(count-onlyの通常役は作れない)。
 // docs/70 §18 の推奨点数を使う。
@@ -314,24 +323,26 @@ export function DeckEditorScreen({
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
           {tab === 'basic' && (
             <PaperPanel title="基本情報">
-              <label className="sp-field">
-                デッキ名
-                <input
-                  type="text"
+              <FormField label="デッキ名">
+                <TextField
+                  label="デッキ名"
                   value={draft.name}
                   maxLength={80}
-                  onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                  onChange={(name) => setDraft({ ...draft, name })}
                 />
-              </label>
-              <label className="sp-field" style={{ marginTop: 'var(--sp-space-8)' }}>
-                説明
-                <textarea
-                  rows={2}
-                  maxLength={500}
-                  value={draft.description ?? ''}
-                  onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-                />
-              </label>
+              </FormField>
+              <div style={{ marginTop: 'var(--sp-space-8)' }}>
+                <FormField label="説明">
+                  <TextField
+                    label="説明"
+                    multiline
+                    rows={2}
+                    maxLength={500}
+                    value={draft.description ?? ''}
+                    onChange={(description) => setDraft({ ...draft, description })}
+                  />
+                </FormField>
+              </div>
             </PaperPanel>
           )}
 
@@ -348,32 +359,26 @@ export function DeckEditorScreen({
                       color={category.color}
                       {...(category.icon !== undefined ? { icon: category.icon } : {})}
                     />
-                    <input
-                      type="text"
-                      aria-label="カテゴリ名"
+                    <TextField
+                      label="カテゴリ名"
                       value={category.name}
                       maxLength={20}
-                      style={{ width: '9em' }}
-                      onChange={(e) => updateCategory(category.id, { name: e.target.value })}
+                      width="9em"
+                      onChange={(name) => updateCategory(category.id, { name })}
                     />
-                    <input
-                      type="color"
-                      aria-label="カテゴリ色"
+                    <ColorField
+                      label="カテゴリ色"
                       value={category.color}
-                      onChange={(e) => updateCategory(category.id, { color: e.target.value })}
+                      onChange={(color) => updateCategory(category.id, { color })}
                     />
-                    <input
-                      type="text"
-                      aria-label="アイコン絵文字"
+                    <TextField
+                      label="アイコン絵文字"
                       value={category.icon ?? ''}
                       maxLength={4}
                       placeholder="絵文字"
-                      style={{ width: '4em' }}
-                      onChange={(e) =>
-                        updateCategory(
-                          category.id,
-                          e.target.value === '' ? { icon: undefined } : { icon: e.target.value },
-                        )
+                      width="4em"
+                      onChange={(icon) =>
+                        updateCategory(category.id, icon === '' ? { icon: undefined } : { icon })
                       }
                     />
                     <Button variant="ghost" onClick={() => removeCategory(category.id)}>
@@ -403,79 +408,63 @@ export function DeckEditorScreen({
                     }}
                   >
                     <div style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <input
-                        type="text"
-                        aria-label="牌名"
+                      <TextField
+                        label="牌名"
                         value={tile.name}
                         maxLength={20}
-                        style={{ width: '8em' }}
-                        onChange={(e) => updateTile(tile.id, { name: e.target.value })}
+                        width="8em"
+                        onChange={(name) => updateTile(tile.id, { name })}
                       />
-                      <input
-                        type="text"
-                        aria-label="絵文字"
+                      <TextField
+                        label="絵文字"
                         value={tile.emoji ?? ''}
                         maxLength={4}
                         placeholder="絵文字"
-                        style={{ width: '4em' }}
-                        onChange={(e) =>
-                          updateTile(
-                            tile.id,
-                            e.target.value === '' ? { emoji: undefined } : { emoji: e.target.value },
-                          )
+                        width="4em"
+                        onChange={(emoji) =>
+                          updateTile(tile.id, emoji === '' ? { emoji: undefined } : { emoji })
                         }
                       />
-                      <input
-                        type="text"
-                        aria-label="代替1文字"
+                      <TextField
+                        label="代替1文字"
                         value={tile.fallbackLabel}
                         maxLength={4}
-                        style={{ width: '3em' }}
-                        onChange={(e) => updateTile(tile.id, { fallbackLabel: e.target.value })}
+                        width="3em"
+                        onChange={(fallbackLabel) => updateTile(tile.id, { fallbackLabel })}
                       />
-                      <label className="sp-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
-                        枚数
-                        <input
-                          type="number"
+                      <FormField label="枚数" inline>
+                        <NumberField
+                          label="枚数"
                           min={1}
                           max={10}
                           value={tile.count}
-                          onChange={(e) => {
-                            const value = Number.parseInt(e.target.value, 10);
-                            if (Number.isInteger(value) && value >= 1 && value <= 10) {
-                              updateTile(tile.id, { count: value });
-                            }
-                          }}
+                          onChange={(count) => updateTile(tile.id, { count })}
                         />
-                      </label>
+                      </FormField>
                       <Button variant="ghost" onClick={() => removeTile(tile.id)}>
                         削除
                       </Button>
                     </div>
                     <div style={{ display: 'flex', gap: 'var(--sp-space-8)', flexWrap: 'wrap', fontSize: 'var(--sp-font-xs)' }}>
                       {draft.categories.map((category) => (
-                        <label key={category.id} style={{ display: 'inline-flex', gap: '3px', alignItems: 'center' }}>
-                          <input
-                            type="checkbox"
-                            checked={tile.categories.includes(category.id)}
-                            onChange={() => toggleTileCategory(tile, category.id)}
-                          />
-                          {category.name}
-                        </label>
+                        <Toggle
+                          key={category.id}
+                          label={category.name}
+                          checked={tile.categories.includes(category.id)}
+                          onChange={() => toggleTileCategory(tile, category.id)}
+                        />
                       ))}
-                      <label style={{ display: 'inline-flex', gap: '3px', alignItems: 'center' }}>
-                        主カテゴリ
-                        <select
+                      <FormField label="主カテゴリ" inline>
+                        <SelectField
+                          label="主カテゴリ"
                           value={tile.primaryCategoryId}
-                          onChange={(e) => updateTile(tile.id, { primaryCategoryId: e.target.value })}
-                        >
-                          {tile.categories.map((categoryId) => (
-                            <option key={categoryId} value={categoryId}>
-                              {draft.categories.find((c) => c.id === categoryId)?.name ?? categoryId}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                          onChange={(primaryCategoryId) => updateTile(tile.id, { primaryCategoryId })}
+                          options={tile.categories.map((categoryId) => ({
+                            value: categoryId,
+                            label: draft.categories.find((c) => c.id === categoryId)?.name ?? categoryId,
+                          }))}
+                        />
+                      </FormField>
                     </div>
                   </div>
                 ))}
@@ -490,18 +479,16 @@ export function DeckEditorScreen({
             <>
               <PaperPanel variant="aged" title="役を追加(安全テンプレート)">
                 <div style={{ display: 'flex', gap: 'var(--sp-space-8)', flexWrap: 'wrap', alignItems: 'center' }}>
-                  <select
-                    aria-label="テンプレート用カテゴリ"
+                  <SelectField
+                    label="テンプレート用カテゴリ"
                     value={templateCategoryId}
-                    onChange={(e) => setTemplateCategoryId(e.target.value)}
-                  >
-                    <option value="">カテゴリを選ぶ</option>
-                    {draft.categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setTemplateCategoryId}
+                    placeholder="カテゴリを選ぶ"
+                    options={draft.categories.map((category) => ({
+                      value: category.id,
+                      label: category.name,
+                    }))}
+                  />
                   <Button
                     variant="ink"
                     disabled={templateCategoryId === ''}
@@ -530,23 +517,18 @@ export function DeckEditorScreen({
                   }}
                 >
                   {([0, 1, 2] as const).map((slot) => (
-                    <select
+                    <SelectField
                       key={slot}
-                      aria-label={`セット牌${slot + 1}`}
+                      label={`セット牌${slot + 1}`}
                       value={setTileIds[slot]}
-                      onChange={(e) => {
+                      onChange={(tileId) => {
                         const next: [string, string, string] = [...setTileIds];
-                        next[slot] = e.target.value;
+                        next[slot] = tileId;
                         setSetTileIds(next);
                       }}
-                    >
-                      <option value="">牌{slot + 1}を選ぶ</option>
-                      {draft.tiles.map((tile) => (
-                        <option key={tile.id} value={tile.id}>
-                          {tile.name}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder={`牌${slot + 1}を選ぶ`}
+                      options={draft.tiles.map((tile) => ({ value: tile.id, label: tile.name }))}
+                    />
                   ))}
                   <Button
                     variant="ink"
@@ -569,26 +551,19 @@ export function DeckEditorScreen({
                 <div className="sp-screen__col" style={{ gap: 'var(--sp-space-8)' }}>
                   {activeVariant?.winRoles.map((role) => (
                     <div key={role.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <input
-                        type="text"
-                        aria-label="役名"
+                      <TextField
+                        label="役名"
                         value={role.name}
                         maxLength={30}
-                        style={{ width: '9em' }}
-                        onChange={(e) => updateRole(role.id, { name: e.target.value })}
+                        width="9em"
+                        onChange={(name) => updateRole(role.id, { name })}
                       />
-                      <input
-                        type="number"
-                        aria-label="点数"
+                      <NumberField
+                        label="点数"
                         min={1}
                         max={999}
                         value={role.basePoints}
-                        onChange={(e) => {
-                          const value = Number.parseInt(e.target.value, 10);
-                          if (Number.isInteger(value) && value >= 1 && value <= 999) {
-                            updateRole(role.id, { basePoints: value });
-                          }
-                        }}
+                        onChange={(basePoints) => updateRole(role.id, { basePoints })}
                       />
                       <span style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', flex: 1, minWidth: '10em' }}>
                         {role.explanation}
@@ -606,18 +581,16 @@ export function DeckEditorScreen({
             <>
               <PaperPanel variant="aged" title="特別ボーナス(単体ではあがれない)">
                 <div style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap', marginBottom: 'var(--sp-space-8)' }}>
-                  <select
-                    aria-label="ボーナス用カテゴリ"
+                  <SelectField
+                    label="ボーナス用カテゴリ"
                     value={templateCategoryId}
-                    onChange={(e) => setTemplateCategoryId(e.target.value)}
-                  >
-                    <option value="">カテゴリを選ぶ</option>
-                    {draft.categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setTemplateCategoryId}
+                    placeholder="カテゴリを選ぶ"
+                    options={draft.categories.map((category) => ({
+                      value: category.id,
+                      label: category.name,
+                    }))}
+                  />
                   <Button
                     variant="ink"
                     disabled={templateCategoryId === ''}
@@ -629,26 +602,19 @@ export function DeckEditorScreen({
                 <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
                   {activeVariant?.specialBonuses.map((bonus) => (
                     <div key={bonus.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <input
-                        type="text"
-                        aria-label="ボーナス名"
+                      <TextField
+                        label="ボーナス名"
                         value={bonus.name}
                         maxLength={30}
-                        style={{ width: '11em' }}
-                        onChange={(e) => updateSpecialBonus(bonus.id, { name: e.target.value })}
+                        width="11em"
+                        onChange={(name) => updateSpecialBonus(bonus.id, { name })}
                       />
-                      <input
-                        type="number"
-                        aria-label="ボーナス点数"
+                      <NumberField
+                        label="ボーナス点数"
                         min={1}
                         max={300}
                         value={bonus.points}
-                        onChange={(e) => {
-                          const value = Number.parseInt(e.target.value, 10);
-                          if (Number.isInteger(value) && value >= 1 && value <= 300) {
-                            updateSpecialBonus(bonus.id, { points: value });
-                          }
-                        }}
+                        onChange={(points) => updateSpecialBonus(bonus.id, { points })}
                       />
                       <span style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', flex: 1, minWidth: '10em' }}>
                         {bonus.explanation}
@@ -669,46 +635,31 @@ export function DeckEditorScreen({
                 <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
                   {activeVariant?.scoreBonuses.map((bonus) => (
                     <div key={bonus.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <input
-                        type="text"
-                        aria-label="スコアボーナス名"
+                      <TextField
+                        label="スコアボーナス名"
                         value={bonus.name}
                         maxLength={30}
-                        style={{ width: '11em' }}
-                        onChange={(e) => updateScoreBonus(bonus.id, { name: e.target.value })}
+                        width="11em"
+                        onChange={(name) => updateScoreBonus(bonus.id, { name })}
                       />
-                      <label className="sp-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
-                        点数
-                        <input
-                          type="number"
-                          aria-label="スコアボーナス点数"
+                      <FormField label="点数" inline>
+                        <NumberField
+                          label="スコアボーナス点数"
                           min={1}
                           max={300}
                           value={bonus.points}
-                          onChange={(e) => {
-                            const value = Number.parseInt(e.target.value, 10);
-                            if (Number.isInteger(value) && value >= 1 && value <= 300) {
-                              updateScoreBonus(bonus.id, { points: value });
-                            }
-                          }}
+                          onChange={(points) => updateScoreBonus(bonus.id, { points })}
                         />
-                      </label>
-                      <label className="sp-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
-                        上限
-                        <input
-                          type="number"
-                          aria-label="スコアボーナス上限"
+                      </FormField>
+                      <FormField label="上限" inline>
+                        <NumberField
+                          label="スコアボーナス上限"
                           min={1}
                           max={900}
                           value={bonus.maxPoints ?? bonus.points}
-                          onChange={(e) => {
-                            const value = Number.parseInt(e.target.value, 10);
-                            if (Number.isInteger(value) && value >= 1 && value <= 900) {
-                              updateScoreBonus(bonus.id, { maxPoints: value });
-                            }
-                          }}
+                          onChange={(maxPoints) => updateScoreBonus(bonus.id, { maxPoints })}
                         />
-                      </label>
+                      </FormField>
                       <Button variant="ghost" onClick={() => removeScoreBonus(bonus.id)}>
                         削除
                       </Button>
@@ -721,36 +672,20 @@ export function DeckEditorScreen({
         </div>
         <div className="sp-screen__col sp-screen__col--side sp-screen__col--scroll">
           <PaperPanel variant="ink" title="検証">
-            {validation.issues.length === 0 ? (
-              <span style={{ fontSize: 'var(--sp-font-xs)' }}>問題なし。</span>
-            ) : (
-              <ul className="sp-issue-list">
-                {validation.issues.map((issue, i) => (
-                  <li key={`${issue.code}-${i}`}>
-                    <Badge variant={issue.severity === 'info' ? 'info' : 'warning'}>
-                      {issue.code}
-                    </Badge>{' '}
-                    {issue.message}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <ValidationIssueList issues={validation.issues} emptyMessage="問題なし。" />
           </PaperPanel>
         </div>
       </div>
-      <Modal open={leaveConfirm} title="保存していない変更があります" onClose={() => setLeaveConfirm(false)}>
-        <p style={{ marginTop: 0, fontSize: 'var(--sp-font-sm)' }}>
-          もどると編集内容は失われます。
-        </p>
-        <div style={{ display: 'flex', gap: 'var(--sp-space-8)' }}>
-          <Button variant="primary" onClick={onBack}>
-            破棄してもどる
-          </Button>
-          <Button variant="ghost" onClick={() => setLeaveConfirm(false)}>
-            編集をつづける
-          </Button>
-        </div>
-      </Modal>
+      <Dialog
+        open={leaveConfirm}
+        title="保存していない変更があります"
+        message="もどると編集内容は失われます。"
+        confirmLabel="破棄してもどる"
+        cancelLabel="編集をつづける"
+        danger
+        onConfirm={onBack}
+        onCancel={() => setLeaveConfirm(false)}
+      />
     </div>
   );
 }
