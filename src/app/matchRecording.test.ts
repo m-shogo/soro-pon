@@ -76,6 +76,21 @@ describe('buildMatchRecordingResult', () => {
     expect(result.matchKey).toBe('official-animal-starter:normal:42:tsumo:you');
   });
 
+  it('matchSessionId指定時はセッション基準のmatchKeyになる(P2-4)', () => {
+    const finalState = baseState({
+      result: { reason: 'tsumo', winnerPlayerId: 'you', breakdown },
+    });
+    const result = buildMatchRecordingResult({
+      finalState,
+      deck: animalDeck(),
+      deckSource: 'official',
+      matchSessionId: 'uuid-1234',
+      nowMs: 777,
+    });
+    expect(result?.matchKey).toBe('uuid-1234:tsumo:you');
+    expect(result?.record.dateMs).toBe(777);
+  });
+
   it('同じfinalStateから常に同じmatchKeyが得られる(冪等キーの安定性)', () => {
     const state = baseState({
       result: { reason: 'tsumo', winnerPlayerId: 'you', breakdown },

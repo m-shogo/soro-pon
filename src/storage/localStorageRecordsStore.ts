@@ -64,7 +64,9 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload {
       const { records: current } = read();
       // 同じ結果確定イベントを二重記録しない(冪等)。
-      if (matchKey === current.lastMatchKey) {
+      // P2-4: 直近1件だけでなく処理済みキー一覧(最大20件)と照合する。
+      const recentKeys = current.recentMatchKeys ?? [];
+      if (matchKey === current.lastMatchKey || recentKeys.includes(matchKey)) {
         return current;
       }
       const roleCollection =
@@ -79,6 +81,7 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
         achievements: current.achievements ?? [],
         totalMatches: (current.totalMatches ?? 0) + 1,
         lastMatchKey: matchKey,
+        recentMatchKeys: [matchKey, ...recentKeys].slice(0, 20),
       });
     },
     unlockAchievements(ids: string[]): RecordsPayload {

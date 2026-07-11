@@ -80,6 +80,11 @@ export const recordsPayloadSchema = z
      * 同じキーでのaddRecord呼び出しはno-opにする(結果確定イベント単位の冪等性)。
      */
     lastMatchKey: z.string().min(1).max(160).optional(),
+    /**
+     * 直近に処理済みのmatchKey一覧(新しい順・最大20件)。
+     * 将来の対局復元/リプレイで「最後の1件」以外との重複記録も防ぐ(P2-4)。
+     */
+    recentMatchKeys: z.array(z.string().min(1).max(160)).max(20).optional(),
   })
   .strict();
 
@@ -102,5 +107,9 @@ export function normalizeRecordsPayload(payload: RecordsPayload): RecordsPayload
     ...payload,
     achievements: payload.achievements ?? [],
     totalMatches: payload.totalMatches ?? payload.records.length,
+    // 旧データ(lastMatchKeyのみ)からの移行: recentMatchKeysへ引き継ぐ
+    recentMatchKeys:
+      payload.recentMatchKeys ??
+      (payload.lastMatchKey !== undefined ? [payload.lastMatchKey] : []),
   };
 }

@@ -7,7 +7,7 @@ import {
   type AchievementEvent,
 } from './achievements';
 import { createDeckTemplate } from './createdDeckTemplate';
-import { buildMatchRecordingResult } from './matchRecording';
+import { buildMatchRecordingResult, newMatchSessionId } from './matchRecording';
 import type { DeckProject } from '../domain/deck';
 import type { MatchState } from '../domain/match';
 import type { DeckValidationResult } from '../domain/validation';
@@ -39,7 +39,14 @@ type Screen =
   | { kind: 'deckEditor'; deckId: string }
   | { kind: 'matchSetup'; deckId: string }
   | { kind: 'collection' }
-  | { kind: 'match'; deckId: string; playerCount: 3 | 4; seed: number };
+  | {
+      kind: 'match';
+      deckId: string;
+      playerCount: 3 | 4;
+      seed: number;
+      /** 対局開始時に発行するセッションID。記録の冪等キーに使う(P2-4) */
+      matchSessionId: string;
+    };
 
 const OFFICIAL_STARTER_ID = 'official-animal-starter';
 
@@ -206,7 +213,10 @@ export function AppRoot() {
   // 対局終了時の記録。決着の組み立ては純関数(matchRecording.ts)に委譲し、
   // storage層のmatchKey冪等性で同じ結果の二重加算を防ぐ(結果確定イベント単位で一度だけ)。
   const recordMatch = useCallback(
-    (finalState: MatchState): { coinsEarned: number; newlyUnlocked: AchievementDef[] } => {
+    (
+      finalState: MatchState,
+      matchSessionId?: string,
+    ): { coinsEarned: number; newlyUnlocked: AchievementDef[] } => {
       const stored = decks.find((d) => d.deck.id === finalState.deckProjectId);
       if (!stored) {
         return { coinsEarned: 0, newlyUnlocked: [] };
@@ -215,6 +225,7 @@ export function AppRoot() {
         finalState,
         deck: stored.deck,
         deckSource: stored.source,
+        ...(matchSessionId !== undefined ? { matchSessionId } : {}),
       });
       if (!built) {
         return { coinsEarned: 0, newlyUnlocked: [] };
@@ -366,7 +377,13 @@ export function AppRoot() {
               if (decks.find((d) => d.deck.id === deck.id)?.source === 'created') {
                 processAchievements({ type: 'matchStartedWithCreatedDeck' });
               }
-              setScreen({ kind: 'match', deckId: deck.id, playerCount, seed: newSeed() });
+              setScreen({
+                kind: 'match',
+                deckId: deck.id,
+                playerCount,
+                seed: newSeed(),
+                matchSessionId: newMatchSessionId(),
+              });
             }}
           />
         );
@@ -391,7 +408,7 @@ export function AppRoot() {
             playerCount={screen.playerCount}
             seed={screen.seed}
             insightMode={settings.insightMode}
-            onResult={recordMatch}
+            onResult={(finalState) => recordMatch(finalState, screen.matchSessionId)}
             onCollection={() => setScreen({ kind: 'collection' })}
             onExit={() => setScreen({ kind: 'top' })}
             onRematch={() =>
@@ -400,6 +417,7 @@ export function AppRoot() {
                 deckId: screen.deckId,
                 playerCount: screen.playerCount,
                 seed: newSeed(),
+                matchSessionId: newMatchSessionId(),
               })
             }
           />

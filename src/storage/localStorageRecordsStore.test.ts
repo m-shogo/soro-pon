@@ -158,6 +158,73 @@ describe('localStorageRecordsStore', () => {
     });
   });
 
+  describe('P2-4: recentMatchKeysによる冪等性', () => {
+    it('直近1件でなくても処理済みmatchKeyはno-opになる', () => {
+      const storage = createMemoryStorage();
+      const store = createLocalStorageRecordsStore(storage);
+      const record = buildMatchRecord({
+        dateMs: 1,
+        deckId: 'd',
+        deckName: 'D',
+        reason: 'draw',
+        winnerName: '',
+        humanWon: false,
+      });
+      store.addRecord(record, 'session-a:draw:draw');
+      store.addRecord(record, 'session-b:draw:draw');
+      // session-aは直近ではないが処理済み -> 二重加算しない
+      const after = store.addRecord(record, 'session-a:draw:draw');
+      expect(after.totalMatches).toBe(2);
+      expect(after.coins).toBe(20);
+      expect(after.recentMatchKeys).toEqual(['session-b:draw:draw', 'session-a:draw:draw']);
+    });
+
+    it('recentMatchKeysは20件でtruncateされる', () => {
+      const storage = createMemoryStorage();
+      const store = createLocalStorageRecordsStore(storage);
+      const record = buildMatchRecord({
+        dateMs: 1,
+        deckId: 'd',
+        deckName: 'D',
+        reason: 'draw',
+        winnerName: '',
+        humanWon: false,
+      });
+      for (let i = 0; i < 25; i += 1) {
+        store.addRecord(record, `session-${i}:draw:draw`);
+      }
+      const { records } = store.load();
+      expect(records.recentMatchKeys).toHaveLength(20);
+      expect(records.recentMatchKeys?.[0]).toBe('session-24:draw:draw');
+    });
+
+    it('lastMatchKeyのみの旧payloadはrecentMatchKeysへ移行される', () => {
+      const storage = createMemoryStorage();
+      storage.setItem(
+        RECORDS_STORAGE_KEY,
+        JSON.stringify({
+          version: 1,
+          coins: 10,
+          records: [],
+          roleCollection: [],
+          lastMatchKey: 'old-key',
+        }),
+      );
+      const store = createLocalStorageRecordsStore(storage);
+      expect(store.load().records.recentMatchKeys).toEqual(['old-key']);
+      // 移行後もold-keyはno-op
+      const record = buildMatchRecord({
+        dateMs: 1,
+        deckId: 'd',
+        deckName: 'D',
+        reason: 'draw',
+        winnerName: '',
+        humanWon: false,
+      });
+      expect(store.addRecord(record, 'old-key').coins).toBe(10);
+    });
+  });
+
   describe('旧データの正規化', () => {
     it('achievements/totalMatchesを含まない旧payloadは読み込み時に具体値へ正規化される', () => {
       const storage = createMemoryStorage();
