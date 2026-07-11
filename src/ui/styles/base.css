@@ -1,61 +1,65 @@
-/* アプリ全体の土台。tokens.cssのtokenのみ使用する。 */
+/* アプリ全体の土台(foundations層 / P1-7)。tokens.cssのtokenのみ使用する。 */
 
-* {
-  box-sizing: border-box;
-}
+@layer foundations {
+  * {
+    box-sizing: border-box;
+  }
 
-html,
-body,
-#root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
+  html,
+  body,
+  #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
 
-body {
-  font-family: var(--sp-font-family);
-  color: var(--sp-color-cream);
-  background: var(--sp-color-night);
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-}
+  body {
+    font-family: var(--sp-font-family);
+    color: var(--sp-color-cream);
+    background: var(--sp-color-night);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
 
-button {
-  font-family: inherit;
-}
+  button {
+    font-family: inherit;
+  }
 
-/* 横画面ゲームシェル: 全体をtransform scaleしない */
-.sp-game-shell {
-  width: 100svw;
-  height: 100svh;
-  overflow: hidden;
-  position: relative;
-  background: var(--sp-gradient-shell);
-}
+  /* 横画面ゲームシェル: 全体をtransform scaleしない */
+  .sp-game-shell {
+    width: 100svw;
+    height: 100svh;
+    overflow: hidden;
+    position: relative;
+    background: var(--sp-gradient-shell);
+  }
 
-.sp-game-safe-area {
-  position: absolute;
-  inset: 0;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right)
-    env(safe-area-inset-bottom) env(safe-area-inset-left);
-  display: flex;
-  flex-direction: column;
+  .sp-game-safe-area {
+    position: absolute;
+    inset: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /*
  * focusリングは二重リング(ring + halo)。単色リングは明るい面か暗い面の
  * どちらかで沈むため、リングとhaloのどちらかが必ず面とコントラストを持つ。
  * skinはこの2色を差し替えられるが、消すことはできない。
+ *
+ * layer外(unlayered)に置くことで全layerのbox-shadowに常に勝つ。
+ * 併せて疑似クラスを重ねて詳細度(0,2,0)にしている。
  */
-/* 疑似クラスを重ねて詳細度(0,2,0)にし、後から読み込まれる
-   コンポーネント側のbox-shadow(0,1,0)に常に勝つようにする */
 :focus-visible:focus-visible {
   outline: 2px solid var(--sp-focus-ring-color);
   outline-offset: 2px;
   box-shadow: 0 0 0 5px var(--sp-focus-ring-halo);
 }
 
+/* reduced-motionの全体無効化もlayer外: motion層より常に優先する */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

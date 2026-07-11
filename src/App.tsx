@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
+// layer順序宣言を必ず最初に読み込む(P1-7)
+import './ui/styles/layers.css';
 import './ui/styles/tokens.css';
 import './ui/styles/base.css';
+import './ui/styles/layout.css';
+import './ui/styles/screens.css';
+import './ui/styles/motion.css';
 import { AppRoot } from './app/AppRoot';
 import { AppErrorBoundary } from './ui/components/AppErrorBoundary';
 import { SkinProvider } from './ui/skins/SkinProvider';

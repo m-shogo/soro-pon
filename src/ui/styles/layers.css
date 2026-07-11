@@ -1,0 +1,9 @@
+/*
+ * cascade layer順序の宣言(P1-7)。全CSSより先に読み込むこと。
+ * 後のlayerほど優先される。skinはtoken値しか変更できないため、
+ * layout層の配置・寸法をスキンが上書きすることはできない。
+ *
+ * 例外: :focus-visibleリング(base.css)はlayer外に置き、
+ * どの層のbox-shadowにも常に勝つ。
+ */
+@layer foundations, layout, components, screens, motion;

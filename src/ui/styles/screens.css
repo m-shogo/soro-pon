@@ -1,0 +1,12 @@
+/*
+ * screens層(P1-7): 画面固有のコンポーネント配置オーバーライドだけを置く。
+ * components層の後に適用される(layer順)。新しい汎用見た目はここに書かない。
+ */
+@layer screens {
+/* TOPメニューのボタンは左寄せ(メニューとしての可読性) */
+.sp-top-menu .sp-button {
+  align-items: flex-start;
+  text-align: left;
+  padding-left: var(--sp-space-24);
+}
+}
