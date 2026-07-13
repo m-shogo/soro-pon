@@ -10,6 +10,7 @@ Read first:
 docs/DESIGN-SYSTEM.md
 docs/SKIN-SYSTEM.md
 docs/SKIN-AUTHORING-GUIDE.md
+docs/IMAGE-ASSET-WORKFLOW.md   (画像生成系アセットの正本フロー)
 ```
 
 ## Current Rule
@@ -46,6 +47,19 @@ candidate/final acceptance flow
 ```
 
 Never generate directly into `final`.
+
+## Image-generated Assets
+
+画像生成系アセット(質感・イラスト・装飾・エフェクト等)の生成〜final昇格は
+`docs/IMAGE-ASSET-WORKFLOW.md` が正本。要点:
+
+```text
+Codex CLI生成(単色グリーン背景) -> Python透過(色距離+despill) ->
+検査(寸法/余白/透明境界) -> candidates -> 画面適用レビュー -> 承認後のみfinal
+```
+
+プログラム生成(scripts/の決定的描画)でよい素材と画像生成系にすべき素材の
+使い分け・背景色ルール・透過処理契約・生成記録(監査/再生成)も同文書に従う。
 
 ## Package Locations
 

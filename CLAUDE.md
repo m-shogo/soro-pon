@@ -12,8 +12,8 @@ Skin foundation hardening H1-H11: implemented
 All P0 gates: passed
 Official skins: yorunoshirube / cute-pop
 Current next phase: アセット生産(candidates -> 人のレビュー -> final)を
-  明示タスクとして開始可能。着手前にdocs/ASSET-PIPELINE.mdと
-  docs/SKIN-DISTRIBUTION.mdを読むこと
+  明示タスクとして開始可能。着手前にdocs/ASSET-PIPELINE.md、
+  docs/IMAGE-ASSET-WORKFLOW.md、docs/SKIN-DISTRIBUTION.mdを読むこと
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
@@ -42,6 +42,7 @@ docs/UI-COMPONENT-CONTRACT.md
 docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
 docs/ASSET-PIPELINE.md
+docs/IMAGE-ASSET-WORKFLOW.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md
@@ -90,24 +91,29 @@ nine-slice/three-slice/repeat/cover/contain/overlay/mask use shared renderers
 installed/paid skins cannot execute arbitrary CSS, JS, HTML, URLs, SVG by default, or external fonts
 ```
 
-## Image Generation Boundary
+## Asset Production (Image Generation)
 
-During the current hardening phase:
+画像生成系アセットの正本は `docs/IMAGE-ASSET-WORKFLOW.md`。追加の口頭指示なしで従う。
 
 ```text
-do not invoke image generation
-do not create final PNG/WebP
-do not write generated output into generated/final
-build fallbacks, contracts, validators, shared components, and candidates workflow
+Codex CLIで生成(高彩度の単色グリーン背景)
+-> Python透過(色距離+2段しきい値+despill。完全一致削除は禁止)
+-> 検査(寸法/余白/透明境界/端接触)
+-> generated/candidates
+-> Gallery/実画面適用レビュー
+-> 人間の承認後のみ generated/final
 ```
 
-Only after all P0 gates pass and an explicit asset-production task begins:
+固定ルール:
 
 ```text
-generated output -> generated/candidates
-preview and screenshot review
-human approval
--> generated/final
+do not write generated output into generated/final(直接final禁止)
+candidatesはmanifest未登録。finalは必ずskin.json経由で参照
+プログラム生成(単純な面/枠/幾何/検証素材)はscripts/の決定的スクリプト
+質感・手描き感・イラスト・エフェクトは画像生成系(上記フロー)
+生成記録(prompt/背景色/透過パラメータ/hash/承認状態)を
+  tools/asset-factory/soro-pon-ui/records/ に残す(raw画像はgitignoreのローカル領域)
+final昇格時はversion繰り上げ+skin:validate+visual regression確認
 ```
 
 ## Shared Component Rule

@@ -1,0 +1,158 @@
+# Image Asset Workflow(画像生成系アセットの正本)
+
+画像生成系アセットの標準手順の正本。ここに書かれた手順が既定であり、
+毎回のチャット指示は不要。矛盾する口頭指示がない限りこの文書に従う。
+
+関連正本:
+
+```text
+docs/ASSET-PIPELINE.md        アセット全体のslot契約とcandidates/finalフロー
+docs/SKIN-DISTRIBUTION.md     final昇格後のversion/hash/配布契約
+docs/SKIN-AUTHORING-GUIDE.md  幾何・nine-slice・safe area契約
+docs/asset-requests/TEMPLATE.md  リクエスト起票の書式
+```
+
+## 正式フロー(8工程)
+
+画像生成系アセットは原則として次の順で作る。工程の省略・順序入れ替えはしない。
+
+```text
+1. Codex CLIから画像生成を実行する
+2. 背景は高彩度の単色グリーンで生成する
+3. Pythonスクリプトで背景を透過処理する
+4. 輪郭のグリーンスピル(緑かぶり)を除去する
+5. サイズ・余白・透明境界・画像端接触・透過破綻を検査する
+6. 検査済みのものだけ generated/candidates/ に置く
+7. Gallery/実画面へ適用して人間がレビューする
+8. 承認後のみ generated/final/ へ昇格する
+```
+
+final昇格の判断は常に人間が行う。自動昇格は禁止。
+
+## 生成方式の使い分け
+
+### プログラム生成でよいもの(scripts/*.mjs 等の決定的描画)
+
+```text
+単純な角丸パネル / 単純なボタン面 / 枠線
+nine-slice検証用素材
+単純な幾何学アイコン / マスク
+寸法確認用素材
+```
+
+### 画像生成系(Codex CLI起点)を基本とするもの
+
+```text
+手描き感のある装飾
+紙・和紙・インクなどの質感
+Cute Pop固有のイラスト装飾
+ヨルノシルベ風の背景や装飾
+牌イラスト
+エフェクト素材
+幾何学生成だけでは無機質になりやすい素材
+```
+
+迷ったら: 「質感・手描き感・イラスト性」が要るなら画像生成系、
+「幾何・枠・面」で足りるならプログラム生成。
+
+## 背景色ルール
+
+```text
+原則: 高彩度の単色グリーン(例 #00ff00)
+素材本体に緑が含まれる場合: マゼンタ/ブルーなど十分に色分離できる単色へ切り替える
+背景は完全な単色。グラデーション・影・模様・ビネットは禁止
+使用した背景色はアセットごとの生成記録(metadata)に残す
+被写体を画像端に接触させない(全周に背景色の余白を確保する)
+```
+
+## Python透過処理の契約
+
+「背景色と完全一致したピクセルだけ削除」は禁止。標準要件:
+
+```text
+色距離ベースで背景色を判定する(完全一致比較は使わない)
+hard threshold(確実に背景) / soft threshold(境界域)の2段しきい値を使う
+しきい値間はアルファを段階補間する(2値化しない)
+半透明境界のグリーンスピル(緑かぶり)を除去する(despill)
+元画像にアルファがある場合はそれも考慮して合成する
+画像四辺に背景色が残っていないか検査する
+輪郭に緑フリンジが残っていないか確認する
+完全透明ピクセルのRGBを必要に応じて正規化する(premultiply境界の汚れ防止)
+同じ入力・同じパラメータから同じ出力が得られる決定的処理にする
+```
+
+## スクリプトと保存領域の契約
+
+```text
+scripts/                     プログラム生成(決定的描画)スクリプト。git管理
+tools/asset-factory/soro-pon-ui/
+  prompts/                   生成指示(prompt)と呼び出しスクリプト。git管理
+  records/                   生成記録metadata(下記)。git管理
+  raw-green/                 グリーン背景の元画像。gitignore(ローカル保持)
+  processed/                 透過処理の中間出力。gitignore(ローカル保持)
+public/assets/ui/soro-pon/skins/<skin>/generated/
+  candidates/                検査済み候補のみ。git管理。manifest未登録
+  final/                     人間承認済みのみ。git管理。manifest登録必須
+```
+
+元画像(raw-green)と中間出力はproduction用ではなく監査・再生成確認用。
+リポジトリにはコミットせずローカルへ保持し、記録(records/)から辿れるようにする。
+
+## 監査・再生成性(生成記録)
+
+各候補について `tools/asset-factory/soro-pon-ui/records/<candidate-file>.json` に
+可能な範囲で残す:
+
+```text
+sourceFile        元の生成画像のファイル名(raw-green/内)
+prompt            生成指示
+tool              生成手段(Codex CLI / 呼び出しスクリプト / モデル名)
+seed              seedがあるなら
+backgroundColor   背景色
+processedFile     Python透過後の画像
+processParams     透過処理パラメータ(しきい値等)
+dimensions        寸法
+contentHash       SHA-256
+placedAt          配置先(candidates/finalのパス)
+generatedAt       生成日時
+approval          承認状態(candidate / approved / rejected)
+license           ライセンスまたは生成由来メモ
+```
+
+プログラム生成アセットは生成スクリプト自体が記録を兼ねる
+(スクリプト名をasset requestへ書けばよい)。
+
+## candidates / final の契約
+
+```text
+candidates はレビュー前の候補置き場。production manifestへ登録しない
+final は人間承認済みの本採用のみ
+final は必ず skin.json(manifest)へ登録し、共有resolver経路からのみ参照する
+  (画面・コンポーネントへの直書きは禁止)
+final昇格時に壊してはならない既存契約:
+  - versioned URL(?v= はmanifest versionから付与される。昇格時にversionを上げる)
+  - content hash(生成記録のcontentHashと実ファイルの一致)
+  - atomic preload(切替時の一括preload。壊れたファイルは切替中止になる)
+  - visual regression(baseline更新は意図した差分のみ。無関係画面の差分はゼロ)
+```
+
+## 実運用の基本手順(アセット着手時)
+
+```text
+1. asset request を作る/更新する(docs/asset-requests/TEMPLATE.md 準拠)
+2. 対象slotを明確にする(slot契約=幾何・renderMode・safe area・minRenderSize)
+3. 生成方式を決める(プログラム生成 or 画像生成系)
+4. 候補を作る(画像生成系は本書の8工程、プログラム生成はscripts/へ決定的スクリプト)
+5. 候補を Gallery(CandidateReviewセクション)または実画面へ適用してレビューする
+6. 人間の承認後のみ final/ へ昇格する
+7. final登録後に確認する:
+   skin manifest(slot登録・status: final・version繰り上げ)
+   pnpm skin:validate / pnpm test / pnpm typecheck / pnpm build
+   preload/atomic切替の動作
+   pnpm test:visual(意図した差分のみbaseline更新)
+```
+
+## Final Decision
+
+画像生成系アセットは「グリーン背景生成 → Python透過 → 検査 → candidates →
+人間レビュー → final」の一本道のみ。近道(直接final、検査省略、手動透過)は禁止。

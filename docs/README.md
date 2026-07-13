@@ -52,6 +52,7 @@ docs/UI-COMPONENT-CONTRACT.md
 docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
 docs/ASSET-PIPELINE.md
+docs/IMAGE-ASSET-WORKFLOW.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md

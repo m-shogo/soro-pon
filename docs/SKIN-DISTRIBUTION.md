@@ -26,6 +26,7 @@ contract更新時: slot追加は後方互換、slot削除・幾何変更はcontr
 インストール時に全ファイルのhashを検証し、1件でも不一致なら全体を拒否する
 署名(公式ストア鍵)は配信基盤導入時に追加。hash検証はその前提となる
 インストール後もロード時にmanifestのschema検証+token allowlist検証を毎回行う(実装済みの検証を再利用)
+公式アセットのhashは生成記録(docs/IMAGE-ASSET-WORKFLOW.md参照)のcontentHashと一致させる
 ```
 
 ## Installation / Entitlement Boundary

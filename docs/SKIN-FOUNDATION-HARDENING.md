@@ -541,6 +541,7 @@ Cute Pop and Yorunoshirube contrast accepted
 nine-slice proof accepted at five sizes
 no final image generated directly
 asset generation requests point to candidates first
+image-generated assets follow docs/IMAGE-ASSET-WORKFLOW.md
 ```
 
 ## Reporting
