@@ -86,7 +86,8 @@ hard threshold(確実に背景) / soft threshold(境界域)の2段しきい値�
 ```text
 scripts/                     プログラム生成(決定的描画)スクリプト。git管理
 tools/asset-factory/soro-pon-ui/
-  prompts/                   生成指示(prompt)と呼び出しスクリプト。git管理
+  prompts/                   生成指示テンプレート(prompt-template.md)。git管理
+  scripts/                   透過・検査スクリプト(chroma-key-green-to-alpha.py等)。git管理
   records/                   生成記録metadata(下記)。git管理
   raw-green/                 グリーン背景の元画像。gitignore(ローカル保持)
   processed/                 透過処理の中間出力。gitignore(ローカル保持)
@@ -97,6 +98,10 @@ public/assets/ui/soro-pon/skins/<skin>/generated/
 
 元画像(raw-green)と中間出力はproduction用ではなく監査・再生成確認用。
 リポジトリにはコミットせずローカルへ保持し、記録(records/)から辿れるようにする。
+
+既知の残課題: 現行の `chroma-key-green-to-alpha.py` は2値判定のみで、本書の
+透過処理契約(色距離・2段しきい値・補間・despill)を満たしていない。
+画像生成系アセットの実生産開始前にこの契約へ合わせて改修すること。
 
 ## 監査・再生成性(生成記録)
 
