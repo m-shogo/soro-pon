@@ -1,0 +1,28 @@
+{
+  "skinId": "cute-pop",
+  "slot": "panel.paper.default",
+  "tool": "scripts/generate-cute-pop-candidates.mjs",
+  "method": "programmatic-sdf",
+  "invocationCommand": "node scripts/generate-cute-pop-candidates.mjs",
+  "note": "単純な角丸パネル面(SDF決定的描画)。プログラム生成対象(画像生成系ではない)。asset request 006参照。panel.paper.defaultはMatchSetup/Modal等でも共有される基礎面のため、Cute Pop固有の装飾は持たせない方針(四隅ドットは削除)。装飾は上位レイヤー(badge/見出し/アイコン/背景装飾)で表現する。",
+  "backgroundColor": null,
+  "transparencyMethod": "sdf-alpha-coverage",
+  "processParams": {
+    "radius": 40,
+    "borderWidth": 3,
+    "border": "#eed9bd",
+    "fill": "#ffffff",
+    "fillBottom": "#fffaf1",
+    "shadeBand": { "width": 8, "color": "#f6e8d2", "strength": 0.4 },
+    "dot": null
+  },
+  "dimensions": { "width": 768, "height": 512 },
+  "pixelDensity": 2,
+  "contentHash": "571a030b0f871fe69944cf2e714da25e949ad4a4fe880a3ab4ad05270a8e827a",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png",
+  "generatedAt": "2026-07-11",
+  "approval": "approved",
+  "approvalNote": "四隅の装飾ドットを削除して再生成したものを承認(元候補との差分: dotパラメータをnullへ)。",
+  "supersedes": "docs/asset-requests/006の初回candidates(四隅ドットあり版)。final移動によりcandidatesから削除済み。",
+  "license": "original project asset (programmatic generation, no external material)"
+}

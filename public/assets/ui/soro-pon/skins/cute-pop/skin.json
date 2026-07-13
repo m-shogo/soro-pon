@@ -1,7 +1,7 @@
 {
   "id": "cute-pop",
   "label": "Cute Pop",
-  "version": 1,
+  "version": 2,
   "skinContractVersion": 1,
   "origin": "official",
   "author": "soro-pon",
@@ -9,5 +9,72 @@
   "tokensFile": "tokens.css",
   "colorScheme": "light",
   "themeColor": "#fff3e2",
-  "slots": {}
+  "slots": {
+    "button.secondary.background": {
+      "file": "button-secondary-2x.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 480,
+        "height": 144
+      },
+      "pixelDensity": 2,
+      "transparent": true,
+      "nineSlice": {
+        "top": 32,
+        "right": 32,
+        "bottom": 32,
+        "left": 32
+      },
+      "nineSliceRender": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "contentSafeArea": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "minRenderSize": {
+        "width": 72,
+        "height": 44
+      }
+    },
+    "panel.paper.default": {
+      "file": "panel-paper-2x.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 768,
+        "height": 512
+      },
+      "pixelDensity": 2,
+      "transparent": true,
+      "nineSlice": {
+        "top": 48,
+        "right": 48,
+        "bottom": 48,
+        "left": 48
+      },
+      "nineSliceRender": {
+        "top": 24,
+        "right": 24,
+        "bottom": 24,
+        "left": 24
+      },
+      "contentSafeArea": {
+        "top": 24,
+        "right": 24,
+        "bottom": 24,
+        "left": 24
+      },
+      "minRenderSize": {
+        "width": 64,
+        "height": 64
+      }
+    }
+  }
 }

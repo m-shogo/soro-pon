@@ -4,9 +4,9 @@
 
 - skin: `cute-pop`
 - slots: `button.secondary.background`, `panel.paper.default`
-- target files (candidates):
-  - `generated/candidates/button-secondary-2x.png`
-  - `generated/candidates/panel-paper-2x.png`
+- target files (final、承認済み):
+  - `generated/final/button-secondary-2x.png`
+  - `generated/final/panel-paper-2x.png`
 
 ## Purpose
 
@@ -31,7 +31,9 @@ CSS fallbackから実アセットへ置き換える第1レビュー単位。
 - 縁は暖色ベージュの細線1.5px、下辺内側にわずかな厚み(シェード帯)で「押せる」感
 - フラット基調。過剰な光沢・強いグラデーション・ドロップシャドウ焼き込みは禁止
   (影はCSS tokenが担当する)
-- 四隅にごく控えめな装飾ドット可(corner領域内、伸縮しない位置)
+- panel.paper.defaultはMatchSetup/Modal等でも共有される基礎面のため、
+  Cute Pop固有の装飾(角ドット等)は持たせない。装飾は上位レイヤー
+  (badge/見出し/アイコン/背景装飾)で表現する(承認時判断・確定)
 
 ## Must Avoid
 
@@ -45,13 +47,22 @@ tokens(--sp-gradient-button-paper / --sp-gradient-panel-paper)によるCSS面で
 
 ## Acceptance Checklist
 
-- [ ] min幅(72px)〜長文2行ボタンで縁が破綻しない
-- [ ] 最小64x64〜大型パネルで四隅が変形しない
-- [ ] 上に--sp-text-on-surfaceの文字を置いて4.5:1以上
-- [ ] cute-pop/yorunoshirube切替で混在フラッシュなし
-- [ ] 844x390〜1366x768の5サイズで確認
+- [x] min幅(72px)〜長文2行ボタンで縁が破綻しない
+- [x] 最小64x64〜大型パネルで四隅が変形しない
+- [x] 上に--sp-text-on-surfaceの文字を置いて4.5:1以上
+- [x] cute-pop/yorunoshirube切替で混在フラッシュなし
+- [x] 844x390〜1366x768の5サイズで確認
 
 ## Generation Method
 
 `scripts/generate-cute-pop-candidates.mjs`(SDFベースのアンチエイリアス矩形描画、
-機械生成・ライセンス問題なし)。再生成可能・決定的。
+プログラム生成・機械生成・ライセンス問題なし)。再生成可能・決定的。
+生成記録: `tools/asset-factory/soro-pon-ui/records/cute-pop-button-secondary-2x.json`,
+`tools/asset-factory/soro-pon-ui/records/cute-pop-panel-paper-2x.json`
+
+## Approval Status(承認状態)
+
+- [x] approved(final昇格済み)
+  - button.secondary.background: 現状のまま承認(下辺シェード濃度維持)
+  - panel.paper.default: 四隅ドットを削除して再生成したものを承認
+    (panel.paper.defaultは共有基礎面のためCute Pop固有装飾を持たせない方針)

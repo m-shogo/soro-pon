@@ -1,0 +1,27 @@
+{
+  "skinId": "cute-pop",
+  "slot": "button.secondary.background",
+  "tool": "scripts/generate-cute-pop-candidates.mjs",
+  "method": "programmatic-sdf",
+  "invocationCommand": "node scripts/generate-cute-pop-candidates.mjs",
+  "note": "単純な角丸ボタン面(SDF決定的描画)。プログラム生成対象(画像生成系ではない)。asset request 006参照。",
+  "backgroundColor": null,
+  "transparencyMethod": "sdf-alpha-coverage",
+  "processParams": {
+    "radius": 28,
+    "borderWidth": 3,
+    "border": "#e6cdae",
+    "fill": "#ffffff",
+    "fillBottom": "#fff6e9",
+    "shadeBand": { "width": 10, "color": "#f3dfc4", "strength": 0.55 },
+    "dot": null
+  },
+  "dimensions": { "width": 480, "height": 144 },
+  "pixelDensity": 2,
+  "contentHash": "160309900e890b6361e799ecdb6e94ecffe438a1917a6ce16a50e459a90c9eff",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png",
+  "generatedAt": "2026-07-11",
+  "approval": "approved",
+  "approvalNote": "候補第1弾を条件付き承認。ボタンは現状のまま(下辺シェード濃度維持)で承認。",
+  "license": "original project asset (programmatic generation, no external material)"
+}

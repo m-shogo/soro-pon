@@ -205,6 +205,9 @@ const TARGETS = [
   {
     file: 'panel-paper-2x.png',
     // 384x256 CSS @2x。radius 20CSS=40src、border 1.5CSS=3src
+    // panel.paper.defaultはMatchSetup/Modal等でも共有される基礎面のため、
+    // Cute Pop固有の装飾(角ドット等)は持たせない。装飾は上位レイヤー
+    // (badge/見出し/アイコン/背景装飾)で表現する(final承認時の判断)。
     spec: {
       width: 768,
       height: 512,
@@ -214,7 +217,7 @@ const TARGETS = [
       fill: '#ffffff',
       fillBottom: '#fffaf1',
       shadeBand: { width: 8, color: '#f6e8d2', strength: 0.4 },
-      dot: { inset: 24, radius: 5, color: '#f5d9b4' },
+      dot: null,
     },
   },
 ];
