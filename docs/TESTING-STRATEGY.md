@@ -268,9 +268,26 @@ command: pnpm test:visual (update: pnpm test:visual:update)
 matrix: TOP / Component Gallery / MatchSetup x yorunoshirube / cute-pop x 5 sizes
 baselines: tests/visual/**-snapshots/*-darwin.png (recorded on macOS)
 determinism: localStorage cleared, reduced-motion, animations disabled, fonts awaited
+skin asset load guarantee: before each screenshot, tests/visual/skinAssetReady.ts
+  asserts final-status slot files responded 200 with image/* content-type
+  (not just status 200 — vite preview's SPA fallback returns 200+text/html
+  for missing static files) and that a live element's computed
+  border-image-source actually resolves to the final URL(?v=<version>).
+  See tests/visual/skinAssetReady.spec.ts for standalone (non-screenshot) checks.
 CI: not run in CI yet. Japanese font rendering differs per OS; a Linux
 baseline job is a separate future decision. Report visual results as
 local-only until then.
+```
+
+## Image Asset Pipeline Tests
+
+```text
+command: pnpm asset:image:test (pytest, fixture-based, no external API calls)
+location: tools/asset-factory/soro-pon-ui/scripts/test_chroma_key.py
+covers: chroma-key transparency, despill, deterministic re-generation,
+  candidate validation (edge-touch / insufficient-padding failure modes),
+  comparison image layout
+full documentation: docs/IMAGE-ASSET-WORKFLOW.md
 ```
 
 ## Final Decision

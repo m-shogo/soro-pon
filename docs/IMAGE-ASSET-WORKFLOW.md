@@ -29,6 +29,37 @@ docs/asset-requests/TEMPLATE.md  リクエスト起票の書式
 
 final昇格の判断は常に人間が行う。自動昇格は禁止。
 
+## 実装済みコマンド(Codex CLI起点)
+
+工程3〜7(透過処理〜candidates配置)は次の1コマンドで一括実行される
+(画像生成API呼び出し自体は含まない。単色背景の元画像を`--input`で渡す)。
+
+```text
+pnpm asset:image:prepare --skin <skin-id> --slot <slot名> --input <raw画像>
+  [--request <asset-request-id>]
+  [--background-color '#rrggbb'] [--hard-threshold 0.12] [--soft-threshold 0.35]
+  [--despill-strength 0.6] [--expected-width N --expected-height N]
+  [--min-padding N] [--prompt '...' | --prompt-file <path>] [--seed ...]
+```
+
+実行内容: asset request確認 → 入力元画像確認 → 透過処理
+(chroma_key.py) → 自動検査(validate_candidate.py) → 比較画像生成
+(compare_image.py) → 生成記録+content hash保存 →
+検査成功時のみ`generated/candidates/`へ配置(失敗時は配置せず、
+理由を記録・標準エラー出力する)。
+
+Pythonテスト(fixtureベース、外部APIなし)は `pnpm asset:image:test`。
+
+実体は `tools/asset-factory/soro-pon-ui/scripts/` 配下(chroma_key.py /
+validate_candidate.py / compare_image.py / fixtures.py / prepare_asset.py)。
+実行にはvenvが必要:
+
+```text
+python3 -m venv tools/asset-factory/soro-pon-ui/.venv
+tools/asset-factory/soro-pon-ui/.venv/bin/pip install \
+  -r tools/asset-factory/soro-pon-ui/requirements.txt
+```
+
 ## Codex CLIからの起動契約
 
 「Codex CLI起点」とは、画像生成の呼び出し自体をCodex CLIから実行することを指す。
@@ -114,9 +145,16 @@ public/assets/ui/soro-pon/skins/<skin>/generated/
 元画像(raw-green)と中間出力はproduction用ではなく監査・再生成確認用。
 リポジトリにはコミットせずローカルへ保持し、記録(records/)から辿れるようにする。
 
-既知の残課題: 現行の `chroma-key-green-to-alpha.py` は2値判定のみで、本書の
-透過処理契約(色距離・2段しきい値・補間・despill)を満たしていない。
-画像生成系アセットの実生産開始前にこの契約へ合わせて改修すること。
+比較画像(processed/内の`*.compare.png`)も同様にgit管理対象外の監査出力
+(production manifestから参照しない)。
+
+プログラム生成(scripts/の決定的スクリプト、単純な面・枠・幾何素材)は、
+生成スクリプトと入力パラメータから完全再生成可能なため、元画像の保存を
+省略してよい(生成スクリプト自体が再現手段を兼ねる)。
+
+過去の既知課題(解消済み): 旧`chroma-key-green-to-alpha.py`は2値判定
+のみだった。現在は`chroma_key.py`(色距離+2段しきい値+補間+despill+
+決定的処理)へ統合され、旧ファイルは互換のための薄いラッパーになっている。
 
 ## 監査・再生成性(生成記録)
 
@@ -164,14 +202,18 @@ final昇格時に壊してはならない既存契約:
 1. asset request を作る/更新する(docs/asset-requests/TEMPLATE.md 準拠)
 2. 対象slotを明確にする(slot契約=幾何・renderMode・safe area・minRenderSize)
 3. 生成方式を決める(プログラム生成 or 画像生成系)
-4. 候補を作る(画像生成系は本書の8工程、プログラム生成はscripts/へ決定的スクリプト)
-5. 候補を Gallery(CandidateReviewセクション)または実画面へ適用してレビューする
+4. 候補を作る
+   画像生成系: Codex CLIから画像生成 -> pnpm asset:image:prepare で
+     透過〜検査〜candidates配置まで一括実行(本書「実装済みコマンド」参照)
+   プログラム生成: scripts/へ決定的スクリプトを書き、candidatesへ直接出力
+5. 候補を Gallery または実画面へ適用してレビューする
 6. 人間の承認後のみ final/ へ昇格する
 7. final登録後に確認する:
    skin manifest(slot登録・status: final・version繰り上げ)
    pnpm skin:validate / pnpm test / pnpm typecheck / pnpm build
    preload/atomic切替の動作
-   pnpm test:visual(意図した差分のみbaseline更新)
+   pnpm test:visual(意図した差分のみbaseline更新。skin asset読込保証は
+     tests/visual/skinAssetReady.ts参照)
 ```
 
 ## Final Decision

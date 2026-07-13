@@ -23,7 +23,14 @@
 
 - 背景色: `#00ff00`(素材に緑が含まれるなら分離可能な単色へ変更し、ここへ記録)
 - 透過処理: 色距離+2段しきい値+despill(IMAGE-ASSET-WORKFLOW.mdの契約に従う)
-- 生成記録: `tools/asset-factory/soro-pon-ui/records/<file>.json`
+- 実行コマンド:
+  `pnpm asset:image:prepare --skin <skin-id> --slot <slot名> --input <raw画像>
+  --request <この request-id> [--background-color '#rrggbb']
+  [--hard-threshold 0.12] [--soft-threshold 0.35] [--despill-strength 0.6]
+  [--expected-width N --expected-height N] [--min-padding N]
+  [--prompt '...'] [--seed ...]`
+  (検査成功時のみcandidatesへ配置。詳細はdocs/IMAGE-ASSET-WORKFLOW.md)
+- 生成記録: `tools/asset-factory/soro-pon-ui/records/<skin>-<slot>.json`(自動生成)
 
 ## Render Contract
 

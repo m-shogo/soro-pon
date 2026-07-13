@@ -114,6 +114,8 @@ candidatesはmanifest未登録。finalは必ずskin.json経由で参照
 生成記録(prompt/背景色/透過パラメータ/hash/承認状態)を
   tools/asset-factory/soro-pon-ui/records/ に残す(raw画像はgitignoreのローカル領域)
 final昇格時はversion繰り上げ+skin:validate+visual regression確認
+実行コマンド: pnpm asset:image:prepare(工程3-6を一括実行) /
+  pnpm asset:image:test(Pythonのfixtureテスト)
 ```
 
 ## Shared Component Rule

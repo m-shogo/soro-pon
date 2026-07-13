@@ -16,7 +16,9 @@
     "test:watch": "vitest",
     "skin:validate": "vitest run src/ui/skins/skinValidate.test.ts",
     "test:visual": "playwright test",
-    "test:visual:update": "playwright test --update-snapshots"
+    "test:visual:update": "playwright test --update-snapshots",
+    "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
+    "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh"
   },
   "dependencies": {
     "react": "^19.1.0",

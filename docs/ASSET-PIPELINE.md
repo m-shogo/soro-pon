@@ -88,6 +88,9 @@ Codex CLI自体に画像生成モデルがない場合でも、許可された�
 6. 検査済みの画像だけをcandidatesへ配置する
 ```
 
+実装済みコマンド: `pnpm asset:image:prepare --skin <id> --slot <slot> --input <raw画像> ...`
+(工程3〜6を一括実行。テストは`pnpm asset:image:test`)。
+
 パラメータ・記録項目(prompt/tool/seed/背景色/処理パラメータ/寸法/
 content hash/承認状態など)とCodex CLI起動契約はdocs/IMAGE-ASSET-WORKFLOW.mdを参照。
 

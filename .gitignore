@@ -43,6 +43,12 @@ dev-fixtures/ip-local/
 tools/asset-factory/soro-pon-ui/raw-green/
 tools/asset-factory/soro-pon-ui/processed/
 
+# Python tooling (asset-factory chroma-key pipeline)
+tools/asset-factory/soro-pon-ui/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
 # TypeScript incremental build info
 *.tsbuildinfo
 playwright-report/
