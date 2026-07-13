@@ -29,6 +29,20 @@ docs/asset-requests/TEMPLATE.md  リクエスト起票の書式
 
 final昇格の判断は常に人間が行う。自動昇格は禁止。
 
+## Codex CLIからの起動契約
+
+「Codex CLI起点」とは、画像生成の呼び出し自体をCodex CLIから実行することを指す。
+Codex CLI自身に画像生成モデルが内蔵されていない場合でも、次を満たすこと。
+
+```text
+リポジトリで許可された画像生成ツール/APIを呼び出すラッパースクリプトを用意する
+  (例: tools/asset-factory/soro-pon-ui/scripts/ 配下)
+そのスクリプトをCodex CLIから実行する(手動で別環境から生成して持ち込まない)
+呼び出しコマンド・prompt・パラメータをrecords/(生成記録)へ残す
+別環境/手動生成で作った画像をcandidatesへ直接持ち込むことは禁止
+  (工程が不透明になり監査・再生成性の契約を満たせないため)
+```
+
 ## 生成方式の使い分け
 
 ### プログラム生成でよいもの(scripts/*.mjs 等の決定的描画)
@@ -78,6 +92,7 @@ hard threshold(確実に背景) / soft threshold(境界域)の2段しきい値�
 画像四辺に背景色が残っていないか検査する
 輪郭に緑フリンジが残っていないか確認する
 完全透明ピクセルのRGBを必要に応じて正規化する(premultiply境界の汚れ防止)
+処理前後の比較画像(原画像 / 透過後 / 市松柄などの背景に重ねたプレビュー)を生成する
 同じ入力・同じパラメータから同じ出力が得られる決定的処理にする
 ```
 
@@ -112,9 +127,11 @@ public/assets/ui/soro-pon/skins/<skin>/generated/
 sourceFile        元の生成画像のファイル名(raw-green/内)
 prompt            生成指示
 tool              生成手段(Codex CLI / 呼び出しスクリプト / モデル名)
+invocationCommand Codex CLIから実行した実際のコマンド(再現用)
 seed              seedがあるなら
 backgroundColor   背景色
 processedFile     Python透過後の画像
+compareFile       処理前後の比較画像
 processParams     透過処理パラメータ(しきい値等)
 dimensions        寸法
 contentHash       SHA-256
