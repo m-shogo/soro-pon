@@ -30,7 +30,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from chroma_key import ChromaKeyParams, hex_to_rgb, process
+from chroma_key import ChromaKeyParams, fit_to_canvas, hex_to_rgb, process
 from compare_image import build_comparison_image
 from validate_candidate import ValidationParams, validate_candidate
 
@@ -51,9 +51,10 @@ def _default_output_name(slot: str) -> str:
 def _ensure_raw_copy(input_path: Path, skin: str, slot: str) -> Path:
     """--inputがraw-green/配下になければ、監査保存領域へコピーする。"""
     RAW_GREEN_DIR.mkdir(parents=True, exist_ok=True)
+    resolved_input = input_path.resolve()
     try:
-        input_path.relative_to(RAW_GREEN_DIR)
-        return input_path  # 既にraw-green配下
+        resolved_input.relative_to(RAW_GREEN_DIR.resolve())
+        return resolved_input  # 既にraw-green配下(相対/絶対パスどちらで渡されても検出する)
     except ValueError:
         pass
     dest = RAW_GREEN_DIR / f"{skin}-{slot.replace('.', '-')}-{input_path.name}"
@@ -77,6 +78,23 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--expected-width", type=int, default=None)
     parser.add_argument("--expected-height", type=int, default=None)
     parser.add_argument("--min-padding", type=int, default=4)
+    parser.add_argument(
+        "--fit-width",
+        type=int,
+        default=None,
+        help=(
+            "透過後、被写体の外接矩形基準でこの幅x高さのキャンバスへ決定的に"
+            "収める(Codex CLI生成画像は生成側都合のサイズになるため)。"
+            "指定時は--fit-heightも必須。fit後にexpected-width/heightの検査対象になる"
+        ),
+    )
+    parser.add_argument("--fit-height", type=int, default=None)
+    parser.add_argument(
+        "--fit-margin-ratio",
+        type=float,
+        default=0.08,
+        help="--fit-width/height指定時の片側余白比率(既定0.08)",
+    )
     parser.add_argument("--prompt", default=None, help="生成に使ったprompt")
     parser.add_argument("--prompt-file", default=None, help="promptをファイルから読む")
     parser.add_argument("--tool", default="codex-cli")
@@ -120,6 +138,14 @@ def main() -> int:
         despill_strength=args.despill_strength,
     )
     processed_image = process(original_image, params)
+
+    if args.fit_width is not None or args.fit_height is not None:
+        if args.fit_width is None or args.fit_height is None:
+            print("ERROR: --fit-widthと--fit-heightは両方指定してください", file=sys.stderr)
+            return 1
+        processed_image = fit_to_canvas(
+            processed_image, args.fit_width, args.fit_height, args.fit_margin_ratio
+        )
 
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     processed_path = PROCESSED_DIR / output_name
@@ -174,7 +200,9 @@ def main() -> int:
     }
 
     RECORDS_DIR.mkdir(parents=True, exist_ok=True)
-    record_path = RECORDS_DIR / f"{args.skin}-{args.slot.replace('.', '-')}.json"
+    # output_nameはcandidateごとに一意なので、それを使ってmetadataが
+    # 同一skin/slotの複数候補間で上書きされないようにする
+    record_path = RECORDS_DIR / f"{args.skin}-{args.slot.replace('.', '-')}-{Path(output_name).stem}.json"
     record_path.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     print(f"content hash: {result.content_hash}")

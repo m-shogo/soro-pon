@@ -1,0 +1,34 @@
+{
+  "skinId": "cute-pop",
+  "slot": "badge.info.background",
+  "assetRequest": "007-cute-pop-badge-info-background",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/raw-green/badge-info-c-small-ticket-raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset: a small information-badge background shaped like a playful small ticket/token -- a rounded-rectangle body with a small semicircular notch cut into the left edge and an identical mirrored semicircular notch cut into the right edge (both vertically centered, perfectly symmetric), flat 2D vector illustration, front-facing, isolated object only. The notches sit only in small fixed end-zones; the horizontal band between them must stay completely plain and flat with a uniform-width border and no unique detail, so it can later be stretched horizontally without any seam -- this is for 9-slice UI scaling. Top and bottom edges have uniform symmetric rounded corners. Color: warm off-white/cream body with a soft warm beige/tan outline, harmonizing with an existing white-card-plus-warm-border UI system. Perfectly flat solid fill: no gradient, no gloss, no 3D bevel, no drop shadow baked in, no grain/paper texture, no oversaturated cheap-gacha look. Must stay clearly readable as a simple ticket shape even at very small size (24x20 px) -- keep the notches large enough not to become noise when scaled down. Absolutely no text, no letters, no numerals, no icon glyph, no watermark, no logo, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the badge with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "model": "gpt-5.6-sol",
+  "invocationCommand": "pnpm asset:image:prepare --skin cute-pop --slot badge.info.background --input tools/asset-factory/soro-pon-ui/raw-green/badge-info-c-small-ticket-raw.png --request 007-cute-pop-badge-info-background --output-name badge-info-background-candidate-c.png --fit-width 240 --fit-height 80 --fit-margin-ratio 0.08 --background-color #00ff00 --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 240 --expected-height 80 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/badge-info-background/candidate-c-small-ticket.txt --seed 019f59d9-82dd-7d40-b3c7-cacc595151cd --model gpt-5.6-sol",
+  "seed": "019f59d9-82dd-7d40-b3c7-cacc595151cd",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/processed/badge-info-background-candidate-c.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/processed/badge-info-background-candidate-c.compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 240,
+    "height": 80
+  },
+  "contentHash": "0818a037df6d2e0decd79bc787dfa9146d87cfdc84a02309db9875ffb4c91c87",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/badge-info-background-candidate-c.png",
+  "generatedAt": "2026-07-13",
+  "approval": "candidate",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset (Codex CLI generation, pending human review)"
+}

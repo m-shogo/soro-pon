@@ -177,6 +177,47 @@ def process(image: Image.Image, params: ChromaKeyParams) -> Image.Image:
     return normalize_transparent_rgb(keyed)
 
 
+def fit_to_canvas(
+    image: Image.Image,
+    target_width: int,
+    target_height: int,
+    margin_ratio: float = 0.08,
+    alpha_threshold: int = 8,
+) -> Image.Image:
+    """透過後の画像を、被写体の外接矩形基準でslot契約サイズへ決定的に収める。
+
+    Codex CLIの画像生成は正方形など生成側の都合サイズになりやすく、
+    asset slotの契約寸法(例: badge.info.background 240x80)とは一致しない。
+    この関数は次を決定的に行う:
+      1. alpha>thresholdの外接矩形(被写体)を求める
+      2. その矩形を、target内の余白(margin_ratio)を除いた領域に収まる
+         ようアスペクト比を保って等比縮小する
+      3. target_width x target_height の透明キャンバス中央へ貼り付ける
+    """
+    rgba = image.convert("RGBA")
+    arr = np.array(rgba)
+    alpha = arr[..., 3]
+    ys, xs = np.where(alpha > alpha_threshold)
+    if len(xs) == 0:
+        raise ValueError("被写体(不透明ピクセル)が見つかりません")
+    x0, x1 = int(xs.min()), int(xs.max()) + 1
+    y0, y1 = int(ys.min()), int(ys.max()) + 1
+    subject = rgba.crop((x0, y0, x1, y1))
+
+    usable_w = target_width * (1 - 2 * margin_ratio)
+    usable_h = target_height * (1 - 2 * margin_ratio)
+    scale = min(usable_w / subject.width, usable_h / subject.height)
+    new_w = max(1, round(subject.width * scale))
+    new_h = max(1, round(subject.height * scale))
+    resized = subject.resize((new_w, new_h), Image.LANCZOS)
+
+    canvas = Image.new("RGBA", (target_width, target_height), (0, 0, 0, 0))
+    paste_x = (target_width - new_w) // 2
+    paste_y = (target_height - new_h) // 2
+    canvas.paste(resized, (paste_x, paste_y), resized)
+    return canvas
+
+
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="単色背景(グリーン等)を色距離ベースで透過するクロマキー処理"

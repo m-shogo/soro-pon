@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 
 import fixtures
-from chroma_key import ChromaKeyParams, chroma_key_transparent, hex_to_rgb, process
+from chroma_key import ChromaKeyParams, chroma_key_transparent, fit_to_canvas, hex_to_rgb, process
 from compare_image import build_comparison_image
 from validate_candidate import ValidationParams, validate_candidate
 
@@ -208,6 +208,45 @@ class TestCompareImage:
         comparison = build_comparison_image(img, processed)
         # 3枚+2ギャップ幅
         assert comparison.size == (100 * 3 + 8 * 2, 100)
+
+
+class TestFitToCanvas:
+    def test_fits_subject_into_target_canvas_size(self):
+        img = fixtures.fixture_green_round_subject(width=1000, height=1000)
+        processed = process(img, GREEN_PARAMS)
+        fit = fit_to_canvas(processed, 240, 80, margin_ratio=0.08)
+        assert fit.size == (240, 80)
+        assert fit.mode == "RGBA"
+
+    def test_subject_does_not_touch_edge_after_fit(self):
+        img = fixtures.fixture_green_round_subject(width=1000, height=1000)
+        processed = process(img, GREEN_PARAMS)
+        fit = fit_to_canvas(processed, 240, 80, margin_ratio=0.08)
+        alpha = np.array(fit)[..., 3]
+        edge = np.concatenate([alpha[0, :], alpha[-1, :], alpha[:, 0], alpha[:, -1]])
+        assert (edge < 10).all()
+
+    def test_deterministic_same_input_same_output(self):
+        img = fixtures.fixture_green_round_subject(width=1000, height=1000)
+        processed = process(img, GREEN_PARAMS)
+        fit1 = fit_to_canvas(processed, 240, 80, margin_ratio=0.08)
+        fit2 = fit_to_canvas(processed, 240, 80, margin_ratio=0.08)
+        buf1, buf2 = io.BytesIO(), io.BytesIO()
+        fit1.save(buf1, format="PNG")
+        fit2.save(buf2, format="PNG")
+        assert hashlib.sha256(buf1.getvalue()).hexdigest() == hashlib.sha256(
+            buf2.getvalue()
+        ).hexdigest()
+
+    def test_raises_when_no_subject(self):
+        empty = fixtures.fixture_green_round_subject(width=50, height=50).convert("RGBA")
+        transparent = np.array(empty)
+        transparent[..., 3] = 0
+        from PIL import Image as PILImage
+
+        blank = PILImage.fromarray(transparent, mode="RGBA")
+        with pytest.raises(ValueError):
+            fit_to_canvas(blank, 240, 80)
 
 
 class TestHexToRgb:
