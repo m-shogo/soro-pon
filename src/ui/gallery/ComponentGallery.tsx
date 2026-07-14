@@ -15,7 +15,6 @@ import { ScoreBreakdown } from '../components/ScoreBreakdown';
 import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
-import { BadgeInfoBackgroundReview } from './BadgeInfoBackgroundReview';
 import { NineSliceProof } from './NineSliceProof';
 import './gallery.css';
 
@@ -56,14 +55,10 @@ export function ComponentGallery() {
         <SkinSelector />
       </section>
 
-      {/* request 006(button.secondary.background / panel.paper.default)は
-          final昇格・skin.json登録済み。下のButton/PaperPanel variantsが
-          Cute Pop選択中に実際に適用された状態を示す(専用レビューセクションは撤去)。 */}
-
-      <section className="sp-gallery__section">
-        <h2>候補アセットレビュー(request 007 / badge.info.background / Codex CLI起点)</h2>
-        <BadgeInfoBackgroundReview />
-      </section>
+      {/* request 006(button.secondary.background / panel.paper.default)、
+          request 007(badge.info.background候補B)はfinal昇格・skin.json登録済み。
+          下のButton/PaperPanel/Badge variantsがCute Pop選択中に実際に適用された
+          状態を示す(専用レビューセクションは撤去)。 */}
 
       <section className="sp-gallery__section">
         <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>

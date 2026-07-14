@@ -2,7 +2,7 @@
   "skinId": "cute-pop",
   "slot": "badge.info.background",
   "assetRequest": "007-cute-pop-badge-info-background",
-  "sourceFile": "tools/asset-factory/soro-pon-ui/raw-green/badge-info-a-rounded-paper-label-raw.png",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/candidate-a/raw.png",
   "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset: a small information-badge background shaped like a soft rounded-rectangle paper label/tag, flat 2D vector illustration, front-facing, isolated object only. Uniform rounded corners on all four corners, perfectly symmetric left-right and top-bottom. A thin uniform-width outline runs around the whole shape. The center area must stay completely plain and flat (no decoration) so it can later be stretched horizontally without any seam -- this is for 9-slice UI scaling, so keep any detail confined to the corners only. Color: warm off-white/cream body with a soft warm beige/tan outline, harmonizing with an existing white-card-plus-warm-border UI system. Perfectly flat solid fill: no gradient, no gloss, no 3D bevel, no drop shadow baked in, no grain/paper texture, no oversaturated cheap-gacha look. Must stay clearly readable as a simple rounded chip even at very small size (24x20 px). Absolutely no text, no letters, no numerals, no icon glyph, no watermark, no logo, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the badge with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
   "tool": "codex-cli",
   "provider": "openai",
@@ -13,8 +13,8 @@
   "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot badge.info.background --input tools/asset-factory/soro-pon-ui/raw-green/badge-info-a-rounded-paper-label-raw.png --request 007-cute-pop-badge-info-background --output-name badge-info-background-candidate-a.png --fit-width 240 --fit-height 80 --fit-margin-ratio 0.08 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 240 --expected-height 80 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/badge-info-background/candidate-a-rounded-paper-label.txt",
   "backgroundColor": "#00ff00",
   "method": "codex-cli-chroma-key",
-  "processedFile": "tools/asset-factory/soro-pon-ui/processed/badge-info-background-candidate-a.png",
-  "compareFile": "tools/asset-factory/soro-pon-ui/processed/badge-info-background-candidate-a.compare.png",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/candidate-a/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/candidate-a/compare.png",
   "processParams": {
     "hardThreshold": 0.12,
     "softThreshold": 0.35,
@@ -26,13 +26,14 @@
     "height": 80
   },
   "contentHash": "884ab08d7bbdd0ef110a32031e13f35f64ce72df6fcb061f8a12f4f0afc3e1c9",
-  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/badge-info-background-candidate-a.png",
+  "placedAt": null,
   "generatedAt": "2026-07-14",
-  "approval": "candidate",
-  "rejectionReason": null,
+  "approval": "not-selected",
+  "rejectionReason": "既存button/panel(プログラム生成)と形状が近く、画像生成系候補としての差別化が弱いため不採用(候補Bを採用)",
   "validation": {
     "ok": true,
     "issues": []
   },
-  "license": "original project asset (Codex CLI generation, pending human review)"
+  "license": "original project asset (Codex CLI generation, pending human review)",
+  "archivedAt": "2026-07-14"
 }

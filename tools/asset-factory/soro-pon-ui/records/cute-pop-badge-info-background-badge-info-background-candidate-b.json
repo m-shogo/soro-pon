@@ -2,7 +2,7 @@
   "skinId": "cute-pop",
   "slot": "badge.info.background",
   "assetRequest": "007-cute-pop-badge-info-background",
-  "sourceFile": "tools/asset-factory/soro-pon-ui/raw-green/badge-info-b-ribbon-tab-raw.png",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/candidate-b/raw.png",
   "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset: a small information-badge background shaped like a restrained ribbon tab -- a rounded-rectangle body with a very small, perfectly mirrored folded-ribbon accent at both the left end and the right end (NOT a single one-sided tail), flat 2D vector illustration, front-facing, isolated object only. The ribbon accents sit only in small fixed end-zones; the horizontal band between them must stay completely plain and flat with a uniform-width border and no unique detail, so it can later be stretched horizontally without any seam -- this is for 9-slice UI scaling. Top and bottom edges have uniform symmetric rounded corners. Color: warm off-white/cream body with a soft warm beige/tan outline and very subtle ribbon-fold shading only, harmonizing with an existing white-card-plus-warm-border UI system. Mostly flat solid fill: no gradient on the main body, no gloss, no 3D bevel, no drop shadow baked in, no grain texture, no oversaturated cheap-gacha look. Must stay clearly readable as a simple tab shape even at very small size (24x20 px) -- keep the ribbon accents small enough not to become noise when scaled down. Absolutely no text, no letters, no numerals, no icon glyph, no watermark, no logo, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the badge with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
   "tool": "codex-cli",
   "provider": "openai",
@@ -14,7 +14,7 @@
   "backgroundColor": "#00ff00",
   "method": "codex-cli-chroma-key",
   "processedFile": "tools/asset-factory/soro-pon-ui/processed/badge-info-background-candidate-b.png",
-  "compareFile": "tools/asset-factory/soro-pon-ui/processed/badge-info-background-candidate-b.compare.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/candidate-b/compare.png",
   "processParams": {
     "hardThreshold": 0.12,
     "softThreshold": 0.35,
@@ -26,13 +26,17 @@
     "height": 80
   },
   "contentHash": "9058c7df6d2b176fcb1edf534bd853c98063930d4fa7c4d2bc7dc9f85b31abcc",
-  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/badge-info-background-candidate-b.png",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png",
   "generatedAt": "2026-07-14",
-  "approval": "candidate",
+  "approval": "promoted",
   "rejectionReason": null,
   "validation": {
     "ok": true,
     "issues": []
   },
-  "license": "original project asset (Codex CLI generation, pending human review)"
+  "license": "original project asset (Codex CLI generation, pending human review)",
+  "promotedTo": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png",
+  "promotedAt": "2026-07-14",
+  "skinVersionAtPromotion": 3,
+  "archivedAt": null
 }

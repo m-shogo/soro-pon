@@ -5,7 +5,7 @@
 - skin: `cute-pop`
 - slot: `badge.info.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **candidate(人間レビュー待ち)。final未昇格**
+- status: **final昇格済み(候補B採用)**
 
 ## Purpose
 
@@ -88,11 +88,12 @@ raw画像と同じ場所へ残すサイドカー(`<raw>.generation.json`)から�
 
 | ID | 方向性 | raw | candidate | comparison | content hash |
 |---|---|---|---|---|---|
-| A | 丸みのある紙ラベル | (records/参照) | (records/参照) | (records/参照) | (records/参照) |
-| B | 控えめなリボンタブ | (records/参照) | (records/参照) | (records/参照) | (records/参照) |
-| C | 小さなチケット形 | (records/参照) | (records/参照) | (records/参照) | (records/参照) |
+| A | 丸みのある紙ラベル | archive/candidate-a/raw.png | archive/candidate-a/candidate.png(not-selected) | archive/candidate-a/compare.png | 884ab08d… |
+| B | 控えめなリボンタブ(採用) | archive/candidate-b/raw.png | public/.../generated/final/badge-info-background.png | archive/candidate-b/compare.png | 9058c7df… |
+| C | 小さなチケット形 | archive/candidate-c/raw.png | archive/candidate-c/candidate.png(not-selected) | archive/candidate-c/compare.png | 0818a037… |
 
-詳細は `tools/asset-factory/soro-pon-ui/records/cute-pop-badge.info.background-*.json` を参照。
+archiveパスは `tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/` 配下。
+詳細は `tools/asset-factory/soro-pon-ui/records/cute-pop-badge-info-background-badge-info-background-candidate-*.json` を参照。
 
 ## Automated Validation Status
 
@@ -101,11 +102,17 @@ raw画像と同じ場所へ残すサイドカー(`<raw>.generation.json`)から�
 
 ## Approval Status(承認状態)
 
-- [ ] candidate(レビュー待ち) ← 現在ここ
-- [ ] approved(final昇格可)
-- [ ] rejected
+- [x] B: promoted(final昇格。cute-pop version 3で`badge.info.background`へ登録)
+- [x] A: not-selected(既存button/panel(プログラム生成)と形状が近く、画像生成系候補としての
+      差別化が弱いため不採用)
+- [x] C: not-selected(24x20px最小表示時に左右ノッチが潰れる/輪郭ノイズになるリスクが
+      候補Bより高いため不採用)
 
-**final promotion status: not promoted**
+**final promotion status: promoted (candidate B, cute-pop skin version 3)**
+
+A/Cのraw・comparison・metadataは削除せず
+`tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/candidate-{a,c}/`
+へ保存し、production manifestからは参照しない。
 
 ## Must Avoid
 

@@ -137,16 +137,24 @@ tools/asset-factory/soro-pon-ui/
   records/                   生成記録metadata(下記)。git管理
   raw-green/                 グリーン背景の元画像。gitignore(ローカル保持)
   processed/                 透過処理の中間出力。gitignore(ローカル保持)
+  archive/<skin>/<slot>/candidate-<id>/  監査用永続保存(raw.png / compare.png /
+                                candidate.png[not-selectedのみ])。git管理
 public/assets/ui/soro-pon/skins/<skin>/generated/
   candidates/                検査済み候補のみ。git管理。manifest未登録
   final/                     人間承認済みのみ。git管理。manifest登録必須
 ```
 
-元画像(raw-green)と中間出力はproduction用ではなく監査・再生成確認用。
-リポジトリにはコミットせずローカルへ保持し、記録(records/)から辿れるようにする。
-
+元画像(raw-green)と中間出力(processed/)はローカル作業領域(gitignore)。
 比較画像(processed/内の`*.compare.png`)も同様にgit管理対象外の監査出力
 (production manifestから参照しない)。
+
+ただしraw-green/processed/はgitignoreのため、リポジトリのclone単体では
+監査原本(raw・comparison)を再現できない。そのため各候補についてrecords/の
+`sourceFile`/`compareFile`が指すファイルは、final昇格またはnot-selected判定の
+時点で`archive/<skin>/<slot>/candidate-<id>/`(git管理)へコピーし、
+Git履歴だけを監査原本にしない。not-selectedの候補は`candidates/`から
+public領域を外し、`candidate.png`もarchive側へ保存する
+(raw・comparison・metadataは削除しない)。
 
 プログラム生成(scripts/の決定的スクリプト、単純な面・枠・幾何素材)は、
 生成スクリプトと入力パラメータから完全再生成可能なため、元画像の保存を
