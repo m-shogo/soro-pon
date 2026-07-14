@@ -162,21 +162,33 @@ public/assets/ui/soro-pon/skins/<skin>/generated/
 可能な範囲で残す:
 
 ```text
-sourceFile        元の生成画像のファイル名(raw-green/内)
-prompt            生成指示
-tool              生成手段(Codex CLI / 呼び出しスクリプト / モデル名)
-invocationCommand Codex CLIから実行した実際のコマンド(再現用)
-seed              seedがあるなら
-backgroundColor   背景色
-processedFile     Python透過後の画像
-compareFile       処理前後の比較画像
-processParams     透過処理パラメータ(しきい値等)
-dimensions        寸法
-contentHash       SHA-256
-placedAt          配置先(candidates/finalのパス)
-generatedAt       生成日時
-approval          承認状態(candidate / approved / rejected)
-license           ライセンスまたは生成由来メモ
+sourceFile         元の生成画像のファイル名(raw-green/内)
+prompt             生成指示
+tool               生成手段(codex-cli等)
+provider           画像生成provider(例: openai)
+model              使用モデル
+seed               実際のseed値のみ。取得できない場合はnull
+                     (Codexのsession idを代入してはならない)
+generationSessionId Codex execのsession id(seedとは別フィールド)
+generationCommand  `pnpm asset:image:generate ...` の再実行可能なコマンド
+processingCommand  `pnpm asset:image:prepare ...` の再実行可能なコマンド
+                     (どちらもshlexで安全にescapeし、実シェルで元の
+                     argv配列へ復元できること。`#00ff00`のような値を
+                     素朴に空白結合すると`#`以降がコメント化され
+                     再実行不能になるため、必ず標準的なshell escaping
+                     関数[shlex.join等]を使う。record_schema.pyが
+                     この契約をshell round-tripテストで検証する)
+backgroundColor    背景色
+processedFile      Python透過後の画像
+compareFile        処理前後の比較画像
+processParams      透過処理パラメータ(しきい値等)
+dimensions         寸法
+contentHash        SHA-256
+placedAt           配置先(candidates/finalのパス。未配置ならnull)
+generatedAt        生成日時
+approval           承認状態(candidate / approved / rejected / not-selected / promoted)
+rejectionReason    不採用の場合の理由(採用時はnull)
+license            ライセンスまたは生成由来メモ
 ```
 
 プログラム生成アセットは生成スクリプト自体が記録を兼ねる

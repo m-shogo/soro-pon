@@ -11,6 +11,16 @@ docs/IMAGE-ASSET-WORKFLOW.md「Codex CLIからの起動契約」の実装:
 
 このスクリプト自体は非決定的(画像生成API呼び出しのため)。
 raw画像が保存された後の処理(chroma_key.py以降)は決定的。
+
+監査schema契約(record_schema.py):
+  - Codex execのsession idはgenerationSessionIdとして記録する。seedとは
+    別物(Codex CLIは実際のseedを提供しないため、seedへsession idを
+    代入してはならない)
+  - generationCommand は本スクリプト自身を再実行可能な形
+    (`pnpm asset:image:generate --prompt-file ... --output-name ...`)で
+    記録する(内部のcodex exec呼び出しは、巨大なprompt本文を1引数として
+    埋め込む必要がありシェル上での再実行に適さないため、別フィールド
+    `codexInvocation` に参考情報として記録するのみ)
 """
 
 from __future__ import annotations
@@ -23,6 +33,8 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+
+from record_schema import GENERATION_COMMAND_PREFIX, build_shell_command
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 FACTORY_ROOT = SCRIPT_DIR.parent
@@ -119,19 +131,34 @@ def main() -> int:
     dest = RAW_GREEN_DIR / args.output_name
     dest.write_bytes(generated_path.read_bytes())
 
+    # 本スクリプト自身を再実行可能な形(shlexで安全にescape済み)。
+    # --workdirは毎回リポジトリ外の一時ディレクトリが既定で振られるため
+    # 再実行コマンドには含めない(むしろ固定すると陳腐化する)。
+    generation_command = build_shell_command(
+        GENERATION_COMMAND_PREFIX,
+        ["--prompt-file", str(prompt_path), "--output-name", args.output_name],
+    )
+
     record = {
         "outputName": args.output_name,
         "rawPath": str(dest),
         "codexGeneratedImagePath": str(generated_path),
-        "invocationCommand": "codex exec --sandbox workspace-write --skip-git-repo-check --cd "
-        f"{workdir} <promptファイル: {prompt_path}の内容>",
+        "generationCommand": generation_command,
+        "codexInvocation": (
+            "codex exec --sandbox workspace-write --skip-git-repo-check --cd "
+            f"{workdir} <promptファイル: {prompt_path}の内容>"
+        ),
         "provider": provider,
         "model": model,
-        "sessionId": session_id,
+        "generationSessionId": session_id,
         "promptFile": str(prompt_path),
         "codexLog": str(log_path),
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
+
+    sidecar_path = RAW_GREEN_DIR / f"{args.output_name}.generation.json"
+    sidecar_path.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
     print(json.dumps(record, indent=2, ensure_ascii=False))
     return 0
 

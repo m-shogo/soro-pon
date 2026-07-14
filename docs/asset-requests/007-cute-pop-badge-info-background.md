@@ -38,8 +38,10 @@ pnpm asset:image:generate \
 を実行し、Codexが `~/.codex/generated_images/<session>/*.png` に保存した実ファイルを
 `raw-green/` へコピーする(手動生成の持ち込みではなく、Codex CLI自身が呼び出し元)。
 
-provider: openai / model: 実行時ログから記録(records/参照) / seed: 非公開
-(Codex CLI側でseed取得APIなし。session idで追跡)
+provider: openai / model: 実行時ログから記録(records/参照)
+seed: 非公開(Codex CLI側でseed取得APIなし)のため常にnull。
+**session idはseedへ代入しない**。`generationSessionId`という別フィールドで
+追跡する(records/参照。監査schema契約はrecord_schema.py)。
 
 ## Prompt
 
@@ -65,8 +67,17 @@ pnpm asset:image:prepare --skin cute-pop --slot badge.info.background \
   --fit-width 240 --fit-height 80 --fit-margin-ratio 0.08 \
   --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 \
   --despill-strength 0.6 --expected-width 240 --expected-height 80 --min-padding 4 \
-  --prompt-file <該当prompt> --seed <session id>
+  --prompt-file <該当prompt>
 ```
+
+`--background-color`の値は必ずシェルクォート(`'#00ff00'`)する。クォートなしだと
+`#`以降がシェル上でコメント化され、記録したコマンドが再実行不能になる
+(実際に遭遇した不具合。修正後はrecord_schema.pyのshell round-tripテストで検出する)。
+
+provider/model/generationSessionId/generationCommandは、`codex_generate_raw.py`が
+raw画像と同じ場所へ残すサイドカー(`<raw>.generation.json`)から自動補完される
+(`--provider`/`--model`/`--generation-session-id`/`--generation-command`で
+明示上書きも可能)。
 
 ## Thresholds / Despill
 

@@ -32,6 +32,7 @@ from PIL import Image
 
 from chroma_key import ChromaKeyParams, fit_to_canvas, hex_to_rgb, process
 from compare_image import build_comparison_image
+from record_schema import PROCESSING_COMMAND_PREFIX, build_shell_command, validate_record
 from validate_candidate import ValidationParams, validate_candidate
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -98,15 +99,42 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--prompt", default=None, help="生成に使ったprompt")
     parser.add_argument("--prompt-file", default=None, help="promptをファイルから読む")
     parser.add_argument("--tool", default="codex-cli")
+    parser.add_argument("--provider", default=None, help="画像生成provider(例: openai)")
     parser.add_argument("--model", default=None)
-    parser.add_argument("--seed", default=None)
+    parser.add_argument(
+        "--seed",
+        default=None,
+        help=(
+            "実際のseed値のみ指定する(Codexのsession idは指定しないこと。"
+            "session idは--generation-session-idを使う)"
+        ),
+    )
+    parser.add_argument(
+        "--generation-session-id",
+        default=None,
+        help="Codex execのsession id(seedとは別フィールドで保持する)",
+    )
+    parser.add_argument(
+        "--generation-command",
+        default=None,
+        help="raw画像生成に使った`pnpm asset:image:generate ...`コマンド(再実行可能な形で記録する)",
+    )
+    parser.add_argument(
+        "--approval",
+        default=None,
+        choices=["candidate", "approved", "rejected", "not-selected", "promoted"],
+        help="人間の判断による承認状態の明示指定(既定: 自動検査結果から導出)",
+    )
+    parser.add_argument("--rejection-reason", default=None, help="不採用の場合の理由")
     parser.add_argument("--license", default="original project asset (Codex CLI generation, pending human review)")
     return parser
 
 
 def main() -> int:
     args = _build_arg_parser().parse_args()
-    invocation_command = "pnpm asset:image:prepare " + " ".join(sys.argv[1:])
+    # shlex.joinで各引数を安全にescapeする(素朴な空白結合だと`--background-color #00ff00`の
+    # `#`以降がシェル上でコメント化され、記録したコマンドが再実行不能になる)
+    processing_command = build_shell_command(PROCESSING_COMMAND_PREFIX, sys.argv[1:])
 
     input_path = Path(args.input)
     if not input_path.is_file():
@@ -129,6 +157,20 @@ def main() -> int:
     output_name = args.output_name or _default_output_name(args.slot)
 
     raw_copy = _ensure_raw_copy(input_path, args.skin, args.slot)
+
+    # codex_generate_raw.pyが残したサイドカー記録(<raw>.generation.json)があれば
+    # provider/model/generationSessionId/generationCommandを自動補完する
+    # (明示的なCLI引数があればそちらを優先する)
+    generation_sidecar_path = raw_copy.with_name(raw_copy.name + ".generation.json")
+    generation_sidecar: dict = {}
+    if generation_sidecar_path.is_file():
+        generation_sidecar = json.loads(generation_sidecar_path.read_text(encoding="utf-8"))
+    provider = args.provider or generation_sidecar.get("provider")
+    model = args.model or generation_sidecar.get("model")
+    generation_session_id = args.generation_session_id or generation_sidecar.get(
+        "generationSessionId"
+    )
+    generation_command = args.generation_command or generation_sidecar.get("generationCommand")
 
     original_image = Image.open(input_path)
     params = ChromaKeyParams(
@@ -170,6 +212,16 @@ def main() -> int:
         shutil.copy2(processed_path, dest)
         placed_at = str(dest.relative_to(REPO_ROOT))
 
+    if args.approval is not None and not result.ok:
+        print(
+            "WARNING: 自動検査に失敗しているため--approval指定は無視し rejected-validation とします",
+            file=sys.stderr,
+        )
+    if args.approval is not None and result.ok:
+        approval = args.approval
+    else:
+        approval = "candidate" if result.ok else "rejected-validation"
+
     record = {
         "skinId": args.skin,
         "slot": args.slot,
@@ -177,9 +229,12 @@ def main() -> int:
         "sourceFile": str(raw_copy.relative_to(REPO_ROOT)) if raw_copy.is_relative_to(REPO_ROOT) else str(raw_copy),
         "prompt": prompt,
         "tool": args.tool,
-        "model": args.model,
-        "invocationCommand": invocation_command,
+        "provider": provider,
+        "model": model,
         "seed": args.seed,
+        "generationSessionId": generation_session_id,
+        "generationCommand": generation_command,
+        "processingCommand": processing_command,
         "backgroundColor": args.background_color,
         "method": "codex-cli-chroma-key",
         "processedFile": str(processed_path.relative_to(REPO_ROOT)),
@@ -194,10 +249,18 @@ def main() -> int:
         "contentHash": result.content_hash,
         "placedAt": placed_at,
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        "approval": "candidate" if result.ok else "rejected-validation",
+        "approval": approval,
+        "rejectionReason": args.rejection_reason,
         "validation": {"ok": result.ok, "issues": result.issues},
         "license": args.license,
     }
+
+    schema_issues = validate_record(record)
+    if schema_issues:
+        print("ERROR: 生成記録が監査schemaに違反しています:", file=sys.stderr)
+        for issue in schema_issues:
+            print(f"  - {issue}", file=sys.stderr)
+        return 1
 
     RECORDS_DIR.mkdir(parents=True, exist_ok=True)
     # output_nameはcandidateごとに一意なので、それを使ってmetadataが
