@@ -44,9 +44,20 @@ pnpm asset:image:prepare --skin <skin-id> --slot <slot名> --input <raw画像>
 
 実行内容: asset request確認 → 入力元画像確認 → 透過処理
 (chroma_key.py) → 自動検査(validate_candidate.py) → 比較画像生成
-(compare_image.py) → 生成記録+content hash保存 →
-検査成功時のみ`generated/candidates/`へ配置(失敗時は配置せず、
-理由を記録・標準エラー出力する)。
+(compare_image.py) → 検査成功時、raw/candidate(透過後)/compareを
+`tools/asset-factory/soro-pon-ui/archive/<skin>/<slot>/candidate-<id>/`
+(git管理)へ永続保存 → 生成記録+content hash保存 →
+approvalがcandidate/approvedの場合のみ`generated/candidates/`へ配置
+(rejected/not-selectedを明示指定した場合はarchiveにのみ保存し、
+publicへは配置しない。自動検査に失敗した場合はarchive保存・
+public配置のどちらも行わず、理由を記録・標準エラー出力する)。
+
+raw-green/processed/はgitignore対象のローカル作業領域のため、record内の
+sourceFile/processedFile/compareFileはcandidate生成の時点でarchive/内の
+パスを指す(raw-green/processedを直接参照しない)。これによりfresh clone
+(raw-green/processedが存在しない状態)でもrecord schema validationが
+成立する(`record_schema.py`の`validate_record()`がファイル実在・
+approval状態別のファイル配置整合性を検証する)。
 
 Pythonテスト(fixtureベース、外部APIなし)は `pnpm asset:image:test`。
 
@@ -137,24 +148,27 @@ tools/asset-factory/soro-pon-ui/
   records/                   生成記録metadata(下記)。git管理
   raw-green/                 グリーン背景の元画像。gitignore(ローカル保持)
   processed/                 透過処理の中間出力。gitignore(ローカル保持)
-  archive/<skin>/<slot>/candidate-<id>/  監査用永続保存(raw.png / compare.png /
-                                candidate.png[not-selectedのみ])。git管理
+  archive/<skin>/<slot>/candidate-<id>/  監査用永続保存(raw.png /
+                                candidate.png / compare.png)。git管理
 public/assets/ui/soro-pon/skins/<skin>/generated/
-  candidates/                検査済み候補のみ。git管理。manifest未登録
-  final/                     人間承認済みのみ。git管理。manifest登録必須
+  candidates/                candidate/approvedのみ。git管理。manifest未登録
+  final/                     人間承認済み(promoted)のみ。git管理。manifest登録必須
 ```
 
 元画像(raw-green)と中間出力(processed/)はローカル作業領域(gitignore)。
 比較画像(processed/内の`*.compare.png`)も同様にgit管理対象外の監査出力
 (production manifestから参照しない)。
 
-ただしraw-green/processed/はgitignoreのため、リポジトリのclone単体では
-監査原本(raw・comparison)を再現できない。そのため各候補についてrecords/の
-`sourceFile`/`compareFile`が指すファイルは、final昇格またはnot-selected判定の
-時点で`archive/<skin>/<slot>/candidate-<id>/`(git管理)へコピーし、
-Git履歴だけを監査原本にしない。not-selectedの候補は`candidates/`から
-public領域を外し、`candidate.png`もarchive側へ保存する
-(raw・comparison・metadataは削除しない)。
+raw-green/processed/はgitignoreのため、リポジトリのclone単体では
+監査原本(raw・comparison)を再現できない。そのため`pnpm asset:image:prepare`が
+自動検査に合格しcandidateとして扱う時点(final昇格やnot-selected判定を待たず、
+生成の都度)で、raw.png/candidate.png(透過後)/compare.pngを
+`archive/<skin>/<slot>/candidate-<id>/`(git管理)へコピーする。records/の
+`sourceFile`/`compareFile`は常にarchive内のraw.png/compare.pngを指し、
+`processedFile`もpromoted以外は常にarchive内のcandidate.pngを指す
+(promotedのみproduction final PNGを指す)。Git履歴だけを監査原本にしない。
+not-selected/rejectedの候補は`candidates/`からpublic領域を外すが、
+raw・comparison・candidate本体・metadataはarchiveへ残し削除しない。
 
 プログラム生成(scripts/の決定的スクリプト、単純な面・枠・幾何素材)は、
 生成スクリプトと入力パラメータから完全再生成可能なため、元画像の保存を

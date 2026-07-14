@@ -32,7 +32,12 @@ from PIL import Image
 
 from chroma_key import ChromaKeyParams, fit_to_canvas, hex_to_rgb, process
 from compare_image import build_comparison_image
-from record_schema import PROCESSING_COMMAND_PREFIX, build_shell_command, validate_record
+from record_schema import (
+    CANDIDATE_LIKE_STATES,
+    PROCESSING_COMMAND_PREFIX,
+    build_shell_command,
+    validate_record,
+)
 from validate_candidate import ValidationParams, validate_candidate
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -41,12 +46,30 @@ REPO_ROOT = FACTORY_ROOT.parent.parent.parent  # repo root
 RAW_GREEN_DIR = FACTORY_ROOT / "raw-green"
 PROCESSED_DIR = FACTORY_ROOT / "processed"
 RECORDS_DIR = FACTORY_ROOT / "records"
+ARCHIVE_ROOT = FACTORY_ROOT / "archive"
 ASSET_REQUESTS_DIR = REPO_ROOT / "docs" / "asset-requests"
 SKINS_ROOT = REPO_ROOT / "public" / "assets" / "ui" / "soro-pon" / "skins"
+
+DEFAULT_LICENSE = "original project asset generated via Codex CLI"
 
 
 def _default_output_name(slot: str) -> str:
     return slot.replace(".", "-") + ".png"
+
+
+def _candidate_archive_id(output_name: str) -> str:
+    """archive/<skin>/<slot>/candidate-<id>/ の<id>を出力ファイル名から導出する。
+
+    既存の命名規則(`<slot>-candidate-<id>.png`)からは末尾の`<id>`を
+    そのまま使う。その規則に合致しない出力名は、stem全体をidとして使う
+    (どんな出力名でも一意なarchiveディレクトリになる)。
+    """
+    stem = Path(output_name).stem
+    marker = "-candidate-"
+    idx = stem.rfind(marker)
+    if idx != -1:
+        return stem[idx + len(marker) :]
+    return stem
 
 
 def _ensure_raw_copy(input_path: Path, skin: str, slot: str) -> Path:
@@ -126,7 +149,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="人間の判断による承認状態の明示指定(既定: 自動検査結果から導出)",
     )
     parser.add_argument("--rejection-reason", default=None, help="不採用の場合の理由")
-    parser.add_argument("--license", default="original project asset (Codex CLI generation, pending human review)")
+    parser.add_argument(
+        "--license",
+        default=DEFAULT_LICENSE,
+        help="生成由来・権利情報のみを記述する(承認状態を示す語は含めないこと)",
+    )
     return parser
 
 
@@ -204,14 +231,6 @@ def main() -> int:
     )
     result = validate_candidate(str(processed_path), validation_params)
 
-    candidates_dir = SKINS_ROOT / args.skin / "generated" / "candidates"
-    placed_at: str | None = None
-    if result.ok:
-        candidates_dir.mkdir(parents=True, exist_ok=True)
-        dest = candidates_dir / output_name
-        shutil.copy2(processed_path, dest)
-        placed_at = str(dest.relative_to(REPO_ROOT))
-
     if args.approval is not None and not result.ok:
         print(
             "WARNING: 自動検査に失敗しているため--approval指定は無視し rejected-validation とします",
@@ -222,11 +241,53 @@ def main() -> int:
     else:
         approval = "candidate" if result.ok else "rejected-validation"
 
+    source_file = (
+        str(raw_copy.relative_to(REPO_ROOT)) if raw_copy.is_relative_to(REPO_ROOT) else str(raw_copy)
+    )
+    processed_file = str(processed_path.relative_to(REPO_ROOT))
+    compare_file = str(compare_path.relative_to(REPO_ROOT))
+    placed_at: str | None = None
+    archived_at: str | None = None
+
+    if result.ok:
+        # 自動検査に合格しcandidateとして扱われる時点で、raw/candidate/compareの
+        # 監査原本をgit管理のarchive/へ永続保存する。processed/はgitignore対象の
+        # ローカル作業領域のため、これをしないとCIのfresh cloneではrecord schemaの
+        # ファイル参照検証(sourceFile/processedFile/compareFileの実在確認)を
+        # 満たせない。
+        archive_dir = (
+            ARCHIVE_ROOT / args.skin / args.slot / f"candidate-{_candidate_archive_id(output_name)}"
+        )
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        archive_raw = archive_dir / "raw.png"
+        archive_candidate = archive_dir / "candidate.png"
+        archive_compare = archive_dir / "compare.png"
+        shutil.copy2(raw_copy, archive_raw)
+        shutil.copy2(processed_path, archive_candidate)
+        shutil.copy2(compare_path, archive_compare)
+
+        source_file = str(archive_raw.relative_to(REPO_ROOT))
+        processed_file = str(archive_candidate.relative_to(REPO_ROOT))
+        compare_file = str(archive_compare.relative_to(REPO_ROOT))
+        archived_at = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+        if approval in CANDIDATE_LIKE_STATES:
+            candidates_dir = SKINS_ROOT / args.skin / "generated" / "candidates"
+            candidates_dir.mkdir(parents=True, exist_ok=True)
+            dest = candidates_dir / output_name
+            shutil.copy2(processed_path, dest)
+            placed_at = str(dest.relative_to(REPO_ROOT))
+        # rejected/not-selectedをこの時点で明示指定した場合はpublic candidatesへ
+        # 配置しない(archiveにのみ永続保存する)。promotedをこの時点で明示指定した
+        # 場合はここでは production final への配置を行わないため、下の
+        # validate_record()がplacedAt/promotedTo不足を検出しrecordを保存しない
+        # (final昇格は別途手動で行う契約のため、この場での自動昇格はしない)。
+
     record = {
         "skinId": args.skin,
         "slot": args.slot,
         "assetRequest": args.request,
-        "sourceFile": str(raw_copy.relative_to(REPO_ROOT)) if raw_copy.is_relative_to(REPO_ROOT) else str(raw_copy),
+        "sourceFile": source_file,
         "prompt": prompt,
         "tool": args.tool,
         "provider": provider,
@@ -237,8 +298,8 @@ def main() -> int:
         "processingCommand": processing_command,
         "backgroundColor": args.background_color,
         "method": "codex-cli-chroma-key",
-        "processedFile": str(processed_path.relative_to(REPO_ROOT)),
-        "compareFile": str(compare_path.relative_to(REPO_ROOT)),
+        "processedFile": processed_file,
+        "compareFile": compare_file,
         "processParams": {
             "hardThreshold": args.hard_threshold,
             "softThreshold": args.soft_threshold,
@@ -248,9 +309,13 @@ def main() -> int:
         "dimensions": {"width": result.width, "height": result.height},
         "contentHash": result.content_hash,
         "placedAt": placed_at,
+        "promotedTo": None,
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "approval": approval,
         "rejectionReason": args.rejection_reason,
+        "promotedAt": None,
+        "skinVersionAtPromotion": None,
+        "archivedAt": archived_at,
         "validation": {"ok": result.ok, "issues": result.issues},
         "license": args.license,
     }
@@ -272,7 +337,10 @@ def main() -> int:
     print(f"comparison image: {compare_path}")
     print(f"metadata: {record_path}")
     if result.ok:
-        print(f"OK: candidatesへ配置しました: {placed_at}")
+        if placed_at is not None:
+            print(f"OK: candidatesへ配置しました: {placed_at}")
+        else:
+            print(f"OK: approval={approval} のためpublicへは配置せずarchiveへのみ保存しました")
         return 0
     print("FAILED: 自動検査に失敗したため candidates へは配置していません:", file=sys.stderr)
     for issue in result.issues:

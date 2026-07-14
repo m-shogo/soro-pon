@@ -14,21 +14,39 @@
 
 ファイル参照フィールドの意味(すべてリポジトリルート相対パス。clone直後に
 実在すること):
-  - sourceFile     透過処理前のraw画像。常にarchive/内のraw.png(永続保存)
+  - sourceFile     透過処理前のraw画像。常にarchive/内のraw.png(自動検査に
+                    合格しcandidateとして配置された時点でgit管理archiveへ
+                    永続保存される。promotedになっても変更しない)
   - processedFile  この候補として実際にレビュー・採用判断された成果物。
                     promoted: production final PNG(placedAt/promotedToと同一)
-                    not-selected/rejected: archive/内のcandidate.png(永続保存)
-  - compareFile    透過前後の比較画像。常にarchive/内のcompare.png(永続保存)
-  - placedAt       production manifestから参照される配置先。promoted以外はnull
+                    それ以外(candidate/approved/not-selected/rejected):
+                      archive/内のcandidate.png(永続保存)
+  - compareFile    透過前後の比較画像。常にarchive/内のcompare.png(永続保存。
+                    promotedになっても変更しない)
+  - placedAt       production/レビュー用に配置されている場所。
+                    candidate/approved: public/.../generated/candidates/内
+                    promoted:            public/.../generated/final/内
+                    not-selected/rejected: null(publicから取り除く)
   - promotedTo     final昇格時の配置先記録。promoted以外はnull。
                     promotedの場合、placedAt/processedFileと同一パスであること
-  - archivedAt     raw/compare(と、not-selectedの場合はcandidate.png)を
-                    git管理のarchive/へコピーした日付。全承認状態で必須
-                    (このrecordのsourceFile/compareFileがarchive/を指す限り)
+  - archivedAt     raw/compare/candidate.pngをgit管理のarchive/へコピーした
+                    日付。このrecordのsourceFile/compareFileがarchive/を
+                    指す限り必須(=自動検査合格後は常に必須)
 
 license は生成由来・権利情報のみを記録し、承認状態(pending/approved/
 rejected等)を含めない。承認状態は approval / rejectionReason / promotedAt /
 archivedAt / skinVersionAtPromotion でのみ管理する。
+
+approval の意味:
+  - candidate     自動生成・自動検査直後。人間レビュー前
+  - approved      人間が候補として好ましいと判断したが、final昇格作業
+                    (manifest登録・version繰り上げ等)はまだ行っていない。
+                    ファイル配置契約はcandidateと同一
+                    (archive参照 + public candidates配置)
+  - rejected / not-selected  人間が不採用と判断した(rejectionReason必須。
+                    publicからは取り除きarchiveにのみ残す)
+  - promoted      final昇格済み(promotedAt/skinVersionAtPromotion必須。
+                    production final PNGのみ参照する)
 """
 
 from __future__ import annotations
@@ -83,6 +101,7 @@ BANNED_LICENSE_SUBSTRINGS = [
 ]
 
 TERMINAL_REJECTED_STATES = {"rejected", "not-selected"}
+CANDIDATE_LIKE_STATES = {"candidate", "approved"}
 
 
 def build_shell_command(prefix_tokens: list[str], args: list[str]) -> str:
@@ -183,6 +202,7 @@ def validate_record(record: dict) -> list[str]:
             issues.append(f"{field} does not shell round-trip safely: {value!r}")
 
     issues.extend(_validate_file_references(record))
+    issues.extend(_validate_file_shapes(record))
     issues.extend(_validate_approval_consistency(record))
     issues.extend(_validate_license(record))
 
@@ -211,6 +231,46 @@ def _validate_file_references(record: dict) -> list[str]:
     return issues
 
 
+def _validate_file_shapes(record: dict) -> list[str]:
+    """sourceFile/processedFile/compareFileがそれぞれの意味通りの場所を指しているか検証する。
+
+    sourceFile/compareFileは承認状態に関わらず常にgit管理archive/内の
+    raw.png/compare.pngでなければならない(自動検査合格後は変更しない)。
+    processedFileはpromoted以外なら常にarchive/内のcandidate.pngで
+    なければならない(promotedのみproduction final PNGを指す)。
+    """
+    issues: list[str] = []
+    source_file = record.get("sourceFile")
+    compare_file = record.get("compareFile")
+    processed_file = record.get("processedFile")
+    approval = record.get("approval")
+
+    if source_file is not None and (
+        "archive/" not in source_file or not source_file.endswith("/raw.png")
+    ):
+        issues.append(
+            f"sourceFile must be the archived raw source (archive/.../raw.png): {source_file!r}"
+        )
+
+    if compare_file is not None and (
+        "archive/" not in compare_file or not compare_file.endswith("/compare.png")
+    ):
+        issues.append(
+            f"compareFile must be the archived comparison image (archive/.../compare.png): "
+            f"{compare_file!r}"
+        )
+
+    if approval != "promoted" and processed_file is not None and (
+        "archive/" not in processed_file or not processed_file.endswith("/candidate.png")
+    ):
+        issues.append(
+            f"processedFile must be the archived candidate image (archive/.../candidate.png) "
+            f"unless approval is promoted: {processed_file!r}"
+        )
+
+    return issues
+
+
 def _validate_approval_consistency(record: dict) -> list[str]:
     issues: list[str] = []
     approval = record["approval"]
@@ -221,6 +281,10 @@ def _validate_approval_consistency(record: dict) -> list[str]:
     if approval == "promoted":
         if placed_at is None:
             issues.append("promoted record must have placedAt set")
+        elif "generated/final/" not in placed_at:
+            issues.append(
+                f"promoted record placedAt must be under generated/final/: {placed_at!r}"
+            )
         if promoted_to is None:
             issues.append("promoted record must have promotedTo set")
         if placed_at is not None and promoted_to is not None and placed_at != promoted_to:
@@ -251,11 +315,24 @@ def _validate_approval_consistency(record: dict) -> list[str]:
             issues.append(f"{approval} record must not have skinVersionAtPromotion set")
         if record.get("rejectionReason") is None:
             issues.append(f"{approval} record must have a rejectionReason")
-        if processed_file is not None and "archive/" not in processed_file:
+
+    elif approval in CANDIDATE_LIKE_STATES:
+        if placed_at is None:
             issues.append(
-                f"{approval} record processedFile must live under archive/ "
-                f"(got {processed_file!r})"
+                f"{approval} record must have placedAt set (public generated/candidates/ path)"
             )
+        elif "generated/candidates/" not in placed_at:
+            issues.append(
+                f"{approval} record placedAt must be under generated/candidates/: {placed_at!r}"
+            )
+        if promoted_to is not None:
+            issues.append(f"{approval} record must not have promotedTo set")
+        if record.get("promotedAt") is not None:
+            issues.append(f"{approval} record must not have promotedAt set")
+        if record.get("skinVersionAtPromotion") is not None:
+            issues.append(f"{approval} record must not have skinVersionAtPromotion set")
+        if record.get("rejectionReason") is not None:
+            issues.append(f"{approval} record must not have a rejectionReason")
 
     for field in ("sourceFile", "compareFile"):
         value = record.get(field)
