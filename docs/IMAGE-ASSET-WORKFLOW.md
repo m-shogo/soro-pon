@@ -170,7 +170,8 @@ public領域を外し、`candidate.png`もarchive側へ保存する
 可能な範囲で残す:
 
 ```text
-sourceFile         元の生成画像のファイル名(raw-green/内)
+sourceFile         透過処理前のraw画像。archive/内のraw.png(永続保存。
+                     clone直後に実在すること)
 prompt             生成指示
 tool               生成手段(codex-cli等)
 provider           画像生成provider(例: openai)
@@ -187,17 +188,41 @@ processingCommand  `pnpm asset:image:prepare ...` の再実行可能なコマン
                      関数[shlex.join等]を使う。record_schema.pyが
                      この契約をshell round-tripテストで検証する)
 backgroundColor    背景色
-processedFile      Python透過後の画像
-compareFile        処理前後の比較画像
+processedFile      この候補として実際にレビュー・採用判断された成果物。
+                     promoted: production final PNG(placedAt/promotedToと
+                       同一パスであること)
+                     not-selected/rejected: archive/内のcandidate.png
+                       (永続保存。clone直後に実在すること)
+compareFile        透過前後の比較画像。archive/内のcompare.png(永続保存。
+                     clone直後に実在すること)
 processParams      透過処理パラメータ(しきい値等)
 dimensions         寸法
 contentHash        SHA-256
-placedAt           配置先(candidates/finalのパス。未配置ならnull)
+placedAt           production manifestから参照される配置先。promoted以外は
+                     null(clone直後に実在すること。null以外は必須)
+promotedTo         final昇格時の配置先記録。promoted以外はnull。promotedの
+                     場合はplacedAt/processedFileと同一パスであること
 generatedAt        生成日時
 approval           承認状態(candidate / approved / rejected / not-selected / promoted)
-rejectionReason    不採用の場合の理由(採用時はnull)
-license            ライセンスまたは生成由来メモ
+rejectionReason    不採用の場合の理由(rejected/not-selectedで必須。それ以外はnull)
+promotedAt         final昇格日(promotedで必須。それ以外はnull)
+skinVersionAtPromotion 昇格時に上げたskin.jsonのversion(promotedで必須。
+                     それ以外はnull)
+archivedAt         raw/compare(とnot-selectedの場合はcandidate.png)を
+                     git管理のarchive/へコピーした日付。sourceFile/
+                     compareFileがarchive/を指す限り必須
+license            生成由来・権利情報のみを記録する(例:
+                     "original project asset generated via Codex CLI")。
+                     pending/approved/rejected等の承認状態を示す語は
+                     licenseへ混ぜない。承認状態はapproval /
+                     rejectionReason / promotedAt / archivedAt /
+                     skinVersionAtPromotionでのみ管理する
 ```
+
+各フィールドの矛盾検査(promoted時のplacedAt/promotedTo/processedFile
+一致、not-selected時のprocessedFile archive/配置、license/approval非混在等)
+は`record_schema.py`の`validate_record()`がpytestで検証する
+(`pnpm asset:image:test`)。
 
 プログラム生成アセットは生成スクリプト自体が記録を兼ねる
 (スクリプト名をasset requestへ書けばよい)。

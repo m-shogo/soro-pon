@@ -5,7 +5,7 @@
 - skin: `cute-pop`
 - slot: `badge.info.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **final昇格済み(候補B採用)**
+- status: **closed(final昇格済み・候補B採用・監査record整合性確認済み)**
 
 ## Purpose
 

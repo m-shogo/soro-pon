@@ -11,6 +11,24 @@
   - 両コマンドともshlexで安全にescapeし、shlex.splitで元のargv配列へ
     復元できること(`#00ff00` のような`#`を含む値がコメント化されて
     消える等の破損を防ぐ)
+
+ファイル参照フィールドの意味(すべてリポジトリルート相対パス。clone直後に
+実在すること):
+  - sourceFile     透過処理前のraw画像。常にarchive/内のraw.png(永続保存)
+  - processedFile  この候補として実際にレビュー・採用判断された成果物。
+                    promoted: production final PNG(placedAt/promotedToと同一)
+                    not-selected/rejected: archive/内のcandidate.png(永続保存)
+  - compareFile    透過前後の比較画像。常にarchive/内のcompare.png(永続保存)
+  - placedAt       production manifestから参照される配置先。promoted以外はnull
+  - promotedTo     final昇格時の配置先記録。promoted以外はnull。
+                    promotedの場合、placedAt/processedFileと同一パスであること
+  - archivedAt     raw/compare(と、not-selectedの場合はcandidate.png)を
+                    git管理のarchive/へコピーした日付。全承認状態で必須
+                    (このrecordのsourceFile/compareFileがarchive/を指す限り)
+
+license は生成由来・権利情報のみを記録し、承認状態(pending/approved/
+rejected等)を含めない。承認状態は approval / rejectionReason / promotedAt /
+archivedAt / skinVersionAtPromotion でのみ管理する。
 """
 
 from __future__ import annotations
@@ -18,6 +36,7 @@ from __future__ import annotations
 import os
 import shlex
 import subprocess
+from pathlib import Path
 
 REQUIRED_FIELDS = [
     "skinId",
@@ -48,6 +67,22 @@ REQUIRED_FIELDS = [
 
 GENERATION_COMMAND_PREFIX = ["pnpm", "asset:image:generate"]
 PROCESSING_COMMAND_PREFIX = ["pnpm", "asset:image:prepare"]
+
+REPO_ROOT = Path(__file__).resolve().parents[4]
+
+# licenseは生成由来・権利情報のみを記録する。承認状態を示す語を混ぜない。
+BANNED_LICENSE_SUBSTRINGS = [
+    "pending",
+    "review",
+    "approval",
+    "approved",
+    "rejected",
+    "not-selected",
+    "promoted",
+    "candidate",
+]
+
+TERMINAL_REJECTED_STATES = {"rejected", "not-selected"}
 
 
 def build_shell_command(prefix_tokens: list[str], args: list[str]) -> str:
@@ -147,4 +182,99 @@ def validate_record(record: dict) -> list[str]:
         if not command_round_trips(value, prefix):
             issues.append(f"{field} does not shell round-trip safely: {value!r}")
 
+    issues.extend(_validate_file_references(record))
+    issues.extend(_validate_approval_consistency(record))
+    issues.extend(_validate_license(record))
+
+    return issues
+
+
+def _path_exists(relative_path: str) -> bool:
+    return (REPO_ROOT / relative_path).is_file()
+
+
+def _validate_file_references(record: dict) -> list[str]:
+    issues: list[str] = []
+    for field in ("sourceFile", "processedFile", "compareFile"):
+        value = record[field]
+        if value is None:
+            issues.append(f"{field} must not be null")
+            continue
+        if not _path_exists(value):
+            issues.append(f"{field} does not exist in a fresh checkout: {value!r}")
+
+    for field in ("placedAt", "promotedTo"):
+        value = record.get(field)
+        if value is not None and not _path_exists(value):
+            issues.append(f"{field} does not exist in a fresh checkout: {value!r}")
+
+    return issues
+
+
+def _validate_approval_consistency(record: dict) -> list[str]:
+    issues: list[str] = []
+    approval = record["approval"]
+    processed_file = record.get("processedFile")
+    placed_at = record.get("placedAt")
+    promoted_to = record.get("promotedTo")
+
+    if approval == "promoted":
+        if placed_at is None:
+            issues.append("promoted record must have placedAt set")
+        if promoted_to is None:
+            issues.append("promoted record must have promotedTo set")
+        if placed_at is not None and promoted_to is not None and placed_at != promoted_to:
+            issues.append(
+                f"promoted record placedAt ({placed_at!r}) and promotedTo "
+                f"({promoted_to!r}) must be identical"
+            )
+        if processed_file is not None and placed_at is not None and processed_file != placed_at:
+            issues.append(
+                f"promoted record processedFile ({processed_file!r}) must match "
+                f"placedAt ({placed_at!r})"
+            )
+        if record.get("promotedAt") is None:
+            issues.append("promoted record must have promotedAt set")
+        if record.get("skinVersionAtPromotion") is None:
+            issues.append("promoted record must have skinVersionAtPromotion set")
+        if record.get("rejectionReason") is not None:
+            issues.append("promoted record must not have a rejectionReason")
+
+    elif approval in TERMINAL_REJECTED_STATES:
+        if placed_at is not None:
+            issues.append(f"{approval} record must not have placedAt set (got {placed_at!r})")
+        if promoted_to is not None:
+            issues.append(f"{approval} record must not have promotedTo set (got {promoted_to!r})")
+        if record.get("promotedAt") is not None:
+            issues.append(f"{approval} record must not have promotedAt set")
+        if record.get("skinVersionAtPromotion") is not None:
+            issues.append(f"{approval} record must not have skinVersionAtPromotion set")
+        if record.get("rejectionReason") is None:
+            issues.append(f"{approval} record must have a rejectionReason")
+        if processed_file is not None and "archive/" not in processed_file:
+            issues.append(
+                f"{approval} record processedFile must live under archive/ "
+                f"(got {processed_file!r})"
+            )
+
+    for field in ("sourceFile", "compareFile"):
+        value = record.get(field)
+        if value is not None and "archive/" in value and record.get("archivedAt") is None:
+            issues.append(
+                f"{field} points into archive/ but archivedAt is not set: {value!r}"
+            )
+
+    return issues
+
+
+def _validate_license(record: dict) -> list[str]:
+    issues: list[str] = []
+    license_value = str(record.get("license") or "")
+    lowered = license_value.lower()
+    for banned in BANNED_LICENSE_SUBSTRINGS:
+        if banned in lowered:
+            issues.append(
+                f"license must not encode approval state (found {banned!r} in "
+                f"license={license_value!r}); use approval/rejectionReason instead"
+            )
     return issues

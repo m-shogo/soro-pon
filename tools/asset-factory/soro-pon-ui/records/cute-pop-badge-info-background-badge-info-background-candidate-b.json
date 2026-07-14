@@ -13,7 +13,7 @@
   "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot badge.info.background --input tools/asset-factory/soro-pon-ui/raw-green/badge-info-b-ribbon-tab-raw.png --request 007-cute-pop-badge-info-background --output-name badge-info-background-candidate-b.png --fit-width 240 --fit-height 80 --fit-margin-ratio 0.08 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 240 --expected-height 80 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/badge-info-background/candidate-b-ribbon-tab.txt",
   "backgroundColor": "#00ff00",
   "method": "codex-cli-chroma-key",
-  "processedFile": "tools/asset-factory/soro-pon-ui/processed/badge-info-background-candidate-b.png",
+  "processedFile": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png",
   "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/badge.info.background/candidate-b/compare.png",
   "processParams": {
     "hardThreshold": 0.12,
@@ -34,9 +34,9 @@
     "ok": true,
     "issues": []
   },
-  "license": "original project asset (Codex CLI generation, pending human review)",
+  "license": "original project asset generated via Codex CLI",
   "promotedTo": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png",
   "promotedAt": "2026-07-14",
   "skinVersionAtPromotion": 3,
-  "archivedAt": null
+  "archivedAt": "2026-07-14"
 }
