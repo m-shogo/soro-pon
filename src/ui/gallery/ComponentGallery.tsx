@@ -16,6 +16,7 @@ import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
 import { NineSliceProof } from './NineSliceProof';
+import { R1TileButtonCandidateReview } from './R1TileButtonCandidateReview';
 import './gallery.css';
 
 const SAMPLE_BREAKDOWN: ResultBreakdown = {
@@ -59,6 +60,11 @@ export function ComponentGallery() {
           request 007(badge.info.background候補B)はfinal昇格・skin.json登録済み。
           下のButton/PaperPanel/Badge variantsがCute Pop選択中に実際に適用された
           状態を示す(専用レビューセクションは撤去)。 */}
+
+      <section className="sp-gallery__section">
+        <h2>R1候補レビュー(request 008/009 / candidatesレビュー)</h2>
+        <R1TileButtonCandidateReview />
+      </section>
 
       <section className="sp-gallery__section">
         <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>
