@@ -15,18 +15,20 @@ import { TileCard } from '../components/TileCard';
  * 承認・昇格後にこのセクションは削除する。
  */
 
-type Candidate = { id: 'a' | 'b' | 'c'; label: string; file: string };
+type Candidate = { id: 'd' | 'e' | 'f'; label: string; file: string };
 
+// round 1 (A/B/C)は人間レビューで全却下(CSSで再現可能なため)。
+// round 2 (D/E/F)は画像生成でしか実現できない質感へ方向転換した候補。
 const TILE_FACE_CANDIDATES: Candidate[] = [
-  { id: 'a', label: 'A: 無地白+クリーム細フレーム', file: 'tile-face-base-candidate-a.png' },
-  { id: 'b', label: 'B: 二重線+四隅ドット', file: 'tile-face-base-candidate-b.png' },
-  { id: 'c', label: 'C: スカラップ(波形)フレーム', file: 'tile-face-base-candidate-c.png' },
+  { id: 'd', label: 'D: アイシングクッキー枠', file: 'tile-face-base-candidate-d.png' },
+  { id: 'e', label: 'E: 水彩ブラッシュ四隅+手描き線', file: 'tile-face-base-candidate-e.png' },
+  { id: 'f', label: 'F: キャンディビーズ枠', file: 'tile-face-base-candidate-f.png' },
 ];
 
 const TILE_BACK_CANDIDATES: Candidate[] = [
-  { id: 'a', label: 'A: パステル菱形格子', file: 'tile-back-base-candidate-a.png' },
-  { id: 'b', label: 'B: 水玉', file: 'tile-back-base-candidate-b.png' },
-  { id: 'c', label: 'C: 斜めストライプ(ピンク)', file: 'tile-back-base-candidate-c.png' },
+  { id: 'd', label: 'D: 手描きトイモチーフ柄', file: 'tile-back-base-candidate-d.png' },
+  { id: 'e', label: 'E: キルトクッション', file: 'tile-back-base-candidate-e.png' },
+  { id: 'f', label: 'F: ジェリー+スプリンクル', file: 'tile-back-base-candidate-f.png' },
 ];
 
 type ButtonCandidate = Candidate & { height: number };
@@ -35,22 +37,22 @@ type ButtonCandidate = Candidate & { height: number };
 // 採用候補のintrinsicSizeはskin.json登録時にこの実寸を使う。
 const BUTTON_CANDIDATES: ButtonCandidate[] = [
   {
-    id: 'a',
-    label: 'A: フラット濃ピンク(480x96)',
-    file: 'button-primary-background-candidate-a.png',
+    id: 'd',
+    label: 'D: ジェリーキャンディCTA(480x96)',
+    file: 'button-primary-background-candidate-d.png',
     height: 96,
   },
   {
-    id: 'b',
-    label: 'B: 上半分ソフトトーン(480x104)',
-    file: 'button-primary-background-candidate-b.png',
-    height: 104,
+    id: 'e',
+    label: 'E: アイシングパイピングCTA(480x120)',
+    file: 'button-primary-background-candidate-e.png',
+    height: 120,
   },
   {
-    id: 'c',
-    label: 'C: クリーム内側ライン(480x128)',
-    file: 'button-primary-background-candidate-c.png',
-    height: 128,
+    id: 'f',
+    label: 'F: マカロンCTA(480x136)',
+    file: 'button-primary-background-candidate-f.png',
+    height: 136,
   },
 ];
 

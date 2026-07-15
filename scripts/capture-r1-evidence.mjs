@@ -1,10 +1,10 @@
 // R1候補(request 008/009)レビュー証跡のスクリーンショット取得スクリプト。
 // 使い方: dev server(5199)起動中に `node scripts/capture-r1-evidence.mjs`
-// 出力: docs/asset-requests/evidence/r1/*.png (git管理のレビュー証跡)
+// 出力: docs/asset-requests/evidence/r1-round2/*.png (git管理のレビュー証跡)
 import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
-const OUT = 'docs/asset-requests/evidence/r1';
+const OUT = 'docs/asset-requests/evidence/r1-round2';
 mkdirSync(OUT, { recursive: true });
 
 const VIEWPORTS = [
