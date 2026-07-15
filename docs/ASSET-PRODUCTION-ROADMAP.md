@@ -62,9 +62,9 @@ Python-SDF / CSS-token / shared overlay / existing final / defer.
 | button.danger.background | `Button.tsx` -> destructive actions | B | B | CSS-token | Low | placeholder (both) | Low-frequency, destructive-action button; a clear token-driven solid/border style is safer for readability than illustrated art and does not block any completion tier |
 | button.disabled.background | `Button.tsx` -> disabled state of any button | C | C | shared overlay | Low | placeholder (both) | Disabled is a state modifier (opacity/desaturation) of whichever background variant is active, not an independent surface identity |
 | tile.face.base | `TileCard.tsx` (`slotFor`) -> DeckDetail/Match/Result/Gallery | A | A | Codex CLI | Highest | placeholder (both) | Tile identity is the single most product-defining asset; this is the fixed "next task" (see below) |
-| tile.face.selected | `TileCard.tsx` (`slotFor`) — currently a **separate full face image**, not an overlay | C (recommended refactor) | C (recommended refactor) | shared overlay (after code change) | Deferred pending overlay implementation | placeholder (both) | Investigation confirms `slotFor()` currently resolves this to a fully distinct slot per state (one `<SkinLayer>` per card, not base+overlay composite). Generating 3 extra full tile illustrations per skin (9 total incl. tsumo/ron) triples the tile art burden and risks state legibility (task explicitly flags this). Recommendation: implement a CSS/DOM state indicator drawn over `tile.face.base` instead of new art. This is an engineering change, not an asset-generation task — do not generate final art for this slot until that decision is made |
-| tile.face.ronAvailable | `TileCard.tsx` (`slotFor`) — same as above | C (recommended refactor) | C (recommended refactor) | shared overlay (after code change) | Deferred pending overlay implementation | placeholder (both) | Same reasoning as tile.face.selected |
-| tile.face.tsumoAvailable | `TileCard.tsx` (`slotFor`) — same as above | C (recommended refactor) | C (recommended refactor) | shared overlay (after code change) | Deferred pending overlay implementation | placeholder (both) | Same reasoning as tile.face.selected |
+| tile.face.selected | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Decision made and implemented (ADR-015, R1): TileCard now composites the state slot over `tile.face.base` as a second SkinLayer; state meaning is already carried by CSS + aria. No separate full-face state art will be generated. The slot remains in the contract as an optional overlay-style layer |
+| tile.face.ronAvailable | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Same as tile.face.selected (ADR-015) |
+| tile.face.tsumoAvailable | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Same as tile.face.selected (ADR-015) |
 | tile.back.base | `TileCard.tsx` (`slotFor`) -> same consumers | A | A | Codex CLI | Highest | placeholder (both) | Tile back is visible for every opponent tile and the discard/draw pile; part of the same "tile identity" batch as tile.face.base |
 | badge.warning.background | `Badge.tsx` -> DeckEditor/DeckDetail/Collection/DeckList/AppRoot, Gallery | B | B | CSS-token | Low | placeholder (both) | Warning legibility (contrast, icon, text) matters more than illustrated art; a token-driven badge surface is sufficient and lower-risk for a state that must stay readable |
 | badge.info.background | `Badge.tsx` -> same consumers | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | Medium (yoru) | final v3 (cute-pop, request 007) / placeholder (yoru) | Cute Pop done. For visual parity between skins, yorunoshirube should eventually get an equivalent, but it is not tier-1 blocking (batch 4) |
@@ -89,9 +89,8 @@ B  (fallback/deterministic sufficient): button.danger.background,
 C  (shared overlay, not a duplicated image): panel.paper.emphasis,
    button.disabled.background (both skins)
    + tile.face.selected, tile.face.ronAvailable, tile.face.tsumoAvailable
-     (both skins — recommended refactor target, currently implemented as
-     full duplicate images; no new art should be generated for these until
-     the overlay refactor is decided)
+     (both skins — ADR-015 decided & implemented: composited over the base
+     face as an optional second layer; no separate full-face art planned)
 
 D  (defer, not needed for current MVP): table.overlay.ink, table.overlay.light
      for cute-pop (no ink/lantern motif in cute-pop's visual language)
@@ -174,6 +173,18 @@ Gate to next batch: tile.face.base + tile.back.base promoted to final on
 Blocker check performed for this roadmap: no code blocker found for
 cute-pop/tile.face.base — `TileCard.tsx` already resolves the slot correctly
 through `SkinLayer`, so this remains the correct starting candidate.
+
+**Batch 1 status (R1): candidates ready — human review pending.**
+Request 008 (tile.face.base / tile.back.base, 3 candidates each) and
+request 009 (button.primary.background, 3 candidates — pulled forward from
+Batch 2 because the primary CTA is the largest visible gap) are generated,
+validated, and placed under `generated/candidates/`. Review material and
+the post-approval promotion procedure: `docs/asset-requests/R1-APPROVAL-PACK.md`.
+One integration blocker was found and fixed before generation: the runtime
+resolved tile state slots as full-face replacements with no cross-slot
+fallback, so promoting only tile.face.base would have made selected tiles
+lose their face image. ADR-015 changed TileCard to composite state slots
+over the base face; no separate full-face state art will be generated.
 
 ### Batch 2 — Cute Pop main screens
 
@@ -342,12 +353,16 @@ General-user Release Candidate (Tier 3):   25-40 business days
 
 ## Next task
 
-Next: Create asset request for cute-pop / tile.face.base. Generate up to 3
-candidates through the canonical Codex CLI pipeline
-(docs/IMAGE-ASSET-WORKFLOW.md). Stop before final promotion for human review.
+Next (human): Review and approve/reject the R1 candidates
+(`docs/asset-requests/R1-APPROVAL-PACK.md` — request 008/009, 9 candidates,
+recommended picks noted there). All machine-executable R1 work is done:
+requests, prompts, generation, transparency/inspection, candidates
+placement, Gallery review section, visual evidence, verification.
 
-No asset request was created, no prompt was written, no image was generated,
-and no candidate/final/manifest/skin-version file was touched by this
-roadmap doc itself — this is a planning document only.
+Next (machine, after approval): promote the approved candidates per the
+procedure in the Approval Pack (final move, record updates, skin.json v3->4,
+skin:validate, visual regression, remove the temporary Gallery review
+section), then start Batch 2 remainder (table.background,
+panel.modal.background, panel.result.frame for cute-pop).
 
 Cross-referenced from docs/IMPLEMENTATION-WORKFLOW.md.

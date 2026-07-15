@@ -18,6 +18,10 @@ Current phase: 公式アセット生産(candidates -> 人のレビュー -> fina
   正本ロードマップ: docs/ASSET-PRODUCTION-ROADMAP.md
   (slot分類・バッチ順・次タスク)。着手前にdocs/ASSET-PIPELINE.md、
   docs/IMAGE-ASSET-WORKFLOW.md、docs/SKIN-DISTRIBUTION.mdも読むこと
+R1 (request 008/009: cute-pop牌表/牌裏/primary CTA): candidates 9点
+  配置済み・人間レビュー待ち。docs/asset-requests/R1-APPROVAL-PACK.md参照。
+  tile状態slot(selected/ron/tsumo)はADR-015でbase合成レイヤー化済み
+  (状態用の別full画像は作らない)
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
