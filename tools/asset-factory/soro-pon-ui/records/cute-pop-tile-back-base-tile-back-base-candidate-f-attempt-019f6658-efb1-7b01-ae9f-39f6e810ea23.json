@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "tile.back.base",
+  "assetRequest": "008-cute-pop-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.back.base/candidate-f/attempt-019f6658-efb1-7b01-ae9f-39f6e810ea23/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset in the style of top-grossing cute casual puzzle games: the back side of a game tile card, a portrait-orientation 3:4 rounded rectangle (clearly taller than wide), front-facing, isolated object only. Design: a glossy candy-jelly card back in rose-pink -- softly dimensional like a poured jelly tile with a gentle airbrushed top light, a subtly darker candy rim around all edges, and tiny pastel sugar sprinkles (small rounded sticks in cream, soft yellow and light pink, each with a tiny highlight) scattered evenly across the surface (this glossy jelly depth and per-sprinkle shading must NOT look like flat CSS). Sprinkles must be evenly distributed with no focal point and stay subtle so a small diamond mark overlaid in the center by the app later remains clearly visible. The card back must read as clearly different from a plain white card front at a glance, and the sprinkles must stay coarse enough not to turn to noise at 24 px wide. No text, no letters, no numerals, no watermark, no logo, no existing game characters or logos, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow bleeding into the green. Center the card with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f6658-efb1-7b01-ae9f-39f6e810ea23",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/candidate-f-candy-gloss-sprinkles.txt --output-name tile-back-base-candidate-f.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot tile.back.base --input tools/asset-factory/soro-pon-ui/raw-green/tile-back-base-candidate-f.png --request 008-cute-pop-tile-face-back --output-name tile-back-base-candidate-f.png --fit-width 600 --fit-height 800 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.2 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 600 --expected-height 800 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/candidate-f-candy-gloss-sprinkles.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.back.base/candidate-f/attempt-019f6658-efb1-7b01-ae9f-39f6e810ea23/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.back.base/candidate-f/attempt-019f6658-efb1-7b01-ae9f-39f6e810ea23/compare.png",
+  "processParams": {
+    "hardThreshold": 0.2,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 600,
+    "height": 800
+  },
+  "contentHash": "a661afc9964bc355847c43e01281ee27ede264608622ef9ee4c1b4ff5666b117",
+  "attemptKey": "019f6658-efb1-7b01-ae9f-39f6e810ea23",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/tile-back-base-candidate-f.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-15",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-15",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

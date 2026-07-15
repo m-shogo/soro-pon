@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "button.primary.background",
+  "assetRequest": "009-cute-pop-button-primary",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-e/attempt-019f665c-7093-7493-8ff3-d77cd228c360/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset in the style of top-grossing cute casual puzzle games: a primary call-to-action button background, a wide landscape rounded-rectangle button (roughly 10:3 width-to-height), front-facing, isolated object only. Design: a deep rose-pink button that looks like a frosted sweet -- bordered by a piped cream icing line just inside the edge, softly dimensional like real icing with gentle highlight and shadow (this icing depth must NOT look like a flat CSS outline), over a softly airbrushed rose-pink body with subtle inner shading for depth. The icing line must have PERFECTLY UNIFORM width, and along the top and bottom of the horizontal middle section it must run perfectly straight and level with no waves and no unique detail, so the middle can later be stretched horizontally without any seam -- this is for 9-slice UI scaling; any playful icing character may appear only within the rounded end-zones and must be mirrored left-right. All four rounded corners perfectly uniform and symmetric. The face must stay dark enough that white text overlaid later reaches strong readable contrast. Color: deep rose-pink (#c22f57 direction) body, warm cream icing border. No text, no letters, no numerals, no icon glyph, no watermark, no logo, no existing game characters or logos, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow bleeding into the green. Center the button with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f665c-7093-7493-8ff3-d77cd228c360",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/candidate-e-icing-piping-cta.txt --output-name button-primary-background-candidate-e.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot button.primary.background --input tools/asset-factory/soro-pon-ui/raw-green/button-primary-background-candidate-e.png --request 009-cute-pop-button-primary --output-name button-primary-background-candidate-e.png --fit-width 480 --fit-height 120 --fit-margin-ratio 0.05 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 480 --expected-height 120 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/candidate-e-icing-piping-cta.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-e/attempt-019f665c-7093-7493-8ff3-d77cd228c360/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-e/attempt-019f665c-7093-7493-8ff3-d77cd228c360/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 480,
+    "height": 120
+  },
+  "contentHash": "b1617b3f56a28c5c03b43c9d7aaeb8560ed5f920c1c81b5ed8813c6779ba598b",
+  "attemptKey": "019f665c-7093-7493-8ff3-d77cd228c360",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/button-primary-background-candidate-e.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-15",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-15",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

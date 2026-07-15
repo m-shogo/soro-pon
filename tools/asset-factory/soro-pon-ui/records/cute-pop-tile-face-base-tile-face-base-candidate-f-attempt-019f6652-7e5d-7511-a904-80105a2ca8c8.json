@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "tile.face.base",
+  "assetRequest": "008-cute-pop-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.face.base/candidate-f/attempt-019f6652-7e5d-7511-a904-80105a2ca8c8/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset in the style of top-grossing cute casual puzzle games: the blank front face of a game tile card, a portrait-orientation 3:4 rounded rectangle (clearly taller than wide), front-facing, isolated object only. Design: a soft white card whose border is a string of tiny candy beads -- small round sugar-candy pearls in alternating pastel pink, pastel orange and cream, each bead individually shaded with a tiny glossy highlight and soft shadow so they look like real dimensional candies (this per-bead dimensional shading must NOT look like flat CSS dots), running evenly around all four edges just inside the card, with one slightly larger candy star at each of the four corners. The entire center area and the whole upper quarter of the card must stay plain soft white with no pattern and no motif, because a category color band, a large emoji glyph, and a name label will be overlaid by the app later. Beads must stay small and even so the frame reads as a delicate decorated edge, not noise, even at 24 px wide. Color: soft white face, pastel pink/orange/cream candy beads. Clean silhouette, uniform symmetric rounded corners. No text, no letters, no numerals, no icon glyph, no suit symbol, no watermark, no logo, no existing game characters or logos, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow bleeding into the green. Center the card with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f6652-7e5d-7511-a904-80105a2ca8c8",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-face-base/candidate-f-candy-bead-frame.txt --output-name tile-face-base-candidate-f.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot tile.face.base --input tools/asset-factory/soro-pon-ui/raw-green/tile-face-base-candidate-f.png --request 008-cute-pop-tile-face-back --output-name tile-face-base-candidate-f.png --fit-width 600 --fit-height 800 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.2 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 600 --expected-height 800 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-face-base/candidate-f-candy-bead-frame.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.face.base/candidate-f/attempt-019f6652-7e5d-7511-a904-80105a2ca8c8/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.face.base/candidate-f/attempt-019f6652-7e5d-7511-a904-80105a2ca8c8/compare.png",
+  "processParams": {
+    "hardThreshold": 0.2,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 600,
+    "height": 800
+  },
+  "contentHash": "5fbc5bc6582f186d0ebedc5c823603d62849bec0a67b4c596b6cf6572c3a7bef",
+  "attemptKey": "019f6652-7e5d-7511-a904-80105a2ca8c8",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/tile-face-base-candidate-f.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-15",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-15",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}
