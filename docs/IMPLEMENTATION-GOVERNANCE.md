@@ -17,10 +17,10 @@ docs/GLOSSARY.md
 ## Current Status
 
 ```text
-Gameplay MVP phases 1-14: implemented
-Multi-skin runtime baseline: implemented / partial
-Active implementation: H1 -> H11 in SKIN-FOUNDATION-HARDENING
-Final image production: blocked until all P0 gates pass
+Gameplay MVP phases 1-14: complete
+Multi-skin runtime baseline: complete
+Skin foundation hardening H1-H11: complete (docs/SKIN-FOUNDATION-HARDENING.md)
+Final image production: active (docs/ASSET-PRODUCTION-ROADMAP.md)
 ```
 
 ## Code Structure and Dependencies

@@ -18,7 +18,13 @@ initial shared component integration
 
 Do not create a second theme system. Harden and complete the existing one.
 
-Final PNG/WebP generation must not start until all P0 gates in this document pass.
+Status: all P0/P1/P2 items and H1-H11 below are **complete** (verified
+2026-07, see docs/IMPLEMENTATION-WORKFLOW.md for the status summary and
+representative commits). This document remains the source of truth for
+what each item required and for any documented exceptions/future scope —
+it is kept as the historical/detail record, not deleted. Final PNG/WebP
+generation is active; current asset-production plan and next task:
+docs/ASSET-PRODUCTION-ROADMAP.md.
 
 ## Non-negotiable invariants
 
@@ -54,6 +60,8 @@ registered visual effects
 ## P0 — Required before image production
 
 ### P0-1 Explicit skin-token allowlist
+
+Status: **complete**.
 
 Problem:
 
@@ -96,6 +104,8 @@ Do not use only a name regex. Use a typed definition table.
 
 ### P0-2 Enforce the full skin contract
 
+Status: **complete**. `pnpm skin:validate` implemented and in CI.
+
 Add `pnpm skin:validate`.
 
 It must validate:
@@ -129,6 +139,8 @@ Add the command to CI after implementation.
 
 ### P0-3 Semantic contrast contract
 
+Status: **complete**.
+
 Create semantic foreground tokens instead of reusing general text colors:
 
 ```text
@@ -153,6 +165,8 @@ warning/info/success states remain distinguishable without color alone
 Add contrast checks for official token sets to `skin:validate` where practical.
 
 ### P0-4 User-facing and Gallery skin selection
+
+Status: **complete**.
 
 Implement shared:
 
@@ -182,6 +196,8 @@ modal/form state where applicable
 ```
 
 ### P0-5 Nine-slice production proof
+
+Status: **complete**. Proof accepted at five sizes for both official skins.
 
 Before generating all assets, prove the renderer with only:
 
@@ -217,6 +233,8 @@ Only after this proof may broad image production start.
 
 ### P0-6 Layered surface rendering
 
+Status: **complete**.
+
 Do not apply skin opacity or blend mode to the content element itself.
 
 Use explicit layers:
@@ -235,6 +253,11 @@ Skin layers must use `pointer-events: none`.
 Text, icons, children, focus rings, and hit areas must remain fully opaque and interactive.
 
 ### P0-7 Finish the central render contract
+
+Status: **complete with policy exception**. Implemented render modes cover
+what current official-skin slots actually need; the remaining listed modes
+are added only when a specific asset proves the need (see H6 below), not
+implemented unconditionally.
 
 Central renderers may support:
 
@@ -261,6 +284,8 @@ Add only modes with tests and real Component Gallery examples.
 
 ### P1-1 DOM and interaction test layer
 
+Status: **complete**.
+
 Keep pure engine tests in node environment.
 
 Add a browser-like component test setup for:
@@ -278,6 +303,13 @@ ErrorState and reset confirmation
 Use an explicit dependency/ADR decision before adding test libraries.
 
 ### P1-2 Playwright visual regression
+
+Status: **complete**. Implemented: 32 test cases total — 30 screenshot
+cases (TOP / Gallery / MatchSetup x 2 skins x 5 sizes) + 2 non-screenshot
+skin-asset-ready assertions, in `tests/visual/`. The minimum matrix below
+covers the 3 screens currently in the suite; additional screens are added
+to the matrix as asset-production batches reach them
+(docs/ASSET-PRODUCTION-ROADMAP.md).
 
 Minimum matrix:
 
@@ -300,6 +332,8 @@ Review sizes:
 Handle deterministic data, timestamps, motion, and fonts before recording baselines.
 
 ### P1-3 Accessibility completion
+
+Status: **complete**.
 
 Modal:
 
@@ -331,6 +365,8 @@ color is never the only signal
 
 ### P1-4 Recovery UX
 
+Status: **complete**.
+
 Implement:
 
 ```text
@@ -347,6 +383,8 @@ Never return a blank screen for a recoverable missing entity.
 
 ### P1-5 Dynamic browser color scheme
 
+Status: **complete**.
+
 Skin metadata must define:
 
 ```text
@@ -359,6 +397,8 @@ Apply it to the document and relevant meta tags when switching.
 Cute Pop must not retain dark native controls solely because the initial HTML is dark.
 
 ### P1-6 Shared-component completion
+
+Status: **complete**.
 
 Prioritize:
 
@@ -382,6 +422,8 @@ Replace repeated screen-local generic controls after shared replacements are tes
 
 ### P1-7 CSS responsibility split
 
+Status: **complete**.
+
 Split the large mixed stylesheet by responsibility:
 
 ```text
@@ -397,6 +439,8 @@ Keep shared component style, screen layout, and motion ownership separate.
 Use cascade layers to prevent skin presentation from modifying layout.
 
 ### P1-8 CI/toolchain hardening
+
+Status: **complete**.
 
 Add or confirm:
 
@@ -415,6 +459,8 @@ Do not claim CI passed when no workflow run is available. Local command results 
 
 ### P2-1 Trust-level file policy
 
+Status: **complete**.
+
 ```text
 official reviewed skin: approved SVG may be allowed
 external/paid skin: PNG/WebP only by default
@@ -425,6 +471,9 @@ Do not load arbitrary external SVG without a proven sanitization pipeline.
 External skins never include executable CSS, JS, HTML, remote URLs, or external fonts.
 
 ### P2-2 Versioned and atomic asset switching
+
+Status: **complete**. Versioned URL, preload, atomic switch, and
+failure fallback are implemented.
 
 Required:
 
@@ -438,6 +487,10 @@ avoid flash of mixed skins
 ```
 
 ### P2-3 Installed-skin integrity and entitlement boundary
+
+Status: **complete as a documented design (docs/SKIN-DISTRIBUTION.md);
+future distribution-only for the actual marketplace/payment
+implementation**, which is not built and is out of current MVP scope.
 
 Before sales/distribution, define:
 
@@ -455,6 +508,13 @@ uninstall behavior
 Skins never gain engine, storage, records, payment, or network execution privileges.
 
 ### P2-4 Complete match-record idempotency
+
+Status: **complete (engineering groundwork); the restore/replay/resend
+feature itself is not built and remains non-MVP** (docs/MASTER-SPEC.md
+"Not current MVP" — online multiplayer/restore-style features are out of
+scope). Persistent `matchSessionId`, recent-processed-ID tracking, pure
+recording builders, and backward-compatible migration are implemented so
+that feature can be added safely later.
 
 Before match restore/replay/resend features:
 
@@ -525,9 +585,10 @@ H11 complete match-record idempotency before restore/replay
 
 Do not combine all items into one commit.
 
-## Completion gate before image production
+## Completion gate before image production — passed
 
-All must pass:
+All items below have passed. Image production is active
+(docs/ASSET-PRODUCTION-ROADMAP.md).
 
 ```text
 P0 items complete

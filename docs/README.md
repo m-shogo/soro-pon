@@ -3,10 +3,10 @@
 ## Current Status
 
 ```text
-Gameplay MVP phases 1-14: implemented
-Multi-skin runtime baseline: implemented / partial
-Current next work: skin-foundation hardening P0 -> P1 -> P2
-Final PNG/WebP generation: blocked until all P0 gates pass
+Gameplay MVP phases 1-14: complete
+Multi-skin runtime baseline: complete
+Skin foundation hardening H1-H11 (P0/P1/P2): complete
+Image production: active — see docs/ASSET-PRODUCTION-ROADMAP.md
 Official skins: yorunoshirube / cute-pop
 ```
 
@@ -53,6 +53,7 @@ docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
 docs/ASSET-PIPELINE.md
 docs/IMAGE-ASSET-WORKFLOW.md
+docs/ASSET-PRODUCTION-ROADMAP.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md
@@ -69,34 +70,36 @@ shared Button/Panel/Dialog/Form/Tile components
 Unity/Godot-style slice rendering only through shared Skin renderers
 layout/hit areas/game state never controlled by skin
 external skins use an explicit typed token allowlist
-both official skins must work without final PNGs
-no final image generation until all hardening P0 gates pass
-future generated images go to candidates before human-reviewed final
+both official skins must work without final PNGs (still true — most slots remain fallback)
+image generation is active; candidates go through human review before final
 ```
 
-## Current Hardening Priority
+## Hardening Priority (P0/P1/P2: complete)
 
 ```text
-P0 before image production:
+P0 (required before image production) — complete:
 - explicit skin-token allowlist and range validation
 - full skin contract / filesystem validator
 - semantic contrast and Cute Pop correction
 - Gallery and user-facing SkinSelector
 - layered SkinSurface and real nine-slice proof
 
-P1 before public demo:
-- DOM/component and visual regression tests
+P1 (required before public demo) — complete:
+- DOM/component and visual regression tests (32 Playwright cases, 5 sizes, both skins)
 - accessibility completion
 - ErrorBoundary/ErrorState/data reset
 - dynamic light/dark browser color scheme
 - common-component/CSS responsibility completion
 
-P2 before installed/paid skins:
+P2 (required before installed/paid skins) — complete for current scope:
 - external file trust policy
 - versioned/preloaded/atomic skin switching
-- package integrity/entitlement boundary
-- complete match-record idempotency before replay/restore
+- package integrity/entitlement boundary (marketplace/payment/entitlement commerce itself is future scope)
+- complete match-record idempotency (restore/replay feature itself remains non-MVP)
 ```
+
+Full status/exception detail: docs/SKIN-FOUNDATION-HARDENING.md.
+Asset production status/plan: docs/ASSET-PRODUCTION-ROADMAP.md.
 
 ## Architecture / API / Rule Contracts
 

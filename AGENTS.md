@@ -5,14 +5,16 @@
 ## Current Status
 
 ```text
-Gameplay MVP phases 1-14: implemented
-Multi-skin runtime baseline: implemented / partial
-Current next phase: docs/SKIN-FOUNDATION-HARDENING.md の H1 から順に実装
+Gameplay MVP phases 1-14: complete
+Multi-skin runtime baseline: complete
+Skin foundation hardening H1-H11 (P0/P1/P2): complete
 Official skins: yorunoshirube / cute-pop
-Final image generation: P0完了後の別フェーズ
+Image production: 稼働中(request 007 closed)。正本は
+  docs/ASSET-PRODUCTION-ROADMAP.md(slot分類・バッチ順・次タスク)
+Current next phase: 公式アセット生産バッチ(次タスクはロードマップ参照)
 ```
 
-「MVP Phase 1から実装開始」は古い状態です。既存実装を壊さず、現在地は `docs/IMPLEMENTATION-WORKFLOW.md` で確認してください。
+「MVP Phase 1から実装開始」「H1から順に実装」は古い状態です。既存実装を壊さず、現在地は `docs/IMPLEMENTATION-WORKFLOW.md` と `docs/ASSET-PRODUCTION-ROADMAP.md` で確認してください。
 
 ## Read First
 
@@ -74,37 +76,37 @@ arbitrary CSS/JS/HTML/external URL/external font in installed skins
 external skin overriding any unknown --sp-* token
 ```
 
-## Current Implementation Order
-
-Do not skip ahead:
+## Hardening Order (H1-H11: complete)
 
 ```text
-H1 token allowlist and typed validation
-H2 skin:validate and CI integration
-H3 semantic contrast and Cute Pop fixes
-H4 SkinSelector and Gallery switching
-H5 layered SkinSurface and real nine-slice proof
-H6 proven renderer-mode completion
-H7 shared-component and CSS responsibility migration
-H8 DOM/accessibility/recovery tests and fixes
-H9 Playwright visual regression and five-size QA
-H10 external/paid skin security and atomic loading
-H11 persistent match-session idempotency before restore/replay
+H1 token allowlist and typed validation                 complete
+H2 skin:validate and CI integration                     complete
+H3 semantic contrast and Cute Pop fixes                  complete
+H4 SkinSelector and Gallery switching                    complete
+H5 layered SkinSurface and real nine-slice proof         complete
+H6 proven renderer-mode completion                       complete (only where proven necessary)
+H7 shared-component and CSS responsibility migration      complete
+H8 DOM/accessibility/recovery tests and fixes             complete
+H9 Playwright visual regression and five-size QA          complete (32 cases, 5 sizes, both skins)
+H10 external/paid skin security and atomic loading        complete (marketplace/commerce is future scope)
+H11 persistent match-session idempotency before restore/replay  complete (restore/replay feature itself is non-MVP)
 ```
 
-Use small commits. Each item must finish tests, docs, commit, and push before the next.
+Detail and exceptions: `docs/SKIN-FOUNDATION-HARDENING.md`.
+Use small commits. Each item finished tests, docs, commit, and push before the next.
 
-## Foundation Image Boundary
+## Image Production — Active
 
-Current work does not generate final images.
+All P0 gates passed. Asset production is the current phase.
 
 ```text
-build contracts, switching, components, fallbacks, validators, and asset request lists
-future generated output -> generated/candidates
-human review -> generated/final
+generate/draw (Codex CLI起点) -> generated/candidates
+-> human review -> generated/final -> manifest update
 ```
 
-Do not invoke image generation or write generated files into `final` unless every P0 gate passes and the task explicitly enters asset production.
+Never write generated output directly into `final`. Current slot
+classification, batch order, and the single next task:
+`docs/ASSET-PRODUCTION-ROADMAP.md`.
 
 ## New Feature Gate
 

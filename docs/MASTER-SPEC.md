@@ -11,16 +11,18 @@ If another document conflicts with this file, this file wins unless this file is
 ## Current Status
 
 ```text
-Gameplay MVP phases 1-14: implemented
-Current next phase: multi-skin design-system foundation
+Gameplay MVP phases 1-14: complete
+Multi-skin design-system foundation (H1-H11): complete
 Official skins: yorunoshirube / cute-pop
-Final image generation: later separate reviewed phase
+Final image generation: active, human-reviewed candidate -> final phase
+Current next phase: official asset production and visual completion
 ```
 
 Current implementation state and commits are tracked in:
 
 ```text
 docs/IMPLEMENTATION-WORKFLOW.md
+docs/ASSET-PRODUCTION-ROADMAP.md
 ```
 
 ## Product Summary
@@ -430,9 +432,7 @@ Invalid skins must safely fall back to the default/base skin and must never prev
 
 ## Image Generation Boundary
 
-The current skin-system foundation phase does not generate final images.
-
-It builds:
+The skin-system foundation phase (H1-H11) is complete. It built:
 
 ```text
 skin contracts and switching
@@ -442,21 +442,22 @@ asset slots
 geometry/safe-area contracts
 CSS/SVG fallback for both official skins
 skin validation
-future asset requests and generation prompts
+asset requests and generation prompts
 candidates/final directory structure
 ```
 
-Later asset production:
+Asset production is now active:
 
 ```text
-generate/draw
+generate/draw (Codex CLI起点)
 -> generated/candidates
 -> preview and screenshot review
 -> human approval
 -> generated/final
 ```
 
-Never generate directly into `final`.
+Never generate directly into `final`. Full slot classification, batch order,
+and the current next task: docs/ASSET-PRODUCTION-ROADMAP.md.
 
 ## Design References
 

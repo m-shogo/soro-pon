@@ -7,11 +7,12 @@ Vamp-pon世界の中で遊ばれている「記憶札遊び」として扱いま
 ## Current Status
 
 ```text
-Gameplay MVP phases 1-14: implemented
-Multi-skin runtime baseline: implemented / partial
-Active work: docs/SKIN-FOUNDATION-HARDENING.md H1 -> H11
+Gameplay MVP phases 1-14: complete
+Multi-skin runtime baseline: complete
+Skin foundation hardening H1-H11: complete
 Official skins: yorunoshirube / cute-pop
-Final PNG/WebP generation: blocked until all P0 gates pass
+Image production pipeline: ready and proven (Codex CLI起点、request 007 closed)
+Current phase: official asset production (candidates -> human review -> final)
 ```
 
 正確な現在地と実装順:
@@ -19,6 +20,7 @@ Final PNG/WebP generation: blocked until all P0 gates pass
 ```text
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/SKIN-FOUNDATION-HARDENING.md
+docs/ASSET-PRODUCTION-ROADMAP.md  (slot classification / batches / next task)
 ```
 
 ## Product Core
@@ -102,44 +104,42 @@ screen-local generic buttons/panels/dialogs/forms are forbidden
 new reusable UI goes through shared components, Gallery, tests, and both skins
 ```
 
-## Active Hardening Order
+## Hardening Order (H1-H11: complete)
 
 ```text
-H1 typed skin-token allowlist
-H2 full contract validator and CI
-H3 semantic contrast and Cute Pop fixes
-H4 Gallery and user-facing SkinSelector
-H5 layered SkinSurface and real nine-slice proof
-H6 proven central render modes
-H7 shared component and CSS responsibility migration
-H8 DOM/accessibility/recovery tests and fixes
-H9 Playwright visual regression and five-size QA
-H10 installed/paid skin security and atomic loading
-H11 persistent match-session idempotency before restore/replay
+H1 typed skin-token allowlist                          complete
+H2 full contract validator and CI                       complete
+H3 semantic contrast and Cute Pop fixes                 complete
+H4 Gallery and user-facing SkinSelector                 complete
+H5 layered SkinSurface and real nine-slice proof         complete
+H6 proven central render modes                          complete (implemented only when proven necessary; no unconditional rollout)
+H7 shared component and CSS responsibility migration     complete
+H8 DOM/accessibility/recovery tests and fixes            complete
+H9 Playwright visual regression and five-size QA         complete (32 cases, 5 sizes, both skins)
+H10 installed/paid skin security and atomic loading      complete (marketplace/payment/entitlement remain future scope)
+H11 persistent match-session idempotency before restore/replay  complete (restore/replay feature itself remains non-MVP)
 ```
 
-Do not skip directly to image generation.
+Details and any documented exceptions: docs/SKIN-FOUNDATION-HARDENING.md.
 
-## Image Generation Boundary
+## Image Generation Status
 
-Current hardening work does not generate final images.
+All P0 gates passed. Image production is active.
 
 ```text
-build contracts, selectors, shared components, fallbacks, validators, and asset requests
+Codex CLI起点で画像を生成する(高彩度単色グリーン背景)
+-> Python透過(色距離+2段しきい値+despill)
+-> 検査
+-> generated/candidates(manifest未登録)
+-> Gallery/実画面レビュー
+-> 人間の承認
+-> generated/final(skin.json経由でのみ参照)
 ```
 
-Only after all P0 gates pass and the user explicitly starts asset production:
-
-```text
-generate/draw
--> generated/candidates
--> preview and screenshot review
--> human approval
--> generated/final
--> manifest update
-```
-
-Never generate directly into `final`.
+Never generate directly into `final`. First proof-of-concept cycle (request
+007, cute-pop / badge.info.background) is closed. See
+docs/ASSET-PRODUCTION-ROADMAP.md for the full slot classification, batch
+order, and the single next task.
 
 ## Existing Skin Baseline
 

@@ -15,10 +15,10 @@ docs/SKIN-FOUNDATION-HARDENING.md
 ## Current State
 
 ```text
-Gameplay MVP phases 1-14: implemented
-Multi-skin runtime baseline: implemented / partial
-Current work: skin-foundation hardening H1 -> H11
-Final PNG/WebP generation: blocked until every P0 gate passes
+Gameplay MVP phases 1-14: complete
+Multi-skin runtime baseline: complete
+Skin foundation hardening H1-H11: complete (docs/SKIN-FOUNDATION-HARDENING.md)
+Final PNG/WebP generation: active (docs/ASSET-PRODUCTION-ROADMAP.md)
 ```
 
 Already implemented:

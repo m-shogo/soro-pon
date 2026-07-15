@@ -5,15 +5,19 @@ Claude Code向けの作業指示。
 ## Current Status
 
 ```text
-Gameplay MVP phases 1-14: implemented
-Multi-skin runtime baseline: implemented
-Skin foundation hardening H1-H11: implemented
-  (H6 render-mode追加は必要性が証明されたときのみ / visual regressionはローカル実行のみ)
-All P0 gates: passed
+Gameplay MVP phases 1-14: complete
+Multi-skin runtime baseline: complete
+Skin foundation hardening H1-H11: complete
+  (H6 render-mode追加は必要性が証明されたときのみ / visual regressionは
+  Playwright 32ケース・5サイズ・両スキンで実装済み)
+All P0/P1/P2 gates: passed
+Image production pipeline: 稼働中・実証済み(request 007 closed)
 Official skins: yorunoshirube / cute-pop
-Current next phase: アセット生産(candidates -> 人のレビュー -> final)を
-  明示タスクとして開始可能。着手前にdocs/ASSET-PIPELINE.md、
-  docs/IMAGE-ASSET-WORKFLOW.md、docs/SKIN-DISTRIBUTION.mdを読むこと
+  (cute-pop final資産3件 / yorunoshirube final資産0件)
+Current phase: 公式アセット生産(candidates -> 人のレビュー -> final)。
+  正本ロードマップ: docs/ASSET-PRODUCTION-ROADMAP.md
+  (slot分類・バッチ順・次タスク)。着手前にdocs/ASSET-PIPELINE.md、
+  docs/IMAGE-ASSET-WORKFLOW.md、docs/SKIN-DISTRIBUTION.mdも読むこと
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
@@ -43,6 +47,7 @@ docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
 docs/ASSET-PIPELINE.md
 docs/IMAGE-ASSET-WORKFLOW.md
+docs/ASSET-PRODUCTION-ROADMAP.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md

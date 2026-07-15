@@ -14,10 +14,15 @@ Active hardening plan: docs/SKIN-FOUNDATION-HARDENING.md
 
 ```text
 Gameplay MVP phases 1-14: complete
-Multi-skin runtime baseline: implemented / partial
-Active work: H1 -> H11 skin-foundation hardening
-Final PNG/WebP production: blocked until all P0 gates pass
-Release/demo gates: after P0/P1 completion and reviewed assets where required
+Multi-skin runtime baseline: complete
+Skin-foundation hardening H1-H11: complete (docs/SKIN-FOUNDATION-HARDENING.md)
+Image production pipeline: ready and proven; request 007 (cute-pop /
+  badge.info.background) closed; 3 final assets exist on cute-pop, 0 on
+  yorunoshirube
+Active work: official asset production — see docs/ASSET-PRODUCTION-ROADMAP.md
+  for slot classification, batches, and the single next task
+Release/demo gates: docs/RELEASE-DEMO-GATES.md — Gate 3 (Skin Foundation
+  Image-ready) is satisfied; Gates 4+ depend on asset-production batches
 ```
 
 ## Completed Gameplay Phases
@@ -73,182 +78,113 @@ core/package skin tests
 
 This baseline must be preserved and hardened, not replaced.
 
-## Active Workflow
+## Completed Hardening (H1-H11)
+
+All 11 items are complete. Full requirement lists, documented exceptions,
+and future-scope callouts live in `docs/SKIN-FOUNDATION-HARDENING.md`
+(P0/P1/P2 sections) — this section is a status summary only.
 
 ### H1 — Token allowlist and typed validation
 
-Status: **next / not complete**
-
-Required:
-
-```text
-explicit skinable token registry
-structural vs skinable separation
-per-token type/range validation
-external skins cannot override spacing/font-size/line-height/z-index/touch/layout/pointer behavior
-```
+Status: **complete**. Explicit skinable token registry with structural
+vs skinable separation and per-token type/range validation in place.
+External skins cannot override spacing/font-size/line-height/z-index/
+touch/layout/pointer behavior.
 
 ### H2 — Contract validator and CI
 
-Status: **pending**
-
-Required:
-
-```bash
-pnpm skin:validate
-```
-
-Must validate actual files, bytes, dimensions, slice/safe-area geometry, trust-level file type, render-mode permission, status/path consistency, and all official packages.
+Status: **complete**. `pnpm skin:validate` (`vitest run
+src/ui/skins/skinValidate.test.ts`) validates files, bytes, dimensions,
+slice/safe-area geometry, trust-level file type, render-mode permission,
+status/path consistency, and all official packages.
 
 ### H3 — Semantic contrast
 
-Status: **pending**
-
-Required:
-
-```text
-on-primary/on-surface/on-category semantic text tokens
-Cute Pop CTA correction
-focus contrast correction
-category foreground selection
-contrast validation where practical
-```
+Status: **complete**. Semantic text tokens, Cute Pop CTA correction, focus
+contrast correction, and category foreground selection implemented.
 
 ### H4 — Skin selection
 
-Status: **pending**
-
-Required:
-
-```text
-SkinSelector
-SkinPreviewCard
-Gallery instant switch
-normal user-facing switch
-loading/failure/default states
-no reload
-no match/editor/UI state loss
-```
+Status: **complete**. `SkinSelector`/`SkinPreviewCard` work in Component
+Gallery and the normal user-facing flow, with loading/failure/default
+states, no reload, and no match/editor/UI state loss.
 
 ### H5 — Layered SkinSurface and nine-slice proof
 
-Status: **pending**
-
-Required:
-
-```text
-skin image and opacity never affect content
-separate source slice and rendered border width
-panel.paper.default proof
-button.primary.background proof
-five-size and long-text verification
-```
+Status: **complete**. `panel.paper.default` and `button.primary.background`
+proofs accepted at five sizes with separated source slice / rendered
+border width.
 
 ### H6 — Central render-mode completion
 
-Status: **pending / only as proven necessary**
-
-Candidate modes:
-
-```text
-repeat-x / repeat-y
-nine-slice-tile
-three-slice-x / three-slice-y
-mask/tint
-```
-
-No screen-local implementations.
+Status: **complete with documented policy**. Policy is "implement an
+additional render mode only when a real slot proves it necessary" — this
+is not "implement every candidate mode unconditionally." No screen-local
+render-mode implementations exist. Re-open only if a specific asset
+requires a mode not yet supported.
 
 ### H7 — Shared component and CSS responsibility migration
 
-Status: **partial / pending**
-
-Required shared components:
-
-```text
-IconButton
-Dialog
-SectionHeader
-ValidationIssueList
-FormField/TextField/NumberField/SelectField/Toggle
-EmptyState/ErrorState
-SkinSelector/SkinPreviewCard
-```
-
-Split mixed CSS into foundations/components/layouts/screens/motion with cascade-layer protection.
+Status: **complete**. `IconButton`, `Dialog`, `SectionHeader`,
+`ValidationIssueList`, form fields, `EmptyState`/`ErrorState`,
+`SkinSelector`/`SkinPreviewCard` are shared components. CSS is split into
+foundations/components/layouts/screens/motion with cascade-layer
+protection.
 
 ### H8 — DOM/accessibility/recovery
 
-Status: **pending**
-
-Required:
-
-```text
-component/interaction test environment
-Modal focus trap and return
-Tabs keyboard model
-Tile selected/emphasis ARIA
-AppErrorBoundary
-recoverable ErrorState
-missing entity fallback
-visible local-data reset
-skin-driven browser color scheme
-```
+Status: **complete**. Component/interaction test environment, Modal focus
+trap/return, Tabs keyboard model, Tile selected/emphasis ARIA,
+`AppErrorBoundary`, recoverable `ErrorState`, missing-entity fallback,
+visible local-data reset, and skin-driven browser color scheme are all
+implemented.
 
 ### H9 — Visual regression and five-size QA
 
-Status: **pending**
-
-Required after ADR/dependency decision:
-
-```text
-Playwright user flows
-both official skins
-all screens at 844x390
-major screens at five sizes
-stable screenshot baselines
-```
+Status: **complete**. Playwright visual regression is implemented:
+32 test cases total (30 screenshot cases across TOP/Gallery/MatchSetup x
+2 skins x 5 sizes, plus 2 non-screenshot skin-asset-ready assertions) in
+`tests/visual/`. Additional screens can be added to the matrix as asset
+production reaches them (see docs/ASSET-PRODUCTION-ROADMAP.md batches).
 
 ### H10 — Installed/paid skin hardening
 
-Status: **future / required before distribution**
-
-```text
-external PNG/WebP-only default
-official reviewed SVG policy
-versioned or content-hashed asset URLs
-preload and atomic switching
-package identity/integrity/upgrade/rollback/uninstall
-no execution privileges
-```
+Status: **complete for engineering scope; marketplace/commerce remains
+future scope**. Versioned/content-hashed asset URLs, preload, atomic
+switching, and failure fallback (previous skin retained) are implemented.
+Package identity/integrity/upgrade/rollback/uninstall design is documented
+in `docs/SKIN-DISTRIBUTION.md`. Actual marketplace, payment, and
+entitlement systems are not built and remain future scope — H10 is about
+the loading/security mechanism, which is done.
 
 ### H11 — Match recording idempotency
 
-Status: **future / required before match restore, replay, or resend**
+Status: **complete for engineering scope; restore/replay feature is
+non-MVP**. Persistent `matchSessionId`, recent-processed-ID tracking, a
+pure recording builder with injected timestamp/ID, and backward-compatible
+storage migration are implemented. The match restore/replay/resend
+*feature* itself is out of current MVP scope (docs/MASTER-SPEC.md
+"Not current MVP") — H11 exists so that feature can be built safely later,
+not to ship it now.
+
+## Image Production — Active
+
+H1-H11 and all P0 gates are complete. Asset production is the current
+phase.
 
 ```text
-persistent matchSessionId
-recent processed ID set
-pure recording builder with injected timestamp/ID
-backward-compatible storage migration
-```
-
-## Image Production — Separate Later Phase
-
-Do not generate final images during H1-H9.
-
-After every P0 gate in `SKIN-FOUNDATION-HARDENING.md` passes and the user explicitly starts asset production:
-
-```text
-generate/draw
+Codex CLI起点で画像を生成する
 -> skins/<id>/generated/candidates
 -> preview and screenshot review
 -> human approval
 -> generated/final
--> manifest update
+-> manifest update (skin.json + version bump)
 ```
 
-Never generate directly into `final`.
+Never generate directly into `final`. First proof-of-concept cycle
+(request 007, cute-pop / badge.info.background) is closed — candidate B
+promoted, A/C not-selected. Full slot classification, batch order, and the
+current single next task: `docs/ASSET-PRODUCTION-ROADMAP.md`.
 
 ## Verification Commands
 
@@ -294,7 +230,7 @@ TOP / Deck Editor / Match / Result / Collection: both official skins
 
 ## Completion Gates
 
-### Before image production
+### Before image production — passed
 
 ```text
 all P0 items complete
@@ -303,36 +239,40 @@ both skins selectable without reload
 state preserved through switch
 contrast accepted
 real nine-slice proof accepted
-candidate-first workflow ready
+candidate-first workflow ready (proven via request 007)
 ```
 
-### Before public demo
+### Before public demo — in progress (asset production, see docs/ASSET-PRODUCTION-ROADMAP.md)
 
 ```text
-all applicable P1 items complete
-component/DOM tests green
-visual regression accepted
-accessibility/recovery/reset path accepted
-release/demo checklist passed
+all applicable P1 items complete            done
+component/DOM tests green                   done
+visual regression accepted                  done for current 3-screen matrix; extends as new screens get final assets
+accessibility/recovery/reset path accepted  done
+release/demo checklist passed               pending — most slots still placeholder (see roadmap)
 ```
 
 ### Before installed/paid skins
 
 ```text
-all P2 skin-distribution items complete
-trust-level policy enforced
-atomic/versioned loading accepted
-integrity and lifecycle rules documented/tested
+all P2 skin-distribution items complete     done (engineering scope; commerce is future scope)
+trust-level policy enforced                 done
+atomic/versioned loading accepted           done
+integrity and lifecycle rules documented/tested  documented in docs/SKIN-DISTRIBUTION.md; marketplace/payment implementation is future scope
 ```
 
 ## Known Pending Areas
 
 ```text
-extendedRoleSpan remains pending and blocked by E7008
-skin hardening H1-H10 remains unfinished
-final official skin images remain placeholder/null
-candidate/final validation is unfinished
-complete match-record idempotency is required before restore/replay
+extendedRoleSpan remains pending and blocked by E7008 (non-MVP, unchanged)
+skin hardening H1-H11: complete (see above) — no longer pending
+official skin final images: 3 of 21 contract slots done (all on cute-pop);
+  0 on yorunoshirube; button.primary.background (main CTA) still placeholder
+  on both — see docs/ASSET-PRODUCTION-ROADMAP.md for batch plan
+candidate/final validation: implemented and proven (request 007 closed);
+  ongoing per-batch use is expected, not "unfinished"
+match restore/replay/resend feature: non-MVP; H11 idempotency groundwork
+  for it is complete but the feature itself is not built
 ```
 
 ## Work Rule
