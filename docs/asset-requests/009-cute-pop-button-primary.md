@@ -5,8 +5,17 @@
 - skin: `cute-pop`
 - slot: `button.primary.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **candidates生成済み・人間レビュー待ち(final昇格前で停止)**
+- status: **round 1(A/B/C)は人間レビューで全却下。round 2(D/E/F)生成済み・
+  人間レビュー待ち(final昇格前で停止)**
 - target files (candidates): `generated/candidates/button-primary-background-candidate-*.png`
+
+## Round 1 Rejection (2026-07-16, approvalSource: user-provided-human-decision)
+
+候補A/B/Cを人間レビューで却下。理由は request 008 と同一:
+CSSで再現可能な単純フラット面のため。round 2はcandy/jelly/icing/macaron等、
+画像生成でしか実現できない質感・立体感のCTAへ方向転換する。
+9-slice安全性(中央帯の水平一様性)・白文字コントラスト・文字焼き込み禁止は維持。
+round 1候補はrejected recordとしてarchiveに保持。
 
 ## Purpose
 

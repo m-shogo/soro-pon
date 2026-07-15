@@ -5,9 +5,33 @@
 - skin: `cute-pop`
 - slots: `tile.face.base`, `tile.back.base`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **candidates生成済み・人間レビュー待ち(final昇格前で停止)**
+- status: **round 1(A/B/C)は人間レビューで全却下。round 2(D/E/F)生成済み・
+  人間レビュー待ち(final昇格前で停止)**
 - target files (candidates): `generated/candidates/tile-face-base-candidate-*.png`,
   `generated/candidates/tile-back-base-candidate-*.png`
+
+## Round 1 Rejection (2026-07-16, approvalSource: user-provided-human-decision)
+
+両slotの候補A/B/Cを人間レビューで却下。理由:
+
+```text
+CSSで再現できるデザイン(単純フラット面・単純な線フレーム・単純ドット)に
+留まっており、画像生成を使う価値がない。ドットやボーダーであっても
+「画像生成でしか実現できない」質感・手描き感・立体感へ振り切ること。
+売れているカジュアルゲームの可愛いデザイン水準を様式の参考にしてよい
+(既存IPのキャラクター・ロゴ・アセットの直接コピーは従来通り禁止)。
+```
+
+Round 2への追加制約:
+
+```text
+- フラットベクター縛りを撤廃。airbrush陰影・手描き線・光沢・立体感・
+  質感(icing/candy/watercolor/quilt等)を必須とする
+- 「no gradient / no gloss / no 3D」系のnegative指示をround 2 promptから除去
+- DOM上乗せ契約(中央・上部無地、文字焼き込み禁止)と24px可読性、
+  chroma-key工程、9-slice安全性(該当slot)は維持
+- round 1候補はrejected recordとしてarchiveに保持(復活させない)
+```
 
 ## Purpose
 
