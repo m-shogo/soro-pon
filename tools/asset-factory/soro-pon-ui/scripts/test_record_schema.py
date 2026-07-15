@@ -258,6 +258,80 @@ class TestApprovalConsistency:
         assert any("archivedAt" in i for i in issues)
 
 
+class TestRejectedValidationState:
+    """rejected-validation(自動画像検査の不合格)の正式状態を検証する。"""
+
+    def _rejected_validation_record(self, **overrides) -> dict:
+        base = _valid_record(
+            approval="rejected-validation",
+            rejectionReason="自動画像検査に不合格: 端に接触",
+            validation={"ok": False, "issues": ["端に接触"]},
+        )
+        base.update(overrides)
+        return base
+
+    def test_valid_rejected_validation_record_passes(self):
+        assert validate_record(self._rejected_validation_record()) == []
+
+    def test_rejected_validation_requires_validation_ok_false(self):
+        record = self._rejected_validation_record(validation={"ok": True, "issues": ["x"]})
+        issues = validate_record(record)
+        assert any("validation.ok" in i for i in issues)
+
+    def test_rejected_validation_requires_preserved_issues(self):
+        record = self._rejected_validation_record(validation={"ok": False, "issues": []})
+        issues = validate_record(record)
+        assert any("issues" in i for i in issues)
+
+    def test_rejected_validation_must_not_be_placed_publicly(self):
+        record = self._rejected_validation_record(placedAt=_EXISTING_CANDIDATE_PNG)
+        issues = validate_record(record)
+        assert any("placedAt" in i for i in issues)
+
+    def test_candidate_with_failed_validation_is_rejected(self):
+        record = _valid_record(
+            approval="candidate",
+            placedAt=_EXISTING_CANDIDATE_PNG,
+            validation={"ok": False, "issues": ["x"]},
+        )
+        issues = validate_record(record)
+        assert any("rejected-validation" in i for i in issues)
+
+
+class TestInjectablePathExists:
+    """validate_record_filesのpath_exists注入(一時領域→最終予定パス検証)を検証する。"""
+
+    def test_staged_paths_can_be_validated_before_placement(self):
+        from record_schema import validate_record_files
+
+        record = _valid_record(
+            sourceFile="tools/asset-factory/soro-pon-ui/archive/x/y/candidate-q/attempt-k/raw.png",
+            processedFile="tools/asset-factory/soro-pon-ui/archive/x/y/candidate-q/attempt-k/candidate.png",
+            compareFile="tools/asset-factory/soro-pon-ui/archive/x/y/candidate-q/attempt-k/compare.png",
+        )
+        staged = {
+            record["sourceFile"],
+            record["processedFile"],
+            record["compareFile"],
+        }
+        # 最終予定パスはまだ実在しないが、staged対応表で検証できる
+        assert validate_record_files(record, path_exists=lambda rel: rel in staged) == []
+        # 注入なし(fresh checkout相当)では実在しないため不合格になる
+        issues = validate_record_files(record)
+        assert any("does not exist" in i for i in issues)
+
+    def test_shape_validation_does_not_touch_filesystem(self):
+        from record_schema import validate_record_shape
+
+        record = _valid_record(
+            sourceFile="tools/asset-factory/soro-pon-ui/archive/no/such/candidate-q/attempt-k/raw.png",
+            processedFile="tools/asset-factory/soro-pon-ui/archive/no/such/candidate-q/attempt-k/candidate.png",
+            compareFile="tools/asset-factory/soro-pon-ui/archive/no/such/candidate-q/attempt-k/compare.png",
+        )
+        # 実在しないパスでも、形(shape)としては合法なので論理検証は通る
+        assert validate_record_shape(record) == []
+
+
 class TestLicenseApprovalConsistency:
     """licenseへ承認状態を示す語を混ぜていないことを検証する。"""
 

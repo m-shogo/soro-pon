@@ -40,17 +40,56 @@ pnpm asset:image:prepare --skin <skin-id> --slot <slot名> --input <raw画像>
   [--background-color '#rrggbb'] [--hard-threshold 0.12] [--soft-threshold 0.35]
   [--despill-strength 0.6] [--expected-width N --expected-height N]
   [--min-padding N] [--prompt '...' | --prompt-file <path>] [--seed ...]
+  [--replace-public-candidate]
 ```
 
-実行内容: asset request確認 → 入力元画像確認 → 透過処理
-(chroma_key.py) → 自動検査(validate_candidate.py) → 比較画像生成
-(compare_image.py) → 検査成功時、raw/candidate(透過後)/compareを
-`tools/asset-factory/soro-pon-ui/archive/<skin>/<slot>/candidate-<id>/`
-(git管理)へ永続保存 → 生成記録+content hash保存 →
-approvalがcandidate/approvedの場合のみ`generated/candidates/`へ配置
-(rejected/not-selectedを明示指定した場合はarchiveにのみ保存し、
-publicへは配置しない。自動検査に失敗した場合はarchive保存・
-public配置のどちらも行わず、理由を記録・標準エラー出力する)。
+実行内容(トランザクション化): asset request確認 → 入力元画像確認 →
+透過処理(chroma_key.py)・比較画像生成(compare_image.py)を一時作業領域
+(tempfile)へ出力 → 自動検査(validate_candidate.py) → 最終配置パス決定・
+record組み立て → record schemaの論理検証(validate_record_shape) →
+一時ファイルと最終予定パスの対応でファイル検証(validate_record_files +
+path_exists注入) → すべて成功した場合のみarchive/public/recordへ確定配置
+(同一ディレクトリ内の一時名へコピー後os.replace()で原子的に確定。確定中に
+失敗した場合は今回追加したファイルをrollbackし、永続領域へ変更を残さない)。
+
+失敗の区別(transaction / rollback契約):
+
+```text
+record schema違反(不正license等): 永続変更を一切残さず終了コード1
+自動画像検査の不合格: approval=rejected-validation として
+  archive監査物(raw/candidate/compare)とrecordを確定保存し、
+  publicへは配置せず終了コード1(終了1でも監査物は残る)
+```
+
+approvalがcandidate/approvedの場合のみ`generated/candidates/`へ配置する
+(rejected/not-selectedを明示指定した場合はarchiveにのみ保存する)。
+
+archiveの世代(attempt)は一意:
+
+```text
+archive/<skin>/<slot>/candidate-<id>/attempt-<key>/{raw,candidate,compare}.png
+<key>の優先順位: (1)generationSessionIdの正規化値
+  → (2)candidate content hashの短縮値 → (3)UUID
+同一candidate IDを再実行しても旧attemptを上書きしない
+同一attempt keyで内容も完全一致する再実行はdedupe(既存archive/recordを
+  再利用する冪等成功)。内容が異なる場合はエラーで停止する(無言上書き禁止)
+recordファイル名もattemptを含む(<skin>-<slot>-<stem>-attempt-<key>.json)
+request 007以前の旧構造(candidate-<id>/直下)は破壊的移行せず、
+  引き続きschemaに通る。新規生成分からattempt構造を適用する
+```
+
+public candidatesの同名衝突規則:
+
+```text
+既定: 同名public candidateが存在し内容が異なる場合はエラーで停止
+  (内容が完全一致する場合のみ冪等成功)
+--replace-public-candidate明示時のみ差し替える
+差し替え前後のattempt archiveは両方残す
+置き換えられた旧candidate recordはapproval=not-selected(superseded)へ
+  更新され、supersededByAttemptに新attempt keyを記録する。現在のpublic
+  candidateがどのattemptかは、candidate/approved状態でplacedAtがその
+  publicパスを指すrecordから一意に辿れる
+```
 
 raw-green/processed/はgitignore対象のローカル作業領域のため、record内の
 sourceFile/processedFile/compareFileはcandidate生成の時点でarchive/内の
@@ -148,8 +187,9 @@ tools/asset-factory/soro-pon-ui/
   records/                   生成記録metadata(下記)。git管理
   raw-green/                 グリーン背景の元画像。gitignore(ローカル保持)
   processed/                 透過処理の中間出力。gitignore(ローカル保持)
-  archive/<skin>/<slot>/candidate-<id>/  監査用永続保存(raw.png /
-                                candidate.png / compare.png)。git管理
+  archive/<skin>/<slot>/candidate-<id>/attempt-<key>/  監査用永続保存
+                                (raw.png / candidate.png / compare.png)。
+                                git管理。attempt単位で一意(上書きしない)
 public/assets/ui/soro-pon/skins/<skin>/generated/
   candidates/                candidate/approvedのみ。git管理。manifest未登録
   final/                     人間承認済み(promoted)のみ。git管理。manifest登録必須
@@ -161,14 +201,15 @@ public/assets/ui/soro-pon/skins/<skin>/generated/
 
 raw-green/processed/はgitignoreのため、リポジトリのclone単体では
 監査原本(raw・comparison)を再現できない。そのため`pnpm asset:image:prepare`が
-自動検査に合格しcandidateとして扱う時点(final昇格やnot-selected判定を待たず、
-生成の都度)で、raw.png/candidate.png(透過後)/compare.pngを
-`archive/<skin>/<slot>/candidate-<id>/`(git管理)へコピーする。records/の
-`sourceFile`/`compareFile`は常にarchive内のraw.png/compare.pngを指し、
+生成の都度(final昇格やnot-selected判定を待たず、自動検査に不合格だった
+rejected-validation試行も含めて)、raw.png/candidate.png(透過後)/compare.pngを
+`archive/<skin>/<slot>/candidate-<id>/attempt-<key>/`(git管理)へコピーする。
+records/の`sourceFile`/`compareFile`は常にarchive内のraw.png/compare.pngを指し、
 `processedFile`もpromoted以外は常にarchive内のcandidate.pngを指す
 (promotedのみproduction final PNGを指す)。Git履歴だけを監査原本にしない。
-not-selected/rejectedの候補は`candidates/`からpublic領域を外すが、
-raw・comparison・candidate本体・metadataはarchiveへ残し削除しない。
+not-selected/rejected/rejected-validationの候補は`candidates/`から
+public領域を外すが、raw・comparison・candidate本体・metadataはarchiveへ
+残し削除しない。
 
 プログラム生成(scripts/の決定的スクリプト、単純な面・枠・幾何素材)は、
 生成スクリプトと入力パラメータから完全再生成可能なため、元画像の保存を
@@ -217,8 +258,15 @@ placedAt           production manifestから参照される配置先。promoted�
 promotedTo         final昇格時の配置先記録。promoted以外はnull。promotedの
                      場合はplacedAt/processedFileと同一パスであること
 generatedAt        生成日時
-approval           承認状態(candidate / approved / rejected / not-selected / promoted)
-rejectionReason    不採用の場合の理由(rejected/not-selectedで必須。それ以外はnull)
+approval           承認状態(candidate / approved / rejected / not-selected /
+                     rejected-validation / promoted)。rejected-validationは
+                     自動画像検査の不合格(機械判断)で、validation.ok=false・
+                     validation.issuesの全保存が必須。publicへは配置しない
+rejectionReason    不採用の場合の理由(rejected/not-selected/
+                     rejected-validationで必須。それ以外はnull。
+                     rejected-validationではvalidation.issuesから
+                     人間可読に設定する)
+attemptKey         archive attemptの一意キー(新規生成分のrecordに記録)
 promotedAt         final昇格日(promotedで必須。それ以外はnull)
 skinVersionAtPromotion 昇格時に上げたskin.jsonのversion(promotedで必須。
                      それ以外はnull)

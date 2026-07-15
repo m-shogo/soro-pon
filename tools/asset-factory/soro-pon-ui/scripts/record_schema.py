@@ -45,8 +45,25 @@ approval の意味:
                     (archive参照 + public candidates配置)
   - rejected / not-selected  人間が不採用と判断した(rejectionReason必須。
                     publicからは取り除きarchiveにのみ残す)
+  - rejected-validation  自動画像検査(validate_candidate)に不合格だった試行。
+                    人間判断ではなく機械判断による不採用。監査のため
+                    raw/candidate/compareはarchiveへ保存しrecordも残すが、
+                    publicへは配置しない(placedAt/promotedTo null)。
+                    validation.okはfalse、validation.issuesへ検査結果を全保存、
+                    rejectionReasonは検査結果から人間可読に設定する
   - promoted      final昇格済み(promotedAt/skinVersionAtPromotion必須。
                     production final PNGのみ参照する)
+
+検証APIは2層に分かれる:
+  - validate_record_shape(record)   論理検証のみ(ファイルシステム非依存)
+  - validate_record_files(record, path_exists=None)
+                                    ファイル実在検証。path_existsを注入する
+                                    ことで、prepare処理中は「一時領域に
+                                    ビルド済みで最終パスへ配置予定」の
+                                    ファイルを最終パス名で検証できる。
+                                    未指定時はfresh checkout相当として
+                                    REPO_ROOT上の実在を確認する
+  - validate_record(record, path_exists=None)  両方を実行する(通常経路)
 """
 
 from __future__ import annotations
@@ -55,6 +72,7 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
+from typing import Callable
 
 REQUIRED_FIELDS = [
     "skinId",
@@ -100,7 +118,9 @@ BANNED_LICENSE_SUBSTRINGS = [
     "candidate",
 ]
 
-TERMINAL_REJECTED_STATES = {"rejected", "not-selected"}
+# 不採用の終端状態。rejected/not-selectedは人間判断、rejected-validationは
+# 自動画像検査の不合格(いずれもpublicへ配置せずarchiveへのみ残す)
+TERMINAL_REJECTED_STATES = {"rejected", "not-selected", "rejected-validation"}
 CANDIDATE_LIKE_STATES = {"candidate", "approved"}
 
 
@@ -171,8 +191,13 @@ def _is_hex(value: str) -> bool:
         return False
 
 
-def validate_record(record: dict) -> list[str]:
-    """生成記録の監査整合性を検査する。問題があれば理由のlistを返す(空なら合格)。"""
+def validate_record_shape(record: dict) -> list[str]:
+    """論理検証のみを行う(ファイルシステムへ一切アクセスしない)。
+
+    prepare処理のトランザクション中、永続領域へ何も書く前に「このrecordは
+    そもそも保存に値するか」を判定するために使う。schemaの意味は
+    validate_record()と同一で、ファイル実在確認だけを含まない。
+    """
     issues: list[str] = []
     for field in REQUIRED_FIELDS:
         if field not in record:
@@ -201,7 +226,6 @@ def validate_record(record: dict) -> list[str]:
         if not command_round_trips(value, prefix):
             issues.append(f"{field} does not shell round-trip safely: {value!r}")
 
-    issues.extend(_validate_file_references(record))
     issues.extend(_validate_file_shapes(record))
     issues.extend(_validate_approval_consistency(record))
     issues.extend(_validate_license(record))
@@ -209,26 +233,52 @@ def validate_record(record: dict) -> list[str]:
     return issues
 
 
-def _path_exists(relative_path: str) -> bool:
-    return (REPO_ROOT / relative_path).is_file()
+def validate_record_files(
+    record: dict, path_exists: Callable[[str], bool] | None = None
+) -> list[str]:
+    """ファイル参照フィールドの実在を検証する。
 
+    path_existsを注入すると「最終予定パス→一時領域のビルド済みファイル」の
+    対応で検証できる(prepare処理のトランザクション中に使う)。未指定時は
+    fresh checkout相当としてREPO_ROOT上の実在を確認する(production record
+    の通常検査経路。テストでschemaを弱める目的での注入は禁止)。
+    """
+    if path_exists is None:
+        path_exists = _default_path_exists
 
-def _validate_file_references(record: dict) -> list[str]:
     issues: list[str] = []
+    if any(field not in record for field in ("sourceFile", "processedFile", "compareFile")):
+        return ["cannot verify file references: required fields missing"]
+
     for field in ("sourceFile", "processedFile", "compareFile"):
         value = record[field]
         if value is None:
             issues.append(f"{field} must not be null")
             continue
-        if not _path_exists(value):
+        if not path_exists(value):
             issues.append(f"{field} does not exist in a fresh checkout: {value!r}")
 
     for field in ("placedAt", "promotedTo"):
         value = record.get(field)
-        if value is not None and not _path_exists(value):
+        if value is not None and not path_exists(value):
             issues.append(f"{field} does not exist in a fresh checkout: {value!r}")
 
     return issues
+
+
+def validate_record(
+    record: dict, path_exists: Callable[[str], bool] | None = None
+) -> list[str]:
+    """生成記録の監査整合性を検査する(論理+ファイル実在)。空listなら合格。"""
+    issues = validate_record_shape(record)
+    if any(issue.startswith("missing field:") for issue in issues):
+        return issues
+    issues.extend(validate_record_files(record, path_exists))
+    return issues
+
+
+def _default_path_exists(relative_path: str) -> bool:
+    return (REPO_ROOT / relative_path).is_file()
 
 
 def _validate_file_shapes(record: dict) -> list[str]:
@@ -315,8 +365,25 @@ def _validate_approval_consistency(record: dict) -> list[str]:
             issues.append(f"{approval} record must not have skinVersionAtPromotion set")
         if record.get("rejectionReason") is None:
             issues.append(f"{approval} record must have a rejectionReason")
+        if approval == "rejected-validation":
+            validation = record.get("validation") or {}
+            if validation.get("ok") is not False:
+                issues.append(
+                    "rejected-validation record must have validation.ok == false "
+                    "(it means the automated image validation failed)"
+                )
+            if not validation.get("issues"):
+                issues.append(
+                    "rejected-validation record must preserve the automated validation issues"
+                )
 
     elif approval in CANDIDATE_LIKE_STATES:
+        validation = record.get("validation") or {}
+        if validation.get("ok") is not True:
+            issues.append(
+                f"{approval} record must have validation.ok == true "
+                "(validation failures must use rejected-validation)"
+            )
         if placed_at is None:
             issues.append(
                 f"{approval} record must have placedAt set (public generated/candidates/ path)"
