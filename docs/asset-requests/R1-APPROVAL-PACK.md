@@ -4,17 +4,62 @@ cute-popのR1候補9点の人間レビュー用資料。ここだけ読めば承
 承認後のpromotion操作ができる状態を目指している。
 
 - 対象request: [008](008-cute-pop-tile-face-back.md) / [009](009-cute-pop-button-primary.md)
-- 状態: **candidates配置済み・自動検査合格・人間承認待ち**
+- 状態: **round 2 (D/E/F) candidates配置済み・自動検査合格・人間承認待ち**
 - final昇格・manifest登録・skin version変更は未実施(直接final禁止を維持)
+
+## Round 1 結果 (2026-07-16)
+
+round 1 (A/B/C、9候補)は人間レビューで**全slot却下**
+(approvalSource: user-provided-human-decision)。
+
+```text
+却下理由: CSSで再現できるデザイン(単純フラット面・単純枠・単純ドット)に
+留まっており画像生成を使う価値がない。画像生成でしか実現できない質感・
+手描き感・立体感のある可愛いデザイン(売れているカジュアルゲーム水準の
+様式参考。IPコピーは不可)へ振り切ること。
+```
+
+処理: 9候補のrecordをrejected(理由付き)へ更新しpublic candidatesから除去。
+attempt archiveと証跡(evidence/r1-round1/)は監査のため保持。
+round 1の候補表・推奨は履歴としてこの下に残すが、**現行レビュー対象は
+round 2 (D/E/F)** である。
 
 ## 何を見るか
 
 1. Component Gallery (`#/gallery`) を開き、SkinをCute Popへ切り替える
 2. 「R1候補レビュー」セクションで各候補を確認する
-   (dev server: `pnpm dev`。静的証跡は `evidence/r1/*.png`)
+   (dev server: `pnpm dev`。静的証跡は `evidence/r1-round2/*.png`)
 3. 判断基準はrequest 008/009のAcceptance Checklist
 
-## 候補一覧と推奨
+## Round 2 候補一覧と所見(現行レビュー対象)
+
+### tile.face.base(牌表面)
+
+| 候補 | コンセプト | 所見(機械レビュー) |
+|---|---|---|
+| D | アイシングクッキー枠 | 立体的なicing質感。24pxでもクッキー縁として成立。中央無地でDOM上乗せと干渉なし |
+| E | 水彩ブラッシュ四隅+手描き線 | 水彩の有機的な滲み。上品で軽い。24pxではブラッシュがほぼ見えなくなる |
+| F | キャンディビーズ枠 | ビーズ1粒ずつに光沢。四隅の星が可愛い。24pxでビーズがやや点ノイズ化する懸念 |
+
+### tile.back.base(牌裏面)
+
+| 候補 | コンセプト | 所見(機械レビュー) |
+|---|---|---|
+| D | 手描きトイモチーフ柄 | 星・ハート・花の手描きパターン。表面との区別明確。中央もモチーフが乗るため◆の視認は要確認 |
+| E | キルトクッション | ふかふかの立体キルト。均一パターンで中央静か。表裏の区別・質感とも最良のバランス |
+| F | ジェリー+スプリンクル | 光沢ジェリー+スプリンクル。最も菓子的で目立つ。24-30pxでスプリンクルが点ノイズ化する懸念 |
+
+### button.primary.background(メインCTA)
+
+| 候補 | コンセプト | intrinsic | 所見(機械レビュー) |
+|---|---|---|---|
+| D | ジェリーキャンディCTA | 480x96 | gloss帯が水平一様で9-slice安全。長文でもseamなし。candy質感が最も強い |
+| E | アイシングパイピングCTA | 480x120 | icing縁が均一幅で9-slice安全。secondaryとの階層差明確 |
+| F | マカロンCTA | 480x136 | 全帯水平一様で9-slice安全。filling線が可愛いが、白文字がfilling線と交差する高さでは要確認 |
+
+機械レビュー上は3slotとも9-slice/可読性の失格候補なし。選定は人間レビューに委ねる。
+
+## Round 1 候補一覧(履歴・全却下済み)
 
 ### tile.face.base(牌表面)
 
@@ -50,10 +95,11 @@ cute-popのR1候補9点の人間レビュー用資料。ここだけ読めば承
 
 ## 証跡
 
-- 行別スクリーンショット: `evidence/r1/desktop-1280x800-row1..9-*.png`
-  (row1-3=face A/B/C、row4-6=back A/B/C、row7-9=button A/B/C)
-- 小型横画面: `evidence/r1/phone-844x390-row1..9-*.png`
-- ヨルノシルベ回帰なし: `evidence/r1/yorunoshirube-gallery-regression-check.png`
+- round 2行別スクリーンショット: `evidence/r1-round2/desktop-1280x800-row1..9-*.png`
+  (row1-3=face D/E/F、row4-6=back D/E/F、row7-9=button D/E/F)
+- round 2小型横画面: `evidence/r1-round2/phone-844x390-row1..9-*.png`
+- ヨルノシルベ回帰なし: `evidence/r1-round2/yorunoshirube-gallery-regression-check.png`
+- round 1証跡(却下済み履歴): `evidence/r1-round1/`
 - 自動検査: 全candidate合格(寸法/透明余白/端接触/フリンジ/背景残り)。
   recordは `tools/asset-factory/soro-pon-ui/records/`、
   attempt archiveは `tools/asset-factory/soro-pon-ui/archive/cute-pop/`
@@ -69,7 +115,7 @@ cute-popのR1候補9点の人間レビュー用資料。ここだけ読めば承
    - tile.face.base / tile.back.base: renderMode stretch,
      intrinsicSize 600x800, pixelDensity 2, transparent true
    - button.primary.background: renderMode nine-slice,
-     intrinsicSize 480x(96|104|128 採用候補の実寸), pixelDensity 2,
+     intrinsicSize 480x(96|120|136 採用候補の実寸), pixelDensity 2,
      nineSlice 32, nineSliceRender 16, contentSafeArea 16,
      minRenderSize 72x44, transparent true
 4. skin version 3 -> 4

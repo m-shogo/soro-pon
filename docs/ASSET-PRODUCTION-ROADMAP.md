@@ -174,7 +174,11 @@ Blocker check performed for this roadmap: no code blocker found for
 cute-pop/tile.face.base — `TileCard.tsx` already resolves the slot correctly
 through `SkinLayer`, so this remains the correct starting candidate.
 
-**Batch 1 status (R1): candidates ready — human review pending.**
+**Batch 1 status (R1): round 2 candidates ready — human review pending.**
+Round 1 candidates (A/B/C) were rejected by human review on 2026-07-16
+(CSS-reproducible flat designs; direction changed to image-generation-only
+texture/depth — icing/watercolor/candy/quilt/jelly). Round 2 candidates
+(D/E/F) regenerated through the same pipeline.
 Request 008 (tile.face.base / tile.back.base, 3 candidates each) and
 request 009 (button.primary.background, 3 candidates — pulled forward from
 Batch 2 because the primary CTA is the largest visible gap) are generated,
@@ -353,9 +357,9 @@ General-user Release Candidate (Tier 3):   25-40 business days
 
 ## Next task
 
-Next (human): Review and approve/reject the R1 candidates
-(`docs/asset-requests/R1-APPROVAL-PACK.md` — request 008/009, 9 candidates,
-recommended picks noted there). All machine-executable R1 work is done:
+Next (human): Review and approve/reject the R1 **round 2** candidates
+(`docs/asset-requests/R1-APPROVAL-PACK.md` — request 008/009, D/E/F,
+machine-review notes recorded there). All machine-executable R1 work is done:
 requests, prompts, generation, transparency/inspection, candidates
 placement, Gallery review section, visual evidence, verification.
 
