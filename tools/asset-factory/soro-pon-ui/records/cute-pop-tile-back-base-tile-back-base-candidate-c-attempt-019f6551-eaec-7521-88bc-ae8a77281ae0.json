@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "tile.back.base",
+  "assetRequest": "008-cute-pop-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.back.base/candidate-c/attempt-019f6551-eaec-7521-88bc-ae8a77281ae0/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset: the back side of a game tile card, a portrait-orientation 3:4 rounded rectangle (clearly taller than wide), flat 2D vector illustration, front-facing, isolated object only. Design: a gentle candy-stripe card back with wide, even diagonal stripes alternating soft rose-pink and warm cream, enclosed by a single clean deeper-pink border frame just inside the card edge. The stripe pattern must be uniform across the whole card with no focal point and no unique detail anywhere, because a small diamond mark will be overlaid in the center by the app later; keep the stripe contrast gentle so that overlay stays visible. The card back must read as clearly different from a plain white card front at a glance. Color: soft rose-pink (#cf4166 direction, strongly softened toward pastel) and warm cream (#fff2dd direction) stripes, deeper rose frame, harmonizing with an existing white-card-plus-warm-border UI system that uses deep pink as its CTA accent. Mostly flat solid fills: no gradient, no gloss, no 3D bevel, no drop shadow baked in, no grain texture, no oversaturated cheap-gacha look. The stripes must stay wide enough not to shimmer or alias when the card is scaled down to 24 px wide. Absolutely no text, no letters, no numerals, no icon glyph, no watermark, no logo, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the card with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f6551-eaec-7521-88bc-ae8a77281ae0",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/candidate-c-pink-diagonal-stripe.txt --output-name tile-back-base-candidate-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot tile.back.base --input tools/asset-factory/soro-pon-ui/raw-green/tile-back-base-candidate-c.png --request 008-cute-pop-tile-face-back --output-name tile-back-base-candidate-c.png --fit-width 600 --fit-height 800 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.2 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 600 --expected-height 800 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/candidate-c-pink-diagonal-stripe.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.back.base/candidate-c/attempt-019f6551-eaec-7521-88bc-ae8a77281ae0/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.back.base/candidate-c/attempt-019f6551-eaec-7521-88bc-ae8a77281ae0/compare.png",
+  "processParams": {
+    "hardThreshold": 0.2,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 600,
+    "height": 800
+  },
+  "contentHash": "87398899a15a60ef717965e06fca1bb57f7f6484a765c93d63d9649fcddcc5a2",
+  "attemptKey": "019f6551-eaec-7521-88bc-ae8a77281ae0",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/tile-back-base-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-15",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-15",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

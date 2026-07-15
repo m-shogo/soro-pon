@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "button.primary.background",
+  "assetRequest": "009-cute-pop-button-primary",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-b/attempt-019f655a-4240-7bf1-9e88-05f8b3388b4c/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset: a primary call-to-action button background, a wide landscape rounded-rectangle pill shape (roughly 10:3 width-to-height), flat 2D vector illustration, front-facing, isolated object only. Design: a deep rose-pink button face whose upper half carries one single, very subtle, slightly lighter rose-pink horizontal tone band (a soft candy-like top light, NOT a glossy shine and NOT a gradient fade), divided by a clean straight horizontal edge, plus a slightly darker rose-pink uniform outline; all four rounded corners perfectly uniform and symmetric. The horizontal middle of the button must stay plain with a uniform-width outline and the tone band running evenly edge to edge with no unique detail, so it can later be stretched horizontally without any seam -- this is for 9-slice UI scaling. The overall face must stay dark enough that overlaid white text reaches strong readable contrast everywhere, including on the lighter top band. Color: deep rose-pink body (#c22f57 direction), slightly lighter top band, darker outline, harmonizing with an existing white-card-plus-warm-border UI system where this button is the strongest visual element. Flat solid fills only: no gradient fade, no gloss, no shine spot, no 3D bevel, no drop shadow baked in, no grain texture, no oversaturated cheap-gacha look. Absolutely no text, no letters, no numerals, no icon glyph, no watermark, no logo, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the button with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f655a-4240-7bf1-9e88-05f8b3388b4c",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/candidate-b-soft-top-light.txt --output-name button-primary-background-candidate-b.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot button.primary.background --input tools/asset-factory/soro-pon-ui/raw-green/button-primary-background-candidate-b.png --request 009-cute-pop-button-primary --output-name button-primary-background-candidate-b.png --fit-width 480 --fit-height 104 --fit-margin-ratio 0.05 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 480 --expected-height 104 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/candidate-b-soft-top-light.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-b/attempt-019f655a-4240-7bf1-9e88-05f8b3388b4c/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-b/attempt-019f655a-4240-7bf1-9e88-05f8b3388b4c/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 480,
+    "height": 104
+  },
+  "contentHash": "517e65b71e2c4be9e7775172aa4817fdae22f4e60e1fb17cce913c774121da8c",
+  "attemptKey": "019f655a-4240-7bf1-9e88-05f8b3388b4c",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/button-primary-background-candidate-b.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-15",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-15",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

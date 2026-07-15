@@ -6,8 +6,8 @@
 - slots: `tile.face.base`, `tile.back.base`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
 - status: **candidates生成済み・人間レビュー待ち(final昇格前で停止)**
-- target files (candidates): `generated/candidates/tile-face-base-2x-*.png`,
-  `generated/candidates/tile-back-base-2x-*.png`
+- target files (candidates): `generated/candidates/tile-face-base-candidate-*.png`,
+  `generated/candidates/tile-back-base-candidate-*.png`
 
 ## Purpose
 
@@ -64,6 +64,7 @@ no screenshot。表面は「中央〜上部をほぼ無地に保つ」制約を�
 ```
 pnpm asset:image:prepare --skin cute-pop --slot <tile.face.base|tile.back.base> \
   --input <raw-green内のraw画像> --request 008-cute-pop-tile-face-back \
+  --output-name <slot名kebab>-candidate-<a|b|c>.png \
   --fit-width 600 --fit-height 800 --fit-margin-ratio 0.02 \
   --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 \
   --despill-strength 0.6 --expected-width 600 --expected-height 800 \

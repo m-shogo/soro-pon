@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "button.primary.background",
+  "assetRequest": "009-cute-pop-button-primary",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-a/attempt-019f6554-7a8b-72a1-a08b-26b3344ba158/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset: a primary call-to-action button background, a wide landscape rounded-rectangle pill shape (roughly 10:3 width-to-height), flat 2D vector illustration, front-facing, isolated object only. Design: a solid deep rose-pink button face with a slightly darker rose-pink uniform outline, all four rounded corners perfectly uniform and symmetric. The horizontal band between the two rounded end-zones must stay completely plain and flat with a uniform-width outline and no unique detail, so it can later be stretched horizontally without any seam -- this is for 9-slice UI scaling. The central area must remain a clean solid fill because white text will be overlaid by the app later and must reach strong readable contrast. Color: deep rose-pink body (#c22f57 direction, dark enough for white text at 4.5:1 contrast), slightly darker outline, harmonizing with an existing white-card-plus-warm-border UI system where this button is the strongest visual element. Completely flat solid fill: no gradient, no gloss, no highlight stripe, no 3D bevel, no drop shadow baked in, no grain texture, no oversaturated cheap-gacha look. Absolutely no text, no letters, no numerals, no icon glyph, no watermark, no logo, no mockup, no screenshot, no surrounding interface, no other objects. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the button with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f6554-7a8b-72a1-a08b-26b3344ba158",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/candidate-a-flat-deep-pink.txt --output-name button-primary-background-candidate-a.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot button.primary.background --input tools/asset-factory/soro-pon-ui/raw-green/button-primary-background-candidate-a.png --request 009-cute-pop-button-primary --output-name button-primary-background-candidate-a.png --fit-width 480 --fit-height 96 --fit-margin-ratio 0.05 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 480 --expected-height 96 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/candidate-a-flat-deep-pink.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-a/attempt-019f6554-7a8b-72a1-a08b-26b3344ba158/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/button.primary.background/candidate-a/attempt-019f6554-7a8b-72a1-a08b-26b3344ba158/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 480,
+    "height": 96
+  },
+  "contentHash": "1d6fda3034a11002a644af84260c45c6618d7aae749cfb2082f12362d53dfc56",
+  "attemptKey": "019f6554-7a8b-72a1-a08b-26b3344ba158",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/button-primary-background-candidate-a.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-15",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-15",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

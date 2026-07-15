@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "tile.face.base",
+  "assetRequest": "008-cute-pop-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.face.base/candidate-a/attempt-019f652f-e37c-7750-9570-b186b9234d2e/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset: the blank front face of a game tile card, a portrait-orientation 3:4 rounded rectangle (clearly taller than wide), flat 2D vector illustration, front-facing, isolated object only. Design: a clean white card face with a single thin, even, warm cream-beige border frame running just inside the card edge, with all four rounded corners perfectly uniform and symmetric. The entire center area and the whole upper quarter of the card must stay completely plain flat white with no pattern, no motif, no vignette, because a category color band, a large emoji glyph, and a name label will be overlaid by the app later. Only the border frame itself may carry the decoration, and it must stay extremely subtle. Color: pure white face, warm cream/beige (#f6e2c8 direction) frame line, harmonizing with an existing white-card-plus-warm-border UI system. Mostly flat solid fill: no gradient, no gloss, no 3D bevel, no drop shadow baked in, no paper grain texture, no oversaturated cheap-gacha look. Must stay clearly readable as a simple card face even scaled down to 24 px wide. Absolutely no text, no letters, no numerals, no icon glyph, no suit symbol, no watermark, no logo, no mockup, no screenshot, no surrounding interface, no other objects, no hand, no table. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the card with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f652f-e37c-7750-9570-b186b9234d2e",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-face-base/candidate-a-plain-cream-frame.txt --output-name tile-face-base-candidate-a.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot tile.face.base --input tools/asset-factory/soro-pon-ui/raw-green/tile-face-base-candidate-a.png --request 008-cute-pop-tile-face-back --output-name tile-face-base-candidate-a.png --fit-width 600 --fit-height 800 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 600 --expected-height 800 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-face-base/candidate-a-plain-cream-frame.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.face.base/candidate-a/attempt-019f652f-e37c-7750-9570-b186b9234d2e/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/tile.face.base/candidate-a/attempt-019f652f-e37c-7750-9570-b186b9234d2e/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 600,
+    "height": 800
+  },
+  "contentHash": "5752c4e49401c267abda1b9fd6d8ca26a3722f8f73d32f3fa3756397de847744",
+  "attemptKey": "019f652f-e37c-7750-9570-b186b9234d2e",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/tile-face-base-candidate-a.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-15",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-15",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

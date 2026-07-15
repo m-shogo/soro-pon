@@ -6,7 +6,7 @@
 - slot: `button.primary.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
 - status: **candidates生成済み・人間レビュー待ち(final昇格前で停止)**
-- target files (candidates): `generated/candidates/button-primary-2x-*.png`
+- target files (candidates): `generated/candidates/button-primary-background-candidate-*.png`
 
 ## Purpose
 
@@ -30,8 +30,15 @@ final未制作の最重要ギャップ(docs/ASSET-PRODUCTION-ROADMAP.md Batch 2�
 - renderMode: nine-slice / pixelDensity: 2
 - 1x契約(base manifest): intrinsicSize 240x72, nineSlice(source) 16,
   contentSafeArea(source) 8, minRenderSize(CSS) 72x44
-- 2x候補: intrinsicSize 480x144, nineSlice(source) 32, nineSliceRender(CSS) 16,
-  contentSafeArea(source) 16, minRenderSize(CSS) 72x44(不変)
+- 2x候補: intrinsicSize 480x(候補ごとに96/104/128), nineSlice(source) 32,
+  nineSliceRender(CSS) 16, contentSafeArea(source) 16, minRenderSize(CSS) 72x44(不変)
+- 処理パラメータの試行記録: 当初480x144 / margin 0.08で処理したところ、
+  生成pillのアスペクト(3.8〜5.1:1)が契約10:3より横長のため高さfillが
+  55〜74%となり、nine-sliceのslice領域(source 32px)が透明余白で占められて
+  CTA面が痩せて見える問題を確認。canvasを生成pillの実アスペクトへ合わせ
+  (480x96/104/128)、margin 0.05(min-padding 4px確保)へ調整して再処理した。
+  採用候補のintrinsicSizeはskin.json登録時にこの実寸を使う
+  (validatorは宣言intrinsicSizeと実ファイル寸法の一致を検査する)
 - 透過PNG。角丸は均一・上下左右対称。中央帯は完全に無地
   (水平・垂直stretchでseamが出ない9-slice安全設計)
 
@@ -61,6 +68,7 @@ sufficient transparent margin, 9-slice safety(角/辺の責務分離、中央無
 ```
 pnpm asset:image:prepare --skin cute-pop --slot button.primary.background \
   --input <raw-green内のraw画像> --request 009-cute-pop-button-primary \
+  --output-name button-primary-background-candidate-<a|b|c>.png \
   --fit-width 480 --fit-height 144 --fit-margin-ratio 0.08 \
   --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 \
   --despill-strength 0.6 --expected-width 480 --expected-height 144 \
