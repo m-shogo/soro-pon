@@ -234,6 +234,57 @@ OSes, so cross-OS baselines would produce false diffs; local darwin
 baselines give deterministic results now without blocking CI.
 ```
 
+## ADR-015: Tile State Slots Composite Over Base (SHARED_OVERLAY_RECOMMENDED)
+
+Decision:
+
+```text
+Decision: SHARED_OVERLAY_RECOMMENDED
+tile.face.selected / tile.face.ronAvailable / tile.face.tsumoAvailable は
+「base牌面を置き換える別full画像」ではなく「tile.face.base(表)/tile.back.base(裏)の
+上へ合成される状態レイヤー」として扱う。
+TileCardは常にbase slotのSkinLayerを描き、状態slotは解決できた場合のみ
+2枚目のSkinLayerとして上へ重ねる。
+状態slot用の新規アート生産は行わない(状態はCSS/DOM stateで既に伝達済み)。
+SKIN-CONTRACT.jsonのslot定義・skin.json・manifest schemaは変更しない。
+```
+
+Reason (evidence):
+
+```text
+1. resolveSkin()/useSkinAsset()にslot間fallbackは存在しない
+   (tile.face.selectedが未定義でもtile.face.baseへは落ちない)。
+   旧実装(状態ごとにslotを差し替える単一SkinLayer)のまま
+   tile.face.baseだけをfinal化すると、牌を選択した瞬間だけ
+   面画像が消えてCSS gradientに落ちる統合バグになる。
+2. 状態の伝達はすでに画像非依存で成立している:
+   CSS(.sp-tile--selected: translateY+lantern border+shadow /
+   .sp-tile--win: 強lantern) + aria-pressed + aria-label文言(P1-3)。
+3. 状態ごとのfull画像はbase面とほぼ全面重複し、スキン1つあたり
+   牌アートを4倍(表3状態+base)にする一方、状態識別性はCSSより悪化しうる。
+4. 契約上、状態slotはすべてtransparent:trueで、上乗せ合成と両立する。
+   両officialスキンとも牌slotのfinal画像は0のため、置き換え→合成への
+   意味変更で影響を受ける既存アセットは存在しない。
+```
+
+State priority (slotFor既存実装を維持):
+
+```text
+faceDown > ron > tsumo > selected > base
+(faceDown時は状態レイヤーなし。ron/tsumoはselectedより優先し同時表示しない)
+```
+
+Rejected:
+
+```text
+KEEP_SEPARATE(状態ごとの独立full画像): アート量4倍・状態視認性リスク・
+  選択瞬間の画像消失バグの原因。
+CONTRACT_CHANGE_REQUIRED(overlay専用slotへのmigration): 現契約の
+  transparent stretch slotのままで合成が成立するため不要。
+BLOCKED_BY_RUNTIME_STATE_MODEL: 該当せず(state modelは単一優先slotで
+  合成順が一意に決まる)。
+```
+
 ## Final Decision
 
 Add new ADR entries when a decision changes architecture, rules, import/security, scoring, or implementation order.

@@ -21,9 +21,21 @@ export type TileCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   showName?: boolean;
 };
 
-function slotFor(faceDown: boolean, selected: boolean, emphasis?: TileEmphasis): AssetSlotName {
+// 牌のslotは「base面 + 状態レイヤー」の合成(ADR-015)。
+// 状態slotをbaseの置き換えにすると、baseだけfinal化した時に
+// 選択中の牌だけ画像が消える(slot間fallbackは存在しない)。
+export function baseSlotFor(faceDown: boolean): AssetSlotName {
+  return faceDown ? 'tile.back.base' : 'tile.face.base';
+}
+
+// 状態優先度: faceDown(状態なし) > ron > tsumo > selected > なし
+export function stateSlotFor(
+  faceDown: boolean,
+  selected: boolean,
+  emphasis?: TileEmphasis,
+): AssetSlotName | null {
   if (faceDown) {
-    return 'tile.back.base';
+    return null;
   }
   if (emphasis === 'ron') {
     return 'tile.face.ronAvailable';
@@ -34,7 +46,7 @@ function slotFor(faceDown: boolean, selected: boolean, emphasis?: TileEmphasis):
   if (selected) {
     return 'tile.face.selected';
   }
-  return 'tile.face.base';
+  return null;
 }
 
 // 牌カード。aspect-ratio固定、サイズは--tile-w/--tile-hで外から渡す。
@@ -54,7 +66,8 @@ export function TileCard({
   style,
   ...rest
 }: TileCardProps) {
-  const slot = slotFor(faceDown, selected, emphasis);
+  const baseSlot = baseSlotFor(faceDown);
+  const stateSlot = stateSlotFor(faceDown, selected, emphasis);
   const classes = [
     'sp-tile',
     'sp-skin-host',
@@ -82,7 +95,7 @@ export function TileCard({
   if (faceDown) {
     return (
       <button type="button" className={classes} style={mergedStyle} aria-label="伏せ牌" {...rest}>
-        <SkinLayer slot={slot} />
+        <SkinLayer slot={baseSlot} />
         <span className="sp-tile__back-mark">◆</span>
       </button>
     );
@@ -103,8 +116,10 @@ export function TileCard({
       aria-pressed={selected}
       {...rest}
     >
-      {/* スキン画像はfallback背景の上・文字の下の独立レイヤー(P0-6) */}
-      <SkinLayer slot={slot} />
+      {/* スキン画像はfallback背景の上・文字の下の独立レイヤー(P0-6)。
+          base面の上へ状態レイヤーを合成する(ADR-015)。 */}
+      <SkinLayer slot={baseSlot} />
+      {stateSlot !== null && <SkinLayer slot={stateSlot} />}
       <span className="sp-tile__band" title={categoryName}>
         {categoryName ?? ''}
       </span>
