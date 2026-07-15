@@ -90,6 +90,8 @@ const row: CSSProperties = {
   gap: 'var(--sp-space-12)',
   alignItems: 'flex-end',
   flexWrap: 'wrap',
+  // selectedのtranslateY(-18%)がラベルへ被らないよう余白を確保する
+  paddingTop: 'var(--sp-space-16)',
 };
 
 function Labeled({ label, children }: { label: string; children: ReactNode }) {
@@ -155,26 +157,31 @@ function TileSamples({ file }: { file: string }) {
           />
         </Labeled>
         <Labeled label="selected(CSS状態と共存)">
-          <TileCard
-            name="ネコ"
-            fallbackLabel="猫"
-            emoji="🐱"
-            categoryColor="#e58a3a"
-            categoryName="動物"
-            selected
-            style={{ ...style, ...tileVars(54) }}
-          />
+          {/* translateY(-18%)がラベルへ被らないよう持ち上げ分の余白を足す */}
+          <div style={{ paddingTop: 14 }}>
+            <TileCard
+              name="ネコ"
+              fallbackLabel="猫"
+              emoji="🐱"
+              categoryColor="#e58a3a"
+              categoryName="動物"
+              selected
+              style={{ ...style, ...tileVars(54) }}
+            />
+          </div>
         </Labeled>
         <Labeled label="ron強調">
-          <TileCard
-            name="ネコ"
-            fallbackLabel="猫"
-            emoji="🐱"
-            categoryColor="#e58a3a"
-            categoryName="動物"
-            emphasis="ron"
-            style={{ ...style, ...tileVars(54) }}
-          />
+          <div style={{ paddingTop: 14 }}>
+            <TileCard
+              name="ネコ"
+              fallbackLabel="猫"
+              emoji="🐱"
+              categoryColor="#e58a3a"
+              categoryName="動物"
+              emphasis="ron"
+              style={{ ...style, ...tileVars(54) }}
+            />
+          </div>
         </Labeled>
         <Labeled label="dimmed">
           <TileCard
