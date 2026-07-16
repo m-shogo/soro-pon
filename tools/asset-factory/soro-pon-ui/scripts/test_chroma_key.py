@@ -13,7 +13,14 @@ import numpy as np
 import pytest
 
 import fixtures
-from chroma_key import ChromaKeyParams, chroma_key_transparent, fit_to_canvas, hex_to_rgb, process
+from chroma_key import (
+    ChromaKeyParams,
+    chroma_key_transparent,
+    cover_to_canvas,
+    fit_to_canvas,
+    hex_to_rgb,
+    process,
+)
 from compare_image import build_comparison_image
 from validate_candidate import ValidationParams, validate_candidate
 
@@ -201,6 +208,60 @@ class TestValidateCandidate:
         assert any("幅" in issue for issue in result.issues)
 
 
+class TestValidateCandidateOpaqueBackground:
+    """table.backgroundのようなcover全面素材向けvalidate_candidate分岐。"""
+
+    def _save(self, image, tmp_path, name="out.png"):
+        path = tmp_path / name
+        image.save(path)
+        return str(path)
+
+    def _opaque_no_green(self, width=400, height=300):
+        from PIL import Image
+
+        return Image.new("RGBA", (width, height), (255, 210, 220, 255))
+
+    def test_fully_opaque_image_passes(self, tmp_path):
+        img = self._opaque_no_green()
+        path = self._save(img, tmp_path)
+        result = validate_candidate(
+            path,
+            ValidationParams(
+                background_color=(0, 255, 0),
+                expected_width=400,
+                expected_height=300,
+                opaque_background=True,
+            ),
+        )
+        assert result.ok, result.issues
+
+    def test_edge_touching_opaque_content_does_not_fail(self, tmp_path):
+        # isolated object契約なら「端に不透明ピクセルが接触」で不合格になるが、
+        # opaque_background=Trueでは全面が不透明であることが正しい状態
+        img = fixtures.fixture_subject_touching_edge()
+        # fixture自体は透過契約向けなので、比較のためprocess()せず
+        # そのまま(緑背景のまま)opaque扱いで検証する
+        path = self._save(img.convert("RGBA"), tmp_path)
+        result = validate_candidate(
+            path, ValidationParams(background_color=(0, 255, 0), opaque_background=True)
+        )
+        assert not any("画像端に接触" in issue for issue in result.issues)
+
+    def test_residual_transparency_fails(self, tmp_path):
+        import numpy as _np
+        from PIL import Image
+
+        arr = _np.full((100, 100, 4), 255, dtype=_np.uint8)
+        arr[40:60, 40:60, 3] = 0  # 中央に穴(誤って透過された想定)
+        img = Image.fromarray(arr, mode="RGBA")
+        path = self._save(img, tmp_path)
+        result = validate_candidate(
+            path, ValidationParams(background_color=(0, 255, 0), opaque_background=True)
+        )
+        assert not result.ok
+        assert any("非不透明ピクセル" in issue for issue in result.issues)
+
+
 class TestCompareImage:
     def test_comparison_image_has_expected_layout(self):
         img = fixtures.fixture_green_round_subject(width=100, height=100)
@@ -247,6 +308,42 @@ class TestFitToCanvas:
         blank = PILImage.fromarray(transparent, mode="RGBA")
         with pytest.raises(ValueError):
             fit_to_canvas(blank, 240, 80)
+
+
+class TestCoverToCanvas:
+    """table.backgroundのようなbackground-size:cover全面素材向けcrop。"""
+
+    def _opaque_image(self, width: int, height: int):
+        from PIL import Image
+
+        return Image.new("RGBA", (width, height), (255, 200, 210, 255))
+
+    def test_output_matches_target_size_wide_source(self):
+        img = self._opaque_image(2000, 1000)
+        out = cover_to_canvas(img, 1920, 1080)
+        assert out.size == (1920, 1080)
+
+    def test_output_matches_target_size_tall_source(self):
+        img = self._opaque_image(1000, 2000)
+        out = cover_to_canvas(img, 1920, 1080)
+        assert out.size == (1920, 1080)
+
+    def test_output_is_fully_opaque_no_transparent_gutter(self):
+        img = self._opaque_image(1500, 900)
+        out = cover_to_canvas(img, 1920, 1080)
+        alpha = np.array(out)[..., 3]
+        assert (alpha == 255).all()
+
+    def test_deterministic_same_input_same_output(self):
+        img = self._opaque_image(1500, 900)
+        out1 = cover_to_canvas(img, 1920, 1080)
+        out2 = cover_to_canvas(img, 1920, 1080)
+        buf1, buf2 = io.BytesIO(), io.BytesIO()
+        out1.save(buf1, format="PNG")
+        out2.save(buf2, format="PNG")
+        assert hashlib.sha256(buf1.getvalue()).hexdigest() == hashlib.sha256(
+            buf2.getvalue()
+        ).hexdigest()
 
 
 class TestHexToRgb:

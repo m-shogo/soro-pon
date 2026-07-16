@@ -218,6 +218,32 @@ def fit_to_canvas(
     return canvas
 
 
+def cover_to_canvas(
+    image: Image.Image,
+    target_width: int,
+    target_height: int,
+) -> Image.Image:
+    """fit_to_canvasとは逆の意図: 透明余白を持つisolated objectではなく、
+    background-size:coverで敷く全面素材(table.backgroundなど)向けに、
+    画像全体をtarget寸法いっぱいへ拡大縮小+中央crop する(決定的処理)。
+
+    fit_to_canvasは被写体の外接矩形を求めて中央に透明余白付きで収めるが、
+    coverはそもそも透明であってはならない(cover背景に透明穴が空くと
+    下地が透けて見える)。scale = max(target_w/src_w, target_h/src_h) で
+    画像全体をtargetが完全に埋まるまで拡大し、はみ出た分を中央基準で
+    crop する。alpha正規化(normalize_transparent_rgb)は呼び出し不要
+    (対象は全面塗りのopaque背景素材のため、透明ピクセルは想定しない)。
+    """
+    rgba = image.convert("RGBA")
+    scale = max(target_width / rgba.width, target_height / rgba.height)
+    new_w = max(1, round(rgba.width * scale))
+    new_h = max(1, round(rgba.height * scale))
+    resized = rgba.resize((new_w, new_h), Image.LANCZOS)
+    left = (new_w - target_width) // 2
+    top = (new_h - target_height) // 2
+    return resized.crop((left, top, left + target_width, top + target_height))
+
+
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="単色背景(グリーン等)を色距離ベースで透過するクロマキー処理"

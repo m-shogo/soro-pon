@@ -60,7 +60,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from chroma_key import ChromaKeyParams, fit_to_canvas, hex_to_rgb, process
+from chroma_key import ChromaKeyParams, cover_to_canvas, fit_to_canvas, hex_to_rgb, process
 from compare_image import build_comparison_image
 from record_schema import (
     CANDIDATE_LIKE_STATES,
@@ -216,6 +216,27 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         default=0.08,
         help="--fit-width/height指定時の片側余白比率(既定0.08)",
     )
+    parser.add_argument(
+        "--cover-width",
+        type=int,
+        default=None,
+        help=(
+            "table.backgroundなどbackground-size:cover全面素材向け。透過後の"
+            "画像全体をこの幅x高さへ拡大縮小+中央cropする(--fit-widthとは"
+            "排他。透明余白を作らない)。指定時は--cover-heightも必須で、"
+            "--opaque-backgroundも指定すること"
+        ),
+    )
+    parser.add_argument("--cover-height", type=int, default=None)
+    parser.add_argument(
+        "--opaque-background",
+        action="store_true",
+        help=(
+            "全面不透明のcover背景素材であることを検査へ伝える(isolated "
+            "object契約の透明余白/端の透明化必須チェックを無効化し、逆に"
+            "全面が不透明であることを検査する)"
+        ),
+    )
     parser.add_argument("--prompt", default=None, help="生成に使ったprompt")
     parser.add_argument("--prompt-file", default=None, help="promptをファイルから読む")
     parser.add_argument("--tool", default="codex-cli")
@@ -357,9 +378,17 @@ def main() -> int:
         if args.fit_width is None or args.fit_height is None:
             print("ERROR: --fit-widthと--fit-heightは両方指定してください", file=sys.stderr)
             return 1
+        if args.cover_width is not None or args.cover_height is not None:
+            print("ERROR: --fit-*と--cover-*は同時指定できません", file=sys.stderr)
+            return 1
         processed_image = fit_to_canvas(
             processed_image, args.fit_width, args.fit_height, args.fit_margin_ratio
         )
+    elif args.cover_width is not None or args.cover_height is not None:
+        if args.cover_width is None or args.cover_height is None:
+            print("ERROR: --cover-widthと--cover-heightは両方指定してください", file=sys.stderr)
+            return 1
+        processed_image = cover_to_canvas(processed_image, args.cover_width, args.cover_height)
 
     with tempfile.TemporaryDirectory(prefix="soro-pon-prepare-") as tmp_str:
         tmp = Path(tmp_str)
@@ -373,6 +402,7 @@ def main() -> int:
             expected_width=args.expected_width,
             expected_height=args.expected_height,
             min_transparent_padding=args.min_padding,
+            opaque_background=args.opaque_background,
         )
         result = validate_candidate(str(staged_candidate), validation_params)
 

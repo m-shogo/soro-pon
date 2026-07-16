@@ -25,6 +25,11 @@ class ValidationParams:
     min_opaque_ratio: float = 0.01
     edge_opaque_alpha_threshold: int = 10
     fringe_distance_threshold: float = 0.25
+    # table.backgroundのようなbackground-size:cover全面素材向け。
+    # isolated object契約(透明ピクセル必須/端の透明余白/端への不透明接触禁止)を
+    # 逆転させる: 全面が不透明であることを要求し、端の不透明接触・余白不足は
+    # 不合格にしない。緑残り・フリンジ・寸法一致の検査はopaqueでも維持する。
+    opaque_background: bool = False
 
 
 @dataclass
@@ -76,9 +81,21 @@ def validate_candidate(image_path: str, params: ValidationParams) -> ValidationR
     alpha = arr[..., 3].astype(np.float64)
     alpha_norm = alpha / 255.0
 
-    # 完全透明領域が存在すること
-    if not (alpha == 0).any():
-        issues.append("完全透明(alpha=0)のピクセルが存在しません(背景が除去されていない可能性)")
+    if params.opaque_background:
+        # cover背景は全面不透明が正しい状態。透明ピクセルが残っていたら
+        # 逆にチロマキー処理で意図せず穴が空いた可能性がある
+        transparent_ratio = float((alpha < 250).sum()) / (width * height)
+        if transparent_ratio > 0.01:
+            issues.append(
+                f"opaque background契約なのに非不透明ピクセルが{transparent_ratio:.4%}"
+                "あります(生成物に背景色に近い色が含まれ誤って透過された可能性)"
+            )
+    else:
+        # 完全透明領域が存在すること
+        if not (alpha == 0).any():
+            issues.append(
+                "完全透明(alpha=0)のピクセルが存在しません(背景が除去されていない可能性)"
+            )
 
     # 不透明な本体領域が消失していないこと
     opaque_ratio = float((alpha > 200).sum()) / (width * height)
@@ -88,14 +105,15 @@ def validate_candidate(image_path: str, params: ValidationParams) -> ValidationR
             f"{params.min_opaque_ratio:.4%})。被写体が消失した可能性"
         )
 
-    # 四辺に不透明ピクセルが接触していないこと(被写体が画像端に接触)
-    edge_alpha = np.concatenate(
-        [alpha[0, :], alpha[-1, :], alpha[:, 0], alpha[:, -1]]
-    )
-    if (edge_alpha > params.edge_opaque_alpha_threshold).any():
-        issues.append(
-            "画像四辺に不透明ピクセルが接触しています(被写体が画像端に接触している可能性)"
+    if not params.opaque_background:
+        # 四辺に不透明ピクセルが接触していないこと(被写体が画像端に接触)
+        edge_alpha = np.concatenate(
+            [alpha[0, :], alpha[-1, :], alpha[:, 0], alpha[:, -1]]
         )
+        if (edge_alpha > params.edge_opaque_alpha_threshold).any():
+            issues.append(
+                "画像四辺に不透明ピクセルが接触しています(被写体が画像端に接触している可能性)"
+            )
 
     # 四辺に背景色が残っていないこと(alpha>0かつ背景色に極めて近い、は透過漏れ)
     edge_rgb = np.concatenate(
@@ -108,9 +126,9 @@ def validate_candidate(image_path: str, params: ValidationParams) -> ValidationR
         issues.append("画像四辺に背景色が不透明のまま残っています")
 
     # 指定した透明余白があること(各辺から内側へmin_transparent_padding分は
-    # 実質的に透明であること)
+    # 実質的に透明であること)。opaque backgroundは余白概念そのものが無い
     pad = params.min_transparent_padding
-    if pad > 0 and pad * 2 < min(width, height):
+    if not params.opaque_background and pad > 0 and pad * 2 < min(width, height):
         bands = [
             alpha[:pad, :],
             alpha[-pad:, :],
