@@ -1,7 +1,7 @@
 {
   "id": "cute-pop",
   "label": "Cute Pop",
-  "version": 4,
+  "version": 5,
   "skinContractVersion": 1,
   "origin": "official",
   "author": "soro-pon",
@@ -162,6 +162,79 @@
       "minRenderSize": {
         "width": 72,
         "height": 44
+      }
+    },
+    "table.background": {
+      "file": "table-background.png",
+      "status": "final",
+      "renderMode": "cover",
+      "intrinsicSize": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "panel.modal.background": {
+      "file": "panel-modal-background.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 512,
+        "height": 384
+      },
+      "transparent": true,
+      "nineSlice": {
+        "top": 24,
+        "right": 24,
+        "bottom": 24,
+        "left": 24
+      },
+      "nineSliceRender": {
+        "top": 24,
+        "right": 24,
+        "bottom": 24,
+        "left": 24
+      },
+      "contentSafeArea": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "minRenderSize": {
+        "width": 96,
+        "height": 96
+      }
+    },
+    "panel.result.frame": {
+      "file": "panel-result-frame.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 512,
+        "height": 384
+      },
+      "transparent": true,
+      "nineSlice": {
+        "top": 32,
+        "right": 32,
+        "bottom": 32,
+        "left": 32
+      },
+      "nineSliceRender": {
+        "top": 32,
+        "right": 32,
+        "bottom": 32,
+        "left": 32
+      },
+      "contentSafeArea": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "minRenderSize": {
+        "width": 96,
+        "height": 96
       }
     }
   }
