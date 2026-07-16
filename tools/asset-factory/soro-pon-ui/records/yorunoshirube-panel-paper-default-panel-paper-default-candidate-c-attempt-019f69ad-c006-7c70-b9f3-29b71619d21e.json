@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "panel.paper.default",
+  "assetRequest": "013-yorunoshirube-panel-family",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/panel.paper.default/candidate-c/attempt-019f69ad-c006-7c70-b9f3-29b71619d21e/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a front-facing, isolated nine-slice panel background object -- a quiet everyday record-card sheet, viewed flat and centered on a solid chroma-key green background (#00ff00) with generous even transparent margin on all sides, no surrounding scene, no mockup, no interface chrome, no shadow cast outward onto the green. Design: a travel-memo card made of two thin layered sheets of aged paper, with a very small hand-stitched thread-binding detail (a few individual thread stitches, not embroidery) visible only along the left edge near the corners. The entire center region must stay nearly uniform, low-contrast, aged ivory with only the faint layered-paper texture visible -- no pattern, no strong marks, no bright accents there, because body text and lists will be overlaid on top and must stay easy to read. This visual quality must come from real paper-layering and hand-stitched thread texture, not a flat CSS pattern. Nine-slice constraints: the top and bottom edge bands must each be horizontally uniform along their whole width (no unique per-position detail), the left and right edge bands must each be vertically uniform along their whole height, and any decorative detail (including the thread stitches) must stay strictly inside the four corner zones, never crossing into the edge bands or the center. Color palette: aged ivory and warm paper-brown as the dominant tones, deep ink-black used only for the thread and a thin edge line, no bright colors. No text, no letters, no numerals, no logo, no watermark, no known characters, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69ad-c006-7c70-b9f3-29b71619d21e",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/panel-paper-default/yoru-candidate-c-thread-bound.txt --output-name yoru-panel-paper-default-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot panel.paper.default --input tools/asset-factory/soro-pon-ui/raw-green/yoru-panel-paper-default-c.png --request 013-yorunoshirube-panel-family --output-name panel-paper-default-candidate-c.png --fit-width 384 --fit-height 256 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 384 --expected-height 256 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/panel-paper-default/yoru-candidate-c-thread-bound.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/panel.paper.default/candidate-c/attempt-019f69ad-c006-7c70-b9f3-29b71619d21e/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/panel.paper.default/candidate-c/attempt-019f69ad-c006-7c70-b9f3-29b71619d21e/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 384,
+    "height": 256
+  },
+  "contentHash": "e0d0cf0f2f1a1b0b4c3bbaed611bf5644357886bee6efa162cfbd014931386be",
+  "attemptKey": "019f69ad-c006-7c70-b9f3-29b71619d21e",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-paper-default-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}
