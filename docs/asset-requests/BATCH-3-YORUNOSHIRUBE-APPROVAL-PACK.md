@@ -13,16 +13,28 @@ button.secondary.background / tile.face.base / tile.back.base)の
   button.secondary.background) /
   [015](015-yorunoshirube-tile-face-back.md)(tile.face.base / tile.back.base)
 - art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md)
-- 状態: **candidates配置済み・自動検査合格・人間承認待ち**
-- **final昇格・manifest登録・skin version変更は未実施**
-  (yorunoshirube skin.jsonは引き続きversion 1・`slots: {}`のまま。
-  Cute Pop final(9件、version 5)は無変更)
+- **状態: Batch 3 result: COMPLETE(2026-07-16、6/8 slot昇格・2/8 slot
+  BLOCKED_BY_TECHNICAL_VALIDATION)**
+- Human decision: table.background=C, panel.paper.default=A,
+  panel.modal.background=B, panel.result.frame=B,
+  button.primary.background=A, button.secondary.background=B,
+  tile.face.base=A, tile.back.base=A
+  (`approvalSource: user-provided-human-decision`)
+- Yorunoshirube version: **v1 → v2**。final昇格slot:
+  table.background, panel.modal.background, button.primary.background,
+  button.secondary.background, tile.face.base, tile.back.base(6件)
+- **panel.paper.default(A)とpanel.result.frame(B)は人間承認済みだが
+  BLOCKED_BY_TECHNICAL_VALIDATIONのためfinal未昇格**(下記セクション参照。
+  既存CSS token fallbackを維持、production表示は破綻なし)
+- Human review pending: 0 / Blocked: 2 / Batch 3 promoted: 6
+- Cute Pop final(9件、version 5)は無変更
 
-## 何を見るか
+## 何を見るか(候補レビュー時の手順 — 昇格後は下記は履歴)
 
 1. `pnpm dev` → `#/gallery` → SkinをヨルノシルベへV切り替え →
    「Batch 3候補レビュー」セクション(8slot、各3候補、実PaperPanel/
-   TileCard/Buttonへ実際に適用した状態)
+   TileCard/Buttonへ実際に適用した状態)。**このGalleryセクションは
+   昇格作業完了に伴い削除済み**。以下は当時の手順の記録
 2. または静的証跡: `evidence/batch-3-yorunoshirube-round1/*.png`
 3. 判断基準はrequest 012-015のAcceptance Checklist、および下記の
    機械レビュー所見
@@ -164,19 +176,28 @@ Yorunoshirubeの8slotは深い黒紺・煤けた青・古紙アイボリー・�
 - visual regression: Gallery baselineは意図更新予定(このPack作成時点では
   未実行。実行後にこの節を更新する)
 
-## 人間判断記入欄
+## 人間判断記入欄(記入済み・2026-07-16)
 
 ```text
-table.background: [A / B / C / REJECT]
-panel.paper.default: [A / B / C / REJECT]
-panel.modal.background: [A / B / C / REJECT]
-panel.result.frame: [A / B / C / REJECT]
-button.primary.background: [A / B / C / REJECT]
-button.secondary.background: [A / B / C / REJECT]
-tile.face.base: [A / B / C / REJECT]
-tile.back.base: [A / B / C / REJECT]
+table.background: C
+panel.paper.default: A
+panel.modal.background: B
+panel.result.frame: B
+button.primary.background: A
+button.secondary.background: B
+tile.face.base: A
+tile.back.base: A
 
-Review note:
+Review note: (各slotの詳細理由はrequest 012-015の各Review note参照)
+table.backgroundはYorunoshirubeの物語性が最も強いC(旅のノートと蝋引き紙)。
+panel.paper.defaultは最も静かで汎用性の高いA(記録用紙)。
+panel.modal.backgroundはtable.backgroundとの世界観連続性が強いB
+(挟み込まれた半透明紙)。panel.result.frameは夜明け前の余韻と9-slice安全性
+のバランスが良いB(夜明け前の記念台紙)。button.primary.backgroundは
+「押せる」印象が最も強いA(街灯の光を閉じ込めた硝子)。
+button.secondary.backgroundはprimaryより明確に弱いB(夜の切符)。
+tile.face.baseは中央可読性が最も高いA(明るい記憶の紙片)。
+tile.back.baseはfaceとの表裏識別性が最も高いA(封蝋紙+型押しの輪)。
 ```
 
 ## 承認後のpromotion手順(候補1つにつき)
@@ -217,3 +238,66 @@ Review note:
   not-selectedへ)
 - 技術的懸念(tile.face.base Bの小型時ノイズ化リスクなど)は、却下ではなく
   「修正指示付き再生成」または軽微な追加加工での解消を推奨
+
+## Promotion完了記録(2026-07-16)
+
+```text
+Batch 3 result: COMPLETE
+Human decision: C / A / B / B / A / B / A / A
+Yorunoshirube version: v1 -> v2
+Batch 3 final promoted: 6
+Batch 3 blocked: 2
+Human review pending: 0
+```
+
+- table.background: candidate C採用 → final(2MB契約超過のため256色
+  パレット+ditheringで再エンコード、視覚差異なしを確認)
+- panel.paper.default: candidate A**人間承認済み・BLOCKED_BY_TECHNICAL_
+  VALIDATION**。promotion前の技術再検査でalpha bounding boxがcanvas幅の
+  43%しかないことが判明(健全な他候補は92-96%)。MatchSetop実画面
+  (380px幅パネル)でnine-slice fill描画すると、パネル内に縮小したカードが
+  浮いて見える不具合を確認(border-image計算・PIL alpha bbox測定の両方で
+  検証)。候補を勝手に別案(B/C)へ差し替えず、既存CSS token fallbackを維持
+- panel.modal.background: candidate B採用 → final(無加工)
+- panel.result.frame: candidate B**人間承認済み・BLOCKED_BY_TECHNICAL_
+  VALIDATION**。panel.paper.defaultと同一理由(alpha bbox幅48%)。同様に
+  候補を差し替えず、既存CSS token fallbackを維持
+- button.primary.background: candidate A採用 → final(無加工)
+- button.secondary.background: candidate B採用 → final(無加工。初回
+  prepareはfit margin不足でrejected-validationとなり、margin調整で
+  再prepareして合格)
+- tile.face.base: candidate A採用 → final(無加工)
+- tile.back.base: candidate A採用 → final(無加工)
+- 不採用18件(not-selected 16件+blocked 2件)は全て理由を記録
+  (`tools/asset-factory/soro-pon-ui/records/`)。初回機械却下履歴
+  (table.background Bの和風建築、panel.result.frame Cの黒金高級UI風装飾、
+  tile.back.base Cのキルト柄類似、button.secondary.background Aの
+  validation失敗)は変更せず保持
+- production consumer統合確認: GameTableLayout(table.background)、
+  Modal(panel.modal.background)、Button(primary/secondary、TOP・
+  MatchSetup・Match)、TileCard(face/back、選択・捨て牌)全て実画面で
+  確認済み。panel.paper.default/panel.result.frameのCSS fallbackが
+  MatchSetup・Result画面で破綻なく表示されることも確認済み
+- Galleryの候補レビューセクション(`Batch3YorunoshirubeCandidateReview.tsx`)
+  削除済み
+- 検証: `pnpm asset:image:test`(87/87) / `pnpm skin:validate`(18/18) /
+  `pnpm test`(314/314) / `pnpm typecheck` / `pnpm build` / `pnpm test:visual`
+  (33/33、Gallery baseline更新+MatchSetup yorunoshirube-1024x600の
+  意図差分のみ)全て green
+- production証跡: `evidence/batch-3-yorunoshirube-final/`(18ファイル、
+  5 viewport + tile-selected/discard-pile + modal + fallback確認2種
+  (matchsetup/result) + Cute Pop回帰 + reload永続化)
+
+## panel.paper.default / panel.result.frame 再挑戦時の要件
+
+BLOCKED_BY_TECHNICAL_VALIDATIONの2slotを再挑戦する場合:
+
+1. 同コンセプト(A: 記録用紙 / B: 夜明け前の記念台紙)を維持してよいが、
+   生成promptに「不透明な被写体がcanvas幅・高さの90%以上を占める、
+   landscape構図で全面を塗る」ことを明示的に指示する
+2. `pnpm asset:image:prepare`実行後、`PIL`で`alpha.getbbox()`を確認し、
+   `(bbox[2]-bbox[0])/width`と`(bbox[3]-bbox[1])/height`が0.9以上である
+   ことを機械的に検査してからGallery/production確認へ進む(他6slotの
+   実測値92-96%を目安とする)
+3. 修正後は本Packの当該slotのApproval Statusを`candidate`へ戻し、
+   通常のpromotion手順で再度human review以降を実施する

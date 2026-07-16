@@ -5,10 +5,12 @@
 - skin: `yorunoshirube`
 - slots: `tile.face.base`, `tile.back.base`
 - generation method: **Codex CLI起点画像生成**
-- status: **candidates配置済み・自動検査合格・人間承認待ち**
+- status: **closed — final昇格済み(2026-07-16)**
+- 採用: tile.face.base=A, tile.back.base=A
+- yorunoshirube skin.json: **version 2**、両slot登録済み
 - candidate limit: 最大3/slot(合計最大6)
 - art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md)
-- 昇格禁止: このroundではfinal昇格を行わない
+- 承認結果・promotion記録: [BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md](BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md)
 
 ## Purpose
 
@@ -117,9 +119,30 @@ CSSトークン(`--sp-gradient-tile-face`/`--sp-gradient-tile-back`)で
 
 ## Approval Status(承認状態)
 
-- [x] candidate(レビュー待ち)
-- [ ] approved
+- [x] approved(final昇格済み)
+- [ ] candidate
 - [ ] rejected
 
-`approvalSource: pending-human-decision`。人間レビュー未実施
-(Batch 3 round 1)。
+`approvalSource: user-provided-human-decision`(2026-07-16)。
+人間承認: tile.face.base=A, tile.back.base=A。
+
+Review note(人間レビュー原文の要旨): faceは明るい記憶の紙片(A)が中央
+最も静かで牌文字・数字・柄の可読性が高く、24pxを含む小型表示への安全性が
+高い。backは封蝋紙+型押しの輪(A)が明るいface Aと黒紺のback Aで表裏を
+瞬時に区別でき、型押しリングが印刷線やCSS borderではない素材表現になる。
+
+## Promotion Record(2026-07-16)
+
+- 採用: tile-face-base-candidate-a → `generated/final/tile-face-base.png`
+  (無加工)
+- 採用: tile-back-base-candidate-a → `generated/final/tile-back-base.png`
+  (無加工)
+- 不採用: face B, C / back B, C(`not-selected`、rejectionReason記録済み。
+  back C初回案は全面ダイヤモンドキルト柄でCute Pop tile.back.base(R1候補E)
+  と酷似し機械却下・再生成した履歴を保持)
+- ADR-015によりtile状態slot(selected/ron/tsumo)はbase合成レイヤーのまま
+  維持(別画像は生成していない)
+- skin version: 1 → 2
+- production証跡: `evidence/batch-3-yorunoshirube-final/match-tile-selected.png`,
+  `match-discard-pile.png`、5 viewport match-table
+- visual regression: 33/33 green

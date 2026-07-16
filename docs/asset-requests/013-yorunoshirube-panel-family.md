@@ -5,13 +5,17 @@
 - skin: `yorunoshirube`
 - slots: `panel.paper.default`, `panel.modal.background`, `panel.result.frame`
 - generation method: **Codex CLI起点画像生成**
-- status: **candidates配置済み・自動検査合格・人間承認待ち**
+- status: **partially closed(2026-07-16)**: `panel.modal.background`は
+  final昇格済み。`panel.paper.default`は人間承認(A)を得たが
+  **BLOCKED_BY_TECHNICAL_VALIDATION**のためfinal未昇格
+  (下記Promotion Record参照)。`panel.result.frame`も同様に人間承認(B)を
+  得たがBLOCKED_BY_TECHNICAL_VALIDATIONのためfinal未昇格
 - candidate limit: 最大3/slot(合計最大9)
 - 1request統合の理由: 3slotとも nine-slice 紙パネル系で、
   render契約・9-slice安全性要件・content safe area責務が同型のため
   (Cute Pop request 011と同じ統合方針)
 - art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md)
-- 昇格禁止: このroundではfinal昇格を行わない
+- 承認結果・promotion記録: [BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md](BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md)
 
 ## Purpose
 
@@ -151,9 +155,39 @@ CSSトークン(`--sp-gradient-panel-paper`等)+box-shadowで表示済み(未変
 
 ## Approval Status(承認状態)
 
-- [x] candidate(レビュー待ち)
-- [ ] approved
+- [x] partially approved / partially blocked(下記参照)
+- [ ] candidate
 - [ ] rejected
 
-`approvalSource: pending-human-decision`。人間レビュー未実施
-(Batch 3 round 1)。
+`approvalSource: user-provided-human-decision`(2026-07-16)。
+人間承認: panel.paper.default=A, panel.modal.background=B, panel.result.frame=B。
+
+Review note(人間レビュー原文の要旨): panel.paper.defaultは最も頻繁に
+使われる共通パネルとして最も静かである必要があり、紙繊維+軽いインク縁の
+Aがlist/long text/empty/formなど多用途対応と静けさのバランスで優位。
+panel.modal.backgroundは地図帳に挟まれた重要な記録という役割にBが最も合い、
+table.background Cとの世界観連続性がある。panel.result.frameは夜明け前の
+淡い紫と小さな光による対局終了時の余韻、勝敗中立性、nine-slice安全性の
+バランスでBが優位。
+
+## Promotion Record(2026-07-16)
+
+- **panel.modal.background: 昇格済み**。採用: candidate-b →
+  `generated/final/panel-modal-background.png`(無加工)。不採用: A, C
+  (`not-selected`)。skin version 1→2、production証跡確認済み
+- **panel.paper.default: BLOCKED_BY_TECHNICAL_VALIDATION**。人間承認(A)は
+  記録・保持しているが、promotion前の技術再検査でcandidate Aのalpha
+  bounding boxがcanvas幅の43%しかないことが判明(他昇格slotは92-96%)。
+  実際のnine-slice fill描画をMatchSetup実画面(380px幅パネル)で確認した
+  ところ、パネル内に縮小したカードが浮いて見える不具合を確認(border-image
+  計算とPIL alpha bbox測定の両方で検証)。**候補を勝手に別案へ差し替えず**、
+  final化を見送り既存CSS tokenフォールバックを維持。修正要件: 同コンセプトで
+  不透明領域がcanvas幅/高さの90%以上を占める構図で再生成すること
+- **panel.result.frame: BLOCKED_BY_TECHNICAL_VALIDATION**。人間承認(B)は
+  記録・保持しているが、panel.paper.defaultと同じ理由(alpha bbox幅48%)で
+  final化を見送り。修正要件は同上
+- production証跡: `evidence/batch-3-yorunoshirube-final/
+  modal-skin-select-yorunoshirube-final.png`(panel.modal.background),
+  `matchsetup-paper-panel-fallback.png` / `result-screen-paper-fallback.png`
+  (panel.paper.default/panel.result.frameのfallbackが破綻なく表示されることの確認)
+- visual regression: 33/33 green

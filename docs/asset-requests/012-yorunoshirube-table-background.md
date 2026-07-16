@@ -5,12 +5,13 @@
 - skin: `yorunoshirube`
 - slot: `table.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **candidates配置済み・自動検査合格・人間承認待ち**(Batch 3の一部。
-  art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md))
-- candidate limit: **最大3**(A/B/C)
-- 昇格禁止: このround(round 1)ではfinal昇格を行わない。
-  人間承認後、別途promotion手順を実施する
-  ([BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md](BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md)参照)
+- status: **closed — final昇格済み(2026-07-16)**
+- 採用candidate: C(旅のノートと蝋引き紙) → `generated/final/table-background.png`
+- 不採用candidate: A(夜の地図帳)、B(黒インクの街) → `not-selected`
+- yorunoshirube/skin.json: **version 2**、`table.background`登録済み
+  (renderMode: cover, intrinsicSize 1920x1080)
+- art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md)
+- 承認結果・promotion記録: [BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md](BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md)
 
 ## Purpose
 
@@ -108,9 +109,28 @@ pnpm asset:image:prepare --skin yorunoshirube --slot table.background \
 
 ## Approval Status(承認状態)
 
-- [x] candidate(レビュー待ち)
-- [ ] approved
+- [x] approved(final昇格済み)
+- [ ] candidate
 - [ ] rejected
 
-`approvalSource: pending-human-decision`。人間レビュー未実施
-(Batch 3 round 1)。
+`approvalSource: user-provided-human-decision`(2026-07-16)。人間承認: C。
+
+Review note(人間レビュー原文の要旨): Batch 3の3案中、Yorunoshirubeの物語性が
+最も強い。蝋引き紙の半透明感・鉛筆線・荷札・記録片などCSSでは再現しにくい
+素材情報があり、「夜の記録帳」「旅の記憶」というスキンの中核を一枚で伝えられる。
+中央の対局領域は静かに保たれている。
+
+## Promotion Record(2026-07-16)
+
+- 採用: table-background-candidate-c → `generated/final/table-background.png`
+- final PNGがSKIN-CONTRACT.json `maxAssetFileBytes`(2MB)を超過したため、
+  256色パレット+Floyd-Steinberg ditheringで再エンコード
+  (2890050 bytes → 1655281 bytes、視覚的差異なしを目視確認)
+- 不採用: candidate A, B(`not-selected`、rejectionReason記録済み。
+  B初回案はtorii/pagoda(和風建築)混入により機械却下・再生成した履歴を保持)
+- promotion前の技術再検査: cover crop時に荷札・記録片が牌/捨て牌へ
+  侵入しないことを5 viewport + DPR2で確認、問題なし
+- skin version: 1 → 2
+- production証跡: `evidence/batch-3-yorunoshirube-final/*-matchsetup.png`,
+  `*-match-table.png`(5 viewport)
+- visual regression: 33/33 green

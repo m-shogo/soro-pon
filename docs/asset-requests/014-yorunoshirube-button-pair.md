@@ -5,10 +5,12 @@
 - skin: `yorunoshirube`
 - slots: `button.primary.background`, `button.secondary.background`
 - generation method: **Codex CLI起点画像生成**
-- status: **candidates配置済み・自動検査合格・人間承認待ち**
+- status: **closed — final昇格済み(2026-07-16)**
+- 採用: button.primary.background=A, button.secondary.background=B
+- yorunoshirube skin.json: **version 2**、両slot登録済み
 - candidate limit: 最大3/slot(合計最大6)
 - art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md)
-- 昇格禁止: このroundではfinal昇格を行わない
+- 承認結果・promotion記録: [BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md](BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md)
 
 ## Purpose
 
@@ -120,9 +122,30 @@ CSSトークン(`--sp-gradient-button-primary`/`--sp-gradient-button-paper`)で
 
 ## Approval Status(承認状態)
 
-- [x] candidate(レビュー待ち)
-- [ ] approved
+- [x] approved(final昇格済み)
+- [ ] candidate
 - [ ] rejected
 
-`approvalSource: pending-human-decision`。人間レビュー未実施
-(Batch 3 round 1)。
+`approvalSource: user-provided-human-decision`(2026-07-16)。
+人間承認: button.primary.background=A, button.secondary.background=B。
+
+Review note(人間レビュー原文の要旨): primaryは街灯の光を閉じ込めた硝子
+(A)が「押せる」印象と視覚的優先度を最も強く持ち、街灯・琥珀の光という
+Yorunoshirubeの象徴を直接表現できる。secondaryは夜の切符(B)が切り欠きと
+印刷ずれによって画像を使用する意味が明確で、primary Aの硝子と発光に対し
+紙の実用品として明確に弱く見える。
+
+## Promotion Record(2026-07-16)
+
+- 採用: button-primary-background-candidate-a →
+  `generated/final/button-primary-background.png`(無加工)
+- 採用: button-secondary-background-candidate-b →
+  `generated/final/button-secondary-background.png`(無加工)
+- 不採用: primary B, C / secondary A, C(`not-selected`、rejectionReason
+  記録済み。secondary A初回prepareはfit margin不足でrejected-validation
+  となった履歴を保持し、margin調整による再prepare後の合格版を人間承認・
+  not-selectedとして記録)
+- skin version: 1 → 2
+- production証跡: `evidence/batch-3-yorunoshirube-final/*-matchsetup.png`
+  (対局開始ボタンのランタン発光)、TOP画面(まず遊ぶ等のsecondaryボタン)
+- visual regression: 33/33 green
