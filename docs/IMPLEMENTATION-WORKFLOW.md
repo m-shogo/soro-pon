@@ -210,8 +210,23 @@ modal/result content. A shared art direction
 one material family. Decision record and promotion evidence:
 `docs/asset-requests/BATCH-2-APPROVAL-PACK.md`. Cute Pop now has 9 of 21
 contract slots final — all 6 A-class slots targeted by Batch 1+2 are done.
-Next fixed task: Batch 3 (Yorunoshirube core) — named, not started; see
-`docs/ASSET-PRODUCTION-ROADMAP.md`.
+
+Batch 3 (requests 012-015: yorunoshirube table.background /
+panel.paper.default / panel.modal.background / panel.result.frame /
+button.primary.background / button.secondary.background / tile.face.base /
+tile.back.base) machine work is **complete** (2026-07-16): all 8 slots have
+up to 3 candidates each (24 total), all passing automated validation, with
+a shared art direction, Gallery comparison UI, production-context
+previews, and visual evidence. **Zero candidates are promoted;
+yorunoshirube skin.json remains at version 1 with `slots: {}`.** Full
+record, including 3 candidates that were caught by machine content review
+(not just file-level validation) and regenerated before being shown for
+review — a wafu-architecture violation, a black-gold-luxury-UI violation,
+and a Cute-Pop-quilt-resembling pattern:
+`docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`. Human review
+is pending. Next fixed task: promote Batch 3's approved candidates once
+human review is supplied, then Batch 4 (Yorunoshirube decoration/effects)
+— named, not started; see `docs/ASSET-PRODUCTION-ROADMAP.md`.
 
 ## Verification Commands
 
@@ -295,7 +310,9 @@ extendedRoleSpan remains pending and blocked by E7008 (non-MVP, unchanged)
 skin hardening H1-H11: complete (see above) — no longer pending
 official skin final images: 9 of 21 contract slots done (all on cute-pop;
   Batch 1+2 closed 2026-07-16, all 6 A-class cute-pop slots final); 0 on
-  yorunoshirube — see docs/ASSET-PRODUCTION-ROADMAP.md for batch plan
+  yorunoshirube (Batch 3's 24 candidates across all 8 A-class yorunoshirube
+  slots are review-ready but not promoted — candidate existence does not
+  count toward this tally) — see docs/ASSET-PRODUCTION-ROADMAP.md for batch plan
   (next: Batch 3, yorunoshirube core)
 candidate/final validation: implemented and proven (request 007 closed);
   ongoing per-batch use is expected, not "unfinished"

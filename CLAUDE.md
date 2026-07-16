@@ -33,8 +33,19 @@ Batch 2(request 010/011: cute-pop table.background/panel.modal.background/
   実画面統合(GameTableLayout/Modal/ResultFrame)済み。
   docs/asset-requests/BATCH-2-APPROVAL-PACK.md参照。
   Batch 1+2でCute Popの対象A分類6slot全てがfinal化完了。
-  次の固定タスク(未着手): Batch 3(ヨルノシルベcore) —
-  docs/ASSET-PRODUCTION-ROADMAP.md参照
+Batch 3(request 012-015: ヨルノシルベ中核8slot — table.background/
+  panel.paper.default/panel.modal.background/panel.result.frame/
+  button.primary.background/button.secondary.background/tile.face.base/
+  tile.back.base)は機械作業完了・人間レビュー待ち(2026-07-16)。
+  共通アートディレクション: docs/asset-requests/BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md。
+  各slot最大3案・計24候補を生成・検査合格・Galleryレビュー・証跡取得済みだが
+  **final昇格は0件、yorunoshirube skin.jsonはversion 1・slots: {}のまま**。
+  docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md参照。
+  機械コンテンツレビューにより3候補(table.background Bの和風建築、
+  panel.result.frame Cの黒金高級UI風装飾、tile.back.base Cの
+  Cute Popキルト柄類似)を却下・再生成済み。
+  次の固定タスク(未着手): 人間承認後のBatch 3 promotion、その後Batch 4
+  (ヨルノシルベ装飾/effects) — docs/ASSET-PRODUCTION-ROADMAP.md参照
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
