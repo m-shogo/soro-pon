@@ -46,7 +46,42 @@ test('cute-pop: final資産が200で読み込まれ、border-image-sourceに反�
   expect(staleRequests).toEqual([]);
 });
 
-test('yorunoshirube: final資産が無いのでborder-image-sourceはfallback(none)のまま', async ({
+test('yorunoshirube: Batch 3 final資産(6slot)が200で読み込まれ、border-image-sourceに反映される', async ({
+  page,
+}) => {
+  const responses = trackResponses(page);
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.localStorage.setItem('soro-pon.skin.v1', 'yorunoshirube');
+  });
+  await page.goto('/');
+  await page.waitForSelector('html[data-skin="yorunoshirube"]');
+
+  const manifest = await page.evaluate(async () => {
+    const res = await fetch('/assets/ui/soro-pon/skins/yorunoshirube/skin.json');
+    return res.json();
+  });
+  expect(manifest.version).toBeGreaterThanOrEqual(2);
+
+  await waitForSkinAssetsReady(page, 'yorunoshirube', responses);
+
+  // button.secondary.background(variant="paper")はTOP画面で必ず使われるため
+  // final資産の読込を直接確認できる
+  const buttonRequests = responses.filter((r) =>
+    r.url.includes('button-secondary-background.png'),
+  );
+  expect(buttonRequests.length).toBeGreaterThan(0);
+  expect(buttonRequests.every((r) => r.status === 200)).toBe(true);
+  expect(buttonRequests.every((r) => r.url.includes(`?v=${manifest.version}`))).toBe(true);
+
+  const anyFinalImage = await page.evaluate(() => {
+    const layers = [...document.querySelectorAll<HTMLElement>('.sp-skin-layer')];
+    return layers.some((el) => getComputedStyle(el).borderImageSource.includes('/generated/final/'));
+  });
+  expect(anyFinalImage).toBe(true);
+});
+
+test('yorunoshirube: panel.paper.default/panel.result.frameはBLOCKED_BY_TECHNICAL_VALIDATIONのためfallback(none)のまま', async ({
   page,
 }) => {
   const responses = trackResponses(page);
@@ -58,9 +93,9 @@ test('yorunoshirube: final資産が無いのでborder-image-sourceはfallback(no
   await page.waitForSelector('html[data-skin="yorunoshirube"]');
   await waitForSkinAssetsReady(page, 'yorunoshirube', responses);
 
-  const anyFinalImage = await page.evaluate(() => {
-    const layers = [...document.querySelectorAll<HTMLElement>('.sp-skin-layer')];
-    return layers.some((el) => getComputedStyle(el).borderImageSource.includes('/generated/final/'));
-  });
-  expect(anyFinalImage).toBe(false);
+  const blockedSlotRequests = responses.filter(
+    (r) =>
+      r.url.includes('panel-paper-default.png') || r.url.includes('panel-result-frame.png'),
+  );
+  expect(blockedSlotRequests).toEqual([]);
 });
