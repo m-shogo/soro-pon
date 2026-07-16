@@ -13,7 +13,7 @@
   "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot table.background --input tools/asset-factory/soro-pon-ui/raw-green/table-background-candidate-a.png --request 010-cute-pop-table-background --output-name table-background-candidate-a.png --cover-width 1920 --cover-height 1080 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 1920 --expected-height 1080 --opaque-background --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/candidate-a-pastel-fabric-playmat.txt",
   "backgroundColor": "#00ff00",
   "method": "codex-cli-chroma-key",
-  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-a/attempt-019f68d4-68b6-7df1-bd97-f0f4c5614d8e/candidate.png",
+  "processedFile": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png",
   "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-a/attempt-019f68d4-68b6-7df1-bd97-f0f4c5614d8e/compare.png",
   "processParams": {
     "hardThreshold": 0.12,
@@ -25,19 +25,20 @@
     "width": 1920,
     "height": 1080
   },
-  "contentHash": "045cb0c9ef91f4a8b10b44d33e52e19dc4408116a1bc677af72ff27a8c7182a6",
+  "contentHash": "bf8e9febc93187db8f39e2aa4f9618c7e3d54ac78b9bfe07052d0e4bfa6d6cf5",
   "attemptKey": "019f68d4-68b6-7df1-bd97-f0f4c5614d8e",
-  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/table-background-candidate-a.png",
-  "promotedTo": null,
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png",
+  "promotedTo": "public/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png",
   "generatedAt": "2026-07-16",
-  "approval": "candidate",
+  "approval": "promoted",
   "rejectionReason": null,
-  "promotedAt": null,
-  "skinVersionAtPromotion": null,
+  "promotedAt": "2026-07-16",
+  "skinVersionAtPromotion": 5,
   "archivedAt": "2026-07-16",
   "validation": {
     "ok": true,
     "issues": []
   },
-  "license": "original project asset generated via Codex CLI"
+  "license": "original project asset generated via Codex CLI",
+  "postPromotionOptimization": "final PNG exceeded SKIN-CONTRACT.json maxAssetFileBytes(2097152); re-encoded as 256-color palette PNG with Floyd-Steinberg dithering (RGBA->P, alpha channel dropped since slot is opaque/non-transparent) at promotion time on 2026-07-16. Visual content unchanged (verified by side-by-side inspection at full 1920x1080 scale); pre-optimization candidate bytes are preserved in the git-tracked attempt archive (archive/cute-pop/table.background/candidate-a/.../candidate.png) for audit. contentHash below reflects the promoted (optimized) file, not the human-reviewed candidate file; the reviewed candidate's original hash is 045cb0c9ef91f4a8b10b44d33e52e19dc4408116a1bc677af72ff27a8c7182a6."
 }
