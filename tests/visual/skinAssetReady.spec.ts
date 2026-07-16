@@ -46,7 +46,7 @@ test('cute-pop: final資産が200で読み込まれ、border-image-sourceに反�
   expect(staleRequests).toEqual([]);
 });
 
-test('yorunoshirube: Batch 3 final資産(6slot)が200で読み込まれ、border-image-sourceに反映される', async ({
+test('yorunoshirube: Batch 3 core final資産(8slot)が200で読み込まれ、border-image-sourceに反映される', async ({
   page,
 }) => {
   const responses = trackResponses(page);
@@ -61,7 +61,7 @@ test('yorunoshirube: Batch 3 final資産(6slot)が200で読み込まれ、border
     const res = await fetch('/assets/ui/soro-pon/skins/yorunoshirube/skin.json');
     return res.json();
   });
-  expect(manifest.version).toBeGreaterThanOrEqual(2);
+  expect(manifest.version).toBeGreaterThanOrEqual(3);
 
   await waitForSkinAssetsReady(page, 'yorunoshirube', responses);
 
@@ -81,7 +81,7 @@ test('yorunoshirube: Batch 3 final資産(6slot)が200で読み込まれ、border
   expect(anyFinalImage).toBe(true);
 });
 
-test('yorunoshirube: panel.paper.default/panel.result.frameはBLOCKED_BY_TECHNICAL_VALIDATIONのためfallback(none)のまま', async ({
+test('yorunoshirube: panel.paper.default/panel.result.frameのremediation後finalが?v=3で読み込まれ、blocked状態が解消していること', async ({
   page,
 }) => {
   const responses = trackResponses(page);
@@ -91,11 +91,27 @@ test('yorunoshirube: panel.paper.default/panel.result.frameはBLOCKED_BY_TECHNIC
   });
   await page.goto('/');
   await page.waitForSelector('html[data-skin="yorunoshirube"]');
+
+  const manifest = await page.evaluate(async () => {
+    const res = await fetch('/assets/ui/soro-pon/skins/yorunoshirube/skin.json');
+    return res.json();
+  });
+  expect(manifest.version).toBeGreaterThanOrEqual(3);
+  // Batch 3 core 8slot(かつてBLOCKED_BY_TECHNICAL_VALIDATIONだった2slotを含む)が
+  // 全てfinal登録されていること
+  expect(Object.keys(manifest.slots)).toHaveLength(8);
+  expect(manifest.slots['panel.paper.default']?.status).toBe('final');
+  expect(manifest.slots['panel.result.frame']?.status).toBe('final');
+
   await waitForSkinAssetsReady(page, 'yorunoshirube', responses);
 
-  const blockedSlotRequests = responses.filter(
+  const correctedSlotRequests = responses.filter(
     (r) =>
       r.url.includes('panel-paper-default.png') || r.url.includes('panel-result-frame.png'),
   );
-  expect(blockedSlotRequests).toEqual([]);
+  // remediation前はCSS fallbackのため0件だったが、v3公開後は両方とも
+  // requestが発生しHTTP 200でversioned URL(?v=3)から解決されること
+  expect(correctedSlotRequests.length).toBeGreaterThan(0);
+  expect(correctedSlotRequests.every((r) => r.status === 200)).toBe(true);
+  expect(correctedSlotRequests.every((r) => r.url.includes(`?v=${manifest.version}`))).toBe(true);
 });
