@@ -208,6 +208,95 @@ class TestValidateCandidate:
         assert any("幅" in issue for issue in result.issues)
 
 
+class TestContentOccupancyValidation:
+    """nine-slice panel向けshrunken-card欠陥の再発防止検査
+    (Batch 3 panel.paper.default/panel.result.frame remediation)。
+    """
+
+    # Batch 3 blocked candidateの実測値相当(panel.paper.default A ≈43%,
+    # panel.result.frame B ≈48%)を下回る、意図的に小さい中央被写体
+    OCCUPANCY_PARAMS = ValidationParams(
+        background_color=(0, 255, 0),
+        min_content_width_ratio=0.90,
+        max_content_width_ratio=0.98,
+        min_content_height_ratio=0.88,
+        max_content_height_ratio=0.98,
+        max_content_center_offset_ratio=0.02,
+    )
+
+    def _save(self, image, tmp_path, name="out.png"):
+        path = tmp_path / name
+        image.save(path)
+        return str(path)
+
+    def test_small_centered_subject_fails_occupancy(self, tmp_path):
+        img = fixtures.fixture_small_centered_rect_subject(width=384, height=256)
+        out = process(img, GREEN_PARAMS)
+        path = self._save(out, tmp_path)
+        result = validate_candidate(path, self.OCCUPANCY_PARAMS)
+        assert not result.ok
+        assert any("小さすぎます" in issue for issue in result.issues)
+        assert result.content_bounds is not None
+        assert result.content_bounds["widthRatio"] < 0.5
+
+    def test_full_bleed_subject_passes_occupancy(self, tmp_path):
+        img = fixtures.fixture_full_bleed_rect_subject(width=384, height=256)
+        out = process(img, GREEN_PARAMS)
+        path = self._save(out, tmp_path)
+        result = validate_candidate(path, self.OCCUPANCY_PARAMS)
+        assert result.ok, result.issues
+        assert result.content_bounds is not None
+        assert result.content_bounds["widthRatio"] >= 0.90
+        assert result.content_bounds["heightRatio"] >= 0.88
+
+    def test_occupancy_not_checked_when_unspecified(self, tmp_path):
+        """既存アセット(occupancy option未指定)の挙動は変化しないこと。"""
+        img = fixtures.fixture_small_centered_rect_subject(width=384, height=256)
+        out = process(img, GREEN_PARAMS)
+        path = self._save(out, tmp_path)
+        result = validate_candidate(path, ValidationParams(background_color=(0, 255, 0)))
+        assert result.ok, result.issues
+        # 計測値はcontent_boundsとして常に記録されるが、閾値未指定なら不合格にしない
+        assert result.content_bounds is not None
+        assert result.content_bounds["widthRatio"] < 0.5
+
+    def test_occupancy_skipped_for_opaque_background(self, tmp_path):
+        """table.backgroundのようなopaque cover素材はoccupancy検査の対象外
+        (全面塗りで被写体の外接矩形という概念自体が意味を持たない)。
+        """
+        img = fixtures.fixture_green_round_subject(width=200, height=200)
+        out = process(img, GREEN_PARAMS)
+        # opaque_background=Trueの通常フローに合わせ、透過を無視して不透明化
+        rgba = np.array(out.convert("RGBA"))
+        rgba[..., 3] = 255
+        from PIL import Image as PILImage
+
+        opaque_out = PILImage.fromarray(rgba, mode="RGBA")
+        path = self._save(opaque_out, tmp_path)
+        result = validate_candidate(
+            path,
+            ValidationParams(
+                background_color=(0, 255, 0),
+                opaque_background=True,
+                min_content_width_ratio=0.90,
+            ),
+        )
+        assert result.content_bounds is None
+
+    def test_existing_valid_candidate_still_passes_with_occupancy_unspecified(self, tmp_path):
+        """既存の正常candidate(円形被写体)はoccupancy option省略時に無影響。"""
+        img = fixtures.fixture_green_round_subject(width=200, height=200)
+        out = process(img, GREEN_PARAMS)
+        path = self._save(out, tmp_path)
+        result = validate_candidate(
+            path,
+            ValidationParams(
+                background_color=(0, 255, 0), expected_width=200, expected_height=200
+            ),
+        )
+        assert result.ok, result.issues
+
+
 class TestValidateCandidateOpaqueBackground:
     """table.backgroundのようなcover全面素材向けvalidate_candidate分岐。"""
 

@@ -106,6 +106,47 @@ def fixture_insufficient_padding(width: int = 200, height: int = 200) -> Image.I
     return Image.fromarray(arr.astype(np.uint8), mode="RGB")
 
 
+def fixture_small_centered_rect_subject(width: int = 384, height: int = 256) -> Image.Image:
+    """8. nine-slice panel向け: canvas中央に小さく浮いた矩形被写体
+    (blocked panel.paper.default A/panel.result.frame Bを再現する
+    content-occupancy低下ケース。canvas幅の約43%しか占有しない)。
+    """
+    arr = _canvas(width, height, GREEN)
+    rect_w = width * 0.43
+    rect_h = height * 0.90
+    x0 = (width - rect_w) / 2
+    y0 = (height - rect_h) / 2
+    x1 = x0 + rect_w
+    y1 = y0 + rect_h
+    color = np.array(WARM_SUBJECT, dtype=np.float64)
+    xs = np.arange(width)
+    ys = np.arange(height)
+    mask = (xs[None, :] >= x0) & (xs[None, :] < x1) & (ys[:, None] >= y0) & (ys[:, None] < y1)
+    for c in range(3):
+        arr[..., c] = np.where(mask, color[c], arr[..., c])
+    return Image.fromarray(arr.astype(np.uint8), mode="RGB")
+
+
+def fixture_full_bleed_rect_subject(width: int = 384, height: int = 256) -> Image.Image:
+    """9. nine-slice panel向け: canvasのほぼ全体(94%幅x92%高)を占有する
+    矩形被写体(corrected A2/B2が満たすべきoccupancy良好ケース)。
+    """
+    arr = _canvas(width, height, GREEN)
+    rect_w = width * 0.94
+    rect_h = height * 0.92
+    x0 = (width - rect_w) / 2
+    y0 = (height - rect_h) / 2
+    x1 = x0 + rect_w
+    y1 = y0 + rect_h
+    color = np.array(WARM_SUBJECT, dtype=np.float64)
+    xs = np.arange(width)
+    ys = np.arange(height)
+    mask = (xs[None, :] >= x0) & (xs[None, :] < x1) & (ys[:, None] >= y0) & (ys[:, None] < y1)
+    for c in range(3):
+        arr[..., c] = np.where(mask, color[c], arr[..., c])
+    return Image.fromarray(arr.astype(np.uint8), mode="RGB")
+
+
 ALL_FIXTURES = {
     "green_round_subject": fixture_green_round_subject,
     "green_subject_with_soft_shadow": fixture_green_subject_with_soft_shadow,
@@ -113,6 +154,8 @@ ALL_FIXTURES = {
     "magenta_background": fixture_magenta_background,
     "subject_touching_edge": fixture_subject_touching_edge,
     "insufficient_padding": fixture_insufficient_padding,
+    "small_centered_rect_subject": fixture_small_centered_rect_subject,
+    "full_bleed_rect_subject": fixture_full_bleed_rect_subject,
 }
 
 

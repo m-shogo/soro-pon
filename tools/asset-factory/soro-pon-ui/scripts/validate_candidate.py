@@ -30,6 +30,17 @@ class ValidationParams:
     # 逆転させる: 全面が不透明であることを要求し、端の不透明接触・余白不足は
     # 不合格にしない。緑残り・フリンジ・寸法一致の検査はopaqueでも維持する。
     opaque_background: bool = False
+    # nine-slice/stretchのisolated object向け: 被写体(alpha>200)の外接矩形が
+    # canvasに対してどれだけの比率を占めるべきかの下限/上限。Noneなら検査しない
+    # (既定は全アセット非適用。table.backgroundのようなopaque cover素材には
+    # 適用しない別種の検査)。Batch 3 panel.paper.default/panel.result.frameの
+    # shrunken-card欠陥(portrait被写体がlandscape canvas中央に浮く)を
+    # 寸法一致検査だけでは検出できなかったことの再発防止として追加。
+    min_content_width_ratio: float | None = None
+    max_content_width_ratio: float | None = None
+    min_content_height_ratio: float | None = None
+    max_content_height_ratio: float | None = None
+    max_content_center_offset_ratio: float | None = None
 
 
 @dataclass
@@ -39,6 +50,7 @@ class ValidationResult:
     content_hash: str | None = None
     width: int = 0
     height: int = 0
+    content_bounds: dict | None = None
 
 
 def _compute_hash(path: str) -> str:
@@ -105,6 +117,72 @@ def validate_candidate(image_path: str, params: ValidationParams) -> ValidationR
             f"{params.min_opaque_ratio:.4%})。被写体が消失した可能性"
         )
 
+    # content occupancy(alpha bounding-box): 被写体がcanvasに対して十分な
+    # 面積を占めているか。寸法一致検査(expected_width/height)はcanvas自体の
+    # サイズしか見ないため、canvas寸法は正しいのに被写体がその中央に小さく
+    # 浮いている(portrait被写体がlandscape canvasの中央にfitされた等)ケースを
+    # 検出できない。ここではopaque(alpha>200)ピクセルの外接矩形を計測し、
+    # nine-slice/stretch isolated objectがcanvas幅・高さに対して十分な比率を
+    # 占め、かつ中央に配置されていることを別軸で検査する。
+    content_bounds: dict | None = None
+    if not params.opaque_background:
+        opaque_mask = alpha > 200
+        if opaque_mask.any():
+            rows = np.any(opaque_mask, axis=1)
+            cols = np.any(opaque_mask, axis=0)
+            y0, y1 = int(np.argmax(rows)), int(len(rows) - 1 - np.argmax(rows[::-1]))
+            x0, x1 = int(np.argmax(cols)), int(len(cols) - 1 - np.argmax(cols[::-1]))
+            content_w = x1 - x0 + 1
+            content_h = y1 - y0 + 1
+            width_ratio = content_w / width
+            height_ratio = content_h / height
+            content_center_x = (x0 + x1 + 1) / 2.0
+            content_center_y = (y0 + y1 + 1) / 2.0
+            center_offset_x_ratio = abs(content_center_x - width / 2.0) / width
+            center_offset_y_ratio = abs(content_center_y - height / 2.0) / height
+            content_bounds = {
+                "widthRatio": round(width_ratio, 4),
+                "heightRatio": round(height_ratio, 4),
+                "centerOffsetXRatio": round(center_offset_x_ratio, 4),
+                "centerOffsetYRatio": round(center_offset_y_ratio, 4),
+            }
+
+            if params.min_content_width_ratio is not None and width_ratio < params.min_content_width_ratio:
+                issues.append(
+                    f"被写体がcanvas幅に対して小さすぎます(width比率 {width_ratio:.4%} < "
+                    f"{params.min_content_width_ratio:.4%})。nine-slice fill描画で"
+                    "縮小したカードが浮いて見える可能性(shrunken-card欠陥)"
+                )
+            if params.max_content_width_ratio is not None and width_ratio > params.max_content_width_ratio:
+                issues.append(
+                    f"被写体がcanvas幅に対して大きすぎます(width比率 {width_ratio:.4%} > "
+                    f"{params.max_content_width_ratio:.4%})。透明余白が不足する可能性"
+                )
+            if params.min_content_height_ratio is not None and height_ratio < params.min_content_height_ratio:
+                issues.append(
+                    f"被写体がcanvas高さに対して小さすぎます(height比率 {height_ratio:.4%} < "
+                    f"{params.min_content_height_ratio:.4%})。nine-slice fill描画で"
+                    "縮小したカードが浮いて見える可能性(shrunken-card欠陥)"
+                )
+            if params.max_content_height_ratio is not None and height_ratio > params.max_content_height_ratio:
+                issues.append(
+                    f"被写体がcanvas高さに対して大きすぎます(height比率 {height_ratio:.4%} > "
+                    f"{params.max_content_height_ratio:.4%})。透明余白が不足する可能性"
+                )
+            if params.max_content_center_offset_ratio is not None:
+                if center_offset_x_ratio > params.max_content_center_offset_ratio:
+                    issues.append(
+                        f"被写体の中心がcanvas中心からX方向にずれすぎています"
+                        f"(offset比率 {center_offset_x_ratio:.4%} > "
+                        f"{params.max_content_center_offset_ratio:.4%})"
+                    )
+                if center_offset_y_ratio > params.max_content_center_offset_ratio:
+                    issues.append(
+                        f"被写体の中心がcanvas中心からY方向にずれすぎています"
+                        f"(offset比率 {center_offset_y_ratio:.4%} > "
+                        f"{params.max_content_center_offset_ratio:.4%})"
+                    )
+
     if not params.opaque_background:
         # 四辺に不透明ピクセルが接触していないこと(被写体が画像端に接触)
         edge_alpha = np.concatenate(
@@ -154,5 +232,10 @@ def validate_candidate(image_path: str, params: ValidationParams) -> ValidationR
             )
 
     return ValidationResult(
-        ok=len(issues) == 0, issues=issues, content_hash=content_hash, width=width, height=height
+        ok=len(issues) == 0,
+        issues=issues,
+        content_hash=content_hash,
+        width=width,
+        height=height,
+        content_bounds=content_bounds,
     )

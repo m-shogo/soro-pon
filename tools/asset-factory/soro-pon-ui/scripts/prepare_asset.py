@@ -237,6 +237,25 @@ def _build_arg_parser() -> argparse.ArgumentParser:
             "全面が不透明であることを検査する)"
         ),
     )
+    parser.add_argument(
+        "--min-content-width-ratio",
+        type=float,
+        default=None,
+        help=(
+            "nine-slice/stretch isolated object向け: 被写体(alpha>200)の外接矩形幅が"
+            "canvas幅に対して満たすべき最小比率(0-1)。未指定なら検査しない。"
+            "portrait被写体がlandscape canvas中央に小さく浮くshrunken-card欠陥の再発防止"
+        ),
+    )
+    parser.add_argument("--max-content-width-ratio", type=float, default=None)
+    parser.add_argument("--min-content-height-ratio", type=float, default=None)
+    parser.add_argument("--max-content-height-ratio", type=float, default=None)
+    parser.add_argument(
+        "--max-content-center-offset-ratio",
+        type=float,
+        default=None,
+        help="被写体中心とcanvas中心のずれの最大許容比率(0-1、canvas幅/高さに対する比率)",
+    )
     parser.add_argument("--prompt", default=None, help="生成に使ったprompt")
     parser.add_argument("--prompt-file", default=None, help="promptをファイルから読む")
     parser.add_argument("--tool", default="codex-cli")
@@ -403,6 +422,11 @@ def main() -> int:
             expected_height=args.expected_height,
             min_transparent_padding=args.min_padding,
             opaque_background=args.opaque_background,
+            min_content_width_ratio=args.min_content_width_ratio,
+            max_content_width_ratio=args.max_content_width_ratio,
+            min_content_height_ratio=args.min_content_height_ratio,
+            max_content_height_ratio=args.max_content_height_ratio,
+            max_content_center_offset_ratio=args.max_content_center_offset_ratio,
         )
         result = validate_candidate(str(staged_candidate), validation_params)
 
@@ -479,7 +503,11 @@ def main() -> int:
             "promotedAt": None,
             "skinVersionAtPromotion": None,
             "archivedAt": today,
-            "validation": {"ok": result.ok, "issues": result.issues},
+            "validation": {
+                "ok": result.ok,
+                "issues": result.issues,
+                "contentBounds": result.content_bounds,
+            },
             "license": args.license,
         }
 
