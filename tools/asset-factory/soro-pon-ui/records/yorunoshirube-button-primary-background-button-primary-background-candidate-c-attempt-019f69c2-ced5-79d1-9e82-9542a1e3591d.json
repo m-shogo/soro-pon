@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "button.primary.background",
+  "assetRequest": "014-yorunoshirube-button-pair",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/button.primary.background/candidate-c/attempt-019f69c2-ced5-79d1-9e82-9542a1e3591d/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga -- avoid any black-and-gold luxury-UI styling, no metallic bezel, no jewel accents): a wide landscape rounded-rectangle button background, roughly 10:3 aspect ratio, front-facing, isolated object only, centered on a solid chroma-key green background (#00ff00) with generous even transparent margin on all sides, no surrounding scene, no mockup, no interface chrome. Design: the strongest light in the whole Yorunoshirube skin family -- a before-dawn signpost panel, dark ink-black paper body with a thin glowing amber line tracing the full inner edge of the button like a lit guide-path, brightest along the border and calmer toward the center. This tactile ink-paper-and-edge-light quality must come from real hand-drawn line rendering and light-emission glow, not a flat CSS gradient or box-shadow glow. The glow must be strong enough to clearly read as \"press this,\" while the button face itself stays dark enough that light cream text placed on top would reach strong contrast. Nine-slice constraints: the horizontal middle band (left-to-right center strip) must stay uniform and seamless so the button can stretch horizontally without visible seams, and all four corners must be uniform and symmetric with each other. Color palette: ink-black body, warm amber edge-glow, no gold-metallic rendering, no rose-pink, no neon colors. No text, no letters, no numerals, no icon glyph, no logo, no watermark, no known characters, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69c2-ced5-79d1-9e82-9542a1e3591d",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/yoru-candidate-c-dawn-signpost.txt --output-name yoru-button-primary-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot button.primary.background --input tools/asset-factory/soro-pon-ui/raw-green/yoru-button-primary-c.png --request 014-yorunoshirube-button-pair --output-name button-primary-background-candidate-c.png --fit-width 240 --fit-height 72 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 240 --expected-height 72 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-primary-background/yoru-candidate-c-dawn-signpost.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/button.primary.background/candidate-c/attempt-019f69c2-ced5-79d1-9e82-9542a1e3591d/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/button.primary.background/candidate-c/attempt-019f69c2-ced5-79d1-9e82-9542a1e3591d/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 240,
+    "height": 72
+  },
+  "contentHash": "e638357eb85ef5ecfa902815b99f3d50952844dd99d4466a4982f1ffd2882c6c",
+  "attemptKey": "019f69c2-ced5-79d1-9e82-9542a1e3591d",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/button-primary-background-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

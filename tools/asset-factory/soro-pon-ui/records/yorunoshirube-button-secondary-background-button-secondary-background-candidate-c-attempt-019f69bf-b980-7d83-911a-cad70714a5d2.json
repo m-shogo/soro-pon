@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "button.secondary.background",
+  "assetRequest": "014-yorunoshirube-button-pair",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/button.secondary.background/candidate-c/attempt-019f69bf-b980-7d83-911a-cad70714a5d2/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga -- avoid any black-and-gold luxury-UI styling, no metallic bezel, no jewel accents): a wide landscape rounded-rectangle button background, roughly 10:3 aspect ratio, front-facing, isolated object only, centered on a solid chroma-key green background (#00ff00) with generous even transparent margin on all sides, no surrounding scene, no mockup, no interface chrome. Design: a secondary, clearly weaker light than the primary button -- an old waxed-paper luggage tag shape flattened into a button, with a tiny hand-punched thread hole visible near one short edge (no thread itself, just the small hole), a faint translucent waxed sheen, and no glowing light at all, just quiet paper tone. This tactile waxed-paper-and-punched-hole quality must come from real material texture, not a flat CSS border or gradient. It must clearly read as visually quieter and less prominent than the primary button when the two are placed side by side, while text placed on top must still stay legible. Nine-slice constraints: the horizontal middle band (left-to-right center strip) must stay uniform and seamless so the button can stretch horizontally without visible seams, and all four corners must be uniform and symmetric with each other. Color palette: aged ivory and pale blue-gray paper tones, deep ink-black only for the thin border line -- no gold, no bright amber glow, no rose-pink, no neon colors. No text, no letters, no numerals, no icon glyph, no logo, no watermark, no known characters, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69bf-b980-7d83-911a-cad70714a5d2",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-secondary-background/yoru-candidate-c-old-tag.txt --output-name yoru-button-secondary-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot button.secondary.background --input tools/asset-factory/soro-pon-ui/raw-green/yoru-button-secondary-c.png --request 014-yorunoshirube-button-pair --output-name button-secondary-background-candidate-c.png --fit-width 240 --fit-height 72 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 240 --expected-height 72 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/button-secondary-background/yoru-candidate-c-old-tag.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/button.secondary.background/candidate-c/attempt-019f69bf-b980-7d83-911a-cad70714a5d2/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/button.secondary.background/candidate-c/attempt-019f69bf-b980-7d83-911a-cad70714a5d2/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 240,
+    "height": 72
+  },
+  "contentHash": "99b0bf080eb50b69dc1ef21100030b69080ee54371c196b01fef22a4b17cebc5",
+  "attemptKey": "019f69bf-b980-7d83-911a-cad70714a5d2",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/button-secondary-background-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}
