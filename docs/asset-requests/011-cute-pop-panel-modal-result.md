@@ -5,10 +5,15 @@
 - skin: `cute-pop`
 - slots: `panel.modal.background`, `panel.result.frame`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **candidates生成予定・人間レビュー前提(final昇格前で停止)**
-- target files (candidates): `generated/candidates/panel-modal-background-candidate-*.png`,
-  `generated/candidates/panel-result-frame-candidate-*.png`
+- status: **closed — final昇格済み(2026-07-16)**
+- panel.modal.background 採用candidate: B(クッションパイピングパネル) →
+  `generated/final/panel-modal-background.png`(A/Cは`not-selected`)
+- panel.result.frame 採用candidate: B(刺繍ワッペン風フレーム) →
+  `generated/final/panel-result-frame.png`(A/Cは`not-selected`。
+  Aは技術的懸念(tall表示でのnine-slice変形)により不採用)
+- cute-pop skin.json: **version 5**、両slot登録済み
 - art direction: [BATCH-2-ART-DIRECTION.md](BATCH-2-ART-DIRECTION.md)
+- 承認結果・promotion手順: [BATCH-2-APPROVAL-PACK.md](BATCH-2-APPROVAL-PACK.md)
 - 1request統合の理由: 両slotともnine-slice paperパネル系で、
   render契約・9-slice安全性要件・content safe area責務が同型のため
 
@@ -154,6 +159,34 @@ CSSグラデーション+box-shadow(`sp-paper-panel`)で表示済み。
 
 ## Approval Status(承認状態)
 
-- [ ] candidate(レビュー待ち)
-- [ ] approved(final昇格可)
-- [ ] rejected(修正指示: )
+- [x] approved(final昇格済み)
+- [ ] candidate
+- [ ] rejected
+
+`approvalSource: user-provided-human-decision`(2026-07-16)。
+人間承認: panel.modal.background=B, panel.result.frame=B。
+
+Review note(人間レビュー原文の要旨):
+panel.modal.background BはCSSでは再現できないクッションの立体感を持ち、
+可読性と9-slice安全性のバランスが良い。
+panel.result.frame Bは全周均一な破線ステッチで9-slice安全性が最も高く、
+勝敗どちらの文脈でも使える。候補Aは魅力的だが、tall表示(長い役リスト+
+スコア+ボタン)でリボンの結び目部分が縦伸縮により変形・尖る9-slice seam
+を実機で確認済みであり、**単なる好みの不採用ではなく技術的理由による
+不採用**として記録する。
+
+## Promotion Record(2026-07-16)
+
+- 採用: panel-modal-background-candidate-b →
+  `generated/final/panel-modal-background.png`(無加工で昇格)
+- 採用: panel-result-frame-candidate-b →
+  `generated/final/panel-result-frame.png`(無加工で昇格)
+- 不採用: panel.modal.background A, C / panel.result.frame A, C
+  (`not-selected`、rejectionReason記録済み。panel.result.frame Aは
+  技術的懸念(tall表示nine-slice変形)を明記)
+- skin version: 4 → 5
+- production証跡: `evidence/batch-2-final/modal-skin-select-*.png`,
+  `result-screen.png`(流局ケース。勝利/長文ケースは対局実演による
+  目視確認済み — 役リスト+スコア内訳表示でcontentSafeArea/9-slice
+  変形なしを確認)
+- visual regression: 32/32 green(Gallery baseline更新のみ、対象外画面は無変更)

@@ -198,14 +198,20 @@ are composited over the base face per ADR-015 — do not generate separate
 full-face art for them.
 
 Batch 2 (request 010/011: cute-pop table.background / panel.modal.background
-/ panel.result.frame) machine work is **complete** — 9 candidates (3 per
-slot) generated, validated, placed in a Gallery review section, and
-evidenced across 5 viewports — but **zero are promoted**; cute-pop
-skin.json remains at **version 4**. A shared art direction
-(`docs/asset-requests/BATCH-2-ART-DIRECTION.md`) governs all 3 slots as
-one material family. Decision record, machine review, and known concerns
-(panel.result.frame candidate A has a 9-slice stretch artifact):
-`docs/asset-requests/BATCH-2-APPROVAL-PACK.md`. Human review is pending.
+/ panel.result.frame) is **closed** (2026-07-16). Human review approved
+table.background: A, panel.modal.background: B, panel.result.frame: B
+(candidate A for panel.result.frame was rejected on technical grounds — a
+9-slice stretch artifact under tall content, confirmed by the reviewer —
+not preference). All three are promoted to final, registered in
+cute-pop/skin.json (version 4 -> 5), and verified in production consumers
+(GameTableLayout, Modal, ResultFrame) across 5 viewports plus real
+modal/result content. A shared art direction
+(`docs/asset-requests/BATCH-2-ART-DIRECTION.md`) governed all 3 slots as
+one material family. Decision record and promotion evidence:
+`docs/asset-requests/BATCH-2-APPROVAL-PACK.md`. Cute Pop now has 9 of 21
+contract slots final — all 6 A-class slots targeted by Batch 1+2 are done.
+Next fixed task: Batch 3 (Yorunoshirube core) — named, not started; see
+`docs/ASSET-PRODUCTION-ROADMAP.md`.
 
 ## Verification Commands
 
@@ -287,9 +293,10 @@ integrity and lifecycle rules documented/tested  documented in docs/SKIN-DISTRIB
 ```text
 extendedRoleSpan remains pending and blocked by E7008 (non-MVP, unchanged)
 skin hardening H1-H11: complete (see above) — no longer pending
-official skin final images: 3 of 21 contract slots done (all on cute-pop);
-  0 on yorunoshirube; button.primary.background (main CTA) still placeholder
-  on both — see docs/ASSET-PRODUCTION-ROADMAP.md for batch plan
+official skin final images: 9 of 21 contract slots done (all on cute-pop;
+  Batch 1+2 closed 2026-07-16, all 6 A-class cute-pop slots final); 0 on
+  yorunoshirube — see docs/ASSET-PRODUCTION-ROADMAP.md for batch plan
+  (next: Batch 3, yorunoshirube core)
 candidate/final validation: implemented and proven (request 007 closed);
   ongoing per-batch use is expected, not "unfinished"
 match restore/replay/resend feature: non-MVP; H11 idempotency groundwork

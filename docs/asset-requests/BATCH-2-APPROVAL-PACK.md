@@ -8,10 +8,14 @@ panel.result.frame 3案)の人間レビュー用資料。ここだけ読めば�
   [011](011-cute-pop-panel-modal-result.md)(panel.modal.background /
   panel.result.frame)
 - art direction: [BATCH-2-ART-DIRECTION.md](BATCH-2-ART-DIRECTION.md)
-- 状態: **candidates配置済み・自動検査合格・人間承認待ち**
-- **final昇格・manifest登録・skin version変更は未実施**
-  (cute-pop skin.jsonは引き続き**version 4**のまま。R1 final
+- 状態: **Batch 2 result: COMPLETE(2026-07-16)**
+- **final昇格・manifest登録・skin version変更 実施済み**
+  (cute-pop skin.jsonは**version 5**。R1 final
   (tile.face.base/tile.back.base/button.primary.background)は無変更)
+- Human decision: **table.background=A / panel.modal.background=B /
+  panel.result.frame=B**(`approvalSource: user-provided-human-decision`)
+- Cute Pop final昇格数: 6 → **9**(21 contract slots中9)
+- Human review pending: 0 / Blocked: 0
 
 ## 何を見るか
 
@@ -94,14 +98,20 @@ panel.result.frame(特にA)のrose-pink/pastel-yellow装飾はR1のCTA色と
   attempt archiveは `tools/asset-factory/soro-pon-ui/archive/cute-pop/`
 - visual regression: 32/32 green(Gallery baselineは意図更新、TOP/MatchSetup無変更)
 
-## 人間判断記入欄
+## 人間判断記入欄(記入済み・2026-07-16)
 
 ```text
-table.background: [A / B / C / REJECT]
-panel.modal.background: [A / B / C / REJECT]
-panel.result.frame: [A / B / C / REJECT]
+table.background: A
+panel.modal.background: B
+panel.result.frame: B
 
-Review note:
+Review note: パステル布プレイマット(A)は暖かさ・親しみやすさが対局全体の
+トーンに最も合う。panel.modal.background Bはクッションの立体感がCSSでは
+再現できず、可読性・9-slice安全性のバランスが良い。panel.result.frame Bは
+全周均一な破線ステッチで9-slice安全性が3候補中最も高く、勝敗どちらの
+文脈でも使える。候補Aは魅力的だが、tall表示でリボンの結び目部分が縦伸縮
+により変形・尖る9-slice seamを実機で確認済みであり、技術的理由により
+不採用とする(単なる好みの不採用ではない)。
 ```
 
 ## 承認後のpromotion手順(候補1つにつき)
@@ -140,3 +150,34 @@ Review note:
 - panel.result.frame候補Aのような9-slice技術的懸念は、却下ではなく
   「修正指示付き再生成」または「同コンセプトの縮小版corner decoration」
   での再挑戦を推奨
+
+## Promotion完了記録(2026-07-16)
+
+```text
+Batch 2 result: COMPLETE
+Human decision: A / B / B
+Cute Pop version: v4 -> v5
+Batch 2 final promoted: 3
+Human review pending: 0
+Blocked: 0
+```
+
+- table.background: candidate A採用 → final(2MB契約超過のため256色
+  パレット+ditheringで再エンコード、視覚差異なしを確認)
+- panel.modal.background: candidate B採用 → final(無加工)
+- panel.result.frame: candidate B採用 → final(無加工)。候補Aは
+  tall表示でのnine-slice変形という技術的理由で不採用(record参照)
+- 不採用6件は全て`not-selected`+rejectionReasonを記録
+  (`tools/asset-factory/soro-pon-ui/records/`)
+- production consumer統合確認: GameTableLayout(table.background)、
+  Modal(panel.modal.background、きせかえ短文/長文)、ResultFrame
+  (panel.result.frame、流局ケースは自動証跡、勝利/tallケースは
+  対局実演による目視確認)全て実画面で確認済み
+- Gallery Batch 2レビューセクション(`Batch2CandidateReview.tsx`)削除済み
+  (production nine-sliceは別実装(`SkinLayer`)のため同問題なしを確認済み)
+- 検証: `pnpm asset:image:test`(87/87) / `pnpm skin:validate`(18/18) /
+  `pnpm test`(314/314) / `pnpm typecheck` / `pnpm build` / `pnpm test:visual`
+  (32/32、Gallery baselineのみ意図更新)全て green
+- production証跡: `evidence/batch-2-final/`(18ファイル、5 viewport +
+  tile-selected/discard-pile + modal短文/長文 + result-screen +
+  R1/ヨルノシルベ回帰確認)

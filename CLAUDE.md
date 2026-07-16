@@ -13,7 +13,7 @@ Skin foundation hardening H1-H11: complete
 All P0/P1/P2 gates: passed
 Image production pipeline: 稼働中・実証済み(request 007 closed)
 Official skins: yorunoshirube / cute-pop
-  (cute-pop final資産6件 / yorunoshirube final資産0件)
+  (cute-pop final資産9件・v5 / yorunoshirube final資産0件)
 Current phase: 公式アセット生産(candidates -> 人のレビュー -> final)。
   正本ロードマップ: docs/ASSET-PRODUCTION-ROADMAP.md
   (slot分類・バッチ順・次タスク)。着手前にdocs/ASSET-PIPELINE.md、
@@ -27,12 +27,14 @@ R1(request 008/009: cute-pop牌表/牌裏/primary CTA)は完了(2026-07-16)。
   tile状態slot(selected/ron/tsumo)はADR-015でbase合成レイヤー化済み
   (状態用の別full画像は作らない)
 Batch 2(request 010/011: cute-pop table.background/panel.modal.background/
-  panel.result.frame)は機械作業完了・人間レビュー待ち(2026-07-16)。
-  3slot共通アートディレクション: docs/asset-requests/BATCH-2-ART-DIRECTION.md。
-  候補9点(各slot3案)生成・検査合格・Galleryレビュー・証跡取得済みだが
-  **final昇格は0件、skin.jsonはversion 4のまま**。
-  docs/asset-requests/BATCH-2-APPROVAL-PACK.md参照
-  (panel.result.frame候補Aは9-slice伸縮時の変形を確認済み、既知の懸念として記録)
+  panel.result.frame)は完了(2026-07-16)。人間承認: table.background=A、
+  panel.modal.background=B、panel.result.frame=B(候補Aは9-slice伸縮時の
+  変形という技術的理由で不採用)。3件ともfinal昇格・skin.json v4→v5・
+  実画面統合(GameTableLayout/Modal/ResultFrame)済み。
+  docs/asset-requests/BATCH-2-APPROVAL-PACK.md参照。
+  Batch 1+2でCute Popの対象A分類6slot全てがfinal化完了。
+  次の固定タスク(未着手): Batch 3(ヨルノシルベcore) —
+  docs/ASSET-PRODUCTION-ROADMAP.md参照
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。

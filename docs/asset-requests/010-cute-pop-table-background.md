@@ -5,9 +5,15 @@
 - skin: `cute-pop`
 - slot: `table.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **candidates生成予定・人間レビュー前提(final昇格前で停止)**
-- target files (candidates): `generated/candidates/table-background-candidate-*.png`
+- status: **closed — final昇格済み(2026-07-16)**
+- 採用candidate: A(パステル布プレイマット) →
+  `generated/final/table-background.png`
+- 不採用candidate: B(クラフト紙ゲームマット)、C(フェルト+刺繍マット) →
+  `not-selected`
+- cute-pop skin.json: **version 5**、`table.background`登録済み
+  (renderMode: cover, intrinsicSize 1920x1080)
 - art direction: [BATCH-2-ART-DIRECTION.md](BATCH-2-ART-DIRECTION.md)
+- 承認結果・promotion手順: [BATCH-2-APPROVAL-PACK.md](BATCH-2-APPROVAL-PACK.md)
 
 ## Purpose
 
@@ -112,6 +118,29 @@ CSSグラデーション(`sp-fallback-table-bg`)で表示済み。
 
 ## Approval Status(承認状態)
 
-- [ ] candidate(レビュー待ち)
-- [ ] approved(final昇格可)
-- [ ] rejected(修正指示: )
+- [x] approved(final昇格済み)
+- [ ] candidate
+- [ ] rejected
+
+`approvalSource: user-provided-human-decision`(2026-07-16)。人間承認: A。
+
+Review note(人間レビュー原文の要旨): パステル布プレイマット(A)は暖かさ・
+親しみやすさが対局全体のトーンに最も合う。B/Cも高品質だが、Batch 2の
+「最も静か・最も低密度」という役割によりマッチするAを採用。
+
+## Promotion Record(2026-07-16)
+
+- 採用: table-background-candidate-a →
+  `generated/final/table-background.png`
+- final PNGがSKIN-CONTRACT.json `maxAssetFileBytes`(2MB)を超過したため、
+  256色パレット+Floyd-Steinberg ditheringで再エンコード
+  (3829067 bytes → 1848567 bytes、視覚的差異なしを目視確認)。
+  詳細は該当record(`tools/asset-factory/soro-pon-ui/records/
+  cute-pop-table-background-table-background-candidate-a-*.json`)の
+  `postPromotionOptimization`フィールド参照
+- 不採用: candidate B, C(`not-selected`、rejectionReason記録済み)
+- skin version: 4 → 5
+- production証跡: `evidence/batch-2-final/*-matchsetup.png`,
+  `*-match-table.png`, `match-tile-selected.png`, `match-discard-pile.png`
+  (5 viewport + detail)
+- visual regression: 32/32 green(Gallery baseline更新のみ、対象外画面は無変更)
