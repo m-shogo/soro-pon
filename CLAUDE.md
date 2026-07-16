@@ -13,7 +13,7 @@ Skin foundation hardening H1-H11: complete
 All P0/P1/P2 gates: passed
 Image production pipeline: 稼働中・実証済み(request 007 closed)
 Official skins: yorunoshirube / cute-pop
-  (cute-pop final資産9件・v5 / yorunoshirube final資産0件)
+  (cute-pop final資産9件・v5 / yorunoshirube final資産6件・v2)
 Current phase: 公式アセット生産(candidates -> 人のレビュー -> final)。
   正本ロードマップ: docs/ASSET-PRODUCTION-ROADMAP.md
   (slot分類・バッチ順・次タスク)。着手前にdocs/ASSET-PIPELINE.md、
@@ -33,18 +33,24 @@ Batch 2(request 010/011: cute-pop table.background/panel.modal.background/
   実画面統合(GameTableLayout/Modal/ResultFrame)済み。
   docs/asset-requests/BATCH-2-APPROVAL-PACK.md参照。
   Batch 1+2でCute Popの対象A分類6slot全てがfinal化完了。
-Batch 3(request 012-015: ヨルノシルベ中核8slot — table.background/
-  panel.paper.default/panel.modal.background/panel.result.frame/
-  button.primary.background/button.secondary.background/tile.face.base/
-  tile.back.base)は機械作業完了・人間レビュー待ち(2026-07-16)。
-  共通アートディレクション: docs/asset-requests/BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md。
-  各slot最大3案・計24候補を生成・検査合格・Galleryレビュー・証跡取得済みだが
-  **final昇格は0件、yorunoshirube skin.jsonはversion 1・slots: {}のまま**。
+Batch 3(request 012-015: ヨルノシルベ中核8slot)は完了(2026-07-16)。
+  人間承認: table.background=C、panel.paper.default=A、
+  panel.modal.background=B、panel.result.frame=B、
+  button.primary.background=A、button.secondary.background=B、
+  tile.face.base=A、tile.back.base=A。うち6slot(table.background/
+  panel.modal.background/button.primary.background/
+  button.secondary.background/tile.face.base/tile.back.base)は
+  final昇格・skin.json v1→v2・実画面統合済み。
+  **panel.paper.default(A)とpanel.result.frame(B)は人間承認済みだが
+  BLOCKED_BY_TECHNICAL_VALIDATION**(fit-to-canvasの不透明領域がcanvas幅の
+  43-48%しかなく、実nine-slice描画でパネル内に縮小したカードが浮く不具合を
+  MatchSetup実画面で確認。候補は差し替えず、既存CSS fallbackを維持)。
   docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md参照。
-  機械コンテンツレビューにより3候補(table.background Bの和風建築、
+  機械コンテンツレビューにより生成時点で3候補(table.background Bの和風建築、
   panel.result.frame Cの黒金高級UI風装飾、tile.back.base Cの
   Cute Popキルト柄類似)を却下・再生成済み。
-  次の固定タスク(未着手): 人間承認後のBatch 3 promotion、その後Batch 4
+  次の固定タスク(未着手): BLOCKED 2slot(panel.paper.default/
+  panel.result.frame)の修正・再promotion、その後Batch 4
   (ヨルノシルベ装飾/effects) — docs/ASSET-PRODUCTION-ROADMAP.md参照
 ```
 
