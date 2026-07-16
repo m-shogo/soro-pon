@@ -214,27 +214,30 @@ contract slots final — all 6 A-class slots targeted by Batch 1+2 are done.
 Batch 3 (requests 012-015: yorunoshirube table.background /
 panel.paper.default / panel.modal.background / panel.result.frame /
 button.primary.background / button.secondary.background / tile.face.base /
-tile.back.base) is **complete** (2026-07-16). Human review approved
-table.background: C, panel.paper.default: A, panel.modal.background: B,
-panel.result.frame: B, button.primary.background: A,
-button.secondary.background: B, tile.face.base: A, tile.back.base: A.
-Six are promoted to final, registered in yorunoshirube/skin.json (version
-1 -> 2), and verified in production consumers across 5 viewports.
-**panel.paper.default and panel.result.frame are human-approved but
-BLOCKED_BY_TECHNICAL_VALIDATION** — their fit-to-canvas opaque content
-spans only 43-48% of canvas width (vs. 92-96% on the other 6 approved
-candidates), producing a visibly shrunken card under real nine-slice
-rendering at production panel widths (confirmed on MatchSetup, not a
-Gallery-only artifact). Human approval for those two is preserved for a
-future corrected regeneration; they were not silently swapped for a
-different candidate. Full record, including 3 machine content-review
-rejections during generation (wafu-architecture, black-gold-luxury-UI, a
+tile.back.base) is **complete** (2026-07-16), including a same-day
+technical remediation. Human review approved table.background: C,
+panel.paper.default: A, panel.modal.background: B, panel.result.frame: B,
+button.primary.background: A, button.secondary.background: B,
+tile.face.base: A, tile.back.base: A. All 8 are promoted to final,
+registered in yorunoshirube/skin.json (version 1 -> 2 -> 3), and verified
+in production consumers across 5 viewports. Two of the eight
+(panel.paper.default, panel.result.frame) were initially **BLOCKED_BY_
+TECHNICAL_VALIDATION** — their fit-to-canvas opaque content spanned only
+43-48% of canvas width (vs. 92-96% on the other 6), producing a visibly
+shrunken card under real nine-slice rendering (confirmed on MatchSetup,
+not a Gallery-only artifact). Rather than silently swap candidates, the
+standing human approval was preserved, a content-occupancy validator was
+added to `validate_candidate.py` (see `docs/IMAGE-ASSET-WORKFLOW.md`), and
+both were regenerated with the same approved concept but a corrected
+landscape full-bleed composition — passing the new validator with no
+visual-identity drift, then promoted under the same standing approval.
+Full record, including 3 machine content-review rejections during
+original generation (wafu-architecture, black-gold-luxury-UI, a
 Cute-Pop-quilt-resembling pattern — all regenerated before review) and the
-correction requirements for the 2 blocked slots:
-`docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`. Yorunoshirube
-now has 6 of 21 contract slots final. Next fixed task: regenerate and
-re-promote the 2 blocked slots — named, not started; see
-`docs/ASSET-PRODUCTION-ROADMAP.md`.
+full remediation timeline: `docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`.
+Yorunoshirube now has 8 of 21 contract slots final (all Batch 3 core
+slots). Next fixed task: Batch 4 (Yorunoshirube decoration/effects) —
+named, not started; see `docs/ASSET-PRODUCTION-ROADMAP.md`.
 
 ## Verification Commands
 
@@ -318,14 +321,12 @@ extendedRoleSpan remains pending and blocked by E7008 (non-MVP, unchanged)
 skin hardening H1-H11: complete (see above) — no longer pending
 official skin final images: 9 of 21 contract slots done on cute-pop
   (Batch 1+2 closed 2026-07-16, all 6 A-class cute-pop slots final);
-  6 of 21 done on yorunoshirube (Batch 3 closed 2026-07-16 — table.background,
-  panel.modal.background, button.primary.background,
-  button.secondary.background, tile.face.base, tile.back.base).
-  panel.paper.default and panel.result.frame are human-approved but
-  BLOCKED_BY_TECHNICAL_VALIDATION (shrunken-card nine-slice defect), not
-  counted as final — see docs/ASSET-PRODUCTION-ROADMAP.md for batch plan
-  and correction requirements
-  (next: Batch 3, yorunoshirube core)
+  8 of 21 done on yorunoshirube (Batch 3 fully closed 2026-07-16 — all 8
+  core slots final, including panel.paper.default/panel.result.frame after
+  a same-day technical remediation of an initial shrunken-card nine-slice
+  defect; see docs/IMAGE-ASSET-WORKFLOW.md for the new content-occupancy
+  validator this added). Official finals across skins: 17
+  (next: Batch 4, yorunoshirube decoration/effects)
 candidate/final validation: implemented and proven (request 007 closed);
   ongoing per-batch use is expected, not "unfinished"
 match restore/replay/resend feature: non-MVP; H11 idempotency groundwork

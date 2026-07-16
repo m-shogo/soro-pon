@@ -30,15 +30,19 @@ Cute Pop final assets: 9 (button.secondary.background, panel.paper.default,
   button.primary.background, table.background, panel.modal.background,
   panel.result.frame) — version 5 (R1 closed 2026-07-16, Batch 2 closed
   2026-07-16)
-Yorunoshirube final assets: 6 (table.background, panel.modal.background,
+Yorunoshirube final assets: 8 — all Batch 3 core slots (table.background,
+  panel.paper.default, panel.modal.background, panel.result.frame,
   button.primary.background, button.secondary.background, tile.face.base,
-  tile.back.base) — version 2 (Batch 3 promotion closed 2026-07-16).
-  panel.paper.default and panel.result.frame have human-approved
-  candidates but are BLOCKED_BY_TECHNICAL_VALIDATION (fit-to-canvas
-  opaque content only spans 43-48% of canvas width, well under the
-  92-96% seen on every other approved Batch 3 candidate; nine-slice
-  fill renders a visibly shrunken card inside the panel at production
-  widths) and remain on CSS token fallback, not final
+  tile.back.base) — version 3 (Batch 3 fully closed 2026-07-16, including
+  technical remediation of the 2 slots initially blocked). A nine-slice
+  content-occupancy validator was added to `validate_candidate.py` after
+  panel.paper.default/panel.result.frame's first-round candidates were
+  found to occupy only 43-48% of canvas width (vs. 92-96% on healthy
+  candidates), producing a shrunken-card artifact under real nine-slice
+  fill; both were regenerated with the same approved concept/material but
+  corrected landscape full-bleed geometry (95.8%/96.1% width) and promoted
+  under the standing human approval (no visual identity drift, no new
+  human decision required)
 button.primary.background (the main CTA) is now final on both skins
   (cute-pop R1 candidate D "jelly candy CTA"; yorunoshirube Batch 3
   candidate A "lantern glass")
@@ -66,10 +70,10 @@ Python-SDF / CSS-token / shared overlay / existing final / defer.
 | table.background | `GameTableLayout` -> MatchScreen (cover) | A | A | Codex CLI | High | final v5 (cute-pop) / final v2 (yoru) | Table atmosphere is core to both skins' identity; CSS gradient reads as unfinished for demo tier 1/2 |
 | table.overlay.ink | `GameTableLayout` -> MatchScreen (overlay, 0.5) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both) | Ink texture is yorunoshirube-specific lore (黒インク); cute-pop's bright/pop language has no ink motif. Re-eval cute-pop only if art direction adds a paper-ink accent |
 | table.overlay.light | `GameTableLayout` -> MatchScreen (overlay, 0.6) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both) | Lantern-light overlay is yorunoshirube lore (ランタン光); CSS radial-gradient is sufficient until batch 4 decoration pass. Re-eval cute-pop if a light/glow accent is added to its palette |
-| panel.paper.default | `PaperPanel` (default) -> most screens, Gallery | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | High (yoru) | final v3 (cute-pop) / **blocked (yoru)** | Cute Pop already done (request 006). Yorunoshirube's paper panel is central to its "night desk / memory book" identity. Batch 3 candidate A is human-approved but BLOCKED_BY_TECHNICAL_VALIDATION (see BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md) — opaque content occupies only 43% of canvas width, producing a shrunken-card artifact under real nine-slice fill; requires a corrected regeneration before promotion |
+| panel.paper.default | `PaperPanel` (default) -> most screens, Gallery | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | High (yoru) | final v3 (cute-pop) / final v3 (yoru) | Cute Pop already done (request 006). Yorunoshirube done (Batch 3 core, technical remediation closed 2026-07-16 — see BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md) |
 | panel.paper.emphasis | `PaperPanel` (selected variant) -> same consumers | C | C | shared overlay | Medium | placeholder (both) | This is a tint/emphasis variant of panel.paper.default, not a distinct surface. A shared highlight overlay avoids a second full nine-slice asset per skin |
 | panel.modal.background | `Modal.tsx` -> `Dialog`, `AppRoot`, `TopScreen`, Gallery | A | A | Codex CLI | Medium-High | final v5 (cute-pop) / final v2 (yoru) | High-frequency surface (every dialog/modal); fallback token panel is functional but reads generic in a finished demo |
-| panel.result.frame | `ResultFrame.tsx` -> `ResultScreen` | A | A | Codex CLI | High (cute-pop) | final v5 (cute-pop) / **blocked (yoru)** | Result screen visual completeness is an explicit tier-1 requirement. Batch 3 candidate B is human-approved but BLOCKED_BY_TECHNICAL_VALIDATION (opaque content occupies only 48% of canvas width, same shrunken-card defect as panel.paper.default) |
+| panel.result.frame | `ResultFrame.tsx` -> `ResultScreen` | A | A | Codex CLI | High (cute-pop) | final v5 (cute-pop) / final v3 (yoru) | Result screen visual completeness is an explicit tier-1 requirement — now final on both skins (Batch 3 core, technical remediation closed 2026-07-16) |
 | button.primary.background | `Button.tsx` -> nearly every screen (main CTA) | A | A | Codex CLI | Highest | final v5 (cute-pop) / final v2 (yoru) | Primary CTA is explicitly required for tier 1 ("primary CTA... unified") — now final on both skins |
 | button.secondary.background | `Button.tsx` (paper variant) | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | High (yoru) | final v3 (cute-pop) / final v2 (yoru) | Cute Pop done (request 006); Yorunoshirube done (Batch 3) |
 | button.danger.background | `Button.tsx` -> destructive actions | B | B | CSS-token | Low | placeholder (both) | Low-frequency, destructive-action button; a clear token-driven solid/border style is safer for readability than illustrated art and does not block any completion tier |
@@ -92,15 +96,15 @@ A  (final image required):        table.background, panel.modal.background,
    panel.result.frame, button.primary.background, tile.face.base,
    tile.back.base  (both skins, 6 slots; all 6 are final on cute-pop as of
    2026-07-16 — Batch 1 closed the CTA/tile pair, Batch 2 closed the
-   remaining 3. On yorunoshirube, 4 of 6 are final as of Batch 3's close
-   2026-07-16 (table.background, button.primary.background, tile.face.base,
-   tile.back.base); panel.result.frame is human-approved but
-   BLOCKED_BY_TECHNICAL_VALIDATION, not yet final)
+   remaining 3. All 6 are also final on yorunoshirube as of Batch 3's full
+   close 2026-07-16, including technical remediation of
+   panel.result.frame's initially-blocked candidate)
    + panel.paper.default, button.secondary.background, badge.info.background
      for yorunoshirube only (already final on cute-pop) — 3 slots.
-     button.secondary.background is now final on yorunoshirube too (Batch 3).
-     panel.paper.default is human-approved but BLOCKED_BY_TECHNICAL_VALIDATION.
-     badge.info.background remains placeholder on yorunoshirube (Batch 4 target)
+     panel.paper.default and button.secondary.background are now final on
+     yorunoshirube too (Batch 3, panel.paper.default via technical
+     remediation). badge.info.background remains placeholder on
+     yorunoshirube (Batch 4 target)
 
 B  (fallback/deterministic sufficient): button.danger.background,
    badge.warning.background (both skins)
@@ -302,7 +306,7 @@ Gate to next batch: yorunoshirube reaches parity with cute-pop's core-slot
   coverage; both-skins comparison accepted
 ```
 
-**Batch 3 status: COMPLETE (2026-07-16) — 6 of 8 slots promoted, 2 blocked.**
+**Batch 3 status: COMPLETE (2026-07-16) — 8 of 8 core slots promoted.**
 A shared art direction (`docs/asset-requests/BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md`)
 was written before generation, establishing yorunoshirube's material family
 (night atlas / paper / ink / lantern-light — explicitly not a recolor of
@@ -314,22 +318,29 @@ up to 3 candidates (24 total across all 8 slots), all passing automated
 validation. Human review approved table.background: C,
 panel.paper.default: A, panel.modal.background: B, panel.result.frame: B,
 button.primary.background: A, button.secondary.background: B,
-tile.face.base: A, tile.back.base: A. Six of these (table.background,
-panel.modal.background, button.primary.background,
-button.secondary.background, tile.face.base, tile.back.base) are promoted
-to final, registered in yorunoshirube/skin.json (version 1 -> 2), and
-verified in production consumers across 5 viewports. **The other two
-(panel.paper.default, panel.result.frame) are human-approved but were
-caught by a pre-promotion technical re-check and are BLOCKED_BY_TECHNICAL_
-VALIDATION**: their fit-to-canvas opaque content occupies only 43-48% of
-canvas width (vs. 92-96% on every other approved candidate), which
-produces a visibly shrunken card floating inside the panel under real
-nine-slice fill rendering at production panel widths — confirmed live on
-MatchSetup and via direct alpha-bounding-box measurement. Human approval
-for those two candidates is preserved for when a corrected asset is
-available; they were not silently swapped for a different candidate.
-Full decision record, promotion evidence, and the correction requirements
-for the 2 blocked slots: `docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`.
+tile.face.base: A, tile.back.base: A. All 8 are promoted to final,
+registered in yorunoshirube/skin.json (version 1 -> 2 -> 3), and verified
+in production consumers across 5 viewports.
+
+Two of the eight (panel.paper.default, panel.result.frame) were initially
+**BLOCKED_BY_TECHNICAL_VALIDATION** after their first-round promotion
+attempt: a pre-promotion technical re-check found their fit-to-canvas
+opaque content occupied only 43-48% of canvas width (vs. 92-96% on every
+other approved candidate), producing a visibly shrunken card floating
+inside the panel under real nine-slice fill rendering — confirmed live on
+MatchSetup and via direct alpha-bounding-box measurement. Rather than
+silently swap in a different candidate, the standing human approval (A and
+B) was preserved and a **content-occupancy validator** was added to
+`validate_candidate.py` (see `docs/IMAGE-ASSET-WORKFLOW.md`) to make this
+class of defect machine-detectable going forward. Both candidates were
+then regenerated with the same approved concept/material/color/density —
+only the composition instruction changed, to require a landscape
+full-bleed silhouette — producing corrected candidates A2 (95.8% width)
+and B2 (96.1% width) that passed the new validator, retained visual
+identity (confirmed via old-vs-new comparison, no drift), and were
+promoted under the same standing approval without requiring a new human
+decision. Full decision record, promotion evidence, and the technical
+remediation timeline: `docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`.
 
 Two candidates were caught and regenerated by machine content review before
 being shown for human review (not just automated file-level validation):
@@ -445,18 +456,22 @@ Cute Pop final assets:              9 of 21 contract slots (18 wired; R1 closed 
                                        face/back gap; Batch 2 closed table.background/
                                        panel.modal.background/panel.result.frame — all 6 A-class
                                        cute-pop slots targeted by Batch 1+2 are now final)
-Yorunoshirube final assets:         6 of 21 contract slots (table.background, panel.modal.background,
+Yorunoshirube final assets:         8 of 21 contract slots (table.background, panel.paper.default,
+                                       panel.modal.background, panel.result.frame,
                                        button.primary.background, button.secondary.background,
-                                       tile.face.base, tile.back.base — Batch 3 closed 2026-07-16.
-                                       panel.paper.default and panel.result.frame are human-approved
-                                       but BLOCKED_BY_TECHNICAL_VALIDATION, not counted as final)
-Public demo overall (Tier 1+2):     ~68-72%  (Tier 1's asset-production scope is complete on cute-pop
-                                                as of Batch 2's close; yorunoshirube now has 6 of its
-                                                8 Batch 3 core slots final, but Tier 2 ("both skins ...
-                                                world-consistent") is not yet met — 2 slots remain
-                                                blocked pending a corrected regeneration, and Batch 4
-                                                (yorunoshirube decoration/effects) has not started)
-Release Candidate overall (Tier 3): ~38-48%  (depends on Tier 1/2 completion first, plus untouched Gate 5/6 QA items)
+                                       tile.face.base, tile.back.base — all Batch 3 core slots,
+                                       fully closed 2026-07-16 including technical remediation of
+                                       the 2 initially-blocked candidates)
+Official finals across skins:       17 (cute-pop 9 + yorunoshirube 8)
+Public demo overall (Tier 1+2):     ~74-78%  (Tier 1's asset-production scope is complete on cute-pop
+                                                as of Batch 2's close; yorunoshirube's Batch 3 core is
+                                                now fully complete (8/8), closing the largest remaining
+                                                gap toward Tier 2 ("both skins ... world-consistent").
+                                                Tier 2 is still not fully met — Batch 4
+                                                (yorunoshirube decoration/effects: badge.info.background
+                                                and the B/C/D-class slots) has not started, and full
+                                                manual QA across both skins is untouched)
+Release Candidate overall (Tier 3): ~42-52%  (depends on Tier 1/2 completion first, plus untouched Gate 5/6 QA items)
 ```
 
 Note: the reference figures suggested when this roadmap was scoped
@@ -506,34 +521,41 @@ design, not gaps — see classification table above).
 table.background: C, panel.paper.default: A, panel.modal.background: B,
 panel.result.frame: B, button.primary.background: A,
 button.secondary.background: B, tile.face.base: A, tile.back.base: A.
-Six of these are promoted to final, registered in yorunoshirube/skin.json
-(version 1 -> 2), and verified in production consumers across 5
-viewports. **The other two (panel.paper.default, panel.result.frame) are
-human-approved but BLOCKED_BY_TECHNICAL_VALIDATION** — a pre-promotion
-re-check found their opaque fit-to-canvas content spans only 43-48% of
-canvas width (vs. 92-96% on the other 6), producing a shrunken-card
-artifact under real nine-slice rendering; this was confirmed live on
-MatchSetup and is not a Gallery-review-only issue. Human approval for
-those two is preserved for when a corrected regeneration is available;
-they were not silently replaced with a different candidate. The temporary
-Gallery review section is removed. Full record, machine content-review
-rejections (wafu architecture on a table.background candidate,
-black-gold-luxury bezel on a panel.result.frame candidate, a
-Cute-Pop-quilt-resembling pattern on a tile.back.base candidate — all
-regenerated before being shown for review), and the correction
-requirements for the 2 blocked slots:
+All 8 are promoted to final, registered in yorunoshirube/skin.json
+(version 1 -> 2 -> 3), and verified in production consumers across 5
+viewports. Two of the eight (panel.paper.default, panel.result.frame)
+were initially **BLOCKED_BY_TECHNICAL_VALIDATION** after their first
+promotion attempt — a pre-promotion re-check found their opaque
+fit-to-canvas content spanned only 43-48% of canvas width (vs. 92-96% on
+the other 6), producing a shrunken-card artifact under real nine-slice
+rendering, confirmed live on MatchSetup. Rather than silently swap in a
+different candidate, the standing human approval was preserved, a
+content-occupancy validator was added to the pipeline
+(`docs/IMAGE-ASSET-WORKFLOW.md`) to make this defect class
+machine-detectable, and both candidates were regenerated with the same
+approved concept/material/color but a corrected landscape full-bleed
+composition — producing A2 (95.8% width) and B2 (96.1% width), which
+passed the new validator, retained visual identity with no drift, and
+were promoted under the same standing approval. Full record, machine
+content-review rejections during original generation (wafu architecture
+on a table.background candidate, black-gold-luxury bezel on a
+panel.result.frame candidate, a Cute-Pop-quilt-resembling pattern on a
+tile.back.base candidate — all regenerated before being shown for
+review), and the full technical remediation timeline:
 `docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`.
 
-**Fixed next task: correct and re-promote the 2 blocked Yorunoshirube
-slots** (panel.paper.default, panel.result.frame) — regenerate with an
-explicit landscape full-bleed composition instruction so opaque content
-fills at least ~90% of canvas width/height like the other 6 approved
-Batch 3 candidates, then re-run prepare/validate and re-attempt promotion
-under the already-recorded human approval. This is named as the next
-target; this roadmap does not authorize starting that regeneration work.
-Entry condition: explicit instruction to fix the blocked slots. Stop
-condition: both slots promoted and the same full verification sweep green,
-or a further blocker is found and reported (not silently worked around).
-Batch 4 (Yorunoshirube decoration/effects) remains the batch after that.
+**All 8 Batch 3 core (A-class) yorunoshirube slots are now final.**
+Yorunoshirube's Tier-1-equivalent asset-production scope for its core
+slots is closed; the remaining 13 of 21 contract slots are B/C/D-class
+(fallback/shared-overlay/deferred by design) or badge.info.background
+(A-class but not part of Batch 3's core 8, target of Batch 4).
+
+**Fixed next task: Batch 4 — Yorunoshirube decoration/effects**
+(badge.info.background parity with cute-pop, and any B/C-class slots
+worth upgrading — see the Batch 4 section above for the full scope). This
+is named as the next target; this roadmap does not authorize starting
+that generation work. Entry condition: explicit instruction to begin
+Batch 4. Stop condition (same as prior batches): stop before final
+promotion for human review.
 
 Cross-referenced from docs/IMPLEMENTATION-WORKFLOW.md.
