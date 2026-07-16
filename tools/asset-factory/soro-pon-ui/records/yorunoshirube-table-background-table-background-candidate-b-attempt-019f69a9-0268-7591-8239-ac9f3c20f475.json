@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "table.background",
+  "assetRequest": "012-yorunoshirube-table-background",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/table.background/candidate-b/attempt-019f69a9-0268-7591-8239-ac9f3c20f475/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga -- specifically avoid any Japanese-traditional / wafu architecture such as torii gates, pagodas, shrine roofs, or temple silhouettes; this is a Western-agnostic, invented old-world town instead): a full-bleed, edge-to-edge opaque game table background, landscape 16:9 aspect ratio, no isolated subject and no chroma-key margin -- the entire frame must be filled corner to corner with the artwork itself. Design: a quiet nighttime town rendered in black ink wash on aged paper, as if painted directly onto a folded travel journal page. The paper shows a soft crease line running diagonally near one edge, faint uneven print-registration offset on any fine linework, and visible ink bleed at line edges (this hand-painted ink-wash quality must NOT look like a flat CSS paper-color fill or a printed pattern). Only generic, unrecognizable rooftop silhouettes (simple gabled or flat roofs, no distinct cultural style) and a small stone footbridge appear near two corners, with faint pale blue-gray river outlines along the outer border, thinning out toward the center. In one distant corner, a very small warm light suggests a single lit window or lamp, subtle and small. The large center-to-bottom area (roughly the middle 60% of the frame) must stay calm, very low-contrast, nearly uniform sooty-blue-black with only the faint ink-wash grain visible -- no strong pattern, no large motif, no bright color spots there, because game tiles and hand-held pieces will be displayed on top of it and must stay easy to read. Color palette: sooty blue-black and deep navy as the dominant base, pale blue-gray used sparingly for the faint outer district lines, warm amber used only as a tiny corner light accent. Do not use any pure black (#000000) flat fill, no strong pure-white fields, no saturated neon colors, no rose-pink. No text, no letters, no numerals, no logo, no watermark, no known or existing game characters, no torii gate, no pagoda, no shrine or temple architecture, no board-game grid, no fixed player-position markers, no compass rose, no large moon, no large buildings, no UI chrome, no mockup, no screenshot. This is a single continuous background image, not an object on a background -- there is no separate background color to remove. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69a9-0268-7591-8239-ac9f3c20f475",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/yoru-candidate-b2-ink-city-revised.txt --output-name yoru-table-background-b2.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot table.background --input tools/asset-factory/soro-pon-ui/raw-green/yoru-table-background-b2.png --request 012-yorunoshirube-table-background --output-name table-background-candidate-b.png --cover-width 1920 --cover-height 1080 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 1920 --expected-height 1080 --opaque-background --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/yoru-candidate-b2-ink-city-revised.txt --generation-session-id 019f69a9-0268-7591-8239-ac9f3c20f475 --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/table.background/candidate-b/attempt-019f69a9-0268-7591-8239-ac9f3c20f475/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/table.background/candidate-b/attempt-019f69a9-0268-7591-8239-ac9f3c20f475/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "contentHash": "d3a0bd8ea63d255d1be4e6692ebfae1832fbce1a4180e5fc405314b5b8e104db",
+  "attemptKey": "019f69a9-0268-7591-8239-ac9f3c20f475",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/table-background-candidate-b.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

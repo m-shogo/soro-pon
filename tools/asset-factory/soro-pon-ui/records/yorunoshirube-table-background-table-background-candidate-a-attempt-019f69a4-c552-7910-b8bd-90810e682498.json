@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "table.background",
+  "assetRequest": "012-yorunoshirube-table-background",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/table.background/candidate-a/attempt-019f69a4-c552-7910-b8bd-90810e682498/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a full-bleed, edge-to-edge opaque game table background, landscape 16:9 aspect ratio, no isolated subject and no chroma-key margin -- the entire frame must be filled corner to corner with the artwork itself. Design: an open night atlas page, like a hand-bound book of maps for a quiet nocturnal town, painted on deep navy-black paper with visible paper fiber texture. Faint hand-drawn street and river lines wander only near the four edges and corners, drawn with slightly uneven black ink linework that shows real ink-bleed and pen pressure variation (this must NOT look like a flat CSS line pattern or grid). In one or two corners, add a small soft glow suggesting a distant streetlamp, warm amber (#e8a23c direction), gentle and small, not a bright burst. The large center-to-bottom area (roughly the middle 60% of the frame) must stay calm, very low-contrast, and almost uniform in deep navy tone with only the faint paper grain visible -- no street lines, no strong pattern, no bright color spots there, because game tiles and hand-held pieces will be displayed on top of it and must stay easy to read. Color palette: deep navy-black and sooty blue as the dominant base (#120d08 to #241a10 direction), aged ivory only as a whisper of highlight on ink edges, warm amber used sparingly only for the corner glow. Do not use any pure black (#000000) flat fill, no strong pure-white fields, no saturated neon colors, no rose-pink. No text, no letters, no numerals, no logo, no watermark, no known or existing game characters, no board-game grid, no fixed player-position markers, no compass rose, no large moon, no large buildings, no UI chrome, no mockup, no screenshot. This is a single continuous background image, not an object on a background -- there is no separate background color to remove. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69a4-c552-7910-b8bd-90810e682498",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/yoru-candidate-a-night-atlas.txt --output-name yoru-table-background-a.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot table.background --input tools/asset-factory/soro-pon-ui/raw-green/yoru-table-background-a.png --request 012-yorunoshirube-table-background --output-name table-background-candidate-a.png --cover-width 1920 --cover-height 1080 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 1920 --expected-height 1080 --opaque-background --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/yoru-candidate-a-night-atlas.txt --generation-session-id 019f69a4-c552-7910-b8bd-90810e682498 --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/table.background/candidate-a/attempt-019f69a4-c552-7910-b8bd-90810e682498/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/table.background/candidate-a/attempt-019f69a4-c552-7910-b8bd-90810e682498/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "contentHash": "567e8a10afd74cd02c9499c981875fc7bba714e07b54b4cfe0c6a4a08930676b",
+  "attemptKey": "019f69a4-c552-7910-b8bd-90810e682498",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/table-background-candidate-a.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}
