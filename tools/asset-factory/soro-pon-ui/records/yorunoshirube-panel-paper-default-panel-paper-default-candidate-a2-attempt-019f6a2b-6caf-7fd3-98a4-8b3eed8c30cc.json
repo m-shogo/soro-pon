@@ -1,0 +1,55 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "panel.paper.default",
+  "assetRequest": "013-yorunoshirube-panel-family",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/panel.paper.default/candidate-a2/attempt-019f6a2b-6caf-7fd3-98a4-8b3eed8c30cc/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a front-facing, isolated nine-slice panel background object -- a quiet everyday record-card sheet of aged ivory paper, viewed flat and centered on a solid chroma-key green background (#00ff00), no surrounding scene, no mockup, no interface chrome, no shadow cast outward onto the green.\n\nComposition (critical, read carefully): the panel object itself must be a wide 3:2 landscape rectangle, not a portrait sheet and not a small card floating inside the canvas. The paper panel must occupy approximately 92-96% of the canvas width and 90-96% of the canvas height, leaving only a narrow, even chroma-key green margin on all four sides -- think of it as a full-bleed rectangular paper sheet photographed to nearly fill the frame, not an index card placed on a large green backdrop. Do not place a smaller paper object inside a large transparent or green canvas. Do not create a notebook mockup, perspective view, vertical page, portrait card, nested frame, or floating sheet. The outer paper silhouette must nearly fill the complete 384x256 landscape canvas while preserving only a minimum thin transparent edge margin for extraction.\n\nDesign: this is the most frequently seen, most restrained panel in the family -- visible paper fiber texture across the whole sheet, a single thin hand-drawn black ink-edge border that follows the outer edge of this wide rectangular sheet and shows real pen-pressure variation (not a uniform CSS border), and only a very small, faint pencil-mark or a tiny corner smudge in one or two corners. The entire center region must stay nearly uniform, low-contrast aged ivory with only the faint paper grain visible -- no pattern, no strong marks, no bright accents there, because body text and lists will be overlaid on top and must stay easy to read. This visual quality must come from real paper-fiber and hand-drawn-ink texture, not a flat CSS paper-color fill or simple border.\n\nNine-slice constraints: all four corners must be uniform and symmetric. The top and bottom edge bands must each be horizontally uniform along their whole width (no unique per-position detail), the left and right edge bands must each be vertically uniform along their whole height, and any decorative detail (the faint pencil mark/smudge) must stay strictly inside the four corner zones, never crossing into the edge bands or the center, because this asset will be rendered as a nine-slice panel that can stretch to any size.\n\nColor palette: aged ivory paper as the dominant tone, deep ink-black used only for the thin border line, no bright colors. No text, no letters, no numerals, no logo, no watermark, no known characters, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f6a2b-6caf-7fd3-98a4-8b3eed8c30cc",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/panel-paper-default/yoru-candidate-a2-record-paper-fullbleed.txt --output-name yoru-panel-paper-default-a2.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot panel.paper.default --input tools/asset-factory/soro-pon-ui/raw-green/yoru-panel-paper-default-a2.png --request 013-yorunoshirube-panel-family --output-name panel-paper-default-candidate-a2.png --fit-width 384 --fit-height 256 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 384 --expected-height 256 --min-padding 4 --min-content-width-ratio 0.90 --max-content-width-ratio 0.98 --min-content-height-ratio 0.88 --max-content-height-ratio 0.98 --max-content-center-offset-ratio 0.02 --prompt-file tools/asset-factory/soro-pon-ui/prompts/panel-paper-default/yoru-candidate-a2-record-paper-fullbleed.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/panel.paper.default/candidate-a2/attempt-019f6a2b-6caf-7fd3-98a4-8b3eed8c30cc/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/panel.paper.default/candidate-a2/attempt-019f6a2b-6caf-7fd3-98a4-8b3eed8c30cc/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 384,
+    "height": 256
+  },
+  "contentHash": "1e7a8242d62076e3a0156d0e33db0196ecc9d97c2244954d3a6a2f29bdf6905a",
+  "attemptKey": "019f6a2b-6caf-7fd3-98a4-8b3eed8c30cc",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-paper-default.png",
+  "promotedTo": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-paper-default.png",
+  "generatedAt": "2026-07-16",
+  "approval": "promoted",
+  "rejectionReason": null,
+  "promotedAt": "2026-07-16",
+  "skinVersionAtPromotion": 3,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": [],
+    "contentBounds": {
+      "widthRatio": 0.9583,
+      "heightRatio": 0.9453,
+      "centerOffsetXRatio": 0.0026,
+      "centerOffsetYRatio": 0.0
+    }
+  },
+  "license": "original project asset generated via Codex CLI",
+  "technicalCorrection": {
+    "reason": "technical-layout-correction",
+    "lineage": "panel.paper.default/A",
+    "supersedes": "original human-approved candidate blocked by shrunken-card nine-slice defect (see technicalBlocker on the superseded record)",
+    "standingHumanApproval": "user-provided-human-decision (2026-07-16); not re-requested, same concept/material/color/decoration/hierarchy retained"
+  }
+}

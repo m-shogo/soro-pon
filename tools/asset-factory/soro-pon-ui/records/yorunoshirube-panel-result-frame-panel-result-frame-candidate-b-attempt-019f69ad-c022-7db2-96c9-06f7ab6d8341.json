@@ -30,8 +30,8 @@
   "placedAt": null,
   "promotedTo": null,
   "generatedAt": "2026-07-16",
-  "approval": "candidate",
-  "rejectionReason": "BLOCKED_BY_TECHNICAL_VALIDATION (2026-07-16, not a rejection -- human approval for this candidate stands and is preserved here for when a corrected asset is available): pre-promotion re-inspection found the opaque (alpha>0) content of this candidate's fit-to-canvas image occupies only a narrow center column of the canvas (bounding-box width / canvas width ratio far below the other 6 approved candidates' 92-96%% ratio), because the underlying generated artwork was a portrait-oriented card centered inside a landscape 3:2-class canvas. Under real nine-slice fill rendering at typical panel widths (e.g. 380px in MatchSetup), this produces a visibly shrunken card floating inside the panel instead of a full-bleed textured background -- confirmed live in the browser (MatchSetup 'panel.paper.default'-styled panels) via computed-style/bounding-box inspection of the rendered `.sp-skin-layer` border-image, and confirmed by measuring this file's alpha bounding box directly with PIL. This did not surface during Batch 3 Gallery candidate review because the review fixture's narrower preview containers made the effect less visually obvious than at production MatchSetup panel widths. Required correction: regenerate this candidate (same concept) with an explicit landscape-full-bleed composition instruction so the opaque content fills at least ~90%% of canvas width/height like the other approved Batch 3 slots, then re-run prepare/validate and re-attempt promotion. Not silently replaced with a different human-unapproved candidate.",
+  "approval": "not-selected",
+  "rejectionReason": "superseded-by-corrected-attempt (2026-07-16, not a preference rejection -- the human-approved concept/material/color/decoration/hierarchy for this candidate is unchanged and was carried forward unmodified into a geometry-corrected regeneration). Original technical blocker preserved for audit: BLOCKED_BY_TECHNICAL_VALIDATION (2026-07-16, not a rejection -- human approval for this candidate stands and is preserved here for when a corrected asset is available): pre-promotion re-inspection found the opaque (alpha>0) content of this candidate's fit-to-canvas image occupies only a narrow center column of the canvas (bounding-box width / canvas width ratio far below the other 6 approved candidates' 92-96%% ratio), because the underlying generated artwork was a portrait-oriented card centered inside a landscape 3:2-class canvas. Under real nine-slice fill rendering at typical panel widths (e.g. 380px in MatchSetup), this produces a visibly shrunken card floating inside the panel instead of a full-bleed textured background -- confirmed live in the browser (MatchSetup 'panel.paper.default'-styled panels) via computed-style/bounding-box inspection of the rendered `.sp-skin-layer` border-image, and confirmed by measuring this file's alpha bounding box directly with PIL. This did not surface during Batch 3 Gallery candidate review because the review fixture's narrower preview containers made the effect less visually obvious than at production MatchSetup panel widths. Required correction: regenerate this candidate (same concept) with an explicit landscape-full-bleed composition instruction so the opaque content fills at least ~90%% of canvas width/height like the other approved Batch 3 slots, then re-run prepare/validate and re-attempt promotion. Not silently replaced with a different human-unapproved candidate.",
   "promotedAt": null,
   "skinVersionAtPromotion": null,
   "archivedAt": "2026-07-16",
@@ -39,5 +39,12 @@
     "ok": true,
     "issues": []
   },
-  "license": "original project asset generated via Codex CLI"
+  "license": "original project asset generated via Codex CLI",
+  "technicalBlocker": {
+    "type": "shrunken-card-nine-slice-defect",
+    "oldContentWidthRatio": 0.4766,
+    "correctedContentWidthRatio": 0.9609,
+    "detectedVia": "pre-promotion re-inspection + live MatchSetup/Result rendering + alpha bounding-box measurement"
+  },
+  "supersededBy": "tools/asset-factory/soro-pon-ui/records/yorunoshirube-panel-result-frame-panel-result-frame-candidate-b2-attempt-019f6a2b-6d1e-7531-bfe2-20b046d311f5.json"
 }
