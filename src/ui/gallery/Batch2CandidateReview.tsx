@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { skinAssetStyle } from '../skins/SkinSurface';
+import { nineSliceRenderWidths, skinAssetStyle } from '../skins/SkinSurface';
 import { useSkin } from '../skins/useSkin';
 import type { SkinAssetDefinition } from '../skins/skinTypes';
 import { Button } from '../components/Button';
@@ -119,7 +119,18 @@ const RESULT_DEF: SkinAssetDefinition = {
 };
 
 function candidateStyle(def: SkinAssetDefinition, file: string): CSSProperties {
-  return skinAssetStyle(candidateUrl(file), { ...def, file });
+  const style = skinAssetStyle(candidateUrl(file), { ...def, file });
+  // nine-sliceのborder-image-widthは実際のborder-widthを上書きしない環境がある
+  // ため、レビュー専用に明示borderWidthを添える(production側のSkinLayer経路は
+  // 対象コンポーネント自身のCSS classがborder-widthを持つため問題にならない)
+  if (def.renderMode === 'nine-slice') {
+    const render = nineSliceRenderWidths(def);
+    return {
+      ...style,
+      borderWidth: `${render.top}px ${render.right}px ${render.bottom}px ${render.left}px`,
+    };
+  }
+  return style;
 }
 
 const row: CSSProperties = {
