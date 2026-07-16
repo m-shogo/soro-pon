@@ -13,21 +13,42 @@ button.secondary.background / tile.face.base / tile.back.base)の
   button.secondary.background) /
   [015](015-yorunoshirube-tile-face-back.md)(tile.face.base / tile.back.base)
 - art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md)
-- **状態: Batch 3 result: COMPLETE(2026-07-16、6/8 slot昇格・2/8 slot
-  BLOCKED_BY_TECHNICAL_VALIDATION)**
+- **状態: Batch 3 result: COMPLETE(2026-07-16)。Core promotion: 8/8。
+  Technical remediation: COMPLETE。Blocked: 0**
 - Human decision: table.background=C, panel.paper.default=A,
   panel.modal.background=B, panel.result.frame=B,
   button.primary.background=A, button.secondary.background=B,
   tile.face.base=A, tile.back.base=A
   (`approvalSource: user-provided-human-decision`)
-- Yorunoshirube version: **v1 → v2**。final昇格slot:
-  table.background, panel.modal.background, button.primary.background,
-  button.secondary.background, tile.face.base, tile.back.base(6件)
-- **panel.paper.default(A)とpanel.result.frame(B)は人間承認済みだが
-  BLOCKED_BY_TECHNICAL_VALIDATIONのためfinal未昇格**(下記セクション参照。
-  既存CSS token fallbackを維持、production表示は破綻なし)
-- Human review pending: 0 / Blocked: 2 / Batch 3 promoted: 6
+- Yorunoshirube version: **v1 → v2 → v3**。final昇格slot(8件全て):
+  table.background, panel.paper.default, panel.modal.background,
+  panel.result.frame, button.primary.background,
+  button.secondary.background, tile.face.base, tile.back.base
+- Human review pending: 0 / Blocked: 0 / Batch 3 promoted: 8/8
 - Cute Pop final(9件、version 5)は無変更
+- Official finals across skins: **17**(cute-pop 9 + yorunoshirube 8)
+
+### 時系列(履歴を保持)
+
+```text
+2026-07-16 (Batch 3 promotion, 1回目):
+  8slot人間承認取得
+  6slot promoted to v2 (table.background, panel.modal.background,
+    button.primary.background, button.secondary.background,
+    tile.face.base, tile.back.base)
+  2slot blocked by technical validation (panel.paper.default A,
+    panel.result.frame B — shrunken-card nine-slice defect)
+
+2026-07-16 (technical remediation):
+  同じ承認済みconcept(記録用紙 / 夜明け前の記念台紙)を維持したまま
+    landscape full-bleed構図で再生成(A2 / B2)
+  alpha bounding-box occupancy validatorを追加(再発防止)
+  旧candidate(A: 42.97%幅, B: 47.66%幅)は新検査でFAILすることを確認
+  corrected candidate(A2: 95.83%幅, B2: 96.09%幅)はPASSを確認
+  visual identity retained(意匠drift無し)を確認、新たな人間選択は
+    求めずstanding approvalのままpromoted to v3
+  Batch 3 core 8/8 完了
+```
 
 ## 何を見るか(候補レビュー時の手順 — 昇格後は下記は履歴)
 
@@ -288,9 +309,11 @@ Human review pending: 0
   5 viewport + tile-selected/discard-pile + modal + fallback確認2種
   (matchsetup/result) + Cute Pop回帰 + reload永続化)
 
-## panel.paper.default / panel.result.frame 再挑戦時の要件
+## panel.paper.default / panel.result.frame 再挑戦時の要件(実施済み)
 
-BLOCKED_BY_TECHNICAL_VALIDATIONの2slotを再挑戦する場合:
+BLOCKED_BY_TECHNICAL_VALIDATIONの2slotを再挑戦する場合の要件として
+2026-07-16(1回目のpromotion)時点で記録していたもの。同日中に
+technical remediationとして下記の通り実施し、完了した。
 
 1. 同コンセプト(A: 記録用紙 / B: 夜明け前の記念台紙)を維持してよいが、
    生成promptに「不透明な被写体がcanvas幅・高さの90%以上を占める、
@@ -301,3 +324,34 @@ BLOCKED_BY_TECHNICAL_VALIDATIONの2slotを再挑戦する場合:
    実測値92-96%を目安とする)
 3. 修正後は本Packの当該slotのApproval Statusを`candidate`へ戻し、
    通常のpromotion手順で再度human review以降を実施する
+
+## Technical Remediation完了記録(2026-07-16)
+
+上記要件を実施し、両slotのBLOCKED_BY_TECHNICAL_VALIDATIONを解消した。
+
+```text
+Batch 3 result: COMPLETE
+Core promotion: 8/8
+Technical remediation: COMPLETE
+Blocked: 0
+Human review pending: 0
+Yorunoshirube version: v3
+Yorunoshirube finals: 8
+Official finals across skins: 17
+```
+
+- 要件1は明示的な口頭指示ではなく、汎用的な再利用可能option
+  (`--min/max-content-width-ratio`等)として`validate_candidate.py`へ
+  実装し、`prepare_asset.py` CLIへ配線した(一時的な手作業ではなく
+  今後のBatch 4以降でも使えるtooling)
+- 要件2は実装した通り機械検査として動作: 旧candidate A(42.97%)/B(47.66%)
+  はFAIL、corrected candidate A2(95.83%)/B2(96.09%)はPASSを確認
+- 要件3の「human reviewを再度求める」は、意匠driftが確認されなかった
+  (visual identity retained: true)ため実施せず、standing human approval
+  (2026-07-16, user-provided-human-decision)をそのまま適用してpromotion
+  した。これは事前に合意されていた例外条件
+  (「技術構図のみの修正であればhuman review不要」)に基づく
+- 新たにpromotedとなったA2/B2、supersededとなった旧A/Bのrecord詳細は
+  request 013のTechnical Remediation Record参照
+- production証跡: `evidence/batch-3-blocker-remediation/`
+- visual regression: 33/33 green(remediation後の最終確認)

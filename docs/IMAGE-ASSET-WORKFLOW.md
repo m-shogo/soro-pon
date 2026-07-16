@@ -177,6 +177,69 @@ hard threshold(確実に背景) / soft threshold(境界域)の2段しきい値�
 同じ入力・同じパラメータから同じ出力が得られる決定的処理にする
 ```
 
+## Nine-slice content occupancy検査(shrunken-card欠陥の再発防止)
+
+寸法一致検査(`expected-width`/`expected-height`)は**canvas自体のサイズ**
+しか見ない。Yorunoshirube Batch 3(`panel.paper.default`/`panel.result.frame`)
+で、canvas寸法は正しいのに被写体(portrait寄りの紙/フレーム)がcanvas中央に
+小さく(幅比率43-48%)配置され、実際のnine-slice fill描画でパネル内に
+縮小したカードが浮いて見える欠陥が、寸法検査・自動検査を通過したまま
+human review(Gallery候補比較)でも見過ごされ、production実描画で初めて
+顕在化した。この欠陥の再発防止として`validate_candidate.py`へ
+content occupancy検査を追加した(`docs/asset-requests/
+BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`のTechnical Remediation参照)。
+
+```text
+何を測るか:
+  透過後画像のopaqueピクセル(alpha>200)の外接矩形(alpha bounding-box)を
+  計測し、canvas幅・高さに対する占有率(widthRatio/heightRatio)と
+  canvas中心からの被写体中心のずれ(centerOffsetXRatio/YRatio)を求める
+
+なぜ寸法検査だけでは不十分か:
+  寸法検査はcanvasのwidth/heightしか見ない。被写体がcanvas内のどこに
+  どれだけの面積で存在するかは別軸の情報であり、portrait被写体を
+  landscape canvasの中央に小さく置いても寸法検査は合格してしまう
+
+nine-slice panelで必要な理由:
+  nine-sliceのcorner/edge/fill領域はcanvas全体を基準に切り出される。
+  被写体がcanvasの一部にしか存在しないと、corner領域が透明become、
+  fill領域のstretchで被写体が不自然に拡大縮小される(shrunken-card欠陥)
+
+適用対象:
+  isolated nine-slice/stretch object契約の素材のみ(`ValidationParams`の
+  `min/max-content-width/height-ratio`、`max-content-center-offset-ratio`
+  を指定した場合のみ検査される。既定はNoneで検査しない=既存挙動不変)。
+  table.backgroundのようなopaque cover契約の素材には適用しない
+  (`opaque_background=True`の場合はcontent_bounds自体を計算しない。
+  全面塗りに外接矩形という概念が意味を持たないため)
+
+thresholdの決め方:
+  実際に良好とみなされた候補(Batch 3の他6承認済みslot)の実測値が
+  92-96%だったため、min=0.90, max=0.98を採用。上限を設けるのは
+  余白ゼロ(透明境界フリンジの原因になりうる)を避けるため
+
+false positiveを避ける方法:
+  円形/不定形の被写体は外接矩形が本来の被写体サイズより大きく出るため、
+  矩形パネル素材(紙/フレームのように輪郭自体がほぼ矩形)にのみ適用する。
+  既存の円形被写体系テスト(TestValidateCandidate)はoption省略時のまま
+  無影響であることをテストで確認済み
+
+blocked候補の実例:
+  panel.paper.default candidate A: widthRatio 42.97%(FAIL)
+  panel.result.frame candidate B: widthRatio 47.66%(FAIL)
+
+corrected候補の実例:
+  panel.paper.default candidate A2: widthRatio 95.83%(PASS)
+  panel.result.frame candidate B2: widthRatio 96.09%(PASS)
+```
+
+CLIオプション(`pnpm asset:image:prepare`): `--min-content-width-ratio` /
+`--max-content-width-ratio` / `--min-content-height-ratio` /
+`--max-content-height-ratio` / `--max-content-center-offset-ratio`
+(全てOptional、float、0-1)。計測値は指定の有無にかかわらず常に
+recordの`validation.contentBounds`へ保存される(閾値未指定時は情報記録のみ、
+不合格化はしない)。
+
 ## スクリプトと保存領域の契約
 
 ```text

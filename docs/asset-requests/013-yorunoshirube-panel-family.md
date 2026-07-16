@@ -5,11 +5,12 @@
 - skin: `yorunoshirube`
 - slots: `panel.paper.default`, `panel.modal.background`, `panel.result.frame`
 - generation method: **Codex CLI起点画像生成**
-- status: **partially closed(2026-07-16)**: `panel.modal.background`は
-  final昇格済み。`panel.paper.default`は人間承認(A)を得たが
-  **BLOCKED_BY_TECHNICAL_VALIDATION**のためfinal未昇格
-  (下記Promotion Record参照)。`panel.result.frame`も同様に人間承認(B)を
-  得たがBLOCKED_BY_TECHNICAL_VALIDATIONのためfinal未昇格
+- status: **closed(2026-07-16、technical remediation完了)**: 3slotとも
+  final昇格済み。`panel.paper.default`(candidate A)と`panel.result.frame`
+  (candidate B)は初回promotion時にBLOCKED_BY_TECHNICAL_VALIDATIONと
+  なったが、承認済みの意匠を変更せずlandscape full-bleed構図のみを修正した
+  corrected attempt(A2/B2)を再生成し、2026-07-16にfinal昇格した
+  (下記Technical Remediation Record参照)
 - candidate limit: 最大3/slot(合計最大9)
 - 1request統合の理由: 3slotとも nine-slice 紙パネル系で、
   render契約・9-slice安全性要件・content safe area責務が同型のため
@@ -189,5 +190,59 @@ table.background Cとの世界観連続性がある。panel.result.frameは夜�
 - production証跡: `evidence/batch-3-yorunoshirube-final/
   modal-skin-select-yorunoshirube-final.png`(panel.modal.background),
   `matchsetup-paper-panel-fallback.png` / `result-screen-paper-fallback.png`
-  (panel.paper.default/panel.result.frameのfallbackが破綻なく表示されることの確認)
-- visual regression: 33/33 green
+  (panel.paper.default/panel.result.frameのfallbackが破綻なく表示されることの確認。
+  この時点ではまだBLOCKED状態)
+- visual regression: 33/33 green(この時点での状態)
+
+## Technical Remediation Record(2026-07-16)
+
+panel.paper.default(A)とpanel.result.frame(B)のBLOCKED_BY_TECHNICAL_
+VALIDATIONを解消。新規に追加したalpha bounding-box occupancy検査
+(`--min/max-content-width-ratio`等、`validate_candidate.py`)を用いて
+根本原因(portrait被写体がlandscape canvas中央に小さく配置される欠陥)を
+再現・修正した。
+
+```text
+panel.paper.default:
+  human decision: A(変更なし、再選択を求めていない)
+  original attempt: candidate A(blocked technical)
+  corrected attempt: A2
+  correction type: landscape full-bleed geometry(意匠・素材・配色は不変)
+  old bbox width ratio: 42.97%
+  new bbox width ratio: 95.83%
+  old bbox height ratio: 96.09%
+  new bbox height ratio: 94.53%
+  final path: generated/final/panel-paper-default.png
+  final hash: 1e7a8242d62076e3a0156d0e33db0196ecc9d97c2244954d3a6a2f29bdf6905a
+  promoted version: v3
+  result: promoted
+
+panel.result.frame:
+  human decision: B(変更なし、再選択を求めていない)
+  original attempt: candidate B(blocked technical)
+  corrected attempt: B2
+  correction type: landscape full-bleed geometry(意匠・素材・配色は不変)
+  old bbox width ratio: 47.66%
+  new bbox width ratio: 96.09%
+  old bbox height ratio: 96.09%
+  new bbox height ratio: 94.53%
+  final path: generated/final/panel-result-frame.png
+  final hash: a49b6aadeba75888c5690579306ee7604b61431daf2b0c349cb0db15a141fffb
+  promoted version: v3
+  result: promoted
+```
+
+visual identity retained: true(同じ古紙アイボリー+黒インク縁 / 同じ淡い紫
++紙の積層+複数の小さな金の光。old-vs-new比較証跡:
+`evidence/batch-3-blocker-remediation/panel-paper-old-vs-a2.png`,
+`panel-result-old-vs-b2.png`)。HUMAN_REVIEW_REQUIRED_FOR_VISUAL_DRIFTには
+該当しなかったため、standing human approvalをそのまま適用してpromotion。
+
+旧blocked candidate(A, B)のrecordは`not-selected`
+(rejectionReason: superseded-by-corrected-attempt)へ更新、元の技術的欠陥は
+`technicalBlocker`フィールドに保持。archiveのraw/candidate/compareは
+削除せず保持。
+
+yorunoshirube skin version: 2 → 3。全8slot(Batch 3 core全て)がfinal。
+production証跡: `evidence/batch-3-blocker-remediation/`。
+visual regression: 33/33 green(remediation後の最終確認)。
