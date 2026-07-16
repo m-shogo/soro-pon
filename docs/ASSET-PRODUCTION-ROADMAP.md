@@ -222,6 +222,37 @@ Rollback conditions: same as batch 1, plus any regression in the tier-1
 Gate to next batch: cute-pop reaches Tier 1 (Cute Pop Demo Ready, see below)
 ```
 
+**Batch 2 status: candidates ready — human review pending.** A shared art
+direction (`docs/asset-requests/BATCH-2-ART-DIRECTION.md`) was written
+before generation so the 3 slots read as one background/panel material
+family (table = quietest/lowest density, modal = mid-density/readability-
+first, result = most festive) rather than unrelated images. Request 010
+(table.background) and 011 (panel.modal.background + panel.result.frame,
+grouped because both are nine-slice paper-panel-contract slots) each
+produced 3 candidates (9 total), all passing automated validation. Review
+material and the post-approval promotion procedure:
+`docs/asset-requests/BATCH-2-APPROVAL-PACK.md`.
+
+Two blockers were found and resolved during this batch, not by touching
+production code:
+- table.background is an *opaque* `cover` slot (SKIN-CONTRACT.json has no
+  `transparent` field for it) — fundamentally different from every prior
+  isolated-object candidate. The pipeline gained `cover_to_canvas()`
+  (chroma_key.py) and `--opaque-background`/`--cover-width`/
+  `--cover-height` (prepare_asset.py / validate_candidate.py), covered by
+  new unit tests, rather than forcing a transparent-margin candidate onto
+  a slot that must be fully opaque.
+- `skinAssetStyle()`'s nine-slice output sets `border-image-*` but not
+  `border-width`; `PaperPanel`'s own CSS class doesn't declare a border at
+  all (unlike `Button`, which does), so injecting only the production
+  style into a Gallery-only preview silently failed to render any visible
+  border-image. The Gallery-only candidate-review helper was fixed to add
+  an explicit `borderWidth` for review purposes; production's actual slot
+  resolution path is unaffected. This surfaced a genuine 9-slice concern
+  in candidate A for panel.result.frame (ribbon corners visibly deform
+  when the panel is stretched tall) — recorded in the Approval Pack as a
+  known concern rather than silently promoted.
+
 ### Batch 3 — Yorunoshirube core
 
 ```text
@@ -335,12 +366,14 @@ UI/skin foundation (H1-H11):        ~95-100% (all 11 items complete; H6 addition
 Image generation/audit pipeline:    ~95-100% (transactional prepare/rollback, chroma-key, record schema, one closed request cycle proven end-to-end)
 Cute Pop final assets:              6 of 21 contract slots (18 wired; R1 closed the primary CTA + tile
                                        face/back gap; table.background/panel.modal.background/
-                                       panel.result.frame still placeholder — remaining Batch 2 work)
+                                       panel.result.frame candidates exist but are NOT final —
+                                       0 of Batch 2's 3 slots promoted; human review pending)
 Yorunoshirube final assets:         0 of 21 contract slots
-Public demo overall (Tier 1+2):     ~50-55%  (R1 closed the single most-used surface — the primary CTA —
-                                                plus tile identity; Tier 1 still needs Batch 2's remaining
-                                                3 slots (table/modal/result) before "match/create/result
-                                                flow visually complete" is met)
+Public demo overall (Tier 1+2):     ~50-55%  (unchanged from R1 completion — Batch 2 candidates existing
+                                                does not move this number; only promotion does. Tier 1
+                                                still needs human approval + promotion of table/modal/
+                                                result before "match/create/result flow visually
+                                                complete" is met)
 Release Candidate overall (Tier 3): ~30-40%  (depends on Tier 1/2 completion first, plus untouched Gate 5/6 QA items)
 ```
 
@@ -349,9 +382,11 @@ Note: the reference figures suggested when this roadmap was scoped
 asset gap than what this audit found. R1's completion (primary CTA + tile
 face/back finals, promoted 2026-07-16) closed the largest single gap, but
 Tier 1 ("match/create/result flow visually complete") still requires
-table.background, panel.modal.background, and panel.result.frame — the
-remainder of Batch 2. Percentages above are this audit's estimate, not the
-original suggested figures.
+table.background, panel.modal.background, and panel.result.frame to be
+human-approved and promoted — Batch 2's machine work (candidates, Gallery
+review, evidence) is done, but candidate existence is explicitly NOT
+counted toward the final-asset tally above. Percentages above are this
+audit's estimate, not the original suggested figures.
 
 ## Timeline estimates (non-binding)
 
@@ -371,6 +406,20 @@ General-user Release Candidate (Tier 3):   25-40 business days
 button.primary.background (D) are human-approved, promoted to final,
 registered in cute-pop/skin.json v4, and verified in production. Full
 record: `docs/asset-requests/R1-APPROVAL-PACK.md`.
+
+**Batch 2 machine work is complete** (2026-07-16): table.background,
+panel.modal.background, and panel.result.frame each have 3 human-review-
+ready candidates (9 total), all passing automated validation, with a
+shared art direction, Gallery comparison UI, production-context previews,
+and visual evidence. **Zero candidates are promoted; cute-pop skin.json
+remains at version 4.** Full record and known concerns (panel.result.frame
+candidate A has a 9-slice stretch artifact):
+`docs/asset-requests/BATCH-2-APPROVAL-PACK.md`.
+
+Next (human): Review and approve/reject the Batch 2 candidates. Next
+(machine, after approval): promote approved candidates per the Approval
+Pack procedure, then begin Batch 3 (Yorunoshirube core) or a Batch 2
+touch-up cycle for any rejected slot.
 
 Next: Create asset request(s) for the remainder of Batch 2 —
 table.background, panel.modal.background, panel.result.frame (cute-pop).

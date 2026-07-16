@@ -193,11 +193,19 @@ candidates (D/E/F) were approved — tile.face.base: D, tile.back.base: E,
 button.primary.background: D — and promoted to final, registered in
 cute-pop/skin.json v4, and verified in production consumers. Decision
 record and evidence: `docs/asset-requests/R1-APPROVAL-PACK.md`. Cute Pop
-now has 6 of 21 contract slots final; the remaining Batch 2 slots
-(table.background, panel.modal.background, panel.result.frame) are the
-next asset-production target per `docs/ASSET-PRODUCTION-ROADMAP.md`. Tile
-state slots (selected/ron/tsumo) are composited over the base face per
-ADR-015 — do not generate separate full-face art for them.
+now has 6 of 21 contract slots final. Tile state slots (selected/ron/tsumo)
+are composited over the base face per ADR-015 — do not generate separate
+full-face art for them.
+
+Batch 2 (request 010/011: cute-pop table.background / panel.modal.background
+/ panel.result.frame) machine work is **complete** — 9 candidates (3 per
+slot) generated, validated, placed in a Gallery review section, and
+evidenced across 5 viewports — but **zero are promoted**; cute-pop
+skin.json remains at **version 4**. A shared art direction
+(`docs/asset-requests/BATCH-2-ART-DIRECTION.md`) governs all 3 slots as
+one material family. Decision record, machine review, and known concerns
+(panel.result.frame candidate A has a 9-slice stretch artifact):
+`docs/asset-requests/BATCH-2-APPROVAL-PACK.md`. Human review is pending.
 
 ## Verification Commands
 

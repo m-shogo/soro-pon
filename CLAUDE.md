@@ -24,10 +24,15 @@ R1(request 008/009: cute-pop牌表/牌裏/primary CTA)は完了(2026-07-16)。
   (アイシングクッキー枠)/tile.back.base:E(キルトクッション)/
   button.primary.background:D(ジェリーキャンディCTA)が承認・final昇格
   (skin.json v4)・実画面統合済み。docs/asset-requests/R1-APPROVAL-PACK.md参照。
-  次はBatch 2残り(table.background/panel.modal.background/
-  panel.result.frame、cute-pop)。
   tile状態slot(selected/ron/tsumo)はADR-015でbase合成レイヤー化済み
   (状態用の別full画像は作らない)
+Batch 2(request 010/011: cute-pop table.background/panel.modal.background/
+  panel.result.frame)は機械作業完了・人間レビュー待ち(2026-07-16)。
+  3slot共通アートディレクション: docs/asset-requests/BATCH-2-ART-DIRECTION.md。
+  候補9点(各slot3案)生成・検査合格・Galleryレビュー・証跡取得済みだが
+  **final昇格は0件、skin.jsonはversion 4のまま**。
+  docs/asset-requests/BATCH-2-APPROVAL-PACK.md参照
+  (panel.result.frame候補Aは9-slice伸縮時の変形を確認済み、既知の懸念として記録)
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
