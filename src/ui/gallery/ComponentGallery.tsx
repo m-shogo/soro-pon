@@ -15,6 +15,7 @@ import { ScoreBreakdown } from '../components/ScoreBreakdown';
 import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
+import { Batch2CandidateReview } from './Batch2CandidateReview';
 import { NineSliceProof } from './NineSliceProof';
 import './gallery.css';
 
@@ -61,6 +62,11 @@ export function ComponentGallery() {
           候補D/E/D)はfinal昇格・skin.json登録済み。下のButton/PaperPanel/Badge/
           TileCard variantsがCute Pop選択中に実際に適用された状態を示す
           (専用レビューセクションは撤去)。 */}
+
+      <section className="sp-gallery__section">
+        <h2>Batch 2候補レビュー(request 010/011 / candidatesレビュー)</h2>
+        <Batch2CandidateReview />
+      </section>
 
       <section className="sp-gallery__section">
         <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>
