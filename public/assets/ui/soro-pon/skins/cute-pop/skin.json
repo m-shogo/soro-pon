@@ -1,7 +1,7 @@
 {
   "id": "cute-pop",
   "label": "Cute Pop",
-  "version": 3,
+  "version": 4,
   "skinContractVersion": 1,
   "origin": "official",
   "author": "soro-pon",
@@ -107,6 +107,61 @@
       "minRenderSize": {
         "width": 24,
         "height": 20
+      }
+    },
+    "tile.face.base": {
+      "file": "tile-face-base.png",
+      "status": "final",
+      "renderMode": "stretch",
+      "intrinsicSize": {
+        "width": 600,
+        "height": 800
+      },
+      "pixelDensity": 2,
+      "transparent": true
+    },
+    "tile.back.base": {
+      "file": "tile-back-base.png",
+      "status": "final",
+      "renderMode": "stretch",
+      "intrinsicSize": {
+        "width": 600,
+        "height": 800
+      },
+      "pixelDensity": 2,
+      "transparent": true
+    },
+    "button.primary.background": {
+      "file": "button-primary-background-2x.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": {
+        "width": 480,
+        "height": 96
+      },
+      "pixelDensity": 2,
+      "transparent": true,
+      "nineSlice": {
+        "top": 32,
+        "right": 32,
+        "bottom": 32,
+        "left": 32
+      },
+      "nineSliceRender": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "contentSafeArea": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      },
+      "minRenderSize": {
+        "width": 72,
+        "height": 44
       }
     }
   }

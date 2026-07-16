@@ -16,7 +16,6 @@ import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
 import { NineSliceProof } from './NineSliceProof';
-import { R1TileButtonCandidateReview } from './R1TileButtonCandidateReview';
 import './gallery.css';
 
 const SAMPLE_BREAKDOWN: ResultBreakdown = {
@@ -57,14 +56,11 @@ export function ComponentGallery() {
       </section>
 
       {/* request 006(button.secondary.background / panel.paper.default)、
-          request 007(badge.info.background候補B)はfinal昇格・skin.json登録済み。
-          下のButton/PaperPanel/Badge variantsがCute Pop選択中に実際に適用された
-          状態を示す(専用レビューセクションは撤去)。 */}
-
-      <section className="sp-gallery__section">
-        <h2>R1候補レビュー(request 008/009 / candidatesレビュー)</h2>
-        <R1TileButtonCandidateReview />
-      </section>
+          request 007(badge.info.background候補B)、
+          request 008/009(tile.face.base/tile.back.base/button.primary.background
+          候補D/E/D)はfinal昇格・skin.json登録済み。下のButton/PaperPanel/Badge/
+          TileCard variantsがCute Pop選択中に実際に適用された状態を示す
+          (専用レビューセクションは撤去)。 */}
 
       <section className="sp-gallery__section">
         <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>
