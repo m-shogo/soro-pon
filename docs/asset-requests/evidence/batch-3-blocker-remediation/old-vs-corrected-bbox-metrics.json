@@ -1,0 +1,50 @@
+{
+  "panel.paper.default": {
+    "old_candidate_a": {
+      "ok": false,
+      "issues": [
+        "被写体がcanvas幅に対して小さすぎます(width比率 42.9688% < 90.0000%)。nine-slice fill描画で縮小したカードが浮いて見える可能性(shrunken-card欠陥)"
+      ],
+      "contentBounds": {
+        "widthRatio": 0.4297,
+        "heightRatio": 0.9609,
+        "centerOffsetXRatio": 0.0013,
+        "centerOffsetYRatio": 0.0
+      }
+    },
+    "corrected_candidate_a2": {
+      "ok": true,
+      "issues": [],
+      "contentBounds": {
+        "widthRatio": 0.9583,
+        "heightRatio": 0.9453,
+        "centerOffsetXRatio": 0.0026,
+        "centerOffsetYRatio": 0.0
+      }
+    }
+  },
+  "panel.result.frame": {
+    "old_candidate_b": {
+      "ok": false,
+      "issues": [
+        "被写体がcanvas幅に対して小さすぎます(width比率 47.6562% < 90.0000%)。nine-slice fill描画で縮小したカードが浮いて見える可能性(shrunken-card欠陥)"
+      ],
+      "contentBounds": {
+        "widthRatio": 0.4766,
+        "heightRatio": 0.9609,
+        "centerOffsetXRatio": 0.0,
+        "centerOffsetYRatio": 0.0013
+      }
+    },
+    "corrected_candidate_b2": {
+      "ok": true,
+      "issues": [],
+      "contentBounds": {
+        "widthRatio": 0.9609,
+        "heightRatio": 0.9453,
+        "centerOffsetXRatio": 0.0,
+        "centerOffsetYRatio": 0.0013
+      }
+    }
+  }
+}
