@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "panel.result.frame",
+  "assetRequest": "011-cute-pop-panel-modal-result",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/panel.result.frame/candidate-c/attempt-019f68e7-23c0-7ec1-9e67-1a80d162b12a/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset in the style of top-grossing cute casual puzzle games: a result/achievement panel frame, a landscape rounded-rectangle card (roughly 4:3 width-to-height), front-facing, isolated object only, designed for 9-slice UI scaling. Design: a storybook double-page-spread style frame in warm cream paper, with a soft hand-drawn colored-pencil border showing gentle layered paper-edge shading, and a small cluster of hand-drawn celebratory doodles (tiny stars, a swirl, a small paper-confetti scatter) confined to the four corners only, mirrored for left-right symmetry. Both the horizontal middle band (top and bottom edges) and the vertical middle band (left and right edges) must stay completely plain and uniform in width with no unique detail, so all four edges can be stretched independently without any seam -- this is a strict 9-slice requirement. The entire center area must remain nearly blank warm cream paper with only faint fiber texture, because a result headline, score breakdown, and buttons will be overlaid there and must stay clearly readable regardless of whether the outcome is a win, a loss, or a draw -- the frame must NOT look victory-specific (no crown, no trophy, no \"WIN\" or \"LOSE\" wording, no medal). Color: cream paper body, soft lavender and pastel-yellow pencil accents concentrated at the corners only, harmonizing with an existing white-card-plus-warm-border UI system whose primary CTA is a deep rose-pink jelly button. No text, no letters, no numerals, no icon glyph, no watermark, no logo, no known or existing game characters, no mockup, no screenshot, no surrounding interface, no other objects. The material value must come from tactile hand-drawn paper layering and colored-pencil imperfection that cannot be reproduced as a simple CSS border, gradient, dot pattern, or box shadow. Background: perfectly flat solid high-saturation chroma-key green (#00ff00), no gradient, no shadow, no pattern. Center the panel with generous even green margin on all four sides; it must not touch the image edge. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f68e7-23c0-7ec1-9e67-1a80d162b12a",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/panel-result-frame/candidate-c-storybook-spread-frame.txt --output-name panel-result-frame-candidate-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot panel.result.frame --input tools/asset-factory/soro-pon-ui/raw-green/panel-result-frame-candidate-c.png --request 011-cute-pop-panel-modal-result --output-name panel-result-frame-candidate-c.png --fit-width 512 --fit-height 384 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 512 --expected-height 384 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/panel-result-frame/candidate-c-storybook-spread-frame.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/panel.result.frame/candidate-c/attempt-019f68e7-23c0-7ec1-9e67-1a80d162b12a/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/panel.result.frame/candidate-c/attempt-019f68e7-23c0-7ec1-9e67-1a80d162b12a/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 512,
+    "height": 384
+  },
+  "contentHash": "8b2c2f232dbd7802291046519ff43afdc785e2542cecbd09e99eab1110e14cc3",
+  "attemptKey": "019f68e7-23c0-7ec1-9e67-1a80d162b12a",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/panel-result-frame-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "table.background",
+  "assetRequest": "010-cute-pop-table-background",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-a/attempt-019f68d4-68b6-7df1-bd97-f0f4c5614d8e/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset in the style of top-grossing cute casual puzzle games: a full-bleed, edge-to-edge opaque game table background, landscape 16:9 aspect ratio, no isolated subject and no chroma-key margin -- the entire frame must be filled corner to corner with the artwork itself. Design: a soft pastel fabric play mat, like a quilted picnic blanket spread out inside a toy box, with a fine visible woven fabric texture and gentle hand-stitched seams running near the outer edges (this tactile fabric weave and stitch depth must NOT look like a flat CSS pattern or gradient). The large center-to-bottom area (roughly the middle 60% of the frame) must stay calm, low-contrast, and nearly uniform in color with only the faint fabric weave visible -- no strong pattern, no large motif, no bright color spots there, because game tiles and hand-held pieces will be displayed on top of it and must stay easy to read. Only the outer edges and the four corners may carry slightly richer detail: small soft toy-box accents like a tiny stitched border, a faint ribbon corner, or a small plush charm silhouette, kept subtle enough not to distract. Color palette: warm cream and soft paper tones as the dominant base, with a light dusty blue used sparingly for stitching and shadow accents (do not use deep rose-pink as a dominant background color; keep pink, if any, as a tiny accent only). Absolutely avoid any green hues, grass, leaf, or mint-colored elements anywhere in the image. No text, no letters, no numerals, no logo, no watermark, no known or existing game characters, no board-game grid, no fixed player-position markers, no UI chrome, no mockup, no screenshot. This is a single continuous background image, not an object on a background -- there is no separate background color to remove. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f68d4-68b6-7df1-bd97-f0f4c5614d8e",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/candidate-a-pastel-fabric-playmat.txt --output-name table-background-candidate-a.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot table.background --input tools/asset-factory/soro-pon-ui/raw-green/table-background-candidate-a.png --request 010-cute-pop-table-background --output-name table-background-candidate-a.png --cover-width 1920 --cover-height 1080 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 1920 --expected-height 1080 --opaque-background --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/candidate-a-pastel-fabric-playmat.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-a/attempt-019f68d4-68b6-7df1-bd97-f0f4c5614d8e/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-a/attempt-019f68d4-68b6-7df1-bd97-f0f4c5614d8e/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "contentHash": "045cb0c9ef91f4a8b10b44d33e52e19dc4408116a1bc677af72ff27a8c7182a6",
+  "attemptKey": "019f68d4-68b6-7df1-bd97-f0f4c5614d8e",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/table-background-candidate-a.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

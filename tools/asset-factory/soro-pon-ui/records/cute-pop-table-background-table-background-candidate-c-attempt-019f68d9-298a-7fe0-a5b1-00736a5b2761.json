@@ -1,0 +1,43 @@
+{
+  "skinId": "cute-pop",
+  "slot": "table.background",
+  "assetRequest": "010-cute-pop-table-background",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-c/attempt-019f68d9-298a-7fe0-a5b1-00736a5b2761/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. Cute Pop mobile-game UI asset in the style of top-grossing cute casual puzzle games: a full-bleed, edge-to-edge opaque game table background, landscape 16:9 aspect ratio, no isolated subject and no chroma-key margin -- the entire frame must be filled corner to corner with the artwork itself. Design: a soft felt play mat with fine visible felt fiber texture and a neat embroidered running stitch along the outer border (this tactile felt nap and thread-by-thread embroidery depth must NOT look like a flat CSS border or dashed line). The large center-to-bottom area (roughly the middle 60% of the frame) must stay calm, low-contrast, and nearly uniform in color, almost plain, with only the faint felt texture visible -- no strong pattern, no large motif, no bright color spots there, because game tiles and hand-held pieces will be displayed on top of it and must stay easy to read. Only the four corners may carry a small embroidered appliqué charm (like a tiny stitched star or flower patch), kept small and subtle enough not to distract. Color palette: warm cream and soft paper tones as the dominant base, with a muted mint-free pastel yellow used sparingly for the embroidery thread accents (do not use deep rose-pink as a dominant background color; keep pink, if any, as a tiny accent only). Absolutely avoid any green hues, grass, leaf, or mint-colored elements anywhere in the image. No text, no letters, no numerals, no logo, no watermark, no known or existing game characters, no board-game grid, no fixed player-position markers, no UI chrome, no mockup, no screenshot. This is a single continuous background image, not an object on a background -- there is no separate background color to remove. Generate this now and confirm the PNG file was saved with its dimensions.\n",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f68d9-298a-7fe0-a5b1-00736a5b2761",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/candidate-c-felt-embroidery-mat.txt --output-name table-background-candidate-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin cute-pop --slot table.background --input tools/asset-factory/soro-pon-ui/raw-green/table-background-candidate-c.png --request 010-cute-pop-table-background --output-name table-background-candidate-c.png --cover-width 1920 --cover-height 1080 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 1920 --expected-height 1080 --opaque-background --prompt-file tools/asset-factory/soro-pon-ui/prompts/table-background/candidate-c-felt-embroidery-mat.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-c/attempt-019f68d9-298a-7fe0-a5b1-00736a5b2761/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/cute-pop/table.background/candidate-c/attempt-019f68d9-298a-7fe0-a5b1-00736a5b2761/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "contentHash": "18eda5200161d20e4e38ede9cb9eae16295d3a7b27d8058e4daec882d29007a9",
+  "attemptKey": "019f68d9-298a-7fe0-a5b1-00736a5b2761",
+  "placedAt": "public/assets/ui/soro-pon/skins/cute-pop/generated/candidates/table-background-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}
