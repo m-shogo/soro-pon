@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "tile.back.base",
+  "assetRequest": "015-yorunoshirube-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-a/attempt-019f69c9-0b53-7e42-95f2-2a2ceff80617/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a portrait rounded-rectangle mahjong-tile-like game-tile background, 3:4 aspect ratio, front-facing, isolated object only, centered on a solid chroma-key green background (#00ff00) with generous even transparent margin on all sides, no surrounding scene, no mockup, no interface chrome. Design: a sealed, closed memory -- deep navy-black envelope-like paper, with a faint pressed/embossed circular relief mark in the center (a raised or debossed texture pressed into the paper itself, not a printed or inked line drawing), and a few individual small embossed thread-stitch dimples visible only along one edge. This must clearly read as a relief/emboss texture, physically pressed into the paper, never as flat printed ink linework -- and it must look visually distinct from a simple color-inverted copy of the bright face tile. The whole surface must stay legible and non-noisy even when this tile is rendered as small as 24px tall (no fine linework that would collapse into visual noise at small sizes). This tactile embossed-paper quality must come from a real pressed-relief rendering, not a flat CSS fill, gradient, or printed border. Color palette: deep navy-black as the dominant tone, a subtle darker-navy tonal emboss for the relief mark, no bright colors, no bright ink lines. No text, no letters, no numerals, no logo, no watermark, no known characters, no large wax-seal stamp, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69c9-0b53-7e42-95f2-2a2ceff80617",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/yoru-candidate-a-sealed-envelope.txt --output-name yoru-tile-back-a.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot tile.back.base --input tools/asset-factory/soro-pon-ui/raw-green/yoru-tile-back-a.png --request 015-yorunoshirube-tile-face-back --output-name tile-back-base-candidate-a.png --fit-width 300 --fit-height 400 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 300 --expected-height 400 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/yoru-candidate-a-sealed-envelope.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-a/attempt-019f69c9-0b53-7e42-95f2-2a2ceff80617/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-a/attempt-019f69c9-0b53-7e42-95f2-2a2ceff80617/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 300,
+    "height": 400
+  },
+  "contentHash": "e437bf8d1c6ffe3c08a248ff6cc01904c6abc530be54e2e550f8e8fee71f9974",
+  "attemptKey": "019f69c9-0b53-7e42-95f2-2a2ceff80617",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/tile-back-base-candidate-a.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

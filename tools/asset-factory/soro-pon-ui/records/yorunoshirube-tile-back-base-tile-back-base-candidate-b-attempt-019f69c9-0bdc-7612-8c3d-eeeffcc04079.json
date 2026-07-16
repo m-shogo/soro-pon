@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "tile.back.base",
+  "assetRequest": "015-yorunoshirube-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-b/attempt-019f69c9-0bdc-7612-8c3d-eeeffcc04079/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a portrait rounded-rectangle mahjong-tile-like game-tile background, 3:4 aspect ratio, front-facing, isolated object only, centered on a solid chroma-key green background (#00ff00) with generous even transparent margin on all sides, no surrounding scene, no mockup, no interface chrome. Design: a sealed, closed memory -- the reverse side of a map page, deep navy-black paper with only a faint pressed/embossed relief impression of a route line and a couple of small embossed dot marks (a raised or debossed texture pressed into the paper itself, not printed or inked line art), fading toward the edges. This must clearly read as a relief/emboss texture, physically pressed into the paper, never as flat printed ink linework, and it must look visually distinct from a simple color-inverted copy of the bright face tile. The whole surface must stay legible and non-noisy even when this tile is rendered as small as 24px tall (no fine linework that would collapse into visual noise at small sizes). This tactile embossed-paper quality must come from a real pressed-relief rendering, not a flat CSS fill, gradient, or printed border. Color palette: deep navy-black as the dominant tone, a subtle darker-navy tonal emboss for the relief line, no bright colors, no bright ink lines. No text, no letters, no numerals, no logo, no watermark, no known characters, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69c9-0bdc-7612-8c3d-eeeffcc04079",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/yoru-candidate-b-map-reverse.txt --output-name yoru-tile-back-b.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot tile.back.base --input tools/asset-factory/soro-pon-ui/raw-green/yoru-tile-back-b.png --request 015-yorunoshirube-tile-face-back --output-name tile-back-base-candidate-b.png --fit-width 300 --fit-height 400 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 300 --expected-height 400 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/yoru-candidate-b-map-reverse.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-b/attempt-019f69c9-0bdc-7612-8c3d-eeeffcc04079/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-b/attempt-019f69c9-0bdc-7612-8c3d-eeeffcc04079/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 300,
+    "height": 400
+  },
+  "contentHash": "05a3031567bdd2066acf10b62d955967448e107b43e02b62b5c54827dac458e1",
+  "attemptKey": "019f69c9-0bdc-7612-8c3d-eeeffcc04079",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/tile-back-base-candidate-b.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

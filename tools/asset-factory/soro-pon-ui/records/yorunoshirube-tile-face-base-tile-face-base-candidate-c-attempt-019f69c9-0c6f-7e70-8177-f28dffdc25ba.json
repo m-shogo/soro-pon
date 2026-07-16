@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "tile.face.base",
+  "assetRequest": "015-yorunoshirube-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.face.base/candidate-c/attempt-019f69c9-0c6f-7e70-8177-f28dffdc25ba/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a portrait rounded-rectangle mahjong-tile-like game-tile background, 3:4 aspect ratio, front-facing, isolated object only, centered on a solid chroma-key green background (#00ff00) with generous even transparent margin on all sides, no surrounding scene, no mockup, no interface chrome. Design: the brightest paper material in the whole Yorunoshirube skin family -- a small old-photograph mounting card, aged ivory paper with a faint photographic-emulsion sheen suggested only near the edges, and a thin hand-drawn corner-frame mark in just one or two corners (like a photo-corner mount). The entire center area must stay quiet, low-detail, and nearly uniform aged ivory with only faint paper grain and the faintest emulsion sheen, because a dark numeral or category-pip icon will be overlaid by the app afterward and must stay highly legible even when this tile is rendered as small as 24px tall. This tactile paper-and-emulsion quality must come from real hand-drawn linework and photographic-sheen texture, not a flat CSS fill or border. Color palette: aged ivory paper as the dominant tone, deep ink-black for the thin corner-frame marks and border, no bright colors. No text, no letters, no numerals, no pip/suit glyphs, no icon, no logo, no watermark, no known characters, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69c9-0c6f-7e70-8177-f28dffdc25ba",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-face-base/yoru-candidate-c-photo-mount.txt --output-name yoru-tile-face-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot tile.face.base --input tools/asset-factory/soro-pon-ui/raw-green/yoru-tile-face-c.png --request 015-yorunoshirube-tile-face-back --output-name tile-face-base-candidate-c.png --fit-width 300 --fit-height 400 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 300 --expected-height 400 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-face-base/yoru-candidate-c-photo-mount.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.face.base/candidate-c/attempt-019f69c9-0c6f-7e70-8177-f28dffdc25ba/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.face.base/candidate-c/attempt-019f69c9-0c6f-7e70-8177-f28dffdc25ba/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 300,
+    "height": 400
+  },
+  "contentHash": "d9c33e8ac06e0a9b85a5948e0bce17ec3170ac10a49b9c0ff897733e1b5b15ae",
+  "attemptKey": "019f69c9-0c6f-7e70-8177-f28dffdc25ba",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/tile-face-base-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}

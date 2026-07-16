@@ -1,0 +1,43 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "tile.back.base",
+  "assetRequest": "015-yorunoshirube-tile-face-back",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-c/attempt-019f69c9-0b7c-78b3-982f-cf48d9318ba5/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a portrait rounded-rectangle mahjong-tile-like game-tile background, 3:4 aspect ratio, front-facing, isolated object only, centered on a solid chroma-key green background (#00ff00) with generous even transparent margin on all sides, no surrounding scene, no mockup, no interface chrome. Design: a sealed, closed memory -- a waxed memory card, deep navy-black waxed paper with a subtle translucent sheen, one very small pale amber embossed dot near a corner (a raised or debossed texture pressed into the paper itself, not printed or inked), and a faint pressed diamond-shaped relief pattern only near the very edges, fading to plain waxed paper toward the center. This must clearly read as a relief/emboss and waxed-sheen texture, physically pressed into the paper, never as flat printed ink linework, and it must look visually distinct from a simple color-inverted copy of the bright face tile. The whole surface must stay legible and non-noisy even when this tile is rendered as small as 24px tall (no fine linework that would collapse into visual noise at small sizes). This tactile embossed-waxed-paper quality must come from a real pressed-relief and waxed-sheen rendering, not a flat CSS fill, gradient, or printed border. Color palette: deep navy-black as the dominant tone, a subtle darker-navy tonal emboss, a single small pale amber dot only, no bright ink lines. No text, no letters, no numerals, no logo, no watermark, no known characters, no green fringe at the edges. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f69c9-0b7c-78b3-982f-cf48d9318ba5",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/yoru-candidate-c-waxed-card.txt --output-name yoru-tile-back-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot tile.back.base --input tools/asset-factory/soro-pon-ui/raw-green/yoru-tile-back-c.png --request 015-yorunoshirube-tile-face-back --output-name tile-back-base-candidate-c.png --fit-width 300 --fit-height 400 --fit-margin-ratio 0.02 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 300 --expected-height 400 --min-padding 4 --prompt-file tools/asset-factory/soro-pon-ui/prompts/tile-back-base/yoru-candidate-c-waxed-card.txt --provider openai",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-c/attempt-019f69c9-0b7c-78b3-982f-cf48d9318ba5/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/tile.back.base/candidate-c/attempt-019f69c9-0b7c-78b3-982f-cf48d9318ba5/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 300,
+    "height": 400
+  },
+  "contentHash": "8ae7d96f4016cdc4f5e5f99a5f044151a8938568ae78bf34d4ed4be4c617d2d5",
+  "attemptKey": "019f69c9-0b7c-78b3-982f-cf48d9318ba5",
+  "placedAt": null,
+  "promotedTo": null,
+  "generatedAt": "2026-07-16",
+  "approval": "rejected",
+  "rejectionReason": "machine content review rejected (2026-07-16): the generated relief is an all-over uniform diamond-quilt pattern covering the whole tile -- this both reads as CSS-reproducible (a uniform repeating diamond grid) and dangerously resembles Cute Pop's tile.back.base quilted-cushion motif (キルトクッション, R1 candidate E), which is explicitly forbidden to reuse per the Batch 3 art direction's Cute Pop differentiation rules. Automated validation passed. Replaced by candidate-c2 (revised prompt: single small amber dot + edge-only relief pattern, no all-over diamond grid, explicit exclusion of quilted/diamond-grid patterns).",
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-16",
+  "validation": {
+    "ok": true,
+    "issues": []
+  },
+  "license": "original project asset generated via Codex CLI"
+}
