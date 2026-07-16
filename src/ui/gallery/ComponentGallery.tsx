@@ -16,7 +16,6 @@ import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
 import { NineSliceProof } from './NineSliceProof';
-import { Batch3YorunoshirubeCandidateReview } from './Batch3YorunoshirubeCandidateReview';
 import './gallery.css';
 
 const SAMPLE_BREAKDOWN: ResultBreakdown = {
@@ -60,18 +59,17 @@ export function ComponentGallery() {
           request 007(badge.info.background候補B)、
           request 008/009(tile.face.base/tile.back.base/button.primary.background
           候補D/E/D)、request 010/011(table.background/panel.modal.background/
-          panel.result.frame 候補A/B/B)はfinal昇格・skin.json登録済み。下の
+          panel.result.frame 候補A/B/B)、request 012-015(ヨルノシルベ
+          table.background/panel.paper.default/panel.modal.background/
+          panel.result.frame/button.primary.background/
+          button.secondary.background/tile.face.base/tile.back.base
+          候補C/A/B/B/A/B/A/A)はfinal昇格・skin.json登録済み。下の
           Button/PaperPanel/Badge/TileCard variantsとGameTableLayout実画面が
-          Cute Pop選択中に実際に適用された状態を示す(専用レビューセクションは撤去)。 */}
+          両スキン選択中に実際に適用された状態を示す(専用レビューセクションは撤去)。 */}
 
       <section className="sp-gallery__section">
         <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>
         <NineSliceProof />
-      </section>
-
-      <section className="sp-gallery__section">
-        <h2>Batch 3候補レビュー(request 012-015 / ヨルノシルベ中核8slot)</h2>
-        <Batch3YorunoshirubeCandidateReview />
       </section>
 
       <section className="sp-gallery__section">

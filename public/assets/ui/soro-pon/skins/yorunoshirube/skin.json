@@ -1,7 +1,7 @@
 {
   "id": "yorunoshirube",
   "label": "ヨルノシルベ",
-  "version": 1,
+  "version": 2,
   "skinContractVersion": 1,
   "origin": "official",
   "author": "soro-pon",
@@ -9,5 +9,59 @@
   "tokensFile": "tokens.css",
   "colorScheme": "dark",
   "themeColor": "#120d08",
-  "slots": {}
+  "slots": {
+    "table.background": {
+      "file": "table-background.png",
+      "status": "final",
+      "renderMode": "cover",
+      "intrinsicSize": { "width": 1920, "height": 1080 }
+    },
+    "panel.modal.background": {
+      "file": "panel-modal-background.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": { "width": 512, "height": 384 },
+      "transparent": true,
+      "nineSlice": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+      "nineSliceRender": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+      "contentSafeArea": { "top": 16, "right": 16, "bottom": 16, "left": 16 },
+      "minRenderSize": { "width": 96, "height": 96 }
+    },
+    "button.primary.background": {
+      "file": "button-primary-background.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": { "width": 240, "height": 72 },
+      "transparent": true,
+      "nineSlice": { "top": 16, "right": 16, "bottom": 16, "left": 16 },
+      "nineSliceRender": { "top": 16, "right": 16, "bottom": 16, "left": 16 },
+      "contentSafeArea": { "top": 8, "right": 8, "bottom": 8, "left": 8 },
+      "minRenderSize": { "width": 72, "height": 44 }
+    },
+    "button.secondary.background": {
+      "file": "button-secondary-background.png",
+      "status": "final",
+      "renderMode": "nine-slice",
+      "intrinsicSize": { "width": 240, "height": 72 },
+      "transparent": true,
+      "nineSlice": { "top": 16, "right": 16, "bottom": 16, "left": 16 },
+      "nineSliceRender": { "top": 16, "right": 16, "bottom": 16, "left": 16 },
+      "contentSafeArea": { "top": 8, "right": 8, "bottom": 8, "left": 8 },
+      "minRenderSize": { "width": 72, "height": 44 }
+    },
+    "tile.face.base": {
+      "file": "tile-face-base.png",
+      "status": "final",
+      "renderMode": "stretch",
+      "intrinsicSize": { "width": 300, "height": 400 },
+      "transparent": true
+    },
+    "tile.back.base": {
+      "file": "tile-back-base.png",
+      "status": "final",
+      "renderMode": "stretch",
+      "intrinsicSize": { "width": 300, "height": 400 },
+      "transparent": true
+    }
+  }
 }
