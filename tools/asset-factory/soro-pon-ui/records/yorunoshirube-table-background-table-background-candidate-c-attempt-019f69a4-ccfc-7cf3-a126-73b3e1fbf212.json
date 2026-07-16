@@ -25,19 +25,20 @@
     "width": 1920,
     "height": 1080
   },
-  "contentHash": "c931b8abd7ce8f9fcf3d3c405824266d07ac847da23c04a6216bb6d84ad99814",
+  "contentHash": "473bd6abd1f548ef4103790ce94259e9027b4fbb64da838e9347642a7b865ab6",
   "attemptKey": "019f69a4-ccfc-7cf3-a126-73b3e1fbf212",
-  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/table-background-candidate-c.png",
-  "promotedTo": null,
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png",
+  "promotedTo": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png",
   "generatedAt": "2026-07-16",
-  "approval": "candidate",
+  "approval": "promoted",
   "rejectionReason": null,
-  "promotedAt": null,
-  "skinVersionAtPromotion": null,
+  "promotedAt": "2026-07-16",
+  "skinVersionAtPromotion": 2,
   "archivedAt": "2026-07-16",
   "validation": {
     "ok": true,
     "issues": []
   },
-  "license": "original project asset generated via Codex CLI"
+  "license": "original project asset generated via Codex CLI",
+  "postPromotionOptimization": "final PNG exceeded SKIN-CONTRACT.json maxAssetFileBytes(2097152); re-encoded as 256-color palette PNG with Floyd-Steinberg dithering (RGBA->P, alpha channel dropped since slot is opaque/non-transparent) at promotion time on 2026-07-16 (2890050 bytes -> 1655281 bytes). Visual content unchanged (verified by side-by-side inspection at full 1920x1080 scale); pre-optimization candidate bytes are preserved in the git-tracked attempt archive for audit. contentHash below reflects the promoted (optimized) file, not the human-reviewed candidate file; the reviewed candidate's original hash is c931b8abd7ce8f9fcf3d3c405824266d07ac847da23c04a6216bb6d84ad99814."
 }
