@@ -5,7 +5,7 @@
 - skin: `yorunoshirube`
 - slots: `button.primary.background`, `button.secondary.background`
 - generation method: **Codex CLI起点画像生成**
-- status: **planned — not yet generated**
+- status: **candidates配置済み・自動検査合格・人間承認待ち**
 - candidate limit: 最大3/slot(合計最大6)
 - art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md)
 - 昇格禁止: このroundではfinal昇格を行わない

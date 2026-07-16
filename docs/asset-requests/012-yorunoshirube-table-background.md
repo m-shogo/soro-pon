@@ -5,7 +5,7 @@
 - skin: `yorunoshirube`
 - slot: `table.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **planned — not yet generated**(このrequestはBatch 3の一部。
+- status: **candidates配置済み・自動検査合格・人間承認待ち**(Batch 3の一部。
   art direction: [BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md](BATCH-3-YORUNOSHIRUBE-ART-DIRECTION.md))
 - candidate limit: **最大3**(A/B/C)
 - 昇格禁止: このround(round 1)ではfinal昇格を行わない。

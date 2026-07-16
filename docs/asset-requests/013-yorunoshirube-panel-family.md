@@ -5,7 +5,7 @@
 - skin: `yorunoshirube`
 - slots: `panel.paper.default`, `panel.modal.background`, `panel.result.frame`
 - generation method: **Codex CLI起点画像生成**
-- status: **planned — not yet generated**
+- status: **candidates配置済み・自動検査合格・人間承認待ち**
 - candidate limit: 最大3/slot(合計最大9)
 - 1request統合の理由: 3slotとも nine-slice 紙パネル系で、
   render契約・9-slice安全性要件・content safe area責務が同型のため
