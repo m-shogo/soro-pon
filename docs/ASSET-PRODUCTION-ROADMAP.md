@@ -25,10 +25,12 @@ Runtime resolver: getSkinAssetUrl() / useSkinAsset() / SkinLayer (src/ui/skins/)
 All 21 slots are declared; 18 are wired into a component; 3 are dead
   (effect.result.burst, effect.wildcard.glow, effect.score.pop have zero
   component references in src/ as of this audit)
-Cute Pop final assets: 3 (button.secondary.background, panel.paper.default,
-  badge.info.background) — version 3
+Cute Pop final assets: 6 (button.secondary.background, panel.paper.default,
+  badge.info.background, tile.face.base, tile.back.base,
+  button.primary.background) — version 4 (R1 closed 2026-07-16)
 Yorunoshirube final assets: 0 — version 1, slots: {} (CSS/token fallback only)
-button.primary.background (the main CTA) is still placeholder on BOTH skins
+button.primary.background (the main CTA) is now final on cute-pop
+  (R1, candidate D "jelly candy CTA")
 Playwright visual regression: tests/visual/skin-screens.spec.ts (30 screenshot
   cases: 3 screens x 2 skins x 5 sizes) + tests/visual/skinAssetReady.spec.ts
   (2 non-screenshot assertions) = 32 total test cases
@@ -109,9 +111,12 @@ at all).
 
 | Skin | Slot | Version | Filename | Render mode | Intrinsic size | Density | Fallback when missing | Request ID | Approved |
 |---|---|---|---|---|---|---|---|---|---|
-| cute-pop | button.secondary.background | v3 | button-secondary-2x.png | nine-slice | 480x144 | 2x | token/CSS nine-slice panel | 006 | yes |
-| cute-pop | panel.paper.default | v3 | panel-paper-2x.png | nine-slice | 768x512 | 2x | token/CSS nine-slice panel | 006 | yes |
-| cute-pop | badge.info.background | v3 | badge-info-background.png | nine-slice | 240x80 | 2x | token/CSS nine-slice badge | 007 | yes (candidate B promoted; A/C not-selected) |
+| cute-pop | button.secondary.background | v4 | button-secondary-2x.png | nine-slice | 480x144 | 2x | token/CSS nine-slice panel | 006 | yes |
+| cute-pop | panel.paper.default | v4 | panel-paper-2x.png | nine-slice | 768x512 | 2x | token/CSS nine-slice panel | 006 | yes |
+| cute-pop | badge.info.background | v4 | badge-info-background.png | nine-slice | 240x80 | 2x | token/CSS nine-slice badge | 007 | yes (candidate B promoted; A/C not-selected) |
+| cute-pop | tile.face.base | v4 | tile-face-base.png | stretch | 600x800 | 2x | CSS gradient tile face | 008 | yes (round 2 candidate D promoted; round 1 A/B/C + round 2 E/F not-selected) |
+| cute-pop | tile.back.base | v4 | tile-back-base.png | stretch | 600x800 | 2x | CSS gradient tile back | 008 | yes (round 2 candidate E promoted; round 1 A/B/C + round 2 D/F not-selected) |
+| cute-pop | button.primary.background | v4 | button-primary-background-2x.png | nine-slice | 480x96 | 2x | token/CSS gradient button | 009 | yes (round 2 candidate D promoted; round 1 A/B/C + round 2 E/F not-selected) |
 | yorunoshirube | (none) | v1 | — | — | — | — | CSS/token fallback for all 21 slots | — | n/a |
 
 Both skins additionally have non-manifest nine-slice proof images under
@@ -174,32 +179,34 @@ Blocker check performed for this roadmap: no code blocker found for
 cute-pop/tile.face.base — `TileCard.tsx` already resolves the slot correctly
 through `SkinLayer`, so this remains the correct starting candidate.
 
-**Batch 1 status (R1): round 2 candidates ready — human review pending.**
-Round 1 candidates (A/B/C) were rejected by human review on 2026-07-16
-(CSS-reproducible flat designs; direction changed to image-generation-only
-texture/depth — icing/watercolor/candy/quilt/jelly). Round 2 candidates
-(D/E/F) regenerated through the same pipeline.
-Request 008 (tile.face.base / tile.back.base, 3 candidates each) and
-request 009 (button.primary.background, 3 candidates — pulled forward from
-Batch 2 because the primary CTA is the largest visible gap) are generated,
-validated, and placed under `generated/candidates/`. Review material and
-the post-approval promotion procedure: `docs/asset-requests/R1-APPROVAL-PACK.md`.
+**Batch 1 status (R1): COMPLETE.** Round 1 candidates (A/B/C) were rejected
+by human review on 2026-07-16 (CSS-reproducible flat designs; direction
+changed to image-generation-only texture/depth). Round 2 candidates (D/E/F)
+were regenerated, and on 2026-07-16 the human reviewer approved:
+tile.face.base -> D (icing cookie frame), tile.back.base -> E (quilted
+cushion), button.primary.background -> D (jelly candy CTA — pulled forward
+from Batch 2 because the primary CTA was the largest visible gap). All
+three are promoted to `generated/final/`, registered in cute-pop/skin.json
+(version 3 -> 4), and verified in production consumers (TOP, MatchSetup,
+Match screen hand/discard, selected-tile state) across 5 viewports. Full
+decision record and promotion evidence: `docs/asset-requests/R1-APPROVAL-PACK.md`.
 One integration blocker was found and fixed before generation: the runtime
 resolved tile state slots as full-face replacements with no cross-slot
 fallback, so promoting only tile.face.base would have made selected tiles
 lose their face image. ADR-015 changed TileCard to composite state slots
-over the base face; no separate full-face state art will be generated.
+over the base face; no separate full-face state art was generated for
+tile.face.selected/ronAvailable/tsumoAvailable.
 
 ### Batch 2 — Cute Pop main screens
 
 ```text
-Target slots: button.primary.background, panel.modal.background,
-  panel.result.frame, table.background
+Target slots: panel.modal.background, panel.result.frame, table.background
+  (button.primary.background completed as part of R1/Batch 1 — see above)
 Target skin: cute-pop
-Screens used: all screens (primary CTA is global), AppRoot/TopScreen/Dialog
-  (modal), ResultScreen (result frame), MatchScreen (table)
+Screens used: AppRoot/TopScreen/Dialog (modal), ResultScreen (result frame),
+  MatchScreen (table)
 Generation method: Codex CLI image generation
-Planned asset-request ID: 009-012 (one per slot, or grouped if visual
+Planned asset-request ID: 010-012 (one per slot, or grouped if visual
   language is shared — decide at request-creation time)
 Max candidates: 3 per slot
 Human review checklist: CTA contrast/legibility at all button states
@@ -326,22 +333,25 @@ Gameplay/engine:                    ~90-95%  (Phases 1-14 complete; extendedRole
 Storage/import/idempotency:         ~90-95%  (H8/H11 complete; restore/replay feature itself is out of MVP scope)
 UI/skin foundation (H1-H11):        ~95-100% (all 11 items complete; H6 additional render modes intentionally not pursued beyond proven need)
 Image generation/audit pipeline:    ~95-100% (transactional prepare/rollback, chroma-key, record schema, one closed request cycle proven end-to-end)
-Cute Pop final assets:              3 of 21 contract slots (18 wired; button.primary.background, the main CTA, still placeholder)
+Cute Pop final assets:              6 of 21 contract slots (18 wired; R1 closed the primary CTA + tile
+                                       face/back gap; table.background/panel.modal.background/
+                                       panel.result.frame still placeholder — remaining Batch 2 work)
 Yorunoshirube final assets:         0 of 21 contract slots
-Public demo overall (Tier 1+2):     ~35-45%  (foundation done, but the highest-visibility slots — primary CTA, tile art, table background,
-                                                modal/result frames — are still placeholder on both skins; Tier 1 alone requires Batch 1+2)
-Release Candidate overall (Tier 3): ~25-35%  (depends on Tier 1/2 completion first, plus untouched Gate 5/6 QA items)
+Public demo overall (Tier 1+2):     ~50-55%  (R1 closed the single most-used surface — the primary CTA —
+                                                plus tile identity; Tier 1 still needs Batch 2's remaining
+                                                3 slots (table/modal/result) before "match/create/result
+                                                flow visually complete" is met)
+Release Candidate overall (Tier 3): ~30-40%  (depends on Tier 1/2 completion first, plus untouched Gate 5/6 QA items)
 ```
 
 Note: the reference figures suggested when this roadmap was scoped
 (~65-70% public demo, ~50-60% Release Candidate) assumed a smaller remaining
-asset gap than what this audit found. The technical-foundation and pipeline
-percentages match the suggested range, but visual completion is lower than
-suggested because button.primary.background — the single most-used surface
-in the app — has no final asset on either skin, and only 3 of 21 slots have
-any final asset at all (all on one skin). Public-demo and Release-Candidate
-percentages above are adjusted down accordingly and should be treated as
-this audit's estimate, not the original suggested figures.
+asset gap than what this audit found. R1's completion (primary CTA + tile
+face/back finals, promoted 2026-07-16) closed the largest single gap, but
+Tier 1 ("match/create/result flow visually complete") still requires
+table.background, panel.modal.background, and panel.result.frame — the
+remainder of Batch 2. Percentages above are this audit's estimate, not the
+original suggested figures.
 
 ## Timeline estimates (non-binding)
 
@@ -357,11 +367,17 @@ General-user Release Candidate (Tier 3):   25-40 business days
 
 ## Next task
 
-Next (human): Review and approve/reject the R1 **round 2** candidates
-(`docs/asset-requests/R1-APPROVAL-PACK.md` — request 008/009, D/E/F,
-machine-review notes recorded there). All machine-executable R1 work is done:
-requests, prompts, generation, transparency/inspection, candidates
-placement, Gallery review section, visual evidence, verification.
+**R1 is complete** (2026-07-16): tile.face.base (D), tile.back.base (E),
+button.primary.background (D) are human-approved, promoted to final,
+registered in cute-pop/skin.json v4, and verified in production. Full
+record: `docs/asset-requests/R1-APPROVAL-PACK.md`.
+
+Next: Create asset request(s) for the remainder of Batch 2 —
+table.background, panel.modal.background, panel.result.frame (cute-pop).
+Generate up to 3 candidates per slot through the canonical Codex CLI
+pipeline. Stop before final promotion for human review. This roadmap does
+not authorize starting that generation work; it only names it as the next
+target.
 
 Next (machine, after approval): promote the approved candidates per the
 procedure in the Approval Pack (final move, record updates, skin.json v3->4,

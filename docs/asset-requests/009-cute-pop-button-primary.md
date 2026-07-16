@@ -5,9 +5,10 @@
 - skin: `cute-pop`
 - slot: `button.primary.background`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **round 1(A/B/C)は人間レビューで全却下。round 2(D/E/F)生成済み・
-  人間レビュー待ち(final昇格前で停止)**
-- target files (candidates): `generated/candidates/button-primary-background-candidate-*.png`
+- status: **closed(final昇格済み)**。candidate D(ジェリーキャンディCTA)採用
+- final path: `generated/final/button-primary-background-2x.png`
+  (cute-pop skin.json version 4、intrinsicSize 480x96)
+- round 1(A/B/C)は全却下。round 2のE/Fはnot-selected
 
 ## Round 1 Rejection (2026-07-16, approvalSource: user-provided-human-decision)
 
@@ -16,6 +17,39 @@ CSSで再現可能な単純フラット面のため。round 2はcandy/jelly/icin
 画像生成でしか実現できない質感・立体感のCTAへ方向転換する。
 9-slice安全性(中央帯の水平一様性)・白文字コントラスト・文字焼き込み禁止は維持。
 round 1候補はrejected recordとしてarchiveに保持。
+
+## Round 2 Approval and Promotion (2026-07-16, approvalSource: user-provided-human-decision)
+
+```text
+button.primary.background: D (ジェリーキャンディCTA) を採用
+  理由: 3候補中もっともメインCTAとしての主役感が強い。CSS gradientだけ
+  では出しにくい厚み・透明感・内部発光・柔らかい反射を持つ。secondary
+  buttonとの差が明確で、押せそうな弾力と光沢があり主要操作として
+  直感的に認識しやすい。水平gloss帯が一様で9-sliceの横伸縮に適し、
+  長文でもseamが出ないことをレビュー時に確認済み
+  E(アイシングパイピング)は牌表面D(アイシングクッキー)と素材表現が
+  重なりすぎ画面全体がお菓子の縁取りだらけになりやすいため、
+  F(マカロン)はfilling線と白文字が交差する可能性がありラベル配置の
+  自由度を下げるため不採用
+```
+
+Promotion技術検証(final化直前に実ファイルを再検査、合格):
+
+```text
+- record.contentHashと実ファイルhashの一致確認
+- validate_candidate.py再検査(issues: [])
+- gloss帯・下辺の厚みが水平方向に一様であることを目視確認(9-slice安全性)
+- min幅(72px)/通常/長文/2行ラベルすべてでseamが出ないことを
+  実TileCard/Buttonでのレビュー時に確認済み(evidence/r1-round2/)
+```
+
+Runtime統合確認: cute-pop skin.json version 4でbutton.primary.background
+(nine-slice, intrinsicSize 480x96, pixelDensity 2, nineSlice 32,
+nineSliceRender 16, contentSafeArea 16, minRenderSize 72x44)を登録。
+ブラウザでTOP/MatchSetup(対局開始CTA)/Match(捨てる/ツモ/ロン)で
+ジェリー光沢が適用され、disabled状態(捨てる牌未選択時)でも視認できる
+ことを確認。secondary(白カード)との階層差は明確。Yorunoshirubeは
+未登録(CSS fallbackのまま、回帰なし)。
 
 ## Purpose
 
@@ -114,6 +148,8 @@ CSSグラデーション(--sp-gradient-button-primary)+白文字で表示済み�
 
 ## Approval Status(承認状態)
 
-- [x] candidate(レビュー待ち)
-- [ ] approved(final昇格可)
+- [ ] candidate(レビュー待ち)
+- [x] approved(final昇格可) — candidate D
 - [ ] rejected(修正指示: )
+
+Request closed 2026-07-16. final: `generated/final/button-primary-background-2x.png`(cute-pop v4)。

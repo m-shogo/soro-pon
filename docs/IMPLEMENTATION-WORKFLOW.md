@@ -187,13 +187,17 @@ promoted, A/C not-selected. Full slot classification, batch order, and the
 current single next task: `docs/ASSET-PRODUCTION-ROADMAP.md`.
 
 R1 (request 008/009: cute-pop tile.face.base / tile.back.base /
-button.primary.background) round 1 candidates were **rejected by human
-review** (CSS-reproducible designs; direction changed to image-only
-texture/depth). Round 2 candidates (D/E/F) are at **candidates ready —
-human review pending**. Review material and post-approval promotion steps:
-`docs/asset-requests/R1-APPROVAL-PACK.md`. Tile state slots
-(selected/ron/tsumo) are composited over the base face per ADR-015 —
-do not generate separate full-face art for them.
+button.primary.background) is **closed** (2026-07-16). Round 1 candidates
+(A/B/C) were rejected by human review (CSS-reproducible designs); round 2
+candidates (D/E/F) were approved — tile.face.base: D, tile.back.base: E,
+button.primary.background: D — and promoted to final, registered in
+cute-pop/skin.json v4, and verified in production consumers. Decision
+record and evidence: `docs/asset-requests/R1-APPROVAL-PACK.md`. Cute Pop
+now has 6 of 21 contract slots final; the remaining Batch 2 slots
+(table.background, panel.modal.background, panel.result.frame) are the
+next asset-production target per `docs/ASSET-PRODUCTION-ROADMAP.md`. Tile
+state slots (selected/ron/tsumo) are composited over the base face per
+ADR-015 — do not generate separate full-face art for them.
 
 ## Verification Commands
 

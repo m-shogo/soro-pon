@@ -5,10 +5,14 @@
 - skin: `cute-pop`
 - slots: `tile.face.base`, `tile.back.base`
 - generation method: **Codex CLI起点画像生成**(docs/IMAGE-ASSET-WORKFLOW.md 8工程)
-- status: **round 1(A/B/C)は人間レビューで全却下。round 2(D/E/F)生成済み・
-  人間レビュー待ち(final昇格前で停止)**
-- target files (candidates): `generated/candidates/tile-face-base-candidate-*.png`,
-  `generated/candidates/tile-back-base-candidate-*.png`
+- status: **closed(final昇格済み)**。tile.face.base: candidate D(アイシング
+  クッキー枠)採用。tile.back.base: candidate E(キルトクッション)採用。
+  round 1(A/B/C)は全却下。round 2のE/F(face)・D/F(back)はnot-selected
+- final path: `generated/final/tile-face-base.png` /
+  `generated/final/tile-back-base.png`(cute-pop skin.json version 4)
+- target files (rejected/not-selected candidates, archived):
+  `generated/candidates/`には現存しない(promotion時に除去、
+  attempt archiveに保持)
 
 ## Round 1 Rejection (2026-07-16, approvalSource: user-provided-human-decision)
 
@@ -32,6 +36,43 @@ Round 2への追加制約:
   chroma-key工程、9-slice安全性(該当slot)は維持
 - round 1候補はrejected recordとしてarchiveに保持(復活させない)
 ```
+
+## Round 2 Approval and Promotion (2026-07-16, approvalSource: user-provided-human-decision)
+
+```text
+tile.face.base: D (アイシングクッキー枠) を採用
+  理由: CSSでは出せない不均一なアイシング質感・厚み・手作業感のある
+  揺らぎ・柔らかな陰影がある。24pxでもクッキー縁として形が残り、
+  牌を「小さなお菓子・玩具」に見せられる。中央が静かでDOM上乗せの
+  文字・絵文字・状態表示と競合しない
+  E(水彩ブラッシュ)は縮小時に特徴が消えやすく、
+  F(キャンディビーズ)は小さい牌で粒が点ノイズ化しやすいため不採用
+
+tile.back.base: E (キルトクッション) を採用
+  理由: 縫い目の凹み・各区画の柔らかな膨らみ・布/クッションらしい陰影・
+  手触りを想像できる立体感がある。表面(アイシングクッキー)と異なる
+  素材感でCute Pop世界に素材の変化を作れる。均一なキルト構造で複数枚
+  並んでも散らからず、表裏の区別が明確
+  D(手描きトイモチーフ)は中央にもモチーフが乗り◆表示との競合懸念、
+  F(ジェリー+スプリンクル)は24-30pxでスプリンクルが点ノイズ化する
+  懸念があり不採用
+```
+
+Promotion技術検証(final化直前に実ファイルを再検査、両slotとも合格):
+
+```text
+- record.contentHashと実ファイルhashの一致確認(2件とも一致)
+- validate_candidate.py再検査(issues: [])
+- 24px/42px/54px/96pxへのdownscaleプレビューで意匠が判別可能なことを確認
+- 24pxでもクッキー輪郭・キルト菱形がノイズ化していないことを確認
+- 中央領域(emoji/text帯)のRGB標準偏差が実質0(無地)であることを確認
+```
+
+Runtime統合確認: cute-pop skin.json version 4でtile.face.base(stretch,
+600x800, 2x)/tile.back.base(stretch, 600x800, 2x)を登録。ブラウザで
+TOP→スキン切替→対局開始→手牌表示→牌選択(selected状態、ADR-015の
+base+状態レイヤー合成)→捨て牌配置まで確認。Yorunoshirubeは未登録
+(CSS fallbackのまま、回帰なし)。
 
 ## Purpose
 
@@ -128,6 +169,9 @@ CSSグラデーション+インク枠(--sp-gradient-tile-face / --sp-gradient-ti
 
 ## Approval Status(承認状態)
 
-- [x] candidate(レビュー待ち)
-- [ ] approved(final昇格可)
+- [ ] candidate(レビュー待ち)
+- [x] approved(final昇格可) — tile.face.base: D / tile.back.base: E
 - [ ] rejected(修正指示: )
+
+Request closed 2026-07-16. final: `generated/final/tile-face-base.png`,
+`generated/final/tile-back-base.png`(cute-pop v4)。

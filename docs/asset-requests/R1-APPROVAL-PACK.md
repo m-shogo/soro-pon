@@ -1,11 +1,34 @@
 # R1 Approval Pack (request 008 / 009)
 
-cute-popのR1候補9点の人間レビュー用資料。ここだけ読めば承認判断と
-承認後のpromotion操作ができる状態を目指している。
+cute-popのR1候補の人間レビュー用資料。R1は**完了**(3slotともfinal昇格済み)。
 
 - 対象request: [008](008-cute-pop-tile-face-back.md) / [009](009-cute-pop-button-primary.md)
-- 状態: **round 2 (D/E/F) candidates配置済み・自動検査合格・人間承認待ち**
-- final昇格・manifest登録・skin version変更は未実施(直接final禁止を維持)
+- 状態: **COMPLETE — 3slotとも人間承認・final昇格・runtime統合・検証済み**
+
+## 最終承認結果 (2026-07-16, approvalSource: user-provided-human-decision)
+
+```text
+cute-pop/tile.face.base:            D (アイシングクッキー枠)
+cute-pop/tile.back.base:            E (キルトクッション)
+cute-pop/button.primary.background: D (ジェリーキャンディCTA)
+```
+
+採用理由の詳細は各requestのRound 2 Approval and Promotionセクション参照。
+不採用(E/F face, D/F back, E/F button)はnot-selectedとしてrecordに理由付きで記録。
+round 1(A/B/C、全9候補)はCSSで再現可能なデザインとして却下済み(下記履歴)。
+
+final path:
+
+```text
+tile.face.base:            generated/final/tile-face-base.png
+tile.back.base:             generated/final/tile-back-base.png
+button.primary.background:  generated/final/button-primary-background-2x.png
+skin version: 3 -> 4
+```
+
+production証跡: `evidence/r1-final/`(Gallery TileCard states/Button variants、
+実MatchSetup/Match画面、Yorunoshirube回帰確認)。candidateレビュー時の証跡は
+`evidence/r1-round1/`(却下済み)・`evidence/r1-round2/`(採用元)に保持。
 
 ## Round 1 結果 (2026-07-16)
 
@@ -24,14 +47,17 @@ attempt archiveと証跡(evidence/r1-round1/)は監査のため保持。
 round 1の候補表・推奨は履歴としてこの下に残すが、**現行レビュー対象は
 round 2 (D/E/F)** である。
 
-## 何を見るか
+## 完了後の実物確認方法
 
-1. Component Gallery (`#/gallery`) を開き、SkinをCute Popへ切り替える
-2. 「R1候補レビュー」セクションで各候補を確認する
-   (dev server: `pnpm dev`。静的証跡は `evidence/r1-round2/*.png`)
-3. 判断基準はrequest 008/009のAcceptance Checklist
+R1候補レビュー専用のGalleryセクションはfinal昇格に伴い削除済み。
+実際の見た目は標準コンポーネントで確認する:
 
-## Round 2 候補一覧と所見(現行レビュー対象)
+1. `pnpm dev` → `#/gallery` → SkinをCute Popへ切り替え →
+   「TileCard states」「Button variants」セクション(標準表示)
+2. または `#/`(TOP)→ まず遊ぶ → 対局開始 → 実際の手牌/捨て牌/CTAで確認
+3. 静的証跡: `evidence/r1-final/*.png`
+
+## Round 2 候補一覧と所見(採用元。history)
 
 ### tile.face.base(牌表面)
 
@@ -105,28 +131,30 @@ round 2 (D/E/F)** である。
   attempt archiveは `tools/asset-factory/soro-pon-ui/archive/cute-pop/`
 - visual regression: 32/32 green(Gallery baselineは意図更新、TOP/MatchSetup無変更)
 
-## 承認後のpromotion手順(候補1つにつき)
+## 実施したpromotion手順(記録)
 
-1. 採用candidateを `generated/candidates/` から `generated/final/` へ移動
-2. 不採用candidateをcandidates/から除去し、recordの`approval`を
-   `not-selected`(rejectionReason付き)へ、採用分を`promoted`へ更新
-   (`placedAt`/`promotedTo`/`promotedAt`/`skinVersionAtPromotion`を更新)
+1. 採用candidate(face D / back E / button D)を `generated/candidates/`
+   から `generated/final/` へ移動(final化直前に hash 照合・
+   validate_candidate.py 再検査を実施、3件とも合格)
+2. 不採用候補(face E/F, back D/F, button E/F)をcandidates/から除去し、
+   recordの`approval`を`not-selected`(rejectionReason付き)へ、
+   採用分を`promoted`へ更新
+   (`placedAt`/`processedFile`/`promotedTo`/`promotedAt`/
+   `skinVersionAtPromotion=4`を記録)
 3. `cute-pop/skin.json` へslot定義を追加(status: final):
    - tile.face.base / tile.back.base: renderMode stretch,
      intrinsicSize 600x800, pixelDensity 2, transparent true
    - button.primary.background: renderMode nine-slice,
-     intrinsicSize 480x(96|120|136 採用候補の実寸), pixelDensity 2,
+     intrinsicSize 480x96(候補Dの実寸), pixelDensity 2,
      nineSlice 32, nineSliceRender 16, contentSafeArea 16,
      minRenderSize 72x44, transparent true
 4. skin version 3 -> 4
-5. Gallery の R1レビューセクション(`R1TileButtonCandidateReview`)を削除
-6. `pnpm skin:validate` / `pnpm test` / `pnpm typecheck` / `pnpm build`
-7. `pnpm test:visual`(対象画面のみ差分が出るのでdiff確認の上baseline更新)
-8. request 008/009 のApproval Statusを更新、このPackへ結果を追記
-9. commit / push / CI確認
-
-## 却下時
-
-- 各requestのApproval Statusへ`rejected(修正指示)`を記録し、
-  修正prompt生成から再実行(candidate上限3を維持、不要になった候補は
-  not-selectedへ)
+5. Gallery の R1レビューセクション(`R1TileButtonCandidateReview.tsx`)を削除
+6. `pnpm skin:validate` / `pnpm test` / `pnpm typecheck` / `pnpm build` 全green
+7. `pnpm test:visual`: 現行baselineに対し実行しGallery(両skin x 5サイズ、
+   レビューセクション削除によるレイアウト下移動のみ)以外ゼロdiffを確認。
+   diff画像を目視確認した上でGalleryのみbaseline更新、再実行で32/32 green
+8. ブラウザでruntime統合確認(TOP→スキン切替→対局→手牌/selected/捨て牌/
+   CTA全状態、Yorunoshirube回帰なし)、production証跡取得
+9. request 008/009 のApproval Statusを更新、このPackへ結果を追記
+10. commit(4分割)・push・CI確認
