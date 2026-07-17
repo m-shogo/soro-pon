@@ -16,6 +16,7 @@ import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
 import { NineSliceProof } from './NineSliceProof';
+import { Batch4YorunoshirubeBadgeInfoReview } from './Batch4YorunoshirubeBadgeInfoReview';
 import './gallery.css';
 
 const SAMPLE_BREAKDOWN: ResultBreakdown = {
@@ -70,6 +71,11 @@ export function ComponentGallery() {
       <section className="sp-gallery__section">
         <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>
         <NineSliceProof />
+      </section>
+
+      <section className="sp-gallery__section">
+        <h2>Batch 4候補レビュー(request 016 / ヨルノシルベ badge.info.background)</h2>
+        <Batch4YorunoshirubeBadgeInfoReview />
       </section>
 
       <section className="sp-gallery__section">
