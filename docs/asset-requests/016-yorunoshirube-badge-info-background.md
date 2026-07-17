@@ -5,7 +5,7 @@
 - skin: `yorunoshirube`
 - slot: `badge.info.background`
 - target files (candidates): `generated/candidates/badge-info-background-candidate-{a,b,c}.png`
-- status: **candidate生成・human review待ち。final昇格はこのrequestの範囲外**
+- status: **closed(final昇格済み・候補A採用・2026-07-17)**
 
 ## Purpose
 
@@ -166,10 +166,64 @@ button/panelに見えない直線的な索引構造(Cute Popのリボンとは�
 
 ## Approval Status(承認状態)
 
-- [x] candidate(レビュー待ち) — 本requestの終了状態。3案(A: 夜の索引タブ /
-      B: グラシン紙の記録ラベル / C: 写真フィルムの見出し片)すべて自動検査
-      (寸法/透過/フリンジ/occupancy/nine-slice/24x20縮小proof)を通過。
-      machine recommendation: A(詳細は
-      `BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`参照)。human review pending。
-- [ ] approved(final昇格可)
+- [x] candidate — 3案(A: 夜の索引タブ / B: グラシン紙の記録ラベル /
+      C: 写真フィルムの見出し片)すべて自動検査(寸法/透過/フリンジ/
+      occupancy/nine-slice/24x20縮小proof)を通過。
+- [x] **approved(final昇格済み)** — Human decision: **A(夜の索引タブ)**。
+      `approvalSource: user-provided-human-decision` /
+      `approvalDate: 2026-07-17`。
 - [ ] rejected(修正指示: )
+
+## Human Decision(2026-07-17)
+
+```text
+yorunoshirube/badge.info.background: A
+concept: 夜の索引タブ
+approvalSource: user-provided-human-decision
+approvalDate: 2026-07-17
+```
+
+採用理由: 24x20の最小表示で輪郭が最も明確、occupancy width 84.17% /
+height 82.50%・center offset X/Yともに0、細長すぎず長いラベルでも
+nine-slice伸縮が安定、panel.paper.defaultの記録用紙と素材語彙が自然に
+つながる、buttonや大きなpanelには見えない、Cute Popのリボンタブと
+素材・形状が明確に異なる、中央content領域が完全に静かでDOM文字・iconを
+妨げない。
+
+## Promotion Record(2026-07-17)
+
+```text
+Candidate A: promoted
+  Final path: public/assets/ui/soro-pon/skins/yorunoshirube/generated/final/badge-info-background.png
+  Final hash: 2643f17472a1b9274f1ea5a88e5e650e3102feaf7ee5e7bc370cc71036736fe1
+  Promoted version: yorunoshirube skin.json v3 -> v4
+  Record: tools/asset-factory/soro-pon-ui/records/
+    yorunoshirube-badge-info-background-badge-info-background-candidate-a-attempt-019f6df2-0e33-7a63-93b1-3cf64f284cb3.json
+    (approval: promoted, skinVersionAtPromotion: 4)
+
+Candidate B: not-selected
+  Reason: 候補Aの方が24x20最小表示で輪郭が明確で、幅occupancyにも余裕があり、
+    高頻度かつ可変幅のinfo badgeとして汎用性が高いため。Bの半透明グラシン紙質は
+    魅力的だが、width ratio 61.7%と狭く、長いラベルでは左右の伸縮部分が
+    相対的に大きくなりやすい。
+  raw/compare/prompt/record/archive: 保持
+    (tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-b/)
+
+Candidate C: not-selected
+  Reason: 候補Aの方が既存の記録用紙panelとの素材連続性と小型可読性で優位なため。
+    Cは記憶・記録の意味は強いが、暗い写真フィルム形状がwarningや状態ラベル寄りに
+    見える可能性があり、汎用info badgeとしてはAが適切。
+  raw/compare/prompt/record/archive: 保持
+    (tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-c/)
+
+Production evidence:
+  docs/asset-requests/evidence/batch-4-yorunoshirube-badge-info-final/
+
+Validation (pre-promotion re-check): ok=true, issues=[]
+Occupancy (re-measured, identical to original candidate measurement):
+  widthRatio 0.8417 / heightRatio 0.8250 / centerOffsetX 0 / centerOffsetY 0
+Minimum-size result: 24x20/32x20/48x24/72x28/120x40/長文幅すべてで
+  輪郭・黒インク縁・琥珀点が破綻なし(BLOCKED_BY_TECHNICAL_VALIDATION該当なし)
+
+Request status: closed
+```

@@ -5,23 +5,31 @@ Yorunoshirube Batch 4(装飾/effects監査 + badge.info.background候補)の
 できる状態を目指している。
 
 - 対象request: [016](016-yorunoshirube-badge-info-background.md)
-  (badge.info.background)
+  (badge.info.background、closed)
 - art direction addendum:
   [BATCH-4-YORUNOSHIRUBE-DECORATION-DIRECTION.md](BATCH-4-YORUNOSHIRUBE-DECORATION-DIRECTION.md)
-- 状態: **Batch 4 result: COMPLETE_EXCEPT_HUMAN_REVIEW(2026-07-17)**
-- **final昇格・manifest登録・skin version変更は実施していない**
-  (yorunoshirube skin.jsonは**version 3のまま**。Batch 3の8 final finalは無変更)
+- 状態: **Batch 4 result: COMPLETE(2026-07-17)**
+- **final昇格・manifest登録・skin version変更を実施済み**
+  (yorunoshirube skin.jsonは**version 4**。Batch 3の8 final + badge.info.background
+  final = 9slot全てfinal)
+- Human decision: **badge.info.background = A(夜の索引タブ)**
+  (`approvalSource: user-provided-human-decision`、`approvalDate: 2026-07-17`)
 - Cute Pop: **version 5 / final 9**(無変更)
-- Batch 4 promotion: **0**
-- Human review pending: **1 slot**(badge.info.background)
+- Yorunoshirube final昇格数: 8 → **9**(21 contract slots中9)
+- Official finals across skins: **18**(cute-pop 9 + yorunoshirube 9)
+- Batch 4 promotion: **1**
+- Human review pending: **0**
 - Blocked: **0**
 
 ## 何を見るか
 
 1. `pnpm dev` → `#/gallery` → Skinをヨルノシルベへ切り替え →
-   「Batch 4候補レビュー(request 016 / ヨルノシルベ badge.info.background)」
-   セクション(size proof 24x20〜120x40 + production-context preview)
-2. または静的証跡: `evidence/batch-4-yorunoshirube-badge-info-round1/*.png`
+   「CategoryChip / InkDivider / LanternGlow」セクションのBadge(info)が
+   final資産(badge-info-background.png、夜の索引タブ)で表示されることを確認
+   (Batch 4専用の候補レビューUIは昇格後に撤去済み)
+2. または静的証跡: `evidence/batch-4-yorunoshirube-badge-info-final/*.png`
+   (round 1候補比較証跡は `evidence/batch-4-yorunoshirube-badge-info-round1/*.png`
+   に保持)
 3. B/C装飾監査の根拠: `evidence/batch-4-yorunoshirube-decoration-audit/*.png`
 4. 判断基準はrequest 016のAcceptance Checklist、および下記の機械レビュー所見
 
@@ -195,22 +203,27 @@ Yorunoshirube final(特にpanel.paper.default候補A「記録用紙」)と素材
 直接連続する。ただしB/Cも技術的には全項目pass、意匠面での優劣は人間判断に
 委ねる。
 
-**machine recommendation only — human review pending — not approved —
-not selected — not final。**
+**Human decision(2026-07-17): A(夜の索引タブ)を採用**。machine
+recommendationと一致。`approvalSource: user-provided-human-decision`。
+候補B/Cは`not-selected`(理由をrecordへ記録済み。archive/raw/compare/
+prompt/recordは削除せず保持)。**final昇格済み。**
 
-## 4. Runtime Preview
+## 4. Runtime Preview(promotion後・production final)
 
 ```
-Gallery route: #/gallery → Batch 4候補レビューセクション(ヨルノシルベ選択時のみ)
-Badge consumers確認画面: DeckEditorScreen行/DeckDetailScreen/CollectionScreen/
-  DeckListScreen相当のGallery内fixture(production-context preview)
-Warning comparison: 候補info badgeと実warning badgeを並列表示、識別可能性確認済み
-Screens: Gallery(review UI) / DeckList / DeckDetail / Collection(実画面回帰確認)
-Viewports: 1366x768(DPR2)
-Preview isolation: candidateはproduction manifest未登録。Badge.tsxの通常解決
-  経路では読み込まれない(Gallery専用style注入)。Cute Pop選択時は候補画像・
-  background-imageともに一切参照されないことをDOM検査で確認済み
-Skin switching: リロード後もヨルノシルベ選択が永続、production画面へ
+Gallery route: #/gallery → CategoryChip/InkDivider/LanternGlowセクションの
+  標準Badge component(review UIは撤去済み、production final適用)
+Badge consumers確認画面: DeckListScreen(遊べる) / DeckDetailScreen(遊べる) /
+  DeckEditorScreen(ValidationIssueList、INFO/WARN複数バッジ) /
+  CollectionScreen(記憶コイン/称号) / Gallery
+Warning comparison: DeckEditorのValidationIssueListでINFO/WARNバッジが
+  並んで表示され、色・prefix文言の両方で区別可能なことを確認済み
+Screens: Gallery / DeckList / DeckDetail / DeckEditor / Collection
+Viewports: 844x390 / 852x393 / 932x430 / 1024x600 / 1366x768(主にDPR2)
+Versioned URL: 全9 Yorunoshirube final資産(badge.info.backgroundを含む)が
+  ?v=4で200解決。candidateパス(badge-info-background-candidate-*.png)への
+  requestは0件
+Skin switching: リロード後もヨルノシルベv4が維持され、production画面へ
   candidateが漏洩しないことを確認
 Cute Pop regression: version 5 / final 9のまま、無変更を確認
 ```
@@ -223,11 +236,17 @@ Request: 016-yorunoshirube-badge-info-background.md
 B/C audit: evidence/batch-4-yorunoshirube-decoration-audit/
   (badge-warning-current.png / table-overlay-ink-current.png /
   table-overlay-light-current.png / panel-emphasis-current.png)
-Badge candidate: evidence/batch-4-yorunoshirube-badge-info-round1/
+Badge candidate round 1(比較用、保持): evidence/batch-4-yorunoshirube-badge-info-round1/
   (gallery-overview.png / candidate-{a,b,c}-small-sizes.png /
   deck-editor-context.png / deck-detail-context.png /
   collection-context.png / warning-comparison.png /
   cutepop-regression.png / skin-switch.png)
+Badge production final: evidence/batch-4-yorunoshirube-badge-info-final/
+  (badge-info-24x20.png / badge-info-deck-list.png / badge-info-deck-detail.png /
+  badge-info-deck-editor.png / badge-info-validation-list.png /
+  badge-info-collection.png / badge-info-gallery-production.png /
+  badge-info-warning-comparison.png / skin-switch-yoru-v4-cutepop-v5.png /
+  cutepop-v5-regression.png / network-v4-assets.json)
 ```
 
 ## 6. Rejection Criteria(参考・machine reject段階では未発動)
@@ -250,34 +269,36 @@ nine-slice seam
 
 今回生成したA/B/C 3案はいずれも該当なし(1回の生成で全項目pass)。
 
-## 7. Human Decision Form
+## 7. Human Decision(記録済み)
 
 ```
-badge.info.background: [A / B / C / REJECT]
+badge.info.background: A
 
-Review note:
+Review note: 24x20最小表示の輪郭明瞭さ、occupancy余裕、
+  panel.paper.defaultとの素材連続性を理由に採用。machine recommendationと一致。
 ```
 
 B/C分類の4slot(badge.warning.background / table.overlay.ink /
 table.overlay.light / panel.paper.emphasis)には人間candidate選択欄を
-設けない(画像候補ではなく、CSS-token/shared overlayのまま維持する
-audit結果のため)。
+設けなかった(画像候補ではなく、CSS-token/shared overlayのまま維持する
+audit結果のため)。この方針は今回のpromotionでも変更していない。
 
-## 8. Promotion Procedure(承認後)
+## 8. Promotion Procedure(実施済み・2026-07-17)
 
-1. 選択されたcandidateを`generated/final/badge-info-background.png`へ配置
-2. `yorunoshirube/skin.json`へ`badge.info.background`を登録
+1. ✅ 選択されたcandidate Aを`generated/final/badge-info-background.png`へ配置
+   (final hash `2643f174...`、candidate hashと完全一致)
+2. ✅ `yorunoshirube/skin.json`へ`badge.info.background`を登録
    (renderMode nine-slice, intrinsicSize 240x80, pixelDensity 2, nineSlice
    16, nineSliceRender 8, contentSafeArea 8, minRenderSize 24x20, transparent)
-3. skin version bump(v3 → v4)
-4. `Batch4YorunoshirubeBadgeInfoReview.tsx`とComponentGalleryへの配線を削除
-5. production consumer(Collection/DeckEditor/DeckDetail/DeckList/
-   ValidationIssueList/AppRoot)で実画面検証・5 viewport証跡取得
-6. visual regression実行・baseline更新(意図差分のみ)・全検証コマンド実行
-7. docs同期(request 016 / 本Approval Pack / roadmap / workflow / CLAUDE.md)
-8. commit・push・CI success確認
+3. ✅ skin version bump(v3 → v4)
+4. ✅ `Batch4YorunoshirubeBadgeInfoReview.tsx`とComponentGalleryへの配線を削除
+5. ✅ production consumer(DeckList/DeckDetail/DeckEditor/Collection/Gallery)
+   で実画面検証・5 viewport証跡取得
+6. ✅ visual regression実行・baseline更新(意図差分2件のみ)・全検証コマンド実行
+7. ✅ docs同期(request 016 / 本Approval Pack / roadmap / workflow / CLAUDE.md)
+8. ✅ commit・push・CI success確認
 
-## REJECT Procedure(却下時)
+## REJECT Procedure(参考・今回は未使用)
 
 1. 却下理由をrequest 016 Approval Statusへ記録
 2. 3案とも却下の場合、新たな方向性で再候補生成(このApproval Packを

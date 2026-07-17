@@ -13,7 +13,7 @@ Skin foundation hardening H1-H11: complete
 All P0/P1/P2 gates: passed
 Image production pipeline: 稼働中・実証済み(request 007 closed)
 Official skins: yorunoshirube / cute-pop
-  (cute-pop final資産9件・v5 / yorunoshirube final資産8件・v3)
+  (cute-pop final資産9件・v5 / yorunoshirube final資産9件・v4)
 Current phase: 公式アセット生産(candidates -> 人のレビュー -> final)。
   正本ロードマップ: docs/ASSET-PRODUCTION-ROADMAP.md
   (slot分類・バッチ順・次タスク)。着手前にdocs/ASSET-PIPELINE.md、
@@ -50,10 +50,9 @@ Batch 3(request 012-015: ヨルノシルベ中核8slot)は完了(2026-07-16、
   機械コンテンツレビューにより生成時点で3候補(table.background Bの和風建築、
   panel.result.frame Cの黒金高級UI風装飾、tile.back.base Cの
   Cute Popキルト柄類似)を却下・再生成済み。
-  Official finals across skins: 17(cute-pop 9 + yorunoshirube 8)。
-Batch 4(request 016: ヨルノシルベ badge.info.background)は
-  human review待ちで完了(2026-07-17、COMPLETE_EXCEPT_HUMAN_REVIEW)。
-  最初に装飾/effects対象5slot(badge.info.background/
+  Official finals across skins(Batch 3時点): 17(cute-pop 9 + yorunoshirube 8)。
+Batch 4(request 016: ヨルノシルベ badge.info.background)は完了
+  (2026-07-17、COMPLETE)。最初に装飾/effects対象5slot(badge.info.background/
   badge.warning.background/table.overlay.ink/table.overlay.light/
   panel.paper.emphasis)を実画面再監査し、badge.info.backgroundのみ
   A-class(Cute Pop parity gap)と確定。残り4slotはCSS-token/shared
@@ -62,12 +61,18 @@ Batch 4(request 016: ヨルノシルベ badge.info.background)は
   変更なし。badge.info.background候補3案(A:夜の索引タブ/B:グラシン紙の
   記録ラベル/C:写真フィルムの見出し片)を生成・自動検査(寸法/透過/
   フリンジ/badge専用occupancy閾値/24x20縮小proof)全て通過。
-  machine recommendation: A。promotion 0件、yorunoshirube v3・
-  final8件のまま。docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
+  human decision: A(夜の索引タブ、approvalSource:
+  user-provided-human-decision、2026-07-17)。候補Aをfinal昇格、
+  B/Cはnot-selectedとして理由記録・archive保持。yorunoshirube
+  skin.json v3→v4をatomic publish、全9slotが?v=4で解決。production
+  consumer(DeckList/DeckDetail/DeckEditor/Collection/Gallery)実画面検証・
+  一時レビューUI撤去済み。docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
   参照。
-  次の固定タスク(未着手、badge.info.background承認後): Batch 5
-  (full-screen integration pass) —
-  docs/ASSET-PRODUCTION-ROADMAP.md参照
+  **現在の状態: cute-pop final9件・v5 / yorunoshirube final9件・v4 /
+  Official finals across skins: 18。両スキンとも9 official finals。**
+  次の固定タスク(未着手): Batch 5(full-screen integration / manual QA
+  pass) — 新規asset生成が目的ではなく、両スキン・全画面・5サイズの
+  release QAゲート。docs/ASSET-PRODUCTION-ROADMAP.md参照
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。

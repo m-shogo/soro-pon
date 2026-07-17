@@ -30,13 +30,14 @@ Cute Pop final assets: 9 (button.secondary.background, panel.paper.default,
   button.primary.background, table.background, panel.modal.background,
   panel.result.frame) — version 5 (R1 closed 2026-07-16, Batch 2 closed
   2026-07-16)
-Yorunoshirube final assets: 8 — all Batch 3 core slots (table.background,
+Yorunoshirube final assets: 9 — all 8 Batch 3 core slots (table.background,
   panel.paper.default, panel.modal.background, panel.result.frame,
   button.primary.background, button.secondary.background, tile.face.base,
-  tile.back.base) — version 3 (Batch 3 fully closed 2026-07-16, including
-  technical remediation of the 2 slots initially blocked). A nine-slice
-  content-occupancy validator was added to `validate_candidate.py` after
-  panel.paper.default/panel.result.frame's first-round candidates were
+  tile.back.base) plus badge.info.background (Batch 4) — version 4
+  (Batch 3 fully closed 2026-07-16, including technical remediation of the
+  2 slots initially blocked; Batch 4 badge promotion closed 2026-07-17). A
+  nine-slice content-occupancy validator was added to `validate_candidate.py`
+  after panel.paper.default/panel.result.frame's first-round candidates were
   found to occupy only 43-48% of canvas width (vs. 92-96% on healthy
   candidates), producing a shrunken-card artifact under real nine-slice
   fill; both were regenerated with the same approved concept/material but
@@ -52,11 +53,13 @@ Batch 4 (2026-07-17): decoration/effects classification re-audited for all
   table.overlay.light, panel.paper.emphasis) stay B/C — real-screen
   evidence showed the existing CSS-token/shared-overlay implementation is
   sufficient, no change made. badge.info.background: 3 candidates
-  generated (request 016), machine-validated, awaiting human review —
-  not promoted, yorunoshirube stays at v3/8 finals
+  generated (request 016), human approved candidate A ("夜の索引タブ",
+  approvalSource: user-provided-human-decision), promoted to final,
+  yorunoshirube published at v4 with all 9 slots final. Both skins now
+  have 9 official finals each (18 total)
 Playwright visual regression: tests/visual/skin-screens.spec.ts (30 screenshot
   cases: 3 screens x 2 skins x 5 sizes) + tests/visual/skinAssetReady.spec.ts
-  (3 non-screenshot assertions) = 33 total test cases
+  (4 non-screenshot assertions) = 34 total test cases
 ```
 
 ## Slot classification table
@@ -92,7 +95,7 @@ Python-SDF / CSS-token / shared overlay / existing final / defer.
 | tile.face.tsumoAvailable | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Same as tile.face.selected (ADR-015) |
 | tile.back.base | `TileCard.tsx` (`slotFor`) -> same consumers | A | A | Codex CLI | Highest | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Tile back is visible for every opponent tile and the discard/draw pile — now final on both skins |
 | badge.warning.background | `Badge.tsx` -> DeckEditor/DeckDetail/Collection/DeckList/AppRoot, Gallery | B | B | CSS-token | Low | placeholder (both); audited sufficient (Batch 4, 2026-07-17, contrast 7.36:1) | Warning legibility (contrast, icon, text) matters more than illustrated art; a token-driven badge surface is sufficient and lower-risk for a state that must stay readable |
-| badge.info.background | `Badge.tsx` -> same consumers | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | Medium (yoru) | final v3 (cute-pop, request 007) / candidate, human review pending (yoru, request 016, Batch 4) | Cute Pop done. Yorunoshirube: 3 candidates generated and machine-validated (Batch 4), promotion pending human approval |
+| badge.info.background | `Badge.tsx` -> same consumers | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | Medium (yoru) | final v3 (cute-pop, request 007) / final, promoted v4 / current skin v4 (yoru, request 016, Batch 4) | Cute Pop done. Yorunoshirube done (Batch 4, human-approved candidate A "夜の索引タブ", closed 2026-07-17) |
 | effect.result.burst | **no component reference found in src/** | D | D | defer | None | placeholder (both), unwired | Dead slot — no consumer exists. Re-evaluate only after `ResultScreen` implements a celebratory-burst render call for this slot; generating art for an unconsumed slot would be wasted production |
 | effect.wildcard.glow | **no component reference found in src/** | D | D | defer (shared overlay when implemented) | None | placeholder (both), unwired | Dead slot — no consumer exists. When a wildcard indicator UI is implemented, recommend a CSS/shared-overlay glow (class C) rather than a standalone image, for the same legibility/economy reasons as the tile-state slots. Re-evaluate when wildcard UI is implemented |
 | effect.score.pop | **no component reference found in src/** | D | D | defer | None | placeholder (both), unwired | Dead slot — no consumer exists. Re-evaluate only after a score-reveal animation feature consumes this slot |
@@ -373,7 +376,7 @@ full promotion and remediation record.
 ### Batch 4 — Yorunoshirube decoration/effects
 
 ```text
-Status: COMPLETE_EXCEPT_HUMAN_REVIEW (2026-07-17)
+Status: COMPLETE (2026-07-17)
 Consumer/classification re-audit: complete for all 5 candidate slots
   (badge.info.background / badge.warning.background / table.overlay.ink /
   table.overlay.light / panel.paper.emphasis) — see
@@ -388,22 +391,26 @@ Target skin: yorunoshirube
 Screens used: CollectionScreen, DeckEditorScreen, DeckDetailScreen,
   DeckListScreen, ValidationIssueList, AppRoot, Gallery
 Generation method: Codex CLI image generation
-Asset-request ID: 016 (docs/asset-requests/016-yorunoshirube-badge-info-background.md)
+Asset-request ID: 016 (docs/asset-requests/016-yorunoshirube-badge-info-background.md, closed)
 Candidates generated: 3 (A: atlas index tab / B: glassine record label /
   C: photographic-film heading strip), all passed automated validation
   including a badge-specific content-occupancy threshold (looser than
   the panel-family threshold — see request 016)
+Human decision: A ("夜の索引タブ"), approvalSource: user-provided-human-decision,
+  approvalDate: 2026-07-17. B/C recorded not-selected with reasons (archives kept)
 Human review checklist: 24x20 minimum-size silhouette integrity; no
   resemblance to Cute Pop's ribbon tab; not a button/panel shape; nine-slice
-  safety
-Final-promotion criteria: same as batch 1
-Manifest/version update: not yet done — candidates are not registered in
-  skin.json; yorunoshirube stays at v3 until a candidate is approved
-Visual regression targets: Gallery review-section screenshots only (this
-  round); full screen matrix once promoted
-Rollback conditions: same as batch 1
-Human review pending: 1 slot (badge.info.background — pick A/B/C or REJECT)
-Gate to next batch: Two Official Skins Demo Ready (Tier 2, see below)
+  safety — all confirmed via pre-promotion re-validation, no drift
+Final-promotion criteria: same as batch 1 — met
+Manifest/version update: done — badge.info.background registered final in
+  yorunoshirube/skin.json, atomic publish v3 -> v4, all 9 slots resolve at ?v=4
+Visual regression targets: Gallery section removal + badge consumer screens —
+  2 baseline diffs inspected and updated, 34/34 final passed
+Rollback conditions: same as batch 1 — not triggered
+Human review pending: 0
+Gate to next batch: Two Official Skins Demo Ready (Tier 2, see below) — asset
+  production for both skins' core+parity slots is now complete; Batch 5 is
+  whole-product QA, not more generation
 ```
 
 ### Batch 5 — Full-screen integration pass
@@ -485,33 +492,38 @@ Cute Pop final assets:              9 of 21 contract slots (18 wired; R1 closed 
                                        face/back gap; Batch 2 closed table.background/
                                        panel.modal.background/panel.result.frame — all 6 A-class
                                        cute-pop slots targeted by Batch 1+2 are now final)
-Yorunoshirube final assets:         8 of 21 contract slots (table.background, panel.paper.default,
+Yorunoshirube final assets:         9 of 21 contract slots (table.background, panel.paper.default,
                                        panel.modal.background, panel.result.frame,
                                        button.primary.background, button.secondary.background,
-                                       tile.face.base, tile.back.base — all Batch 3 core slots,
-                                       fully closed 2026-07-16 including technical remediation of
-                                       the 2 initially-blocked candidates)
-Official finals across skins:       17 (cute-pop 9 + yorunoshirube 8)
-Public demo overall (Tier 1+2):     ~74-78%  (Tier 1's asset-production scope is complete on cute-pop
-                                                as of Batch 2's close; yorunoshirube's Batch 3 core is
-                                                now fully complete (8/8), closing the largest remaining
-                                                gap toward Tier 2 ("both skins ... world-consistent").
-                                                Tier 2 is still not fully met — Batch 4
-                                                (yorunoshirube decoration/effects: badge.info.background
-                                                and the B/C/D-class slots) has not started, and full
-                                                manual QA across both skins is untouched)
-Release Candidate overall (Tier 3): ~42-52%  (depends on Tier 1/2 completion first, plus untouched Gate 5/6 QA items)
+                                       tile.face.base, tile.back.base — Batch 3 core, fully closed
+                                       2026-07-16 including technical remediation of the 2
+                                       initially-blocked candidates — plus badge.info.background,
+                                       Batch 4, closed 2026-07-17)
+Official finals across skins:       18 (cute-pop 9 + yorunoshirube 9)
+Public demo overall (Tier 1+2):     ~78-82%  (Tier 1's asset-production scope is complete on cute-pop
+                                                as of Batch 2's close; yorunoshirube's Batch 3 core
+                                                (8/8) plus Batch 4's badge.info.background parity are
+                                                now both complete, so both skins have 9 official finals
+                                                each and the world-consistency asset gap toward Tier 2
+                                                is closed. Tier 2 is still not fully met — Batch 5's
+                                                full manual QA across both skins, all screens, and all
+                                                5 review sizes has not started, and B/C/D-class slots
+                                                remain deterministic/deferred by design, not images)
+Release Candidate overall (Tier 3): ~45-55%  (depends on Tier 1/2 completion first, plus untouched Gate 5/6 QA items)
 ```
 
 Note: the reference figures suggested when this roadmap was scoped
 (~65-70% public demo, ~50-60% Release Candidate) assumed a smaller remaining
 asset gap than what this audit found. Batch 1 (primary CTA + tile face/back)
 and Batch 2 (table/modal/result), both closed 2026-07-16, complete Tier 1's
-asset-production scope on cute-pop. Public demo readiness is not being
-inflated to 100%: Tier 2 (yorunoshirube parity) has not started, and Tier
-1/2's remaining B/C/D-class slots (fallback/overlay/deferred by design) are
-unaffected by this batch. Percentages above are this audit's estimate, not
-the original suggested figures.
+asset-production scope on cute-pop; Batch 3 (yorunoshirube core, closed
+2026-07-16) and Batch 4 (yorunoshirube badge.info.background parity, closed
+2026-07-17) complete the equivalent scope on yorunoshirube. Public demo
+readiness is not being inflated to 100%: Batch 5's full manual QA (both
+skins, all screens, all 5 review sizes, Gate 4/5) has not started, and
+"asset production complete" is not the same claim as "release QA complete".
+Percentages above are this audit's estimate, not the original suggested
+figures.
 
 ## Timeline estimates (non-binding)
 
@@ -575,28 +587,45 @@ review), and the full technical remediation timeline:
 
 **All 8 Batch 3 core (A-class) yorunoshirube slots are now final.**
 Yorunoshirube's Tier-1-equivalent asset-production scope for its core
-slots is closed; the remaining 13 of 21 contract slots are B/C/D-class
-(fallback/shared-overlay/deferred by design) or badge.info.background
-(A-class but not part of Batch 3's core 8, target of Batch 4).
+slots is closed; the remaining 13 of 21 contract slots (at the time) were
+B/C/D-class (fallback/shared-overlay/deferred by design) or
+badge.info.background (A-class but not part of Batch 3's core 8, target of
+Batch 4).
 
-**Batch 4 is complete except human review** (2026-07-17): the
-classification audit for all 5 candidate decoration slots
-(badge.info.background / badge.warning.background / table.overlay.ink /
-table.overlay.light / panel.paper.emphasis) is done. Only
-badge.info.background stayed A-class; the other 4 were confirmed
+**Batch 4 is complete** (2026-07-17): the classification audit for all 5
+candidate decoration slots (badge.info.background / badge.warning.background
+/ table.overlay.ink / table.overlay.light / panel.paper.emphasis) is done.
+Only badge.info.background stayed A-class; the other 4 were confirmed
 sufficient as CSS-token/shared-overlay with real-screen evidence and no
 change was made. 3 candidates for badge.info.background (request 016)
 passed all automated validation (dimension, transparency, fringe, and a
 badge-specific content-occupancy threshold distinct from the panel-family
-threshold) and are shown in the Gallery review section — see
-`docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`. Yorunoshirube
-stays at v3 (8 finals); no candidate has been promoted. Human review
-pending: 1 slot.
+threshold). Human review approved candidate A ("夜の索引タブ",
+`approvalSource: user-provided-human-decision`, 2026-07-17); candidates B
+and C are recorded not-selected with reasons (archives kept, not deleted).
+Candidate A was promoted to final, registered in yorunoshirube/skin.json,
+and published atomically (version 3 -> 4) — all 9 Yorunoshirube slots now
+resolve at `?v=4`. Production consumers (DeckList, DeckDetail, DeckEditor's
+ValidationIssueList, Collection, Gallery) verified across 5 viewports; the
+temporary Gallery review UI (`Batch4YorunoshirubeBadgeInfoReview.tsx`) was
+removed. Full record: `docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`.
 
-**Fixed next task: Batch 5 — Full-screen integration pass**, entry
-condition: badge.info.background human approval and promotion first (pick
-one of A/B/C or REJECT via the Approval Pack), then explicit instruction
-to begin Batch 5. Stop condition (same as prior batches): stop before
-starting new generation work without instruction.
+**Both skins now have 9 official finals each (18 total).** Yorunoshirube's
+core-plus-parity asset-production scope is closed; the remaining 12 of 21
+contract slots are B/C/D-class (fallback/shared-overlay/deferred by
+design, audited sufficient where applicable — see classification table
+above), not gaps.
+
+**Fixed next task: Batch 5 — Full-screen integration / manual QA pass.**
+This is not more unconditional asset generation — both skins now have
+their required core and parity assets. The remaining gate is whole-product
+visual and interaction QA (all screens x both skins x 5 review sizes,
+`docs/MANUAL-QA.md`, `docs/RELEASE-DEMO-GATES.md` Gate 4/5). Entry
+condition: explicit instruction to begin Batch 5. Stop condition: all
+screens x both skins x five review sizes manually verified, Gate 4/5
+results recorded, required fixes completed, visual regression and CI
+green, and release-readiness honestly decided (asset-production-complete
+is not the same claim as release-QA-complete — "public demo visually
+ready" stays false until Batch 5 finishes).
 
 Cross-referenced from docs/IMPLEMENTATION-WORKFLOW.md.

@@ -235,25 +235,32 @@ Full record, including 3 machine content-review rejections during
 original generation (wafu-architecture, black-gold-luxury-UI, a
 Cute-Pop-quilt-resembling pattern — all regenerated before review) and the
 full remediation timeline: `docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`.
-Yorunoshirube now has 8 of 21 contract slots final (all Batch 3 core
-slots).
+Yorunoshirube had 8 of 21 contract slots final at that point (all Batch 3
+core slots).
 
-Batch 4 (request 016: yorunoshirube badge.info.background) is **complete
-except human review** (2026-07-17). The decoration/effects classification
-was re-audited on real screens for all 5 candidate slots first:
-badge.info.background stayed A-class (Cute Pop parity gap); the other 4
-(badge.warning.background, table.overlay.ink, table.overlay.light,
-panel.paper.emphasis) were confirmed sufficient as CSS-token/shared
-overlay with no change needed (contrast, opacity, and focus-collision
-checks all passed — see `docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`).
-3 badge.info.background candidates (atlas index tab / glassine record
-label / photographic-film heading strip) were generated and passed all
-automated validation, including a badge-specific content-occupancy
-threshold distinct from the panel-family threshold added during Batch 3
-remediation. None promoted — yorunoshirube stays at v3/8 finals; human
-review pending on 1 slot. Next fixed task: Batch 5 (full-screen
-integration pass), entry condition is badge.info.background approval and
-promotion first.
+Batch 4 (request 016: yorunoshirube badge.info.background) is **complete**
+(2026-07-17). The decoration/effects classification was re-audited on real
+screens for all 5 candidate slots first: badge.info.background stayed
+A-class (Cute Pop parity gap); the other 4 (badge.warning.background,
+table.overlay.ink, table.overlay.light, panel.paper.emphasis) were
+confirmed sufficient as CSS-token/shared overlay with no change needed
+(contrast, opacity, and focus-collision checks all passed). 3
+badge.info.background candidates (atlas index tab / glassine record label
+/ photographic-film heading strip) were generated and passed all automated
+validation, including a badge-specific content-occupancy threshold
+distinct from the panel-family threshold added during Batch 3 remediation.
+Human review approved candidate A ("夜の索引タブ",
+`approvalSource: user-provided-human-decision`, 2026-07-17); B and C are
+recorded not-selected with reasons (archives kept). Candidate A was
+promoted to final and yorunoshirube/skin.json published atomically
+(version 3 -> 4) — all 9 slots (the 8 Batch 3 core plus badge.info.background)
+now resolve at `?v=4`. Production consumers verified across 5 viewports;
+the temporary Gallery review UI was removed. Full record:
+`docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`. Both skins
+now have 9 official finals each (18 total). Next fixed task: Batch 5
+(full-screen integration / manual QA pass) — not more generation, both
+skins' core and parity assets are complete; the remaining gate is
+whole-product visual/interaction QA.
 
 ## Verification Commands
 
@@ -337,14 +344,15 @@ extendedRoleSpan remains pending and blocked by E7008 (non-MVP, unchanged)
 skin hardening H1-H11: complete (see above) — no longer pending
 official skin final images: 9 of 21 contract slots done on cute-pop
   (Batch 1+2 closed 2026-07-16, all 6 A-class cute-pop slots final);
-  8 of 21 done on yorunoshirube (Batch 3 fully closed 2026-07-16 — all 8
-  core slots final, including panel.paper.default/panel.result.frame after
-  a same-day technical remediation of an initial shrunken-card nine-slice
-  defect; see docs/IMAGE-ASSET-WORKFLOW.md for the new content-occupancy
-  validator this added). Official finals across skins: 17 (unchanged by
-  Batch 4 — badge.info.background candidates are machine-validated but not
-  promoted; human review pending)
-  (next: Batch 5, full-screen integration pass, after badge.info.background approval)
+  9 of 21 done on yorunoshirube (Batch 3's 8 core slots, closed 2026-07-16
+  including panel.paper.default/panel.result.frame's same-day technical
+  remediation of an initial shrunken-card nine-slice defect — see
+  docs/IMAGE-ASSET-WORKFLOW.md for the content-occupancy validator this
+  added — plus badge.info.background, Batch 4, closed 2026-07-17).
+  Official finals across skins: 18 (both skins now have 9 each)
+  (next: Batch 5, full-screen integration/manual QA pass — asset
+  production for both skins' core+parity slots is complete; this is a
+  whole-product QA gate, not more generation)
 candidate/final validation: implemented and proven (request 007 closed);
   ongoing per-batch use is expected, not "unfinished"
 match restore/replay/resend feature: non-MVP; H11 idempotency groundwork
