@@ -16,7 +16,6 @@ import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
 import { SkinSelector } from '../components/SkinSelector';
 import { NineSliceProof } from './NineSliceProof';
-import { Batch4YorunoshirubeBadgeInfoReview } from './Batch4YorunoshirubeBadgeInfoReview';
 import './gallery.css';
 
 const SAMPLE_BREAKDOWN: ResultBreakdown = {
@@ -64,18 +63,14 @@ export function ComponentGallery() {
           table.background/panel.paper.default/panel.modal.background/
           panel.result.frame/button.primary.background/
           button.secondary.background/tile.face.base/tile.back.base
-          候補C/A/B/B/A/B/A/A)はfinal昇格・skin.json登録済み。下の
+          候補C/A/B/B/A/B/A/A)、request 016(ヨルノシルベ badge.info.background
+          候補A)はfinal昇格・skin.json登録済み。下の
           Button/PaperPanel/Badge/TileCard variantsとGameTableLayout実画面が
           両スキン選択中に実際に適用された状態を示す(専用レビューセクションは撤去)。 */}
 
       <section className="sp-gallery__section">
         <h2>Nine-slice実証(P0-5 / candidatesレビュー)</h2>
         <NineSliceProof />
-      </section>
-
-      <section className="sp-gallery__section">
-        <h2>Batch 4候補レビュー(request 016 / ヨルノシルベ badge.info.background)</h2>
-        <Batch4YorunoshirubeBadgeInfoReview />
       </section>
 
       <section className="sp-gallery__section">
