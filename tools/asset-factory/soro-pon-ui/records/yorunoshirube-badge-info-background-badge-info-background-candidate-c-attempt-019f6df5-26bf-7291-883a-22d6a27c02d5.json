@@ -1,0 +1,49 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "badge.info.background",
+  "assetRequest": "016-yorunoshirube-badge-info-background",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-c/attempt-019f6df5-26bf-7291-883a-22d6a27c02d5/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI badge background asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a small, front-facing, isolated, horizontal nine-slice badge background object -- a tiny photographic-film heading strip, the kind of small dark filmstrip fragment used as a caption label under an old photograph in a night memory journal -- viewed flat and centered on a solid chroma-key green background (#00ff00) with a narrow and even transparent extraction margin on all sides, no surrounding scene, no mockup, no screenshot, no interface chrome, no existing game UI copy. Design: a deep navy-black photographic-emulsion surface with subtle print-registration misalignment (a very faint double-edge ghosting along the border only), one tiny warm light point near a single end suggesting a lit frame, and no sprocket holes, no visible frame numbers. The center must stay quiet, dark, and calm -- faint emulsion grain only, no unique motif -- because dynamic text and an icon will be overlaid on top of it. This is not a button and not a large panel and not a ribbon: it is a small flat rectangular strip with straight sides, no ribbon tails, no deep side notches, no rounded pill shape, no sprocket-hole notches. This visual quality must come from real photographic-emulsion texture, print-registration ghosting, and fine grain -- it must not be reproducible as a simple CSS solid color, gradient, border, rounded rectangle, pseudo-element, noise overlay, dot pattern, stripe pattern, or box shadow. Nine-slice constraints: all unique detail (the light point, the registration ghosting) must remain inside the corner zones only; the horizontal middle bands (top and bottom edges) must be visually uniform along their full width; the vertical middle bands (left and right edges) must be visually uniform along their full height; the central content area must contain no unique motif; the silhouette must remain clearly recognizable as a small strip when rendered at a tiny size such as 24x20 pixels; avoid any deep side notches, sprocket holes, or thin protrusions that would collapse into noise at minimum size. Color palette: deep navy-black dominant, one small warm amber light point only, no other bright colors. No text, no letters, no numerals, no logo, no watermark, no known characters, no ribbon shape, no ticket shape, no green fringe at the edges. This is not a color-recoloring of any ribbon-tab or jelly-candy design; it is an entirely different flat dark filmstrip-label silhouette. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f6df5-26bf-7291-883a-22d6a27c02d5",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/badge-info-background/yoru-candidate-c-film-heading-strip.txt --output-name yoru-badge-info-c.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot badge.info.background --input tools/asset-factory/soro-pon-ui/raw-green/yoru-badge-info-c.png --request 016-yorunoshirube-badge-info-background --output-name badge-info-background-candidate-c.png --fit-width 240 --fit-height 80 --fit-margin-ratio 0.08 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 240 --expected-height 80 --min-padding 4 --min-content-width-ratio 0.40 --max-content-width-ratio 0.98 --min-content-height-ratio 0.30 --max-content-height-ratio 0.95 --max-content-center-offset-ratio 0.06 --prompt-file tools/asset-factory/soro-pon-ui/prompts/badge-info-background/yoru-candidate-c-film-heading-strip.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-c/attempt-019f6df5-26bf-7291-883a-22d6a27c02d5/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-c/attempt-019f6df5-26bf-7291-883a-22d6a27c02d5/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 240,
+    "height": 80
+  },
+  "contentHash": "6380e2265d0676a4d31c42a1e2db758f7e9f355eced09dff74a6c8c44f4382a7",
+  "attemptKey": "019f6df5-26bf-7291-883a-22d6a27c02d5",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/badge-info-background-candidate-c.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-17",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-17",
+  "validation": {
+    "ok": true,
+    "issues": [],
+    "contentBounds": {
+      "widthRatio": 0.8417,
+      "heightRatio": 0.7125,
+      "centerOffsetXRatio": 0.0,
+      "centerOffsetYRatio": 0.0063
+    }
+  },
+  "license": "original project asset generated via Codex CLI"
+}

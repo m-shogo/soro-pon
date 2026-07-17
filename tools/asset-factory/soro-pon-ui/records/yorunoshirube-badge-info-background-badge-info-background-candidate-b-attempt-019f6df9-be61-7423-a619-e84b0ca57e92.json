@@ -1,0 +1,49 @@
+{
+  "skinId": "yorunoshirube",
+  "slot": "badge.info.background",
+  "assetRequest": "016-yorunoshirube-badge-info-background",
+  "sourceFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-b/attempt-019f6df9-be61-7423-a619-e84b0ca57e92/raw.png",
+  "prompt": "Generate an image and save it as a PNG file. Use case: game-ui-asset. This is an original mobile-game UI badge background asset for a fictional skin called \"Yorunoshirube\" (an entirely original game setting, not based on any real commercial game, anime, or manga): a small, front-facing, isolated, horizontal nine-slice badge background object -- a tiny glassine-paper record label, the kind of small semi-transparent layered paper tag used to mark a page in a night travel journal -- viewed flat and centered on a solid chroma-key green background (#00ff00) with a narrow and even transparent extraction margin on all sides, no surrounding scene, no mockup, no screenshot, no interface chrome, no existing game UI copy. Design: semi-translucent glassine paper with a soft layered-paper edge (two thin sheets very slightly offset, suggesting depth without a heavy drop shadow), a sooty blue-grey tone, and one very small ink stamp mark tucked into a single corner as the only accent. The center must stay quiet, soft, and calm -- gentle paper-fiber texture only, no unique motif -- because dynamic text and an icon will be overlaid on top of it. This is not a button and not a large panel and not a ribbon: it is a small flat rectangular label with straight sides, no ribbon tails, no deep side notches, no rounded pill shape. This visual quality must come from real semi-translucent paper layering, soft fiber texture, and a hand-stamped ink mark -- it must not be reproducible as a simple CSS solid color, gradient, border, rounded rectangle, pseudo-element, noise overlay, dot pattern, stripe pattern, or box shadow. Nine-slice constraints: all unique detail (the ink stamp, the layered-edge offset) must remain inside the corner zones only; the horizontal middle bands (top and bottom edges) must be visually uniform along their full width; the vertical middle bands (left and right edges) must be visually uniform along their full height; the central content area must contain no unique motif; the silhouette must remain clearly recognizable as a small label when rendered at a tiny size such as 24x20 pixels; avoid any deep side notches or thin protrusions that would collapse into noise at minimum size. Color palette: sooty blue-grey for the translucent paper, deep ink-black for the small stamp mark only, no other colors, no bright gold or amber. No text, no letters, no numerals, no logo, no watermark, no known characters, no ribbon shape, no ticket shape, no green fringe at the edges. This is not a color-recoloring of any ribbon-tab or jelly-candy design; it is an entirely different flat translucent glassine-paper label silhouette. Generate this now and confirm the PNG file was saved with its dimensions.",
+  "tool": "codex-cli",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "seed": null,
+  "generationSessionId": "019f6df9-be61-7423-a619-e84b0ca57e92",
+  "generationCommand": "pnpm asset:image:generate --prompt-file tools/asset-factory/soro-pon-ui/prompts/badge-info-background/yoru-candidate-b-glassine-record-label.txt --output-name yoru-badge-info-b.png",
+  "processingCommand": "pnpm asset:image:prepare --skin yorunoshirube --slot badge.info.background --input tools/asset-factory/soro-pon-ui/raw-green/yoru-badge-info-b.png --request 016-yorunoshirube-badge-info-background --output-name badge-info-background-candidate-b.png --fit-width 240 --fit-height 80 --fit-margin-ratio 0.08 --background-color '#00ff00' --hard-threshold 0.12 --soft-threshold 0.35 --despill-strength 0.6 --expected-width 240 --expected-height 80 --min-padding 4 --min-content-width-ratio 0.40 --max-content-width-ratio 0.98 --min-content-height-ratio 0.30 --max-content-height-ratio 0.95 --max-content-center-offset-ratio 0.06 --prompt-file tools/asset-factory/soro-pon-ui/prompts/badge-info-background/yoru-candidate-b-glassine-record-label.txt",
+  "backgroundColor": "#00ff00",
+  "method": "codex-cli-chroma-key",
+  "processedFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-b/attempt-019f6df9-be61-7423-a619-e84b0ca57e92/candidate.png",
+  "compareFile": "tools/asset-factory/soro-pon-ui/archive/yorunoshirube/badge.info.background/candidate-b/attempt-019f6df9-be61-7423-a619-e84b0ca57e92/compare.png",
+  "processParams": {
+    "hardThreshold": 0.12,
+    "softThreshold": 0.35,
+    "despillStrength": 0.6,
+    "minPadding": 4
+  },
+  "dimensions": {
+    "width": 240,
+    "height": 80
+  },
+  "contentHash": "faac85ee8afe20760f1df6d2798065044c3e5100192860ca68b421edda61bb08",
+  "attemptKey": "019f6df9-be61-7423-a619-e84b0ca57e92",
+  "placedAt": "public/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/badge-info-background-candidate-b.png",
+  "promotedTo": null,
+  "generatedAt": "2026-07-17",
+  "approval": "candidate",
+  "rejectionReason": null,
+  "promotedAt": null,
+  "skinVersionAtPromotion": null,
+  "archivedAt": "2026-07-17",
+  "validation": {
+    "ok": true,
+    "issues": [],
+    "contentBounds": {
+      "widthRatio": 0.6167,
+      "heightRatio": 0.8375,
+      "centerOffsetXRatio": 0.0,
+      "centerOffsetYRatio": 0.0063
+    }
+  },
+  "license": "original project asset generated via Codex CLI"
+}
