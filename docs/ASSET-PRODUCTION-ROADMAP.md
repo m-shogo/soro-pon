@@ -46,6 +46,14 @@ Yorunoshirube final assets: 8 — all Batch 3 core slots (table.background,
 button.primary.background (the main CTA) is now final on both skins
   (cute-pop R1 candidate D "jelly candy CTA"; yorunoshirube Batch 3
   candidate A "lantern glass")
+Batch 4 (2026-07-17): decoration/effects classification re-audited for all
+  5 candidate slots. Only badge.info.background confirmed as an A-class
+  image gap; the other 4 (badge.warning.background, table.overlay.ink,
+  table.overlay.light, panel.paper.emphasis) stay B/C — real-screen
+  evidence showed the existing CSS-token/shared-overlay implementation is
+  sufficient, no change made. badge.info.background: 3 candidates
+  generated (request 016), machine-validated, awaiting human review —
+  not promoted, yorunoshirube stays at v3/8 finals
 Playwright visual regression: tests/visual/skin-screens.spec.ts (30 screenshot
   cases: 3 screens x 2 skins x 5 sizes) + tests/visual/skinAssetReady.spec.ts
   (3 non-screenshot assertions) = 33 total test cases
@@ -68,10 +76,10 @@ Python-SDF / CSS-token / shared overlay / existing final / defer.
 | Slot | Runtime usage | Cute Pop class | Yorunoshirube class | Generation method | Priority | Current status | Reason |
 |---|---|---|---|---|---|---|---|
 | table.background | `GameTableLayout` -> MatchScreen (cover) | A | A | Codex CLI | High | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Table atmosphere is core to both skins' identity; CSS gradient reads as unfinished for demo tier 1/2 |
-| table.overlay.ink | `GameTableLayout` -> MatchScreen (overlay, 0.5) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both) | Ink texture is yorunoshirube-specific lore (黒インク); cute-pop's bright/pop language has no ink motif. Re-eval cute-pop only if art direction adds a paper-ink accent |
-| table.overlay.light | `GameTableLayout` -> MatchScreen (overlay, 0.6) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both) | Lantern-light overlay is yorunoshirube lore (ランタン光); CSS radial-gradient is sufficient until batch 4 decoration pass. Re-eval cute-pop if a light/glow accent is added to its palette |
+| table.overlay.ink | `GameTableLayout` -> MatchScreen (overlay, 0.5) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both); audited sufficient (Batch 4, 2026-07-17) | Ink texture is yorunoshirube-specific lore (黒インク); cute-pop's bright/pop language has no ink motif. Re-eval cute-pop only if art direction adds a paper-ink accent |
+| table.overlay.light | `GameTableLayout` -> MatchScreen (overlay, 0.6) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both); audited sufficient (Batch 4, 2026-07-17) | Lantern-light overlay is yorunoshirube lore (ランタン光); CSS radial-gradient confirmed sufficient by the Batch 4 decoration audit. Re-eval cute-pop if a light/glow accent is added to its palette |
 | panel.paper.default | `PaperPanel` (default) -> most screens, Gallery | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | High (yoru) | final v3 (cute-pop) / final v3 (yoru) | Cute Pop already done (request 006). Yorunoshirube done (Batch 3 core, technical remediation closed 2026-07-16 — see BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md) |
-| panel.paper.emphasis | `PaperPanel` (selected variant) -> same consumers | C | C | shared overlay | Medium | placeholder (both) | This is a tint/emphasis variant of panel.paper.default, not a distinct surface. A shared highlight overlay avoids a second full nine-slice asset per skin |
+| panel.paper.emphasis | `PaperPanel` (selected variant) -> same consumers | C | C | shared overlay | Medium | placeholder (both); audited sufficient (Batch 4, 2026-07-17) | This is a tint/emphasis variant of panel.paper.default, not a distinct surface. A shared highlight overlay avoids a second full nine-slice asset per skin |
 | panel.modal.background | `Modal.tsx` -> `Dialog`, `AppRoot`, `TopScreen`, Gallery | A | A | Codex CLI | Medium-High | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | High-frequency surface (every dialog/modal); fallback token panel is functional but reads generic in a finished demo |
 | panel.result.frame | `ResultFrame.tsx` -> `ResultScreen` | A | A | Codex CLI | High (cute-pop) | final v5 (cute-pop) / final v3 (yoru) | Result screen visual completeness is an explicit tier-1 requirement — now final on both skins (Batch 3 core, technical remediation closed 2026-07-16) |
 | button.primary.background | `Button.tsx` -> nearly every screen (main CTA) | A | A | Codex CLI | Highest | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Primary CTA is explicitly required for tier 1 ("primary CTA... unified") — now final on both skins |
@@ -83,8 +91,8 @@ Python-SDF / CSS-token / shared overlay / existing final / defer.
 | tile.face.ronAvailable | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Same as tile.face.selected (ADR-015) |
 | tile.face.tsumoAvailable | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Same as tile.face.selected (ADR-015) |
 | tile.back.base | `TileCard.tsx` (`slotFor`) -> same consumers | A | A | Codex CLI | Highest | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Tile back is visible for every opponent tile and the discard/draw pile — now final on both skins |
-| badge.warning.background | `Badge.tsx` -> DeckEditor/DeckDetail/Collection/DeckList/AppRoot, Gallery | B | B | CSS-token | Low | placeholder (both) | Warning legibility (contrast, icon, text) matters more than illustrated art; a token-driven badge surface is sufficient and lower-risk for a state that must stay readable |
-| badge.info.background | `Badge.tsx` -> same consumers | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | Medium (yoru) | final v3 (cute-pop, request 007) / placeholder (yoru) | Cute Pop done. For visual parity between skins, yorunoshirube should eventually get an equivalent, but it is not tier-1 blocking (batch 4) |
+| badge.warning.background | `Badge.tsx` -> DeckEditor/DeckDetail/Collection/DeckList/AppRoot, Gallery | B | B | CSS-token | Low | placeholder (both); audited sufficient (Batch 4, 2026-07-17, contrast 7.36:1) | Warning legibility (contrast, icon, text) matters more than illustrated art; a token-driven badge surface is sufficient and lower-risk for a state that must stay readable |
+| badge.info.background | `Badge.tsx` -> same consumers | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | Medium (yoru) | final v3 (cute-pop, request 007) / candidate, human review pending (yoru, request 016, Batch 4) | Cute Pop done. Yorunoshirube: 3 candidates generated and machine-validated (Batch 4), promotion pending human approval |
 | effect.result.burst | **no component reference found in src/** | D | D | defer | None | placeholder (both), unwired | Dead slot — no consumer exists. Re-evaluate only after `ResultScreen` implements a celebratory-burst render call for this slot; generating art for an unconsumed slot would be wasted production |
 | effect.wildcard.glow | **no component reference found in src/** | D | D | defer (shared overlay when implemented) | None | placeholder (both), unwired | Dead slot — no consumer exists. When a wildcard indicator UI is implemented, recommend a CSS/shared-overlay glow (class C) rather than a standalone image, for the same legibility/economy reasons as the tile-state slots. Re-evaluate when wildcard UI is implemented |
 | effect.score.pop | **no component reference found in src/** | D | D | defer | None | placeholder (both), unwired | Dead slot — no consumer exists. Re-evaluate only after a score-reveal animation feature consumes this slot |
@@ -365,22 +373,36 @@ full promotion and remediation record.
 ### Batch 4 — Yorunoshirube decoration/effects
 
 ```text
-Target slots: badge.info.background, badge.warning.background (if upgraded
-  from B), table.overlay.ink, table.overlay.light (if upgraded from B),
-  panel.paper.emphasis (if the C/overlay refactor is not adopted)
+Status: COMPLETE_EXCEPT_HUMAN_REVIEW (2026-07-17)
+Consumer/classification re-audit: complete for all 5 candidate slots
+  (badge.info.background / badge.warning.background / table.overlay.ink /
+  table.overlay.light / panel.paper.emphasis) — see
+  docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
+Audit result: only badge.info.background confirmed as an A-class image
+  gap (Cute Pop parity). The other 4 stayed B/C (CSS-token / shared
+  overlay) — real-screen readability/hierarchy checks passed with no
+  change needed, so none were upgraded and no image generation was done
+  for them.
+Target slot: badge.info.background only
 Target skin: yorunoshirube
-Screens used: same consumers as listed in the classification table
-Generation method: Codex CLI image generation, or CSS-token if the
-  classification in this doc is not revised
-Planned asset-request ID: next available
-Max candidates: 3 per slot
-Human review checklist: decoration does not compete with primary content
-  legibility; overlays remain subtle at opacity settings defined in
-  SKIN-CONTRACT.json (0.5 / 0.6)
+Screens used: CollectionScreen, DeckEditorScreen, DeckDetailScreen,
+  DeckListScreen, ValidationIssueList, AppRoot, Gallery
+Generation method: Codex CLI image generation
+Asset-request ID: 016 (docs/asset-requests/016-yorunoshirube-badge-info-background.md)
+Candidates generated: 3 (A: atlas index tab / B: glassine record label /
+  C: photographic-film heading strip), all passed automated validation
+  including a badge-specific content-occupancy threshold (looser than
+  the panel-family threshold — see request 016)
+Human review checklist: 24x20 minimum-size silhouette integrity; no
+  resemblance to Cute Pop's ribbon tab; not a button/panel shape; nine-slice
+  safety
 Final-promotion criteria: same as batch 1
-Manifest/version update: yorunoshirube skin.json version bump
-Visual regression targets: full screen matrix
+Manifest/version update: not yet done — candidates are not registered in
+  skin.json; yorunoshirube stays at v3 until a candidate is approved
+Visual regression targets: Gallery review-section screenshots only (this
+  round); full screen matrix once promoted
 Rollback conditions: same as batch 1
+Human review pending: 1 slot (badge.info.background — pick A/B/C or REJECT)
 Gate to next batch: Two Official Skins Demo Ready (Tier 2, see below)
 ```
 
@@ -557,12 +579,24 @@ slots is closed; the remaining 13 of 21 contract slots are B/C/D-class
 (fallback/shared-overlay/deferred by design) or badge.info.background
 (A-class but not part of Batch 3's core 8, target of Batch 4).
 
-**Fixed next task: Batch 4 — Yorunoshirube decoration/effects**
-(badge.info.background parity with cute-pop, and any B/C-class slots
-worth upgrading — see the Batch 4 section above for the full scope). This
-is named as the next target; this roadmap does not authorize starting
-that generation work. Entry condition: explicit instruction to begin
-Batch 4. Stop condition (same as prior batches): stop before final
-promotion for human review.
+**Batch 4 is complete except human review** (2026-07-17): the
+classification audit for all 5 candidate decoration slots
+(badge.info.background / badge.warning.background / table.overlay.ink /
+table.overlay.light / panel.paper.emphasis) is done. Only
+badge.info.background stayed A-class; the other 4 were confirmed
+sufficient as CSS-token/shared-overlay with real-screen evidence and no
+change was made. 3 candidates for badge.info.background (request 016)
+passed all automated validation (dimension, transparency, fringe, and a
+badge-specific content-occupancy threshold distinct from the panel-family
+threshold) and are shown in the Gallery review section — see
+`docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`. Yorunoshirube
+stays at v3 (8 finals); no candidate has been promoted. Human review
+pending: 1 slot.
+
+**Fixed next task: Batch 5 — Full-screen integration pass**, entry
+condition: badge.info.background human approval and promotion first (pick
+one of A/B/C or REJECT via the Approval Pack), then explicit instruction
+to begin Batch 5. Stop condition (same as prior batches): stop before
+starting new generation work without instruction.
 
 Cross-referenced from docs/IMPLEMENTATION-WORKFLOW.md.

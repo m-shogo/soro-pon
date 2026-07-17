@@ -51,7 +51,22 @@ Batch 3(request 012-015: ヨルノシルベ中核8slot)は完了(2026-07-16、
   panel.result.frame Cの黒金高級UI風装飾、tile.back.base Cの
   Cute Popキルト柄類似)を却下・再生成済み。
   Official finals across skins: 17(cute-pop 9 + yorunoshirube 8)。
-  次の固定タスク(未着手): Batch 4(ヨルノシルベ装飾/effects) —
+Batch 4(request 016: ヨルノシルベ badge.info.background)は
+  human review待ちで完了(2026-07-17、COMPLETE_EXCEPT_HUMAN_REVIEW)。
+  最初に装飾/effects対象5slot(badge.info.background/
+  badge.warning.background/table.overlay.ink/table.overlay.light/
+  panel.paper.emphasis)を実画面再監査し、badge.info.backgroundのみ
+  A-class(Cute Pop parity gap)と確定。残り4slotはCSS-token/shared
+  overlayのまま実画面評価でPASS(badge.warning contrast 7.36:1、
+  overlay opacity契約値と実装一致、panel emphasisのfocus-visible非衝突)、
+  変更なし。badge.info.background候補3案(A:夜の索引タブ/B:グラシン紙の
+  記録ラベル/C:写真フィルムの見出し片)を生成・自動検査(寸法/透過/
+  フリンジ/badge専用occupancy閾値/24x20縮小proof)全て通過。
+  machine recommendation: A。promotion 0件、yorunoshirube v3・
+  final8件のまま。docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
+  参照。
+  次の固定タスク(未着手、badge.info.background承認後): Batch 5
+  (full-screen integration pass) —
   docs/ASSET-PRODUCTION-ROADMAP.md参照
 ```
 

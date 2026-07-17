@@ -233,6 +233,20 @@ corrected候補の実例:
   panel.result.frame candidate B2: widthRatio 96.09%(PASS)
 ```
 
+### thresholdはasset class単位で決める(panelとbadgeで別値)
+
+panel家系(90-98%/88-98%/center offset≤2%)の閾値をそのまま他のasset
+classへ流用しない。Batch 4(request 016、badge.info.background)では、
+badgeが panelより小さく意図的な非対称タブ形状(索引タブ・ラベル・切り欠き)
+を持ちうるため、まずCute Popの既存final/archived candidatesを実測し、
+健全な分布(widthRatio 57-84%、heightRatio 47.5-84%)を確認したうえで、
+その分布を包含する余裕を持った閾値(min/max-content-width-ratio
+0.40/0.98、min/max-content-height-ratio 0.30/0.95、
+max-content-center-offset-ratio 0.06)を新たに採用した。閾値をasset
+生成前に決め打ちせず、同一slot系統の既存final/candidateを実測してから
+決めるのが標準手順(詳細: `docs/asset-requests/
+016-yorunoshirube-badge-info-background.md`)。
+
 CLIオプション(`pnpm asset:image:prepare`): `--min-content-width-ratio` /
 `--max-content-width-ratio` / `--min-content-height-ratio` /
 `--max-content-height-ratio` / `--max-content-center-offset-ratio`
