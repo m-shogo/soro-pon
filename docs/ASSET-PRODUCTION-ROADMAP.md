@@ -67,22 +67,22 @@ Python-SDF / CSS-token / shared overlay / existing final / defer.
 
 | Slot | Runtime usage | Cute Pop class | Yorunoshirube class | Generation method | Priority | Current status | Reason |
 |---|---|---|---|---|---|---|---|
-| table.background | `GameTableLayout` -> MatchScreen (cover) | A | A | Codex CLI | High | final v5 (cute-pop) / final v2 (yoru) | Table atmosphere is core to both skins' identity; CSS gradient reads as unfinished for demo tier 1/2 |
+| table.background | `GameTableLayout` -> MatchScreen (cover) | A | A | Codex CLI | High | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Table atmosphere is core to both skins' identity; CSS gradient reads as unfinished for demo tier 1/2 |
 | table.overlay.ink | `GameTableLayout` -> MatchScreen (overlay, 0.5) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both) | Ink texture is yorunoshirube-specific lore (黒インク); cute-pop's bright/pop language has no ink motif. Re-eval cute-pop only if art direction adds a paper-ink accent |
 | table.overlay.light | `GameTableLayout` -> MatchScreen (overlay, 0.6) | D | B | CSS-token (yoru) / defer (cute-pop) | Low | placeholder (both) | Lantern-light overlay is yorunoshirube lore (ランタン光); CSS radial-gradient is sufficient until batch 4 decoration pass. Re-eval cute-pop if a light/glow accent is added to its palette |
 | panel.paper.default | `PaperPanel` (default) -> most screens, Gallery | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | High (yoru) | final v3 (cute-pop) / final v3 (yoru) | Cute Pop already done (request 006). Yorunoshirube done (Batch 3 core, technical remediation closed 2026-07-16 — see BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md) |
 | panel.paper.emphasis | `PaperPanel` (selected variant) -> same consumers | C | C | shared overlay | Medium | placeholder (both) | This is a tint/emphasis variant of panel.paper.default, not a distinct surface. A shared highlight overlay avoids a second full nine-slice asset per skin |
-| panel.modal.background | `Modal.tsx` -> `Dialog`, `AppRoot`, `TopScreen`, Gallery | A | A | Codex CLI | Medium-High | final v5 (cute-pop) / final v2 (yoru) | High-frequency surface (every dialog/modal); fallback token panel is functional but reads generic in a finished demo |
+| panel.modal.background | `Modal.tsx` -> `Dialog`, `AppRoot`, `TopScreen`, Gallery | A | A | Codex CLI | Medium-High | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | High-frequency surface (every dialog/modal); fallback token panel is functional but reads generic in a finished demo |
 | panel.result.frame | `ResultFrame.tsx` -> `ResultScreen` | A | A | Codex CLI | High (cute-pop) | final v5 (cute-pop) / final v3 (yoru) | Result screen visual completeness is an explicit tier-1 requirement — now final on both skins (Batch 3 core, technical remediation closed 2026-07-16) |
-| button.primary.background | `Button.tsx` -> nearly every screen (main CTA) | A | A | Codex CLI | Highest | final v5 (cute-pop) / final v2 (yoru) | Primary CTA is explicitly required for tier 1 ("primary CTA... unified") — now final on both skins |
-| button.secondary.background | `Button.tsx` (paper variant) | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | High (yoru) | final v3 (cute-pop) / final v2 (yoru) | Cute Pop done (request 006); Yorunoshirube done (Batch 3) |
+| button.primary.background | `Button.tsx` -> nearly every screen (main CTA) | A | A | Codex CLI | Highest | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Primary CTA is explicitly required for tier 1 ("primary CTA... unified") — now final on both skins |
+| button.secondary.background | `Button.tsx` (paper variant) | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | High (yoru) | final v3 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Cute Pop done (request 006); Yorunoshirube done (Batch 3) |
 | button.danger.background | `Button.tsx` -> destructive actions | B | B | CSS-token | Low | placeholder (both) | Low-frequency, destructive-action button; a clear token-driven solid/border style is safer for readability than illustrated art and does not block any completion tier |
 | button.disabled.background | `Button.tsx` -> disabled state of any button | C | C | shared overlay | Low | placeholder (both) | Disabled is a state modifier (opacity/desaturation) of whichever background variant is active, not an independent surface identity |
-| tile.face.base | `TileCard.tsx` (`slotFor`) -> DeckDetail/Match/Result/Gallery | A | A | Codex CLI | Highest | final v5 (cute-pop) / final v2 (yoru) | Tile identity is the single most product-defining asset — now final on both skins |
+| tile.face.base | `TileCard.tsx` (`slotFor`) -> DeckDetail/Match/Result/Gallery | A | A | Codex CLI | Highest | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Tile identity is the single most product-defining asset — now final on both skins |
 | tile.face.selected | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Decision made and implemented (ADR-015, R1): TileCard now composites the state slot over `tile.face.base` as a second SkinLayer; state meaning is already carried by CSS + aria. No separate full-face state art will be generated. The slot remains in the contract as an optional overlay-style layer |
 | tile.face.ronAvailable | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Same as tile.face.selected (ADR-015) |
 | tile.face.tsumoAvailable | `TileCard.tsx` (`stateSlotFor`) — composited over base (ADR-015) | C | C | shared overlay | No art planned | placeholder (both) | Same as tile.face.selected (ADR-015) |
-| tile.back.base | `TileCard.tsx` (`slotFor`) -> same consumers | A | A | Codex CLI | Highest | final v5 (cute-pop) / final v2 (yoru) | Tile back is visible for every opponent tile and the discard/draw pile — now final on both skins |
+| tile.back.base | `TileCard.tsx` (`slotFor`) -> same consumers | A | A | Codex CLI | Highest | final v5 (cute-pop) / final, promoted v2 / current skin v3 (yoru) | Tile back is visible for every opponent tile and the discard/draw pile — now final on both skins |
 | badge.warning.background | `Badge.tsx` -> DeckEditor/DeckDetail/Collection/DeckList/AppRoot, Gallery | B | B | CSS-token | Low | placeholder (both) | Warning legibility (contrast, icon, text) matters more than illustrated art; a token-driven badge surface is sufficient and lower-risk for a state that must stay readable |
 | badge.info.background | `Badge.tsx` -> same consumers | existing final | A | existing final (cute-pop) / Codex CLI (yoru) | Medium (yoru) | final v3 (cute-pop, request 007) / placeholder (yoru) | Cute Pop done. For visual parity between skins, yorunoshirube should eventually get an equivalent, but it is not tier-1 blocking (batch 4) |
 | effect.result.burst | **no component reference found in src/** | D | D | defer | None | placeholder (both), unwired | Dead slot — no consumer exists. Re-evaluate only after `ResultScreen` implements a celebratory-burst render call for this slot; generating art for an unconsumed slot would be wasted production |
@@ -352,8 +352,15 @@ impression); tile.back.base candidate C's first generation was an all-over
 diamond-quilt pattern that both read as CSS-reproducible and duplicated
 Cute Pop's quilted-cushion motif. All three were rejected with a recorded
 reason and replaced by a revised-prompt regeneration before candidate
-placement. Yorunoshirube remains at **version 1, `slots: {}`** — zero
-candidates are promoted.
+placement. At the pre-human-review checkpoint described in this
+paragraph, Yorunoshirube was still at **version 1, `slots: {}`** — zero
+candidates promoted. Batch 3 later completed in full: all 8 core slots
+were approved, technically remediated where needed, and promoted —
+Yorunoshirube is now at **version 3** with **8 final assets** (all
+promoted in v2 or v3; every slot currently resolves under the shared
+`?v=3` skin version). See the Batch 3 status summary above and
+`docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md` for the
+full promotion and remediation record.
 
 ### Batch 4 — Yorunoshirube decoration/effects
 
