@@ -166,6 +166,10 @@ button/panelに見えない直線的な索引構造(Cute Popのリボンとは�
 
 ## Approval Status(承認状態)
 
-- [ ] candidate(レビュー待ち) — 本requestの終了状態
+- [x] candidate(レビュー待ち) — 本requestの終了状態。3案(A: 夜の索引タブ /
+      B: グラシン紙の記録ラベル / C: 写真フィルムの見出し片)すべて自動検査
+      (寸法/透過/フリンジ/occupancy/nine-slice/24x20縮小proof)を通過。
+      machine recommendation: A(詳細は
+      `BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`参照)。human review pending。
 - [ ] approved(final昇格可)
 - [ ] rejected(修正指示: )
