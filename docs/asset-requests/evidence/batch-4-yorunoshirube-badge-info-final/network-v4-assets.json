@@ -1,0 +1,38 @@
+[
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-paper-default.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-modal-background.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-result-frame.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-primary-background.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-secondary-background.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-face-base.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-back-base.png?v=4",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/badge-info-background.png?v=4",
+    "status": 200
+  }
+]

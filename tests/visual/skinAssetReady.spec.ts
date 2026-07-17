@@ -98,8 +98,9 @@ test('yorunoshirube: panel.paper.default/panel.result.frameのremediation後fina
   });
   expect(manifest.version).toBeGreaterThanOrEqual(3);
   // Batch 3 core 8slot(かつてBLOCKED_BY_TECHNICAL_VALIDATIONだった2slotを含む)が
-  // 全てfinal登録されていること
-  expect(Object.keys(manifest.slots)).toHaveLength(8);
+  // 全てfinal登録されていること(Batch 4のbadge.info.background追加後は9slotになるため
+  // 下限のみ確認し、厳密な件数はBatch 4専用testで検証する)
+  expect(Object.keys(manifest.slots).length).toBeGreaterThanOrEqual(8);
   expect(manifest.slots['panel.paper.default']?.status).toBe('final');
   expect(manifest.slots['panel.result.frame']?.status).toBe('final');
 
@@ -114,4 +115,75 @@ test('yorunoshirube: panel.paper.default/panel.result.frameのremediation後fina
   expect(correctedSlotRequests.length).toBeGreaterThan(0);
   expect(correctedSlotRequests.every((r) => r.status === 200)).toBe(true);
   expect(correctedSlotRequests.every((r) => r.url.includes(`?v=${manifest.version}`))).toBe(true);
+});
+
+test('yorunoshirube: Batch 4 badge.info.background昇格後、v4で9final全てが解決し、candidate requestが発生しないこと', async ({
+  page,
+}) => {
+  const responses = trackResponses(page);
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.localStorage.setItem('soro-pon.skin.v1', 'yorunoshirube');
+  });
+  await page.goto('/');
+  await page.waitForSelector('html[data-skin="yorunoshirube"]');
+
+  const manifest = await page.evaluate(async () => {
+    const res = await fetch('/assets/ui/soro-pon/skins/yorunoshirube/skin.json');
+    return res.json();
+  });
+  expect(manifest.version).toBeGreaterThanOrEqual(4);
+  // Batch 3の8core + Batch 4のbadge.info.backgroundで9slot全てfinal登録
+  expect(Object.keys(manifest.slots)).toHaveLength(9);
+  expect(manifest.slots['badge.info.background']?.status).toBe('final');
+  expect(manifest.slots['badge.info.background']?.file).toBe('badge-info-background.png');
+
+  await waitForSkinAssetsReady(page, 'yorunoshirube', responses);
+
+  // DeckListScreenのinfo badge("遊べる")がbadge.info.background finalを
+  // versioned URL(?v=4)で読み込むこと
+  const badgeRequests = responses.filter((r) => r.url.includes('badge-info-background.png'));
+  expect(badgeRequests.length).toBeGreaterThan(0);
+  expect(badgeRequests.every((r) => r.status === 200)).toBe(true);
+  expect(badgeRequests.every((r) => r.url.includes(`?v=${manifest.version}`))).toBe(true);
+  expect(badgeRequests.every((r) => r.url.includes('/generated/final/'))).toBe(true);
+
+  // Batch 3の8核 final全て(panel.paper.default/panel.result.frameを含む)が
+  // 同一version(?v=4)で解決されること(atomic publish確認)
+  const coreFiles = [
+    'table-background.png',
+    'panel-paper-default.png',
+    'panel-modal-background.png',
+    'panel-result-frame.png',
+    'button-primary-background.png',
+    'button-secondary-background.png',
+    'tile-face-base.png',
+    'tile-back-base.png',
+  ];
+  for (const file of coreFiles) {
+    const reqs = responses.filter((r) => r.url.includes(file));
+    expect(reqs.length).toBeGreaterThan(0);
+    expect(reqs.every((r) => r.status === 200)).toBe(true);
+    expect(reqs.every((r) => r.url.includes(`?v=${manifest.version}`))).toBe(true);
+  }
+
+  // candidateパス(badge-info-background-candidate-*.png)は一切requestされないこと
+  // (Gallery専用review UIは撤去済み、production resolverはfinalしか参照しない)
+  const candidateRequests = responses.filter((r) =>
+    r.url.includes('badge-info-background-candidate'),
+  );
+  expect(candidateRequests).toEqual([]);
+
+  // B/C分類のslot(badge.warning.background/table.overlay.ink/table.overlay.light/
+  // panel.paper.emphasis)は画像化されていないため、対応する画像requestが発生しないこと
+  const bcSlotFiles = [
+    'badge-warning-background',
+    'table-overlay-ink',
+    'table-overlay-light',
+    'panel-paper-emphasis',
+  ];
+  for (const stem of bcSlotFiles) {
+    const reqs = responses.filter((r) => r.url.includes(stem));
+    expect(reqs).toEqual([]);
+  }
 });
