@@ -1,0 +1,130 @@
+{
+  "pass": [
+    {
+      "label": "fresh boot yorunoshirube",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot yorunoshirube: no console errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "fresh boot cute-pop",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot cute-pop: no console errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "corrupt deck data recovers to usable TOP",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "invalid skin ID falls back to a valid built-in skin",
+      "ok": true,
+      "detail": "data-skin=yorunoshirube"
+    },
+    {
+      "label": "import valid: accepted",
+      "ok": true,
+      "detail": "inDeckDetail=true rejectedBadge=0 textareaValueLen=8487 readBtnEnabled=true"
+    },
+    {
+      "label": "import invalid-json: rejected",
+      "ok": true,
+      "detail": "inDeckDetail=false rejectedBadge=2 textareaValueLen=11 readBtnEnabled=true"
+    },
+    {
+      "label": "import unsafe-script: rejected",
+      "ok": true,
+      "detail": "inDeckDetail=false rejectedBadge=2 textareaValueLen=8524 readBtnEnabled=true"
+    },
+    {
+      "label": "unsaved changes warning shown",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "Gallery loads (yorunoshirube)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "Gallery no console errors (yorunoshirube)",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "Gallery loads (cute-pop)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "Gallery no console errors (cute-pop)",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "skin switch applies without reload",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "3-player match reaches Result",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "3-player match: no console errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "3-player: rematch/TOP options present on Result",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "4-player match reaches Result",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "4-player match: no console errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "4-player: rematch/TOP options present on Result",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "reset confirmation dialog opens",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "reset confirmation dialog closes via cancel",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "reload on TOP does not crash",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "fail": []
+}

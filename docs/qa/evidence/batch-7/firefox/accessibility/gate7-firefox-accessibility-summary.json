@@ -1,0 +1,110 @@
+{
+  "pass": [
+    {
+      "label": "yorunoshirube TOP: exactly one h1",
+      "ok": true,
+      "detail": "[{\"tag\":\"H1\",\"text\":\"soro-pon\"}]"
+    },
+    {
+      "label": "yorunoshirube TOP: every button has an accessible name",
+      "ok": true,
+      "detail": "unnamed=0"
+    },
+    {
+      "label": "yorunoshirube きせかえ modal: role=dialog with aria-modal + resolvable aria-labelledby",
+      "ok": true,
+      "detail": "{\"hasAriaModal\":true,\"hasLabelledby\":true,\"labelResolves\":true}"
+    },
+    {
+      "label": "yorunoshirube import textarea has aria-label",
+      "ok": true,
+      "detail": "{\"ariaLabel\":\"デッキJSON\"}"
+    },
+    {
+      "label": "yorunoshirube import rejection reasons visible + live-region wrapped",
+      "ok": true,
+      "detail": "{\"found\":true,\"hasLiveRegionAncestor\":true,\"text\":\"拒否 I2002: JSONとして読み込めませんでした。\"}"
+    },
+    {
+      "label": "yorunoshirube Match: every tile has an accessible name",
+      "ok": true,
+      "detail": "{\"total\":9,\"withName\":9,\"withAriaPressed\":9}"
+    },
+    {
+      "label": "yorunoshirube Match: tiles expose aria-pressed",
+      "ok": true,
+      "detail": "{\"total\":9,\"withName\":9,\"withAriaPressed\":9}"
+    },
+    {
+      "label": "cute-pop TOP: exactly one h1",
+      "ok": true,
+      "detail": "[{\"tag\":\"H1\",\"text\":\"soro-pon\"}]"
+    },
+    {
+      "label": "cute-pop TOP: every button has an accessible name",
+      "ok": true,
+      "detail": "unnamed=0"
+    },
+    {
+      "label": "cute-pop きせかえ modal: role=dialog with aria-modal + resolvable aria-labelledby",
+      "ok": true,
+      "detail": "{\"hasAriaModal\":true,\"hasLabelledby\":true,\"labelResolves\":true}"
+    },
+    {
+      "label": "cute-pop import textarea has aria-label",
+      "ok": true,
+      "detail": "{\"ariaLabel\":\"デッキJSON\"}"
+    },
+    {
+      "label": "cute-pop import rejection reasons visible + live-region wrapped",
+      "ok": true,
+      "detail": "{\"found\":true,\"hasLiveRegionAncestor\":true,\"text\":\"拒否 I2002: JSONとして読み込めませんでした。\"}"
+    },
+    {
+      "label": "cute-pop Match: every tile has an accessible name",
+      "ok": true,
+      "detail": "{\"total\":9,\"withName\":9,\"withAriaPressed\":9}"
+    },
+    {
+      "label": "cute-pop Match: tiles expose aria-pressed",
+      "ok": true,
+      "detail": "{\"total\":9,\"withName\":9,\"withAriaPressed\":9}"
+    },
+    {
+      "label": "keyboard: Tab moves focus on TOP",
+      "ok": true,
+      "detail": "まず遊ぶすぐに対戦をはじめます"
+    },
+    {
+      "label": "keyboard: Enter opens きせかえ dialog",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "keyboard: Escape closes dialog and returns focus",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "yorunoshirube TOP: no horizontal overflow at 200%-zoom-equivalent viewport",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "cute-pop TOP: no horizontal overflow at 200%-zoom-equivalent viewport",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "reduced-motion: match screen renders full content",
+      "ok": true,
+      "detail": "対局\n残り牌 56\n手番 あなた\n捨てる牌を選ぶ\n「かわいいトリオ」はボーナスなので、これだけではあがれません。\n「森の"
+    },
+    {
+      "label": "reduced-motion: no console errors",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "fail": []
+}
