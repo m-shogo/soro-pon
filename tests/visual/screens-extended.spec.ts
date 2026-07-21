@@ -95,8 +95,13 @@ for (const skin of SKINS) {
         () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
       );
       expect(hasScrollOverflow, 'Result screen must not cause horizontal overflow').toBe(false);
+      // 対局seedが非決定的なため、実行のたびに中身が変わるスクショを
+      // git管理下のevidenceへ書くとgit statusが毎回汚れる(Gate 6で発覚し修正)。
+      // test-results/はgitignore対象なので、実行毎の最新サンプルはそこへ置く。
+      // Batch 5時点の固定evidenceはdocs/qa/evidence/batch-5/result/に
+      // 既存のまま(playwright-result-*.png)保持し、以後の再実行では上書きしない。
       await page.screenshot({
-        path: `docs/qa/evidence/batch-5/result/playwright-result-${suffix}.png`,
+        path: `test-results/gate6-result-samples/playwright-result-${suffix}.png`,
       });
     });
   }
