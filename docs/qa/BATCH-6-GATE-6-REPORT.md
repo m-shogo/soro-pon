@@ -1,12 +1,26 @@
 # Batch 6 — Gate 6 Report
 
 - Date: 2026-07-21
-- Start commit (this batch): `2f1d297` (end of Batch 5 + its own corrections)
 - Preceding batch: Batch 5 (full-screen QA), corrected same-day in commit
   `46c7637` before Gate 6 work began — see "Batch 5 Corrections" below.
 - Browser/device: Chromium (Desktop Chrome), same validated scope as
   Batch 5. No new browser/device scope was added.
 - Skins: yorunoshirube (v4, 9 finals), cute-pop (v5, 9 finals) — unchanged.
+- **Git chronology (audit-precise, distinguishing the original
+  implementation from its same-day correction pass — see
+  `docs(qa): clarify Batch 6 git chronology`):**
+  ```text
+  Batch 6 original Start HEAD:        2f1d297  (end of Batch 5 + its own corrections)
+  Batch 6 implementation End HEAD:    b5a5a49  (docs(release): record Gate 6 decision and rollback runbook)
+  Batch 6 correction Start HEAD:      b5a5a49
+  Batch 6 correction End HEAD:        bf6028e  (docs(qa): correct Gate 6 totals and recovery guarantees)
+  origin/main after correction:       bf6028e
+  ```
+  This report's findings, the 522-test-case total, and the Gate 6
+  decision are unchanged by this chronology clarification — only the
+  HEAD labeling is corrected to distinguish "original Batch 6 work"
+  from "the same-day correction pass on top of it," rather than
+  conflating them under a single ambiguous "Start/End HEAD" pair.
 
 ## Batch 5 Corrections (completed before Gate 6 work started)
 

@@ -6,11 +6,21 @@ This document operationalizes that definition into concrete checks,
 evidence, and PASS/CONDITIONAL/FAIL criteria — it does not replace or
 override the canonical gate list.
 
-Date: 2026-07-21. Start commit: `b5b9f5c`'s parent
-(`2f1d297` — end of Batch 5 + its corrections). Browser: Chromium
-(Desktop Chrome) only, same validated scope as Batch 5 — see
+Date: 2026-07-21. Browser: Chromium (Desktop Chrome) only, same
+validated scope as Batch 5 — see
 [BATCH-5-QA-MATRIX.md](./BATCH-5-QA-MATRIX.md) for why WebKit/Firefox/
-real Safari remain NOT TESTED. Gate 6 does not expand browser scope.
+real Safari remain NOT TESTED as of Gate 6 (Batch 7 extends this scope —
+see [BATCH-7-CROSS-BROWSER-A11Y-REPORT.md](./BATCH-7-CROSS-BROWSER-A11Y-REPORT.md)).
+Gate 6 itself does not expand browser scope.
+
+Git chronology (audit-precise):
+
+```text
+Batch 6 original Start HEAD:      2f1d297  (end of Batch 5 + its own corrections)
+Batch 6 implementation End HEAD:  b5a5a49  (docs(release): record Gate 6 decision and rollback runbook)
+Batch 6 correction Start HEAD:    b5a5a49
+Batch 6 correction End HEAD:      bf6028e  (docs(qa): correct Gate 6 totals and recovery guarantees)
+```
 
 ## Scope
 
