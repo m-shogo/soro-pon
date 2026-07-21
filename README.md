@@ -32,8 +32,23 @@ Batch 6 (Gate 6: Release Candidate hardening): complete
     previously failed silently with no user feedback (now shown via
     Toast, draft preserved).
   See docs/qa/BATCH-6-GATE-6-REPORT.md for full evidence and decision record.
-Current phase: further release-candidate hardening (not yet scoped — see
-  "Next Fixed Task" in docs/qa/BATCH-6-GATE-6-REPORT.md)
+Batch 7 (Cross-Browser & Screen Reader Acceptance): complete
+  Not a new Gate — Gate 6 remains PASS, unchanged. Extends RC readiness's
+    verified browser scope from Chromium-only to Chromium + Firefox +
+    Playwright WebKit (all three: 0 P0/P1/P2, full functional/visual/
+    accessibility parity). "Playwright WebKit" is Playwright's own
+    WebKit build, NOT real Safari — real Safari, iOS Safari, and Android
+    physical devices remain untested and unclaimed.
+  Real macOS VoiceOver acceptance was attempted and BLOCKED (the user
+    denied the computer-use browser-access grant needed to drive Safari
+    under VoiceOver) — recorded honestly, not claimed as passed. NVDA/
+    JAWS were not used (no Windows environment available).
+  RC readiness: still LIMITED READY (upgraded in browser-engine scope,
+    but real-device and real-screen-reader verification remain open).
+  See docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md for full evidence and
+    decision record.
+Current phase: further RC hardening (not yet scoped — see
+  "Next Fixed Task" in docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md)
 ```
 
 正確な現在地と実装順:
@@ -305,7 +320,7 @@ imports are validated (schema + unsafe-key rejection) before a deck can be playe
 locally imported or private images are never included in shared deck JSON
 no online multiplayer, no accounts, no billing, no cloud sync
 supported skins: yorunoshirube, cute-pop (both official, both complete)
-verified browser scope for this demo: Chromium (Desktop Chrome) only — Safari/Firefox/WebKit/real mobile devices are not tested and not claimed supported
+verified browser scope for this demo: Chromium (Desktop Chrome), Firefox, and Playwright WebKit (desktop, engine-level) — real Safari, iOS Safari, and Android physical devices are not tested and not claimed supported
 reset path: TOP screen -> "ローカルデータを初期化…" (irreversible, explained in the confirmation dialog)
 ```
 

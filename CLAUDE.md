@@ -147,11 +147,35 @@ Batch 6(Gate 6: Release Candidate hardening)は完了(2026-07-21)。
   救済不能な当該entry自体の完全復元は保証しない)を区別する
   正確な表現へ訂正した。詳細: docs/qa/BATCH-6-GATE-6-REPORT.mdの
   Verification節/Storage Recovery節。
-  次の固定タスク(未着手・要明示指示): 上記RC readinessのopen item群
-  (実screen reader受入、非Chromium browser検証、長時間memory soak、
-  実deploy環境rollback)のいずれかを明示指示で着手するか、Gate 7/8
-  (installed/paid skin trust、match restore/replay)を対象機能が
-  実際に計画された時点で開始する。docs/qa/BATCH-6-GATE-6-REPORT.mdの
+Batch 7(Cross-Browser & Screen Reader Acceptance)は完了(2026-07-21、
+  COMPLETE)。新しいGateではない — Gate 6はPASSのまま変更なし。RC
+  readinessのbrowser scopeをChromium限定からChromium+Firefox+
+  Playwright WebKit(3エンジンとも0 P0/P1/P2、機能/visual/accessibility
+  すべてparity達成)へ拡張した。「Playwright WebKit」はPlaywright独自の
+  WebKit build であり実Safariではない — 実Safari/iOS Safari実機/
+  Android実機は今回も未検証・対応保証なし。macOS VoiceOverの実受入は
+  試行したがBLOCKED(computer-useでSafariへアクセスする許可を
+  ユーザーが明示的に拒否したため。NVDA/JAWSはWindows環境がなく未使用)。
+  発見した3件はすべてQAスクリプト側の手法上の欠陥であり製品コード側の
+  修正は0件(getByRole名前マッチングのsubstring誤検出、WebKitでの
+  二重navigation起因fetch中断の見せかけのエラー、Firefox/WebKitでは
+  localStorage.setItemの直接再代入が黙って無効化される問題——
+  いずれも修正しFirefox/WebKit両エンジンで機能・visual・accessibility
+  ともにChromiumと完全なparityを再確認済み)。visual regressionを
+  cross-browser suiteとして新設(Firefox 48件+WebKit 48件=96件、
+  Tier A・8画面・両skin・優先3viewport、既存Chromium 70件は
+  playwright.crossbrowser.config.tsを別ファイルにすることで無傷)。
+  RC readiness: LIMITED READY継続(browser engine scopeは拡張したが、
+  実端末・実screen readerの検証は引き続きopen)。証跡:
+  docs/qa/BATCH-7-CROSS-BROWSER-A11Y-MATRIX.md、
+  docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md、
+  docs/qa/evidence/batch-7/(PNG38+JSON4=42件)。
+  次の固定タスク(未着手・要明示指示): 実screen reader受入の再挑戦
+  (Safari/browserアクセス許可を得た上でVoiceOver、またはNVDA/JAWSが
+  使えるWindows環境の用意)、実iPhone/iPad Safari検証、実Android検証、
+  長時間memory soak、実deploy環境rollback rehearsalのいずれかを
+  明示指示で着手するか、Gate 7/8を対象機能が実際に計画された時点で
+  開始する。docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.mdの
   Next Fixed Task参照。
 ```
 
