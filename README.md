@@ -47,8 +47,27 @@ Batch 7 (Cross-Browser & Screen Reader Acceptance): complete
     but real-device and real-screen-reader verification remain open).
   See docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md for full evidence and
     decision record.
+Batch 8 (macOS VoiceOver Acceptance): BLOCKED
+  Targeted the specific Batch 7 open item of real screen-reader
+    acceptance. Real Safari is only viewable (not drivable) via the
+    available automation tooling in this environment, so the attempt
+    pivoted to VoiceOver + Chrome instead (a real, if less conventional,
+    pairing — VoiceOver does support Chrome). VoiceOver's own
+    first-launch dialog became frontmost and could not be dismissed
+    through any available permission mechanism (unindexed by Spotlight),
+    blocking all further interaction after 3 identical failures. Zero of
+    the planned 20 acceptance flows were exercised — this is recorded as
+    BLOCKED, not as a partial pass and not as "automated checks
+    substitute for screen-reader verified."
+  No product code changed (nothing was found to test, so nothing was
+    found to fix). All existing suites re-verified green, zero
+    regressions.
+  RC readiness: unchanged, still LIMITED READY (neither upgraded nor
+    downgraded — the targeted gap remains exactly as open as before).
+  See docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md for the full
+    attempt log and decision record.
 Current phase: further RC hardening (not yet scoped — see
-  "Next Fixed Task" in docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md)
+  "Next Fixed Task" in docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md)
 ```
 
 正確な現在地と実装順:

@@ -170,12 +170,42 @@ Batch 7(Cross-Browser & Screen Reader Acceptance)は完了(2026-07-21、
   docs/qa/BATCH-7-CROSS-BROWSER-A11Y-MATRIX.md、
   docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md、
   docs/qa/evidence/batch-7/(PNG38+JSON4=42件)。
+Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
+  open item中「実screen reader受入」を対象に実施を試みた。
+  computer-useでのSafariアクセスはread tier(画面閲覧のみ、
+  click/type不可)のため、ユーザーの明示的な推奨に基づき
+  Claude in Chrome(実インタラクション可能)でChromeを操作しつつ、
+  computer-useのシステムショートカット(Cmd+F5、非ブラウザアプリを
+  frontmostにして送信)でVoiceOverを起動、キャプションパネルを
+  スクリーンショットで観測する方針(=VoiceOver + Chrome。Safariでは
+  ない)へ切り替えて実施。VoiceOverユーティリティでキャプションパネル
+  既に有効を確認・Chrome側でyorunoshirube skin+animal starter deckを
+  seed済みの状態まで到達したが、VoiceOver起動直後に表示される
+  「VoiceOverクイックスタート」ダイアログがSpotlightインデックス未登録
+  のためrequest_accessで許可対象に追加できず、以後の全computer-use
+  操作(Return/Cmd+F5再送/直接click)が同一エラーで3回連続ブロックされた
+  時点で、指示通りこれ以上のリトライを行わずBLOCKEDと判定。20フロー中
+  0フローが実施され、実VoiceOver信号は一切取得できなかった(自動検査
+  結果での代替や部分PASSとしての記載はしていない)。この試行により
+  ユーザーの実機でVoiceOverがONのままダイアログが残っている可能性が
+  あることをセッション内で明示的に警告済み(Cmd+F5または手動で解除を
+  依頼)。製品コードの変更は0件(何も検証できなかったため修正対象も
+  0件)。既存の全自動検証(typecheck/unit 330/skin:validate 18/
+  asset:image:test 92/build/Chromium visual 70/Firefox機能25/
+  WebKit機能25/Firefox a11y 21/WebKit a11y 21/cross-browser visual 96)
+  は全て再実行し無退行を確認。RC readiness: LIMITED READY
+  変更なし(対象gapを閉じられなかったため昇格なし、製品側の新規欠陥も
+  ないため降格もなし)。証跡: docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-MATRIX.md、
+  docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md、
+  docs/qa/evidence/batch-8/(JSON1件、試行ログ)。
   次の固定タスク(未着手・要明示指示): 実screen reader受入の再挑戦
-  (Safari/browserアクセス許可を得た上でVoiceOver、またはNVDA/JAWSが
-  使えるWindows環境の用意)、実iPhone/iPad Safari検証、実Android検証、
-  長時間memory soak、実deploy環境rollback rehearsalのいずれかを
-  明示指示で着手するか、Gate 7/8を対象機能が実際に計画された時点で
-  開始する。docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.mdの
+  (VoiceOverの初回quickstartダイアログを事前に無効化した状態を用意する、
+  またはユーザー自身が実VoiceOverを操作しエージェントが記録に専念する
+  形を取るなど、今回判明した制約を踏まえた別アプローチが必要)、
+  実iPhone/iPad Safari検証、実Android検証、長時間memory soak、
+  実deploy環境rollback rehearsalのいずれかを明示指示で着手するか、
+  Gate 7/8を対象機能が実際に計画された時点で開始する。
+  docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdの
   Next Fixed Task参照。
 ```
 

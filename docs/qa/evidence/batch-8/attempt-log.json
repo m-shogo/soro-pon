@@ -1,0 +1,34 @@
+{
+  "batch": "Batch 8: macOS VoiceOver Acceptance",
+  "date": "2026-07-21",
+  "attempts": [
+    {
+      "attempt": 1,
+      "method": "computer-use request_access for Safari with systemKeyCombos",
+      "result": "granted, tier=read (no click/type into any browser via computer-use)",
+      "outcome": "insufficient for interactive VoiceOver+Safari navigation"
+    },
+    {
+      "attempt": 2,
+      "method": "Recommended pivot: Claude in Chrome (interactive) + computer-use Cmd+F5 (system-level VoiceOver toggle, sent while a non-browser app is frontmost) + computer-use screenshots to observe VoiceOver's caption panel",
+      "steps": [
+        "computer-use request_access for Google Chrome (granted, tier=read) and VoiceOverユーティリティ (granted, tier=full)",
+        "Opened VoiceOverユーティリティ, confirmed caption panel already enabled (パネルとメニュー > キャプションパネルを表示: checked)",
+        "Claude in Chrome: created tab, navigated to http://localhost:5199, seeded yorunoshirube skin + animal-starter deck via javascript_tool",
+        "computer-use: brought VoiceOverユーティリティ to front, sent Cmd+F5 — key press succeeded, VoiceOver appeared to activate (focus highlight box visible around Chrome tab title in the follow-up screenshot)",
+        "VoiceOver's own welcome/quickstart dialog ('VoiceOverクイックスタート') appeared and became the frontmost window",
+        "Attempted computer-use request_access for 'com.apple.VoiceOverQuickstart' and 'VoiceOverクイックスタート' — both resolved as not-installed/not-indexed (Spotlight index incomplete on this machine), request was never shown to the user",
+        "Attempted Return key, Cmd+F5 toggle-off, and a direct left_click on the visible checkbox in VoiceOverユーティリティ's window — all three blocked by computer-use with the same error: 'VoiceOverクイックスタート is not in the allowed applications and is currently in front'",
+        "Stopped retrying per instruction not to retry indefinitely once the same structural block repeated 3 times in a row"
+      ],
+      "outcome": "BLOCKED — genuine environment/tooling limitation, not a user denial. VoiceOver's own onboarding dialog is unindexed and cannot be added to the computer-use permission allowlist by any name tried, and once frontmost it blocks all further computer-use interaction system-wide (not just within the browser).",
+      "sideEffectWarning": "VoiceOver may have been left ON with the quickstart dialog still open on the user's actual desktop after this session. The user was warned to press Cmd+F5 or dismiss the dialog manually if it is still present."
+    }
+  ],
+  "flowsCompleted": 0,
+  "flowsPlanned": 20,
+  "voiceOverCaptionPanelPreConfigured": true,
+  "chromeTabSeeded": true,
+  "actualSpeechOrCaptionContentObserved": false,
+  "conclusion": "No VoiceOver acceptance data was gathered. This is recorded honestly as BLOCKED (environment/tooling limitation), not as a partial pass or as an automated-check substitute."
+}
