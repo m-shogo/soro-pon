@@ -8,6 +8,12 @@ Chrome), headless, via Playwright — matches this project's own
 `scripts/batch5-qa-02-match-play.mjs`,
 `scripts/batch5-qa-03-import-editor-a11y.mjs`, plus
 `tests/visual/screens-extended.spec.ts` (Playwright visual regression).
+**All interaction below — including "match" rows — was driven by
+Chromium browser automation, not by a human or a real device.** Any
+"Public Demo Ready" conclusion drawn from this matrix applies strictly
+within the validated Chromium browser scope; see the Browser/device
+matrix at the bottom of this file (2026-07-21 correction, see
+[BATCH-5-MANUAL-QA-REPORT.md](./BATCH-5-MANUAL-QA-REPORT.md#corrections-recorded-2026-07-21-same-day-before-gate-6-work)).
 
 Screens were enumerated from `src/app/AppRoot.tsx` (`Screen` union) and
 `src/App.tsx` (`#/gallery` hash route) — see
@@ -44,8 +50,9 @@ the discard-board / hand layout is shared with MatchSetup/TOP's
 `GameTableLayout`, which was verified at all 5 sizes.
 ² SkinSelector modal Tier-B visual baseline only covers phone
 (844x390) and desktop (1366x768) representative sizes per the Tier
-A/B split in `docs/MANUAL-QA.md` §26 guidance — manual screenshot
-evidence at 1024x600 was captured via script 1.
+A/B split in `docs/MANUAL-QA.md` §26 guidance — automated screenshot
+evidence at 1024x600 was captured via script 1 (Chromium automation,
+not human manual clicking).
 ³ Portrait/rotate-prompt behavior exists in code
 (`src/ui/screens/RotatePrompt` referenced from `App.tsx`) but was not
 re-verified in Batch 5; this was already covered under prior hardening

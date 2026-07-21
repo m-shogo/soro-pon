@@ -30,19 +30,56 @@ screenshots — not a static code read. Manual interactive spot-checks
 (see "Non-defect findings" below) by directly inspecting the running app.
 
 Rationale for scripted rather than freehand manual QA: the scope
-(2 skins × 5 viewports × ~10 screens × multiple data states × real
+(2 skins × 5 viewports × ~10 screens × multiple data states × full
 gameplay to completion) is not reliably reproducible or auditable by
 freehand clicking. Scripts make every check re-runnable, and every
 screenshot is saved to disk under `docs/qa/evidence/batch-5/` as
-durable evidence (138 files: 121 PNG screenshots + 7 JSON evidence
-files, ~32MB) rather than living only in a chat transcript.
+durable evidence (138 files: 131 PNG screenshots + 7 JSON evidence
+files, ~32MB) rather than living only in a chat transcript. **All
+interaction in this batch — including all gameplay — was performed by
+Chromium browser automation (Playwright), not by a human clicking
+through the app or by an engine-only simulation.** No real mobile/tablet
+device and no non-Chromium browser were used; see "Corrections" below
+and [BATCH-5-QA-MATRIX.md](./BATCH-5-QA-MATRIX.md) for the exact browser
+scope.
+
+### Corrections (recorded 2026-07-21, same day, before Gate 6 work)
+
+This report originally used imprecise language in two places, corrected
+here without rewriting git history (see the Batch 6 docs commit that
+introduced this correction):
+
+1. **"real UI interaction" (previous wording) did not mean human manual
+   play.** Every match in this batch — the 4 described in "Gameplay"
+   below and the 10 additional Playwright visual-regression cases — was
+   driven end-to-end by scripted Chromium automation (`page.click()`
+   / `page.getByRole(...).click()` in Playwright), which does exercise
+   the real DOM/event-handler path (not an engine-level simulation
+   bypassing the UI), but is not manual human operation and not a real
+   device. The two match sets are now labeled: **4 QA-script-driven
+   automated matches** (`scripts/batch5-qa-02-match-play.mjs`, run
+   individually, each screenshot manually reviewed by the agent as
+   primary evidence) and **10 additional Playwright-test-driven
+   automated match runs** (`tests/visual/screens-extended.spec.ts`'s
+   `Result reachable and renders *`, run under the `pnpm test:visual`
+   test harness with pass/fail assertions; screenshots saved as
+   supplementary evidence, not each individually reviewed).
+2. **Evidence file count was miscounted.** The commit message ("138
+   evidence files") was correct; the breakdown printed later in this
+   report ("121 PNG + 7 JSON = 128") was an arithmetic error and did
+   not match the 138 actually committed. Corrected count, re-verified
+   by direct enumeration of `docs/qa/evidence/batch-5/` on 2026-07-21:
+   **131 PNG + 7 JSON = 138**, matching `git diff-tree --no-commit-id
+   --name-only -r 6512db0 | grep '^docs/qa/evidence' | wc -l` exactly.
+   See the Evidence section below for the corrected per-directory
+   breakdown.
 
 ## Automated check totals
 
 | Source | Checks | Pass | Fail (genuine defects) |
 |---|---|---|---|
 | `batch5-qa-01-boot-recovery-viewport.mjs` (boot/recovery/viewport sweep/skin switching) | 76 | 75 | 0¹ |
-| `batch5-qa-02-match-play.mjs` (real match play, 4 full matches to Result) | 21 | 21 | 0 |
+| `batch5-qa-02-match-play.mjs` (4 automated full matches to Result) | 21 | 21 | 0 |
 | `batch5-qa-03-import-editor-a11y.mjs` (import/editor/accessibility) | 27 | 27 | 0 |
 | `pnpm test:visual` (Playwright visual regression, expanded) | 56 | 56 | 0 |
 | **Total** | **180** | **179** | **0** |
@@ -128,11 +165,13 @@ no infinite loading on missing deck, no reload crash on any tested flow.
   skin (cute-pop `?v=5`, yorunoshirube `?v=4`). No mixed-version leakage
   observed in any captured session.
 
-## Gameplay (real matches, not simulated)
+## Gameplay (automated, full-UI matches — not human manual play, not an engine-only simulation)
 
-Four complete matches were played end-to-end through real UI interaction
-(tile selection, discard, automatic CPU turns, ron/tsumo declaration)
-until the Result screen was reached:
+Four complete matches were played end-to-end through the real DOM/UI
+(scripted tile selection, discard, automatic CPU turns, ron/tsumo
+declaration — all issued by Chromium automation, not by a human, and
+not by calling the engine directly) until the Result screen was
+reached:
 
 | Match | Result reached | Reason | Score | Reload on Result |
 |---|---|---|---|---|
@@ -153,8 +192,12 @@ started from the UI — confirmed not reachable.
 
 Additionally, the Playwright visual-regression suite independently drove
 10 more matches to Result (2 skins × 5 viewports) as part of
-`Result reachable and renders *`, all passing, giving 14 total
-real completed matches across this QA pass.
+`Result reachable and renders *`, all passing — these are the
+**10 additional Playwright-test-driven automated match runs** referenced
+in "Corrections" above, giving **14 total automated matches driven
+through the real UI to a completed Result screen** across this QA pass.
+None of the 14 were played by a human, and none were run on a real
+mobile/tablet device.
 
 ## Accessibility / Keyboard
 
@@ -267,18 +310,46 @@ copy, no clipping at the narrowest required viewport in either skin.
 
 ## Evidence
 
+Re-verified by direct enumeration on 2026-07-21 (see "Corrections"
+above for why this replaces the original, miscounted breakdown):
+
+```text
+$ find docs/qa/evidence/batch-5 -type f | wc -l         # 138
+$ find docs/qa/evidence/batch-5 -type f -name "*.png" | wc -l   # 131
+$ find docs/qa/evidence/batch-5 -type f -name "*.json" | wc -l  # 7
+$ git ls-files docs/qa/evidence/batch-5 | wc -l          # 138 (all tracked, none gitignored)
+```
+
 - QA Matrix: `docs/qa/BATCH-5-QA-MATRIX.md`
 - Manual QA Report: this file
-- Evidence root: `docs/qa/evidence/batch-5/` (138 files, ~32MB)
-  - Cute Pop: `docs/qa/evidence/batch-5/cutepop/<viewport>/*.png` (40 files)
-  - Yorunoshirube: `docs/qa/evidence/batch-5/yorunoshirube/<viewport>/*.png` (40 files)
-  - Recovery: `docs/qa/evidence/batch-5/recovery/*.png` (7 files)
-  - Accessibility: `docs/qa/evidence/batch-5/accessibility/*.png`, `touch-targets.json` (5 files)
-  - Skin switch: `docs/qa/evidence/batch-5/skin-switch/*.png` (3 files)
-  - Match: `docs/qa/evidence/batch-5/match/*.png` (12 files)
-  - Result: `docs/qa/evidence/batch-5/result/*.png` (14 files)
-  - Network: `docs/qa/evidence/batch-5/network/*.json` (3 files)
-  - Issues (import/editor probes): `docs/qa/evidence/batch-5/issues/*.png`, `*.json` (14 files)
+- Evidence root: `docs/qa/evidence/batch-5/` — **138 files total: 131 PNG
+  screenshots + 7 JSON evidence files**, ~32MB, all git-tracked (not
+  gitignored).
+  - Cute Pop: `docs/qa/evidence/batch-5/cutepop/<viewport>/*.png` — 40 files (40 PNG)
+  - Yorunoshirube: `docs/qa/evidence/batch-5/yorunoshirube/<viewport>/*.png` — 40 files (40 PNG)
+  - Recovery: `docs/qa/evidence/batch-5/recovery/*.png` — 7 files (7 PNG)
+  - Accessibility: `docs/qa/evidence/batch-5/accessibility/*.png`, `touch-targets.json` — 5 files (4 PNG + 1 JSON)
+  - Skin switch: `docs/qa/evidence/batch-5/skin-switch/*.png` — 3 files (3 PNG)
+  - Match: `docs/qa/evidence/batch-5/match/*.png` — 12 files (12 PNG)
+  - Result: `docs/qa/evidence/batch-5/result/*.png` — 14 files (14 PNG)
+  - Network: `docs/qa/evidence/batch-5/network/*.json` — 3 files (3 JSON)
+  - Issues (import/editor probes): `docs/qa/evidence/batch-5/issues/*.png`, `*.json` — 14 files (11 PNG + 3 JSON)
+  - `cross-skin/`, `console/`, `matrix/` subdirectories were created but
+    are empty (0 files) — no dedicated files were placed there. Cross-skin
+    comparison is instead done via matched filenames across the
+    `cutepop/`/`yorunoshirube/` directories (see "Visual / Cross-skin"
+    above); `console/` being empty is itself the evidence of zero
+    captured console errors (the collectors ran in every scenario but
+    only write a file when an error is found).
+
+Not counted in the 138: the two QA markdown docs themselves
+(`BATCH-5-QA-MATRIX.md`, `BATCH-5-MANUAL-QA-REPORT.md`), the 3 QA
+automation scripts (`scripts/batch5-qa-0{1,2,3}-*.mjs`), and the
+Playwright visual-regression spec + baselines (`tests/visual/screens-extended.spec.ts`
++ 12 snapshot PNGs) — these are QA tooling and test code, not evidence
+artifacts, and were committed separately (see commit `75a80b4` for the
+visual-regression spec/baselines, distinct from the evidence commit
+`6512db0`).
 
 ## Asset Inventory (unchanged this batch)
 
@@ -313,9 +384,12 @@ Asset version changes this batch: none (CSS/test/docs only)
 - Known issue list current. ✅ Yes — zero open P0/P1/P2; see
   "Non-defect findings" for the two investigated-and-closed items.
 
-## Gate 5 Decision — Public Demo Ready
+## Gate 5 Decision — Public Demo Ready (within the validated Chromium browser scope)
 
-**PASS**, with browser scope explicitly stated below.
+**PASS within the validated Chromium (Desktop Chrome) browser scope
+only.** This Gate 5 decision does NOT claim Safari, Firefox, WebKit, or
+any real mobile/tablet device is verified or supported — those remain
+untested (see below and the QA Matrix's browser table).
 
 - CI passing: pending push (see final report in the conversation for the
   post-push confirmation).
@@ -344,26 +418,36 @@ Asset version changes this batch: none (CSS/test/docs only)
 - Common missing/corrupt entity recovery: ✅.
 - Skin switching updates browser color scheme: ✅.
 
-**Public demo readiness: TRUE, limited to the stated browser scope:**
+**Public demo readiness: TRUE, strictly within the validated Chromium
+browser scope. Not evaluated, not implied, and not claimed for any
+other browser or device:**
 
 ```text
 Gate 5 browser scope: Chromium (Desktop Chrome) only.
+Safari:        NOT TESTED — no support claim.
+Firefox:       NOT TESTED — no support claim.
+WebKit:        NOT TESTED — no support claim.
+Real mobile/tablet devices: NOT TESTED — no support claim.
 ```
 
 This is not a narrowing of a prior commitment — the project's Playwright
 config (`playwright.config.ts`) has only ever defined a single
 `devices['Desktop Chrome']` project; no WebKit/Firefox project exists to
 compare against, and no prior release claimed multi-browser coverage.
+Wherever "Public Demo Ready" or `COMPLETE_PUBLIC_DEMO_READY` appears in
+this document set, it means "public demo ready within the validated
+Chromium browser scope" — never a general cross-browser or cross-device
+guarantee.
 
 ## Honest Readiness
 
 ```text
 Batch 5 manual QA complete:        true
 Gate 4:                            PASS
-Gate 5:                            PASS (Chromium/Desktop Chrome scope)
-Both official skins stable:        true
-Full target-browser QA complete:   true, for the project's own defined target (Chromium)
-Public demo visually ready:        true, within stated browser scope
+Gate 5:                            PASS, within the validated Chromium (Desktop Chrome) browser scope only
+Both official skins stable:        true, within the validated Chromium browser scope
+Full target-browser QA complete:   true for Chromium (this project's only defined target); Safari/Firefox/WebKit/real devices NOT TESTED
+Public demo visually ready:        true, strictly within the validated Chromium browser scope — not evaluated for any other browser or device
 Known P0:                          0
 Known P1:                          0
 Known P2:                          0

@@ -12,11 +12,16 @@ Multi-skin runtime baseline: complete
 Skin foundation hardening H1-H11: complete
 Official skins: yorunoshirube (9 finals, v4) / cute-pop (9 finals, v5)
 Image production pipeline: ready and proven (Codex CLI起点、request 007 closed)
-Batch 5 (full-screen integration / manual QA / public demo gate review): complete
+Batch 5 (full-screen integration / automated QA / public demo gate review): complete
   Gate 4 (User Test Ready): PASS
-  Gate 5 (Public Demo Ready): PASS, browser scope = Chromium (Desktop Chrome)
+  Gate 5 (Public Demo Ready): PASS, strictly within the validated
+    Chromium (Desktop Chrome) browser scope — Safari/Firefox/WebKit/
+    real mobile devices are NOT TESTED and NOT claimed supported.
+  All Batch 5 QA (including gameplay) was performed by Chromium browser
+    automation (Playwright), not by human manual testing or on a real
+    device.
   See docs/qa/BATCH-5-MANUAL-QA-REPORT.md for full evidence and decision record.
-Current phase: release-candidate hardening (Gate 6) — not yet started
+Current phase: release-candidate hardening (Gate 6)
 ```
 
 正確な現在地と実装順:
@@ -288,7 +293,7 @@ imports are validated (schema + unsafe-key rejection) before a deck can be playe
 locally imported or private images are never included in shared deck JSON
 no online multiplayer, no accounts, no billing, no cloud sync
 supported skins: yorunoshirube, cute-pop (both official, both complete)
-verified browser scope for this demo: Chromium (Desktop Chrome)
+verified browser scope for this demo: Chromium (Desktop Chrome) only — Safari/Firefox/WebKit/real mobile devices are not tested and not claimed supported
 reset path: TOP screen -> "ローカルデータを初期化…" (irreversible, explained in the confirmation dialog)
 ```
 

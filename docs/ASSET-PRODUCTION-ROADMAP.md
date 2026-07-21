@@ -616,18 +616,22 @@ contract slots are B/C/D-class (fallback/shared-overlay/deferred by
 design, audited sufficient where applicable — see classification table
 above), not gaps.
 
-**Batch 5 — Full-screen integration / manual QA / public demo gate
+**Batch 5 — Full-screen integration / automated QA / public demo gate
 review: COMPLETE (2026-07-21).** All screens x both skins x five review
-sizes were verified (automated Playwright-driven QA scripts plus expanded
-visual regression, 34 -> 56 cases). Gate 4: PASS. Gate 5: PASS (browser
-scope: Chromium/Desktop Chrome, matching this project's own
-`playwright.config.ts` target; WebKit/Firefox/real Safari were not
-verified in this pass). Zero P0/P1 product defects were found — every
+sizes were verified via Chromium browser automation (Playwright-driven
+QA scripts plus expanded visual regression, 34 -> 56 cases) — not human
+manual testing, not a real device. Gate 4: PASS. **Gate 5: PASS, strictly
+within the validated Chromium (Desktop Chrome) browser scope** (matching
+this project's own `playwright.config.ts` target; WebKit/Firefox/real
+Safari/real mobile devices were NOT verified in this pass and are not
+claimed supported). Zero P0/P1 product defects were found — every
 initial finding traced back to either a QA-script bug or already-intended
 design (SkinSelector reachable from TOP/Gallery only per H4 scope; match
 state is intentionally session-only and does not survive reload). Full
 evidence: `docs/qa/BATCH-5-QA-MATRIX.md`,
-`docs/qa/BATCH-5-MANUAL-QA-REPORT.md`, `docs/qa/evidence/batch-5/`.
+`docs/qa/BATCH-5-MANUAL-QA-REPORT.md`, `docs/qa/evidence/batch-5/`
+(138 files: 131 PNG + 7 JSON, re-verified by direct enumeration
+2026-07-21 after an earlier miscount of 121+7 in the original report).
 
 **Fixed next task: Release Candidate track — Gate 6.** Entry condition:
 explicit instruction to begin Gate 6. Stop condition: Gate 6 requirements
