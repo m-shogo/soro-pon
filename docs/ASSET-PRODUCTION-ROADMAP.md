@@ -616,16 +616,23 @@ contract slots are B/C/D-class (fallback/shared-overlay/deferred by
 design, audited sufficient where applicable — see classification table
 above), not gaps.
 
-**Fixed next task: Batch 5 — Full-screen integration / manual QA pass.**
-This is not more unconditional asset generation — both skins now have
-their required core and parity assets. The remaining gate is whole-product
-visual and interaction QA (all screens x both skins x 5 review sizes,
-`docs/MANUAL-QA.md`, `docs/RELEASE-DEMO-GATES.md` Gate 4/5). Entry
-condition: explicit instruction to begin Batch 5. Stop condition: all
-screens x both skins x five review sizes manually verified, Gate 4/5
-results recorded, required fixes completed, visual regression and CI
-green, and release-readiness honestly decided (asset-production-complete
-is not the same claim as release-QA-complete — "public demo visually
-ready" stays false until Batch 5 finishes).
+**Batch 5 — Full-screen integration / manual QA / public demo gate
+review: COMPLETE (2026-07-21).** All screens x both skins x five review
+sizes were verified (automated Playwright-driven QA scripts plus expanded
+visual regression, 34 -> 56 cases). Gate 4: PASS. Gate 5: PASS (browser
+scope: Chromium/Desktop Chrome, matching this project's own
+`playwright.config.ts` target; WebKit/Firefox/real Safari were not
+verified in this pass). Zero P0/P1 product defects were found — every
+initial finding traced back to either a QA-script bug or already-intended
+design (SkinSelector reachable from TOP/Gallery only per H4 scope; match
+state is intentionally session-only and does not survive reload). Full
+evidence: `docs/qa/BATCH-5-QA-MATRIX.md`,
+`docs/qa/BATCH-5-MANUAL-QA-REPORT.md`, `docs/qa/evidence/batch-5/`.
+
+**Fixed next task: Release Candidate track — Gate 6.** Entry condition:
+explicit instruction to begin Gate 6. Stop condition: Gate 6 requirements
+(migration, storage recovery, performance caps, asset caching, rollback,
+accessibility acceptance) verified, blocking defects fixed, tests/CI
+green, release-candidate decision recorded.
 
 Cross-referenced from docs/IMPLEMENTATION-WORKFLOW.md.

@@ -70,9 +70,32 @@ Batch 4(request 016: ヨルノシルベ badge.info.background)は完了
   参照。
   **現在の状態: cute-pop final9件・v5 / yorunoshirube final9件・v4 /
   Official finals across skins: 18。両スキンとも9 official finals。**
-  次の固定タスク(未着手): Batch 5(full-screen integration / manual QA
-  pass) — 新規asset生成が目的ではなく、両スキン・全画面・5サイズの
-  release QAゲート。docs/ASSET-PRODUCTION-ROADMAP.md参照
+Batch 5(full-screen integration / manual QA / public demo gate review)は
+  完了(2026-07-21、COMPLETE_PUBLIC_DEMO_READY)。新規asset生成は行っていない
+  (Batch 5の目的は個別assetではなく製品全体のQA)。両skin・全screen
+  (TOP/DeckList/DeckDetail/DeckEditor/Collection/MatchSetup/Match/Result/
+  Gallery)・5viewport(844x390/852x393/932x430/1024x600/1366x768)・
+  keyboard/focus/touch target・deck import(valid/invalid JSON/unknown field/
+  unsafe field/unsafe image URL/oversized)・deck editor validation・
+  boot/recovery(fresh/corrupt/invalid skin/missing deck/ErrorBoundary/reset)・
+  skin switching(state保持/asset version/404・candidate leakage 0)・
+  実対局(3人戦/4人戦×両skin、計4対局をResultまで完走、reload idempotency
+  確認済み)を自動化スクリプト(scripts/batch5-qa-0{1,2,3}-*.mjs)と
+  Playwright visual regression拡張(34->56 cases、Result/DeckList/
+  DeckEditor/きせかえModalを追加、Result画面は対局seedが非決定的なため
+  strict baseline対象外とし到達性+overflowのみ機械検証)で実施。
+  発見した問題は全て自スクリプトの不具合または既存の意図した設計
+  (SkinSelectorはTOP/Galleryのみ配置がH4の意図通り、対局中reloadで
+  TOPへ戻るのは対局状態を永続化しない設計通り)であり、製品コード側の
+  P0/P1は0件。Gate 4: PASS。Gate 5: PASS(browser scope: Chromium/
+  Desktop Chrome。本プロジェクトのplaywright.config.tsが元々定義する
+  対象browserと同一であり、WebKit/Firefox/実Safariは今回未検証)。
+  README.mdへpublic demo limitations copyを追加。証跡:
+  docs/qa/BATCH-5-QA-MATRIX.md、docs/qa/BATCH-5-MANUAL-QA-REPORT.md、
+  docs/qa/evidence/batch-5/(スクリーンショット121枚+network/console JSON)。
+  次の固定タスク(未着手・要明示指示): Release Candidate track — Gate 6
+  (migration/storage recovery/performance caps/asset caching/rollback/
+  a11y acceptance等)。
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。

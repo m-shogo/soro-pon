@@ -10,9 +10,13 @@ Vamp-pon世界の中で遊ばれている「記憶札遊び」として扱いま
 Gameplay MVP phases 1-14: complete
 Multi-skin runtime baseline: complete
 Skin foundation hardening H1-H11: complete
-Official skins: yorunoshirube / cute-pop
+Official skins: yorunoshirube (9 finals, v4) / cute-pop (9 finals, v5)
 Image production pipeline: ready and proven (Codex CLI起点、request 007 closed)
-Current phase: official asset production (candidates -> human review -> final)
+Batch 5 (full-screen integration / manual QA / public demo gate review): complete
+  Gate 4 (User Test Ready): PASS
+  Gate 5 (Public Demo Ready): PASS, browser scope = Chromium (Desktop Chrome)
+  See docs/qa/BATCH-5-MANUAL-QA-REPORT.md for full evidence and decision record.
+Current phase: release-candidate hardening (Gate 6) — not yet started
 ```
 
 正確な現在地と実装順:
@@ -115,7 +119,7 @@ H5 layered SkinSurface and real nine-slice proof         complete
 H6 proven central render modes                          complete (implemented only when proven necessary; no unconditional rollout)
 H7 shared component and CSS responsibility migration     complete
 H8 DOM/accessibility/recovery tests and fixes            complete
-H9 Playwright visual regression and five-size QA         complete (32 cases, 5 sizes, both skins)
+H9 Playwright visual regression and five-size QA         complete (56 cases, 5 sizes, both skins)
 H10 installed/paid skin security and atomic loading      complete (marketplace/payment/entitlement remain future scope)
 H11 persistent match-session idempotency before restore/replay  complete (restore/replay feature itself remains non-MVP)
 ```
@@ -275,6 +279,20 @@ one hardening item completed before the next
 ```
 
 Report changed files, commit SHA, commands/local results, CI status or unavailable, affected skins/screens, visual proof, remaining risk, and next hardening item.
+
+## Public Demo Notes
+
+```text
+local-first demo: decks and progress are stored only in this browser's localStorage
+imports are validated (schema + unsafe-key rejection) before a deck can be played
+locally imported or private images are never included in shared deck JSON
+no online multiplayer, no accounts, no billing, no cloud sync
+supported skins: yorunoshirube, cute-pop (both official, both complete)
+verified browser scope for this demo: Chromium (Desktop Chrome)
+reset path: TOP screen -> "ローカルデータを初期化…" (irreversible, explained in the confirmation dialog)
+```
+
+See docs/qa/BATCH-5-MANUAL-QA-REPORT.md for the full QA evidence behind this notice.
 
 ## Final Decision
 
