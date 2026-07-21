@@ -1,11 +1,14 @@
 import type { DeckProject, DeckSource } from '../domain/deck';
 import type { ValidationIssue } from '../domain/validation';
+import { migrateLegacyDeck } from '../engine/import/migrateLegacyDeck';
+import { deckProjectSchema } from '../schemas/deckProjectSchema';
 import {
+  storedDeckSchema,
   storedDecksPayloadSchema,
   type StoredDeck,
   type StoredDecksPayload,
 } from '../schemas/storageSchema';
-import type { KeyValueStorage } from './keyValueStorage';
+import { safeWrite, type KeyValueStorage } from './keyValueStorage';
 
 export const DECKS_STORAGE_KEY = 'soro-pon.decks.v1';
 export const DECKS_BACKUP_KEY = 'soro-pon.decks.v1.corrupt-backup';
@@ -25,42 +28,161 @@ export type DeckStore = {
 
 const EMPTY_PAYLOAD: StoredDecksPayload = { version: 1, decks: [] };
 
+const DECK_SOURCES: readonly DeckSource[] = ['official', 'created', 'imported'];
+
+// 個々のdeck entryをできる限り復元する(Gate 6 migration/storage recovery)。
+// 目的: outer payloadのstrict parseが1件の壊れた/旧schemaのdeckのせいで
+// 失敗した場合、他の正常なdeckまで巻き添えで全消去しない。
+// - 通常のstoredDeckSchemaでparseできればそのまま採用
+// - deck本体だけmigrateLegacyDeck(version 0 -> 現行)で救えるなら救う
+//   (import経路と同じ決定的migrationを再利用する。新しいmigration
+//   frameworkは導入しない)
+// - それでも壊れているentryは個別に捨てる(全体は道連れにしない)
+function salvageDecks(rawDecks: unknown[]): { decks: StoredDeck[]; recoveredCount: number; droppedCount: number } {
+  const decks: StoredDeck[] = [];
+  let droppedCount = 0;
+  let recoveredCount = 0;
+
+  for (const entry of rawDecks) {
+    const direct = storedDeckSchema.safeParse(entry);
+    if (direct.success) {
+      decks.push(direct.data);
+      continue;
+    }
+    if (entry === null || typeof entry !== 'object') {
+      droppedCount += 1;
+      continue;
+    }
+    const record = entry as Record<string, unknown>;
+    const migrated = migrateLegacyDeck(record['deck']);
+    if (!migrated.ok) {
+      droppedCount += 1;
+      continue;
+    }
+    const deckParsed = deckProjectSchema.safeParse(migrated.migrated);
+    const source = DECK_SOURCES.includes(record['source'] as DeckSource)
+      ? (record['source'] as DeckSource)
+      : 'created';
+    const updatedAtMs =
+      typeof record['updatedAtMs'] === 'number' && Number.isFinite(record['updatedAtMs'])
+        ? (record['updatedAtMs'] as number)
+        : Date.now();
+    if (deckParsed.success) {
+      decks.push({ deck: deckParsed.data, source, updatedAtMs });
+      recoveredCount += 1;
+    } else {
+      droppedCount += 1;
+    }
+  }
+
+  return { decks, recoveredCount, droppedCount };
+}
+
 // localStorageのdeck保管庫。読み込みは必ずZod strict parseを通し、
 // 破損データはバックアップへ退避して空の状態から回復する(起動を止めない)。
 export function createLocalStorageDeckStore(
   storage: KeyValueStorage,
   now: () => number = () => Date.now(),
 ): DeckStore {
+  const quarantineAndReset = (raw: string, message: string): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
+    storage.setItem(DECKS_BACKUP_KEY, raw);
+    storage.removeItem(DECKS_STORAGE_KEY);
+    return {
+      payload: EMPTY_PAYLOAD,
+      issues: [{ code: 'L9001', severity: 'warning', message }],
+    };
+  };
+
   const readPayload = (): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
     const raw = storage.getItem(DECKS_STORAGE_KEY);
     if (raw === null) {
       return { payload: EMPTY_PAYLOAD, issues: [] };
     }
+    let json: unknown;
     try {
-      const parsed = storedDecksPayloadSchema.safeParse(JSON.parse(raw) as unknown);
-      if (parsed.success) {
-        return { payload: parsed.data, issues: [] };
-      }
+      json = JSON.parse(raw);
     } catch {
-      // JSONとして壊れている場合も下の回復処理へ
+      return quarantineAndReset(
+        raw,
+        '保存データが壊れていたため初期化しました。壊れたデータはバックアップに退避しています。',
+      );
     }
+    const parsed = storedDecksPayloadSchema.safeParse(json);
+    if (parsed.success) {
+      return { payload: parsed.data, issues: [] };
+    }
+    // outer shapeがstrict parseを通らなかった場合でも、
+    // decks配列自体が存在するなら1件ずつ救済を試みる。
+    const maybeDecks =
+      json !== null && typeof json === 'object' && Array.isArray((json as Record<string, unknown>)['decks'])
+        ? ((json as Record<string, unknown>)['decks'] as unknown[])
+        : null;
+    if (maybeDecks === null) {
+      return quarantineAndReset(
+        raw,
+        '保存データが壊れていたため初期化しました。壊れたデータはバックアップに退避しています。',
+      );
+    }
+    const { decks, recoveredCount, droppedCount } = salvageDecks(maybeDecks);
     storage.setItem(DECKS_BACKUP_KEY, raw);
-    storage.removeItem(DECKS_STORAGE_KEY);
-    return {
-      payload: EMPTY_PAYLOAD,
-      issues: [
-        {
-          code: 'L9001',
-          severity: 'warning',
-          message:
-            '保存データが壊れていたため初期化しました。壊れたデータはバックアップに退避しています。',
-        },
-      ],
-    };
+    if (decks.length === 0 && maybeDecks.length > 0) {
+      // 何も救えなかった場合は従来通りの全消去メッセージにする
+      return quarantineAndReset(
+        raw,
+        '保存データが壊れていたため初期化しました。壊れたデータはバックアップに退避しています。',
+      );
+    }
+    // outer payload自体はstrict parseを通らなかった(未知フィールド/不正な
+    // versionなど)ため、無警告で黙って正規化はしない — 何が起きたかを常に
+    // 可視化する。3パターンに分ける:
+    // - droppedCount > 0: 実際にdeck entryを失った(L9003)
+    // - droppedCount === 0 かつ recoveredCount > 0: 旧形式からの自動変換の
+    //   みで、データは失っていない(L9002)
+    // - それ以外: outer shapeのみの問題で、deck自体は無事(L9001、既存の
+    //   L9001系呼び出し元/テストとの互換を保つ)
+    const issues: ValidationIssue[] =
+      droppedCount > 0
+        ? [
+            {
+              code: 'L9003',
+              severity: 'warning',
+              message:
+                `一部のデッキ保存データが壊れていたため、正常な${decks.length}件のみ復元しました` +
+                (recoveredCount > 0 ? `(うち${recoveredCount}件は旧形式から自動変換)` : '') +
+                `。壊れたデータはバックアップに退避しています。`,
+            },
+          ]
+        : recoveredCount > 0
+          ? [
+              {
+                code: 'L9002',
+                severity: 'warning',
+                message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。`,
+              },
+            ]
+          : [
+              {
+                code: 'L9001',
+                severity: 'warning',
+                message:
+                  '保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。念のため元データはバックアップに退避しています。',
+              },
+            ];
+    // 救済結果を書き戻す(ベストエフォート)。失敗しても今回の読み込み結果は
+    // そのまま返す — 次回起動時に同じ救済処理を再実行するだけなので安全。
+    try {
+      storage.setItem(DECKS_STORAGE_KEY, JSON.stringify({ version: 1, decks }));
+    } catch {
+      // quotaなどで書き戻せなくても、今回のin-memory復元結果は利用できる。
+    }
+    return { payload: { version: 1, decks }, issues };
   };
 
   const writePayload = (payload: StoredDecksPayload): void => {
-    storage.setItem(DECKS_STORAGE_KEY, JSON.stringify(payload));
+    safeWrite(
+      () => storage.setItem(DECKS_STORAGE_KEY, JSON.stringify(payload)),
+      '保存に失敗しました(空き容量が不足している可能性があります)。デッキの変更は保存されていません。',
+    );
   };
 
   return {

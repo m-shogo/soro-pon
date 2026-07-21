@@ -14,6 +14,7 @@ import type { DeckValidationResult } from '../domain/validation';
 import { parseDeckImport } from '../engine/import/parseDeckImport';
 import { validateDeckProject } from '../engine/validation/validateDeckProject';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
+import { StorageWriteError } from '../storage/keyValueStorage';
 import { createLocalStorageDeckStore } from '../storage/localStorageDeckStore';
 import { createLocalStorageRecordsStore } from '../storage/localStorageRecordsStore';
 import { createLocalStorageSettingsStore } from '../storage/localStorageSettingsStore';
@@ -117,13 +118,39 @@ export function AppRoot() {
     [],
   );
 
+  // 保存系書き込みをquota超過等から安全に包む(Gate 6 storage recovery)。
+  // 失敗時は生のDOMExceptionをそのまま投げず、理解可能な通知として
+  // saveNoticesへ積み、falseを返す。呼び出し側はfalseなら「保存された前提の
+  // 後続処理(画面遷移やdirty解除)」を行わない。
+  const [saveNotices, setSaveNotices] = useState<string[]>([]);
+  const tryWrite = useCallback((fn: () => void): boolean => {
+    try {
+      fn();
+      return true;
+    } catch (err) {
+      if (err instanceof StorageWriteError) {
+        setSaveNotices((prev) => [...prev, err.message]);
+        return false;
+      }
+      throw err;
+    }
+  }, []);
+
   const [bootNotices] = useState<string[]>(() => {
     // 初回起動: 公式スターターを保存(strict parse経由)
     const { decks, issues } = deckStore.loadAll();
     if (!decks.some((d) => d.deck.id === OFFICIAL_STARTER_ID)) {
       const parsed = deckProjectSchema.safeParse(starterRaw);
       if (parsed.success) {
-        deckStore.saveDeck(parsed.data, 'official');
+        try {
+          deckStore.saveDeck(parsed.data, 'official');
+        } catch (err) {
+          if (err instanceof StorageWriteError) {
+            issues.push({ code: 'L9002', severity: 'warning', message: err.message });
+          } else {
+            throw err;
+          }
+        }
       }
     }
     return issues.map((issue) => issue.message);
@@ -142,12 +169,13 @@ export function AppRoot() {
       const current = recordsStore.load().records;
       const gained = computeNewAchievements(current.achievements ?? [], event, current);
       if (gained.length > 0) {
-        recordsStore.unlockAchievements(gained);
-        setRecordsVersion((v) => v + 1);
+        if (tryWrite(() => recordsStore.unlockAchievements(gained))) {
+          setRecordsVersion((v) => v + 1);
+        }
       }
       return ACHIEVEMENTS.filter((a) => gained.includes(a.id));
     },
-    [recordsStore],
+    [recordsStore, tryWrite],
   );
 
   const validations = useMemo(() => {
@@ -182,7 +210,10 @@ export function AppRoot() {
       return;
     }
     const validation = validateDeckProject({ deck: result.deck });
-    deckStore.saveDeck(result.deck, 'imported');
+    if (!tryWrite(() => deckStore.saveDeck(result.deck, 'imported'))) {
+      // 保存に失敗した場合はimport modalを開いたままにし、入力内容も失わない。
+      return;
+    }
     refreshDecks();
     processAchievements({ type: 'deckImported' });
     setImportOpen(false);
@@ -230,12 +261,16 @@ export function AppRoot() {
       if (!built) {
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
-      recordsStore.addRecord(built.record, built.matchKey, built.roleKey);
+      if (!tryWrite(() => recordsStore.addRecord(built.record, built.matchKey, built.roleKey))) {
+        // 保存に失敗しても対局結果画面自体はin-memory stateから描画できるため、
+        // Result画面を止めない。コイン/実績だけが保存されない。
+        return { coinsEarned: 0, newlyUnlocked: [] };
+      }
       setRecordsVersion((v) => v + 1);
       const newlyUnlocked = processAchievements(built.achievementEvent);
       return { coinsEarned: built.record.coinsEarned, newlyUnlocked };
     },
-    [decks, recordsStore, processAchievements],
+    [decks, recordsStore, processAchievements, tryWrite],
   );
 
   const importModal = (
@@ -309,7 +344,9 @@ export function AppRoot() {
             onImport={() => setImportOpen(true)}
             onCreate={() => {
               const id = `created-${Date.now()}`;
-              deckStore.saveDeck(createDeckTemplate(id, '新しいデッキ'), 'created');
+              if (!tryWrite(() => deckStore.saveDeck(createDeckTemplate(id, '新しいデッキ'), 'created'))) {
+                return;
+              }
               refreshDecks();
               setScreen({ kind: 'deckEditor', deckId: id });
             }}
@@ -330,7 +367,9 @@ export function AppRoot() {
             onEdit={() => setScreen({ kind: 'deckEditor', deckId: deck.id })}
             onExport={() => handleExport(deck)}
             onDelete={() => {
-              deckStore.removeDeck(deck.id);
+              if (!tryWrite(() => deckStore.removeDeck(deck.id))) {
+                return;
+              }
               refreshDecks();
               setScreen({ kind: 'deckList' });
             }}
@@ -348,7 +387,10 @@ export function AppRoot() {
             deck={deck}
             onSave={(updated) => {
               const saveSource = source === 'official' ? 'created' : source;
-              deckStore.saveDeck(updated, saveSource);
+              if (!tryWrite(() => deckStore.saveDeck(updated, saveSource))) {
+                // 保存に失敗した場合はDeckEditorに留まり、draftを失わせない。
+                return;
+              }
               refreshDecks();
               const savedValidation = validateDeckProject({ deck: updated });
               processAchievements({
@@ -431,6 +473,7 @@ export function AppRoot() {
       {renderScreen()}
       {importModal}
       <Toast messages={bootNotices} tone="warning" />
+      <Toast messages={saveNotices} tone="warning" />
     </>
   );
 }

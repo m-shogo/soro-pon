@@ -6,7 +6,7 @@ import {
   type MatchRecord,
   type RecordsPayload,
 } from '../schemas/storageSchema';
-import type { KeyValueStorage } from './keyValueStorage';
+import { safeWrite, type KeyValueStorage } from './keyValueStorage';
 
 export const RECORDS_STORAGE_KEY = 'soro-pon.records.v1';
 
@@ -55,7 +55,10 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
   };
 
   const write = (next: RecordsPayload): RecordsPayload => {
-    storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(next));
+    safeWrite(
+      () => storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(next)),
+      '対局記録の保存に失敗しました(空き容量が不足している可能性があります)。今回のコイン・実績は保存されていません。',
+    );
     return next;
   };
 
