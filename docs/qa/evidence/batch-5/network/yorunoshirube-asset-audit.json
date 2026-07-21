@@ -1,0 +1,87 @@
+[
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/skin.json",
+    "status": 200,
+    "contentType": "application/json"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/tokens.css",
+    "status": 200,
+    "contentType": "text/css"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-paper-default.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-modal-background.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-result-frame.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-primary-background.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-secondary-background.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-face-base.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-back-base.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/badge-info-background.png?v=4",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/proof-button-primary-2x.png",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/proof-panel-paper-2x.png",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/skin.json",
+    "status": 200,
+    "contentType": "application/json"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/tokens.css",
+    "status": 200,
+    "contentType": "text/css"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/skin.json",
+    "status": 200,
+    "contentType": "application/json"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/tokens.css",
+    "status": 200,
+    "contentType": "text/css"
+  }
+]

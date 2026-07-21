@@ -1,0 +1,387 @@
+{
+  "pass": [
+    {
+      "label": "fresh boot TOP yorunoshirube 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot yorunoshirube 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP yorunoshirube 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot yorunoshirube 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP yorunoshirube 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot yorunoshirube 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP yorunoshirube 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot yorunoshirube 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP yorunoshirube 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot yorunoshirube 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP cute-pop 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot cute-pop 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP cute-pop 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot cute-pop 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP cute-pop 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot cute-pop 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP cute-pop 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot cute-pop 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "fresh boot TOP cute-pop 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "console clean fresh boot cute-pop 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP yorunoshirube 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList yorunoshirube 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor yorunoshirube 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable yorunoshirube 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP yorunoshirube 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList yorunoshirube 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor yorunoshirube 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable yorunoshirube 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP yorunoshirube 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList yorunoshirube 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor yorunoshirube 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable yorunoshirube 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP yorunoshirube 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList yorunoshirube 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor yorunoshirube 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable yorunoshirube 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP yorunoshirube 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList yorunoshirube 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor yorunoshirube 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable yorunoshirube 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP cute-pop 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList cute-pop 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor cute-pop 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable cute-pop 844x390",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP cute-pop 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList cute-pop 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor cute-pop 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable cute-pop 852x393",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP cute-pop 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList cute-pop 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor cute-pop 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable cute-pop 932x430",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP cute-pop 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList cute-pop 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor cute-pop 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable cute-pop 1024x600",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll TOP cute-pop 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckList cute-pop 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no h-scroll DeckEditor cute-pop 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "2-player not selectable cute-pop 1366x768",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "reload on TOP does not crash",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "reload during match does not blank-screen",
+      "ok": true,
+      "detail": "landed on: soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\nすぐに対戦をはじめます\nデッキ一覧\n保存"
+    },
+    {
+      "label": "corrupt deck data recovers to usable TOP",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "corrupt deck data preserved in backup key",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "invalid skin id falls back to a valid built-in skin",
+      "ok": true,
+      "detail": "resolved data-skin=yorunoshirube"
+    },
+    {
+      "label": "missing/no deck does not blank-screen on まず遊ぶ",
+      "ok": true,
+      "detail": "landed on: 対局設定\n動物スターター / 通常版\nもどる\n人数\n3人戦\n4人戦\n\n手牌8枚 / 引いて9枚 / 3枚グループ×3組であがり。山 57 枚。\n\n面子\n君\nあな"
+    },
+    {
+      "label": "reset confirmation dialog explains scope",
+      "ok": true,
+      "detail": "ローカルデータの初期化デッキ・対局記録・実績・設定・スキン選択を全て削除して最初の状態に戻します。この操作は取り消せません。全て削除して初期化するやめる"
+    },
+    {
+      "label": "skin switch to cute-pop applies without reload",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "color-scheme meta updates on skin switch",
+      "ok": true,
+      "detail": "colorScheme=light"
+    },
+    {
+      "label": "theme-color meta updates on skin switch",
+      "ok": true,
+      "detail": "themeColor=#fff3e2"
+    },
+    {
+      "label": "skin selection persists after reload",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "no candidate asset requests in production runtime",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "no 404 asset requests during skin switch",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "yorunoshirube final asset requests all 200 image/*",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "cute-pop final asset requests all 200 image/*",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "fail": [
+    {
+      "label": "SkinSelector reachable from DeckEditor",
+      "ok": false,
+      "detail": null
+    }
+  ],
+  "notes": []
+}

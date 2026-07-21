@@ -1,0 +1,44 @@
+[
+  {
+    "screen": "TOP",
+    "label": "まず遊ぶすぐに対戦をはじめます",
+    "width": 420,
+    "height": 49.609375,
+    "pass": true
+  },
+  {
+    "screen": "TOP",
+    "label": "デッキ一覧保存したデッキを確認・編集しま",
+    "width": 420,
+    "height": 49.609375,
+    "pass": true
+  },
+  {
+    "screen": "TOP",
+    "label": "JSONを読み込むデッキデータ(JSON",
+    "width": 420,
+    "height": 49.609375,
+    "pass": true
+  },
+  {
+    "screen": "TOP",
+    "label": "記憶帳あがった役と記録。記憶コイン 0",
+    "width": 420,
+    "height": 49.609375,
+    "pass": true
+  },
+  {
+    "screen": "TOP",
+    "label": "きせかえ見た目のスキンを切り替えます",
+    "width": 420,
+    "height": 49.609375,
+    "pass": true
+  },
+  {
+    "screen": "TOP",
+    "label": "ローカルデータを初期化…",
+    "width": 420,
+    "height": 44,
+    "pass": true
+  }
+]

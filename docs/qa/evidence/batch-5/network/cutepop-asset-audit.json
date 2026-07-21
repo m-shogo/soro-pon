@@ -1,0 +1,87 @@
+[
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/skin.json",
+    "status": 200,
+    "contentType": "application/json"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/tokens.css",
+    "status": 200,
+    "contentType": "text/css"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png?v=5",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/candidates/proof-button-primary-2x.png",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/candidates/proof-panel-paper-2x.png",
+    "status": 200,
+    "contentType": "image/png"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/skin.json",
+    "status": 200,
+    "contentType": "application/json"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/tokens.css",
+    "status": 200,
+    "contentType": "text/css"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/skin.json",
+    "status": 200,
+    "contentType": "application/json"
+  },
+  {
+    "url": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/tokens.css",
+    "status": 200,
+    "contentType": "text/css"
+  }
+]

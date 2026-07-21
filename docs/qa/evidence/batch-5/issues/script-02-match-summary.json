@@ -1,0 +1,110 @@
+{
+  "pass": [
+    {
+      "label": "yoru-3p: reaches Result screen",
+      "ok": true,
+      "detail": "discards=14 ronOrTsumo=false"
+    },
+    {
+      "label": "yoru-3p: result explains score or draw",
+      "ok": true,
+      "detail": "対戦結果\n夜の帳が下りた。記憶を積み重ねし者が、今宵の勝者となる。\nロン — ナギ\n1組目\n鳥\n🦆\n鳥\n🦆\n鳥\n🐧\n2組目\n海の生き物\n🐬\n海の生き物\n🐙\n海の生き物\n🐙\n3組目\n哺乳類\n🦊\n哺乳類\n🦒\n哺乳類\n🐒\n◆\n役「空と海と大地」\n100点\n特別ボーナス「かわいいトリオ」\n+20点\n合計得点\n118\n順位\n・ あなた\n・ トモリ(放銃)\n★ ナギ\n獲得した記憶コイン\n+1"
+    },
+    {
+      "label": "yoru-3p: reload on Result does not blank-screen",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\nすぐに対戦をはじめます\nデッキ一覧\n保存したデッキを確認・編集します\nJSONを"
+    },
+    {
+      "label": "yoru-3p: after reload lands on a recoverable screen (TOP, by design match state is session-only)",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\n"
+    },
+    {
+      "label": "yoru-3p: no console errors during match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "yoru-4p: reaches Result screen",
+      "ok": true,
+      "detail": "discards=1 ronOrTsumo=false"
+    },
+    {
+      "label": "yoru-4p: result explains score or draw",
+      "ok": true,
+      "detail": "対戦結果\n夜の帳が下りた。記憶を積み重ねし者が、今宵の勝者となる。\nロン — ナギ\n1組目\n鳥\n🦆\n鳥\n🦅\n鳥\n🦅\n2組目\n海の生き物\n🐙\n海の生き物\n🐙\n鳥\n🐧\n3組目\n哺乳類\n🐘\nかわいい\n🐰\nオールマイティ\n⭐\n◆\n役「空と海と大地」\n100点\nワイルド使用 1枚\n特別ボーナス「かわいいトリオ」\n+20点\n特別ボーナス「つよい仲間」\n+25点\n合計得点\n143\n順位\n・ あな"
+    },
+    {
+      "label": "yoru-4p: reload on Result does not blank-screen",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\nすぐに対戦をはじめます\nデッキ一覧\n保存したデッキを確認・編集します\nJSONを"
+    },
+    {
+      "label": "yoru-4p: after reload lands on a recoverable screen (TOP, by design match state is session-only)",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\n"
+    },
+    {
+      "label": "yoru-4p: no console errors during match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "cutepop-3p: reaches Result screen",
+      "ok": true,
+      "detail": "discards=12 ronOrTsumo=false"
+    },
+    {
+      "label": "cutepop-3p: result explains score or draw",
+      "ok": true,
+      "detail": "対戦結果\n夜の帳が下りた。記憶を積み重ねし者が、今宵の勝者となる。\nロン — ナギ\n1組目\n鳥\n🦉\n鳥\n🦉\nオールマイティ\n⭐\n2組目\n海の生き物\n🐬\n海の生き物\n🐟\n海の生き物\n🐋\n3組目\n哺乳類\n🐻\nかわいい\n🐼\nかわいい\n🐰\n◆\n役「空と海と大地」\n100点\nワイルド使用 1枚\n特別ボーナス「かわいいトリオ」\n+20点\n特別ボーナス「森のなかまたち」\n+20点\n特別ボーナス「"
+    },
+    {
+      "label": "cutepop-3p: reload on Result does not blank-screen",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\nすぐに対戦をはじめます\nデッキ一覧\n保存したデッキを確認・編集します\nJSONを"
+    },
+    {
+      "label": "cutepop-3p: after reload lands on a recoverable screen (TOP, by design match state is session-only)",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\n"
+    },
+    {
+      "label": "cutepop-3p: no console errors during match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "cutepop-4p: reaches Result screen",
+      "ok": true,
+      "detail": "discards=1 ronOrTsumo=false"
+    },
+    {
+      "label": "cutepop-4p: result explains score or draw",
+      "ok": true,
+      "detail": "対戦結果\n夜の帳が下りた。記憶を積み重ねし者が、今宵の勝者となる。\nツモ — トモリ\n1組目\n鳥\n🦆\n鳥\n🦉\nオールマイティ\n⭐\n2組目\n海の生き物\n🐟\nは虫類\n🐢\nは虫類\n🐢\n3組目\n哺乳類\n🦁\n哺乳類\n🐒\n哺乳類\n🐒\n◆\n役「空と海と大地」\n100点\nワイルド使用 1枚\n特別ボーナス「かわいいトリオ」\n+20点\n特別ボーナス「森のなかまたち」\n+20点\n合計得点\n140\n順位\n"
+    },
+    {
+      "label": "cutepop-4p: reload on Result does not blank-screen",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\nすぐに対戦をはじめます\nデッキ一覧\n保存したデッキを確認・編集します\nJSONを"
+    },
+    {
+      "label": "cutepop-4p: after reload lands on a recoverable screen (TOP, by design match state is session-only)",
+      "ok": true,
+      "detail": "soro-pon\nVamp Pon 世界の中で流行っている記憶札遊び\nまず遊ぶ\n"
+    },
+    {
+      "label": "cutepop-4p: no console errors during match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "extended variant (14-tile) not reachable via normal starter MatchSetup",
+      "ok": true,
+      "detail": "4人戦 enabled=true (starter deck only exposes normal variant)"
+    }
+  ],
+  "fail": []
+}

@@ -1,0 +1,140 @@
+{
+  "pass": [
+    {
+      "label": "import valid-animal-starter: no blank screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "import valid-animal-starter: accepted and lands on DeckDetail",
+      "ok": true,
+      "detail": "動物スターター\n対局できます\n対局へ\n編集\nエクスポート\n削除\nもどる\nデッキ情報\n\n公式MVPサンプル。画像なしで遊べる安全テーマのスターターデッキ。通常版は9枚=3枚グループx3で判定する。\n\n\ud83d"
+    },
+    {
+      "label": "import invalid-json: no blank screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "import invalid-json: rejected with visible reason",
+      "ok": true,
+      "detail": "rejectedBadge=2 inDeckDetail=true"
+    },
+    {
+      "label": "import unknown-field: no blank screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "import unknown-field: rejected with visible reason",
+      "ok": true,
+      "detail": "rejectedBadge=2 inDeckDetail=true"
+    },
+    {
+      "label": "import unsafe-field-script: no blank screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "import unsafe-field-script: rejected with visible reason",
+      "ok": true,
+      "detail": "rejectedBadge=2 inDeckDetail=true"
+    },
+    {
+      "label": "import unsafe-image-url: no blank screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "import unsafe-image-url: rejected with visible reason",
+      "ok": true,
+      "detail": "rejectedBadge=2 inDeckDetail=true"
+    },
+    {
+      "label": "import large-file: no blank screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "import large-file: rejected with visible reason",
+      "ok": true,
+      "detail": "rejectedBadge=2 inDeckDetail=true"
+    },
+    {
+      "label": "editor: category creation adds a row",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "editor: tile creation works",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "editor: specificSet template gated until 3 tiles selected (no premature enable)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "editor: specificSet button did not enable after selecting 3 tiles (skipped duplicate test)",
+      "ok": true,
+      "detail": "non-blocking: template UI wiring, not a crash"
+    },
+    {
+      "label": "editor: unsaved changes warning shown on back navigation",
+      "ok": true,
+      "detail": "count=1"
+    },
+    {
+      "label": "editor: no crash during category/tile/role edits",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "keyboard: Tab moves focus on TOP",
+      "ok": true,
+      "detail": "まず遊ぶすぐに対戦をはじめます"
+    },
+    {
+      "label": "keyboard: focus ring visible after 5 tabs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "modal: きせかえ opens a dialog via Enter key",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "modal: initial focus lands inside dialog",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "modal: Escape closes dialog",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "modal: focus returns to opener after Escape",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "Tabs: ArrowRight moves selection in DeckEditor",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "Tabs: Home returns to first tab",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "touch targets: TOP buttons meet minimum size (>=44x40)",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "fail": []
+}
