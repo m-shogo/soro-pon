@@ -1,0 +1,22 @@
+{
+  "coldBootMs": 96,
+  "nav.top-to-deckList": 82,
+  "nav.deckList-to-deckDetail": 19,
+  "nav.deckDetail-to-deckEditor": 24,
+  "nav.top-to-matchSetup": 39,
+  "nav.matchSetup-to-matchStart": 28,
+  "nav.gallery-load": 19,
+  "heapBeforeSkinSwitchLoopBytes": 5836876,
+  "heapAfterSkinSwitchLoopBytes": 6979900,
+  "heapGrowthSkinSwitchLoopBytes": 1143024,
+  "rematchesCompleted": 3,
+  "heapBeforeRematchLoopBytes": 6110720,
+  "heapAfterRematchLoopBytes": 7589128,
+  "heapGrowthRematchLoopBytes": 1478408,
+  "consoleErrorsDuringRematchLoop": [],
+  "jsBundleBytes": 419601,
+  "cssBundleBytes": 34907,
+  "cutePopFinalAssetsBytes": 3539252,
+  "yorunoshirubeFinalAssetsBytes": 2753652,
+  "distTotalBytes": 7529349
+}

@@ -1,0 +1,30 @@
+{
+  "pass": [
+    {
+      "label": "partial deck-store corruption keeps the healthy deck (not wiped to 0)",
+      "ok": true,
+      "detail": "cardCount=1"
+    },
+    {
+      "label": "salvage warning toast is visible and readable",
+      "ok": true,
+      "detail": "⚠ 一部のデッキ保存データが壊れていたため、正常な1件のみ復元しました。壊れたデータはバックアップに退避しています。"
+    },
+    {
+      "label": "editor stays open after a failed (quota-exceeded) save (draft not lost)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "label": "quota-exceeded shows a clear, non-technical Japanese message",
+      "ok": true,
+      "detail": "⚠ 保存に失敗しました(空き容量が不足している可能性があります)。デッキの変更は保存されていません。"
+    },
+    {
+      "label": "invalid skin ID still recovers to a valid built-in skin",
+      "ok": true,
+      "detail": "data-skin=yorunoshirube"
+    }
+  ],
+  "fail": []
+}

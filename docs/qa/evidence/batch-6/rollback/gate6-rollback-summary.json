@@ -1,0 +1,40 @@
+{
+  "pass": [
+    {
+      "label": "OLD build (pre-Batch-5, 9b9ba1a) boots cleanly",
+      "ok": true,
+      "detail": "errs=0"
+    },
+    {
+      "label": "OLD build reads 2 decks written in NEW-build shape without loss",
+      "ok": true,
+      "detail": "cardCount=2"
+    },
+    {
+      "label": "OLD build: no crash reading NEW-shape data",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "NEW build reads OLD-shape data without loss (roll-forward safety)",
+      "ok": true,
+      "detail": "cardCount=1"
+    },
+    {
+      "label": "NEW build: no crash reading OLD-shape data",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "OLD build resolves its own bundled skin package cleanly (no 4xx/5xx)",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "label": "OLD build skin applies (data-skin set)",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "fail": []
+}

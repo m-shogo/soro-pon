@@ -296,7 +296,12 @@ export function AppRoot() {
         placeholder='{"version": 1, "id": "...", ...}'
       />
       {importIssues.length > 0 && (
-        <ul className="sp-issue-list" style={{ marginTop: 'var(--sp-space-8)' }}>
+        <ul
+          className="sp-issue-list"
+          style={{ marginTop: 'var(--sp-space-8)' }}
+          role="status"
+          aria-live="polite"
+        >
           {importIssues.slice(0, 8).map((message, i) => (
             <li key={i}>
               <Badge variant="warning">拒否</Badge> {message}
