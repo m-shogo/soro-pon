@@ -21,7 +21,19 @@ Batch 5 (full-screen integration / automated QA / public demo gate review): comp
     automation (Playwright), not by human manual testing or on a real
     device.
   See docs/qa/BATCH-5-MANUAL-QA-REPORT.md for full evidence and decision record.
-Current phase: release-candidate hardening (Gate 6)
+Batch 6 (Gate 6: Release Candidate hardening): complete
+  Gate 6: PASS, within the validated Chromium browser scope.
+  RC readiness: LIMITED READY (open items: real screen-reader pass,
+    non-Chromium browser verification, longer memory soak test, real
+    deploy target — none are Gate 6 blockers, all explicitly tracked).
+  Fixed 2 real P1 storage-layer defects found this batch: a single
+    corrupted/legacy deck entry could previously wipe a user's entire
+    deck list (now salvaged per-deck), and a quota-exceeded save
+    previously failed silently with no user feedback (now shown via
+    Toast, draft preserved).
+  See docs/qa/BATCH-6-GATE-6-REPORT.md for full evidence and decision record.
+Current phase: further release-candidate hardening (not yet scoped — see
+  "Next Fixed Task" in docs/qa/BATCH-6-GATE-6-REPORT.md)
 ```
 
 正確な現在地と実装順:
@@ -124,7 +136,7 @@ H5 layered SkinSurface and real nine-slice proof         complete
 H6 proven central render modes                          complete (implemented only when proven necessary; no unconditional rollout)
 H7 shared component and CSS responsibility migration     complete
 H8 DOM/accessibility/recovery tests and fixes            complete
-H9 Playwright visual regression and five-size QA         complete (56 cases, 5 sizes, both skins)
+H9 Playwright visual regression and five-size QA         complete (70 cases, 5 sizes, both skins)
 H10 installed/paid skin security and atomic loading      complete (marketplace/payment/entitlement remain future scope)
 H11 persistent match-session idempotency before restore/replay  complete (restore/replay feature itself remains non-MVP)
 ```

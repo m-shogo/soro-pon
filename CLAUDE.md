@@ -103,9 +103,44 @@ Batch 5(full-screen integration / 自動化QA / public demo gate review)は
   docs/qa/BATCH-5-QA-MATRIX.md、docs/qa/BATCH-5-MANUAL-QA-REPORT.md、
   docs/qa/evidence/batch-5/(PNGスクリーンショット131枚+JSON証跡7件、
   計138件、全てgit管理下)。
-  次の固定タスク(未着手・要明示指示): Release Candidate track — Gate 6
-  (migration/storage recovery/performance caps/asset caching/rollback/
-  a11y acceptance等)。
+Batch 6(Gate 6: Release Candidate hardening)は完了(2026-07-21)。
+  migration(deck storeのper-deck salvage。1件の壊れた/旧schemaのdeckが
+  他の正常なdeckを道連れにしない。既存のmigrateLegacyDeck再利用、新規
+  frameworkなし)・storage recovery(quota超過write失敗をStorageWriteError
+  へ変換しToastで通知、DeckEditor/importモーダルはdraftを保持したまま
+  留まる)の2件は実際に発見された製品コード側のP1不具合として修正
+  (修正前: 1件の壊れたdeckでdeck一覧全体が消去され得た/quota超過保存が
+  無言で失敗しUIは保存成功したかのように振る舞っていた)。
+  performance(cold boot ~96ms、画面遷移19-82ms、CDP経由での正確な
+  heap計測、bundle/asset実サイズ)・caching(content hashが無変更時は
+  安定・実変更時は変化することを実際のrebuildで確認)・rollback
+  (git worktreeで旧commit 9b9ba1a をbuildし別portで起動、新旧buildの
+  データ相互読み込みを実際に確認、7/7 PASS)・accessibility acceptance
+  (heading階層/accessible name/dialog aria-modal・aria-labelledby/
+  tile aria-pressed/200%zoom相当viewport/reduced-motion、semantic
+  DOM検査のみで実VoiceOver等は未実施と明記)は全て実ブラウザ自動化
+  スクリプト(scripts/gate6-qa-0{1,2,3,4}-*.mjs)で検証。import拒否
+  理由リストにaria-live欠落を発見しrole="status" aria-live="polite"
+  を追加(trivial、既存sp-issue-listクラス全体には広げず該当箇所のみ)。
+  visual regressionを70件へ拡張(+14、reset確認/quota超過toast/
+  部分救済toast/invalid skin fallback)。Result画面の非決定的
+  screenshotがgit管理下evidenceを毎回汚す設計問題も発見・修正
+  (test-results/へ書き先変更)。P0/P1: 0件(発見2件は両方修正・再検証
+  済み)。Gate 6: PASS(browser scope: Chromium/Desktop Chromeのみ、
+  Gate 4/5から拡張なし)。RC readiness: LIMITED READY(未実施:
+  実screen reader検証、非Chromium browser検証、長時間memory soak
+  test、実deploy環境でのrollback——いずれもGate 6のblockerではなく
+  明示的にtracked)。証跡: docs/qa/BATCH-6-GATE-6-QA-MATRIX.md、
+  docs/qa/BATCH-6-GATE-6-REPORT.md、
+  docs/release/STORAGE-RECOVERY-POLICY.md、
+  docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md、
+  docs/qa/evidence/batch-6/。
+  次の固定タスク(未着手・要明示指示): 上記RC readinessのopen item群
+  (実screen reader受入、非Chromium browser検証、長時間memory soak、
+  実deploy環境rollback)のいずれかを明示指示で着手するか、Gate 7/8
+  (installed/paid skin trust、match restore/replay)を対象機能が
+  実際に計画された時点で開始する。docs/qa/BATCH-6-GATE-6-REPORT.mdの
+  Next Fixed Task参照。
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
