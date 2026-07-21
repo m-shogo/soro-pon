@@ -83,7 +83,7 @@
     {
       "label": "reduced-motion: match screen still renders full content (no reliance on animation to reveal UI)",
       "ok": true,
-      "detail": "対局\n残り牌 56\n手番 あなた\n捨てる牌を選ぶ\n「森のなかまたち」はボーナスなので、これだけではあがれません。\n「どう"
+      "detail": "対局\n残り牌 56\n手番 あなた\n捨てる牌を選ぶ\n「つよい仲間」はボーナスなので、これだけではあがれません。\n「どうぶつ"
     },
     {
       "label": "reduced-motion: no console errors",

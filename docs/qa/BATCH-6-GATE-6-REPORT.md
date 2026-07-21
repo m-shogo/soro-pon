@@ -180,16 +180,40 @@ green.
   monkey-patch (real quota exhaustion is not practical to trigger in a
   test environment) at both the unit-test and real-browser level.
   Converted to a translated `StorageWriteError`, shown via `Toast`.
+  **Guarantee scope (precise, not "lossless"):** on a quota-exceeded
+  write, the in-session draft remains visible on screen (DeckEditor/
+  the import modal does not navigate away or discard the pasted text),
+  the user receives a Toast notification, and previously *persisted*
+  data is not overwritten or destroyed (the failed write never reaches
+  `setItem`, so whatever was already saved stays exactly as it was).
+  **Not guaranteed**: recovery of the unsaved draft after a reload —
+  if the user reloads or closes the tab while the quota-exceeded toast
+  is showing, the in-memory draft is gone, same as any unsaved web-app
+  form state. This was not tested as "recoverable after reload" and is
+  not claimed as such.
 - **Partial writes**: not separately simulated (no evidence this app
   performs multi-step writes that could be left half-complete — each
   store write is a single `setItem` call with a fully-serialized JSON
   string, so there is no intermediate state to corrupt).
 - **User-facing recovery**: reset path (TOP → "ローカルデータを初期化…")
   unchanged from Batch 5, re-confirmed still visible and functional.
-- **Data loss risk**: for the scenarios tested, zero — either full
-  recovery, partial recovery preserving everything possible, or (for
-  genuinely unrecoverable payloads) quarantine to a backup key rather
-  than deletion.
+- **Corrupted-entry (migration/salvage) guarantee scope (precise, not
+  "fully recoverable"):** valid deck entries — including ones
+  recoverable via `migrateLegacyDeck()` — are salvaged individually and
+  kept. An entry that is genuinely malformed (not valid under the
+  current schema and not migratable from a known legacy schema) is
+  **dropped from the active deck list**, not silently restored; it is
+  preserved only in the raw form inside the `*.corrupt-backup` key,
+  which the app does not automatically re-parse or offer to restore.
+  Dropping such an entry no longer causes *other, unrelated healthy
+  decks* to be lost — that is the actual fix this batch. It does not
+  mean every corrupted entry itself comes back.
+- **Data loss risk, summarized precisely**: zero risk to *other,
+  unaffected* data in every scenario tested (a bad entry no longer
+  takes down healthy entries; a failed write no longer overwrites
+  already-persisted data). The specific unrecoverable/unsaved item
+  itself is not always restorable — see the two guarantee-scope notes
+  above.
 
 ## Performance
 
@@ -328,19 +352,50 @@ snapshot. See commit `2bfc50e`.
 ## Verification
 
 ```text
-pnpm typecheck:       PASS
-pnpm test:            330/330 PASS (314 pre-existing + 16 new)
-pnpm skin:validate:   18/18 PASS (unchanged)
-pnpm asset:image:test: 92/92 PASS (unchanged)
-pnpm build:           PASS
-pnpm test:visual:     70/70 PASS (56 pre-existing + 14 new)
-Gate 6 browser scripts (Chromium automation, not unit tests):
+pnpm typecheck:       PASS  (verification result, not a test case — see note below)
+pnpm test:            330/330 PASS (314 pre-existing + 16 new; this vitest run
+                       already includes the 18 skin-contract tests below as one
+                       of its 27 test files — see "Total" note)
+pnpm skin:validate:   18/18 PASS — SAME 18 test cases as inside pnpm test above
+                       (`vitest run src/ui/skins/skinValidate.test.ts` is a
+                       narrower re-run of one file already covered by `pnpm
+                       test`). Not counted again in the total below.
+pnpm asset:image:test: 92/92 PASS (unchanged; independent pytest suite, not
+                       covered by pnpm test)
+pnpm build:           PASS  (verification result, not a test case)
+pnpm test:visual:     70/70 PASS (56 pre-existing + 14 new; independent
+                       Playwright suite)
+Gate 6 browser scripts (Chromium automation via standalone .mjs scripts,
+not registered with any test runner — pass/fail counted by the scripts'
+own assertions, independent of the suites above):
   gate6-qa-01 (migration/storage recovery):   5/5 PASS
   gate6-qa-02 (performance):                   spot-check, no pass/fail gate
   gate6-qa-03 (rollback rehearsal):            7/7 PASS
   gate6-qa-04 (accessibility acceptance):     18/18 PASS
-Total automated pass/fail checks this batch: 330 + 70 + 5 + 7 + 18 = 430
 ```
+
+**Total: 522 independent pass/fail test cases** (330 + 92 + 70 + 5 + 7 + 18),
+**plus `pnpm typecheck` and `pnpm build` as separate verification results**
+(neither is a pass/fail test case with a count; both are single
+PASS/FAIL commands).
+
+This corrects two earlier miscounts from this batch's own first report:
+
+- **"430"** (the number first reported) = 330 + 70 + 5 + 7 + 18. It
+  correctly avoided double-counting `skin:validate`'s 18 (a genuine
+  subset of the 330), but it accidentally *omitted*
+  `asset:image:test`'s 92 entirely — an independent suite that should
+  have been included. 430 + 92 = 522.
+- **"540"** (a naive sum of every number in the summary table,
+  330 + 18 + 92 + 70 + 30) double-counts `skin:validate`'s 18 test
+  cases, since they are the identical 18 cases already inside the 330
+  from `pnpm test` — `skin:validate` just re-runs one file narrower,
+  it does not add new coverage. 540 − 18 = 522.
+
+Both errors independently resolve to the same corrected figure, **522**,
+which is the number of genuinely distinct, independently-executable
+pass/fail test cases run this batch, with no suite's cases counted
+under two different labels.
 
 ### CI and Playwright
 
@@ -372,6 +427,40 @@ Batch 5's), not a CI-blocking check. If CI-based visual regression is
 wanted later, it should be scoped as its own follow-up (Linux baselines
 or a dedicated visual-regression CI job with browser caching), not
 folded silently into this gate.
+
+## Evidence Inventory (`docs/qa/evidence/batch-6/`)
+
+Re-verified 2026-07-21 by direct enumeration
+(`find docs/qa/evidence/batch-6 -type f`) and cross-checked against
+`git ls-files docs/qa/evidence/batch-6` — all 14 files are git-tracked,
+none are gitignored artifacts.
+
+```text
+PNG screenshots:  10
+JSON evidence:     4
+Logs:              0
+Markdown/other:    0
+Total:            14
+```
+
+Breakdown by subdirectory:
+
+```text
+accessibility/    5  (4 PNG, 1 JSON)
+migration/         1  (1 PNG)
+performance/       1  (1 JSON)
+rollback/          5  (4 PNG, 1 JSON)
+storage-recovery/  1  (1 PNG)
+(gate6-script-01-summary.json at the evidence root) 1 (1 JSON)
+```
+
+This is distinct from — and much smaller than — Batch 5's 138-file
+evidence set, because Gate 6 relies more heavily on unit tests
+(16 new cases in `gate6StorageRecovery.test.ts`, not screenshot-based)
+and on the 14 new Playwright visual-regression baselines (tracked under
+`tests/visual/gate6-recovery-states.spec.ts-snapshots/`, a separate
+location from `docs/qa/evidence/`, consistent with how Batch 5's own
+Playwright baselines were organized).
 
 ## Issue Summary
 
@@ -424,8 +513,10 @@ scope carried from Gate 4/5 — Gate 6 does not expand it).
 - Accessibility acceptance basics met via semantic/programmatic
   inspection; real screen-reader verification remains an explicitly
   recorded environment limitation, not claimed.
-- All automated verification green (430 pass/fail checks this batch,
-  0 failing), CI green (pending push confirmation — see final report),
+- All automated verification green (522 pass/fail test cases this
+  batch, plus `pnpm typecheck` and `pnpm build` as separate verification
+  results — see "Verification" above for the full accounting — 0
+  failing), CI green (pending push confirmation — see final report),
   worktree clean.
 
 **RC readiness: LIMITED READY** — ready for a release-candidate

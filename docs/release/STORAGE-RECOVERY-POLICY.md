@@ -8,22 +8,47 @@ evidence.
 
 ## Principles
 
-1. **Never destroy data the app doesn't have to.** A single corrupted or
-   legacy-schema deck entry must not take down the whole deck list.
+1. **Never destroy *other, unaffected* data the app doesn't have to.** A
+   single corrupted or legacy-schema deck entry must not take down the
+   whole deck list. This does not mean the corrupted entry itself is
+   always recovered — see "Guarantee scope" below.
 2. **Never fail silently.** Every recovery action surfaces a
    Japanese-language `ValidationIssue` (read path, shown as a `Toast` on
    boot) or throws a catchable, translated error (write path, shown as a
    `Toast` at the point of the failed action).
-3. **Never lose an in-progress user edit on a storage failure.** If a
-   save fails (e.g. quota exceeded), the screen that was mid-edit
-   (DeckEditor, the import modal) stays open with the user's input
-   intact — it does not navigate away as if the save had succeeded.
+3. **Never lose an in-progress user edit *while the screen stays
+   open*.** If a save fails (e.g. quota exceeded), the screen that was
+   mid-edit (DeckEditor, the import modal) stays open with the user's
+   input intact — it does not navigate away as if the save had
+   succeeded. This is an in-session guarantee only: it does not cover
+   recovery after a reload or tab close while unsaved — see "Guarantee
+   scope" below.
 4. **Prefer partial recovery to full reset.** When only some data is
-   unrecoverable, keep everything else.
+   unrecoverable, keep everything else that is recoverable.
 5. **No speculative migration framework.** Reuse the deterministic,
    already-existing `migrateLegacyDeck()` (deck-schema version 0 → 1).
    Do not add a generic multi-step migration runner until a second real
    schema version actually exists.
+
+## Guarantee scope (read this before calling anything "lossless")
+
+Do not describe this policy as making recovery "lossless" without
+qualification — it doesn't, in two specific, bounded ways:
+
+- **Quota-exceeded writes**: the in-session draft stays visible and
+  editable on screen, the user is notified via `Toast`, and
+  already-*persisted* data is never overwritten by the failed write.
+  What is **not** guaranteed: if the user reloads or closes the tab
+  while that unsaved draft exists, the draft itself is gone — same as
+  any ordinary unsaved web-form state. There is no autosave-to-a-
+  separate-key mechanism.
+- **Corrupted/unrecoverable deck entries**: an entry that fails both
+  the current schema and legacy-migration is dropped from the active
+  deck list, not restored. It is preserved only as raw, unparsed JSON
+  inside a `*.corrupt-backup` key — the app does not automatically
+  re-attempt parsing it or offer a restore UI for it. The guarantee is
+  that *other, healthy* entries are no longer taken down with it —
+  not that the corrupted entry itself comes back.
 
 ## Read path (localStorage → app state)
 

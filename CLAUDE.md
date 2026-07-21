@@ -135,6 +135,18 @@ Batch 6(Gate 6: Release Candidate hardening)は完了(2026-07-21)。
   docs/release/STORAGE-RECOVERY-POLICY.md、
   docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md、
   docs/qa/evidence/batch-6/。
+  Batch 6訂正(2026-07-21、同日中): 初回報告の自動チェック総数
+  「430」は二重集計なしだったがasset:image:test(92件)を集計から
+  漏らしていた誤りで、単純合計「540」はskin:validateの18件を
+  pnpm testの330件と二重計上した誤りだった。両者を訂正した正しい
+  独立チェック総数は**522件**(330+92+70+5+7+18、typecheck/buildは
+  test caseでなくverification resultとして別扱い)。同時に
+  「lossless」という表現も、quota超過時(セッション内draftは保持・
+  永続データは破壊しないが、reload後のdraft復元は保証しない)と
+  corrupted entry salvage(健全な他deckを道連れにしないだけで、
+  救済不能な当該entry自体の完全復元は保証しない)を区別する
+  正確な表現へ訂正した。詳細: docs/qa/BATCH-6-GATE-6-REPORT.mdの
+  Verification節/Storage Recovery節。
   次の固定タスク(未着手・要明示指示): 上記RC readinessのopen item群
   (実screen reader受入、非Chromium browser検証、長時間memory soak、
   実deploy環境rollback)のいずれかを明示指示で着手するか、Gate 7/8
