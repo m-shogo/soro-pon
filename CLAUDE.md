@@ -189,23 +189,44 @@ Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
   結果での代替や部分PASSとしての記載はしていない)。この試行により
   ユーザーの実機でVoiceOverがONのままダイアログが残っている可能性が
   あることをセッション内で明示的に警告済み(Cmd+F5または手動で解除を
-  依頼)。製品コードの変更は0件(何も検証できなかったため修正対象も
-  0件)。既存の全自動検証(typecheck/unit 330/skin:validate 18/
-  asset:image:test 92/build/Chromium visual 70/Firefox機能25/
-  WebKit機能25/Firefox a11y 21/WebKit a11y 21/cross-browser visual 96)
-  は全て再実行し無退行を確認。RC readiness: LIMITED READY
-  変更なし(対象gapを閉じられなかったため昇格なし、製品側の新規欠陥も
-  ないため降格もなし)。証跡: docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-MATRIX.md、
+  依頼)。
+  同日中に2回の再挑戦を実施(いずれもBLOCKED維持)。Attempt 2:
+  ユーザーがquickstartダイアログを手動で解除・再表示無効化した状態で
+  再試行したが、今度はVoiceOverダイアログ個別ではなくVoiceOver自体が
+  frontmost appとしてcomputer-useに認識され、以後の全click/key操作が
+  ブロック(request_accessは"VoiceOver"名でも解決不能)。Claude in Chrome
+  経由でのTabキー送信もVoiceOverのフォーカスをDockへ逸らす結果となり、
+  キャプションパネルの実内容は観測できず。ユーザーへ人間操作+記録の
+  協調方式を提案したが、ユーザーはClaude Code単独での続行を希望。
+  Attempt 3: computer-useを使わずmacOS Accessibility API
+  (AXIsProcessTrusted=false)・AppleScript/System Events
+  (Apple Events送信権限なし、エラー-1743)・システム設定への
+  request_access(拒否)・CGEventPost(Accessibility trust前提のため
+  実効性確認不能)の4経路を検証したが、いずれもこのセッションの
+  プロセスに必要なmacOS TCC権限(Accessibility/Automation)が
+  付与されておらず、GUIでの人間の許可なしに自己解決する経路が
+  存在しないことを確認。Playwright/CDPのaccessibility snapshotは
+  利用可能だが、実VoiceOver出力の代替とはしない(今回の受入基準通り)。
+  3回の試行全てで20フロー中0フローが実施され、real VoiceOver focus/
+  caption出力は一度も観測できなかった。製品コードの変更は0件
+  (何も検証できなかったため修正対象も0件)。既存の全自動検証
+  (typecheck/unit 330/skin:validate 18/asset:image:test 92/build/
+  Chromium visual 70/Firefox機能25/WebKit機能25/Firefox a11y 21/
+  WebKit a11y 21/cross-browser visual 96)は全て再実行し無退行を確認。
+  RC readiness: LIMITED READY変更なし(対象gapを閉じられなかったため
+  昇格なし、製品側の新規欠陥もないため降格もなし)。証跡:
+  docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-MATRIX.md、
   docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md、
-  docs/qa/evidence/batch-8/(JSON1件、試行ログ)。
+  docs/qa/evidence/batch-8/(JSON2件、試行ログ×2)。
   次の固定タスク(未着手・要明示指示): 実screen reader受入の再挑戦
-  (VoiceOverの初回quickstartダイアログを事前に無効化した状態を用意する、
-  またはユーザー自身が実VoiceOverを操作しエージェントが記録に専念する
-  形を取るなど、今回判明した制約を踏まえた別アプローチが必要)、
-  実iPhone/iPad Safari検証、実Android検証、長時間memory soak、
-  実deploy環境rollback rehearsalのいずれかを明示指示で着手するか、
-  Gate 7/8を対象機能が実際に計画された時点で開始する。
-  docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdの
+  (macOS Accessibility/Automation権限を事前にGUIで付与した状態を
+  用意する、computer-use相当ツールがVoiceOverをシステム全体の
+  オーバーレイとして扱えるようにする、またはユーザー自身が実VoiceOver
+  を操作しエージェントが記録に専念する形を取るなど、3回の試行で判明した
+  制約を踏まえた別アプローチが必要)、実iPhone/iPad Safari検証、
+  実Android検証、長時間memory soak、実deploy環境rollback rehearsalの
+  いずれかを明示指示で着手するか、Gate 7/8を対象機能が実際に計画された
+  時点で開始する。docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdの
   Next Fixed Task参照。
 ```
 

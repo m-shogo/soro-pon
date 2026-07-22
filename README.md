@@ -47,18 +47,32 @@ Batch 7 (Cross-Browser & Screen Reader Acceptance): complete
     but real-device and real-screen-reader verification remain open).
   See docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md for full evidence and
     decision record.
-Batch 8 (macOS VoiceOver Acceptance): BLOCKED
+Batch 8 (macOS VoiceOver Acceptance): BLOCKED (3 attempts, same day)
   Targeted the specific Batch 7 open item of real screen-reader
     acceptance. Real Safari is only viewable (not drivable) via the
     available automation tooling in this environment, so the attempt
     pivoted to VoiceOver + Chrome instead (a real, if less conventional,
-    pairing — VoiceOver does support Chrome). VoiceOver's own
-    first-launch dialog became frontmost and could not be dismissed
-    through any available permission mechanism (unindexed by Spotlight),
-    blocking all further interaction after 3 identical failures. Zero of
-    the planned 20 acceptance flows were exercised — this is recorded as
-    BLOCKED, not as a partial pass and not as "automated checks
-    substitute for screen-reader verified."
+    pairing — VoiceOver does support Chrome).
+  Attempt 1: VoiceOver's first-launch quickstart dialog became
+    frontmost and could not be dismissed (unindexed by Spotlight),
+    blocking all further computer-use interaction.
+  Attempt 2 (retry, after the user manually pre-dismissed and disabled
+    the quickstart dialog): the dialog no longer appeared, but
+    computer-use is structurally unable to interact with anything while
+    VoiceOver itself is active (VoiceOver, not a specific dialog, is
+    reported as the frontmost app and can't be allowlisted); routing
+    keyboard input through Claude-in-Chrome instead sent VoiceOver's
+    focus to the macOS Dock rather than the page.
+  Attempt 3 (Claude-Code-only, no user manual operation, using OS-level
+    APIs instead of computer-use): macOS Accessibility trust and
+    Automation (Apple Events) trust are both unavailable to this
+    session's process, blocking AXUIElement, AppleScript/System Events,
+    and (per Apple's documented behavior) CGEvent injection; no path
+    exists to self-grant those permissions without a human clicking
+    "Allow" in System Settings, which was not available.
+  Zero of the planned 20 acceptance flows were exercised across all 3
+    attempts — recorded as BLOCKED, not as a partial pass and not as
+    "automated checks substitute for screen-reader verified."
   No product code changed (nothing was found to test, so nothing was
     found to fix). All existing suites re-verified green, zero
     regressions.

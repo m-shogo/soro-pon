@@ -1,0 +1,51 @@
+{
+  "attempt": 3,
+  "label": "Claude Code-only retry (no user manual operation), per explicit user instruction to avoid the human-collaborative fallback",
+  "date": "2026-07-21",
+  "priorAttempts": [
+    "attempt-log.json attempt 1: VoiceOver+Chrome via Claude-in-Chrome + computer-use, blocked by unindexed VoiceOverクイックスタート dialog",
+    "attempt-log.json attempt 2 (retry, same session as this file's predecessor): user manually dismissed and disabled the quickstart dialog; VoiceOver activated without it reappearing, but computer-use blocked ALL click/key actions once VoiceOver itself (not just the dialog) was reported as the frontmost application; sending Tab via Claude-in-Chrome's keyboard dispatch moved VoiceOver's cursor toward the Dock rather than into page content, and no VoiceOver caption panel content could be reliably observed via computer-use screenshots. User was asked to switch to a human-operates/agent-records collaborative mode; user declined that mode for this session and requested a further Claude-Code-only attempt instead (this file)."
+  ],
+  "routesAttempted": [
+    {
+      "route": "macOS Accessibility API (AXUIElement) via direct ctypes call to ApplicationServices.framework",
+      "command": "ctypes AXIsProcessTrusted()",
+      "result": "returned 0 (false) — this shell process is NOT trusted for Accessibility API access",
+      "classification": "Environment limitation"
+    },
+    {
+      "route": "AppleScript / System Events (osascript)",
+      "command": "osascript -e 'tell application \"System Events\" to get name of first process whose frontmost is true'",
+      "result": "execution error -1743: 'System Eventsに Apple Eventsを送信する権限がありません' (no permission to send Apple Events to System Events — Automation TCC permission not granted)",
+      "classification": "Environment limitation"
+    },
+    {
+      "route": "Self-remediation via System Settings (computer-use) to check/grant the above permissions",
+      "command": "mcp__computer-use__request_access for システム設定 (System Settings / com.apple.systempreferences)",
+      "result": "denied (reason: user_denied)",
+      "classification": "Environment limitation — no path exists in this session to grant the required TCC permissions without human GUI interaction, and that access was not available"
+    },
+    {
+      "route": "CGEvent keyboard injection (CoreGraphics, ctypes)",
+      "command": "CGEventCreateKeyboardEvent + CGEventPost(kCGHIDEventTap, ...) for a Tab key",
+      "result": "event object created and CGEventPost was called without a Python-visible error, but CGEventPost's return value carries no success/failure signal, and Apple's documented behavior is that synthetic events posted to the HID event tap have no effect when the posting process is not Accessibility-trusted (already confirmed false above) — no verifiable effect could be confirmed, consistent with the documented no-op behavior for untrusted processes",
+      "classification": "Environment limitation (same root cause as AXIsProcessTrusted=false)"
+    },
+    {
+      "route": "computer-use direct interaction while VoiceOver active",
+      "result": "confirmed blocked again in this session's predecessor attempt (see attempt-log.json attempt 2) — VoiceOver itself is reported as the frontmost, non-allowlisted application for every click/key action, and cannot be resolved via request_access under any name tried",
+      "classification": "Tooling limitation (computer-use's app-allowlist model is incompatible with a system-wide accessibility overlay that itself claims frontmost status)"
+    },
+    {
+      "route": "Playwright / Chrome DevTools Protocol (page.accessibility snapshot, keyboard.press, locator focus)",
+      "result": "fully available and reliable — but per this batch's own explicit acceptance criteria, an accessibility-tree snapshot or DOM focus change via Playwright/CDP does NOT itself constitute observed real VoiceOver focus movement or VoiceOver caption/speech output, since it never actually exercises VoiceOver (Playwright does not communicate with VoiceOver at all — it operates the browser directly via CDP, independent of any screen reader running on the host). Not used as a substitute claim.",
+      "classification": "Available, but explicitly insufficient per the batch's own real-VoiceOver-only acceptance rule — not attempted further since it cannot produce the required evidence type regardless of how it is used"
+    }
+  ],
+  "conclusion": "Every route capable of driving or observing real VoiceOver requires a macOS TCC permission (Accessibility trust for AXUIElement/CGEvent-affecting-other-processes, or Automation trust for AppleScript/System Events) that this session's Claude Code process does not hold, and no path exists within this session to grant that permission without a human directly interacting with a macOS System Settings permission dialog — which was not available this session (System Settings access was itself denied). This is an environment/tooling limitation, not a product defect: zero application code was exercised under real VoiceOver, so no claim about the product's actual VoiceOver experience can be made in either direction.",
+  "realVoiceOverFocusObserved": false,
+  "realVoiceOverCaptionOutputObserved": false,
+  "topScreenMinimalSuccessConditionMet": false,
+  "flowsCompleted": 0,
+  "flowsPlanned": 20
+}

@@ -58,10 +58,14 @@ Dev server: http://localhost:5199 (Vite dev server, already running)
 
 ## Actual outcome
 
-**BLOCKED before any of the 20 flows could be exercised.** See
+**BLOCKED before any of the 20 flows could be exercised, across 3
+independent same-day attempts using 2 different toolchains.** See
 [BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md](./BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md)
-for the full attempt log and exact blocker. Full attempt log (every
-step tried, in order): `docs/qa/evidence/batch-8/attempt-log.json`.
+for the full attempt log and exact blockers of each. Attempt 1 and its
+retry (Attempt 2, after the user pre-dismissed VoiceOver's quickstart
+dialog): `docs/qa/evidence/batch-8/attempt-log.json`. Attempt 3
+(Claude-Code-only, via OS-level Accessibility/Automation APIs instead
+of computer-use): `docs/qa/evidence/batch-8/attempt-3-claude-code-only.json`.
 
 ## P0-P3 classification (unchanged scheme from Batch 6/7, extended)
 

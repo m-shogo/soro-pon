@@ -92,6 +92,88 @@ app itself.
 exercised.** Zero VoiceOver speech/caption content was ever observed;
 zero interaction with the app occurred under VoiceOver.
 
+## Attempt 2 (same-day retry): user pre-dismissed the quickstart dialog
+
+The user manually dismissed VoiceOver's quickstart dialog outside of
+this session and disabled its "show at launch" setting, then asked for
+a retry with the same Chrome+VoiceOver method.
+
+1. Repository re-verified fresh: `HEAD == origin/main == b549f82`,
+   worktree clean — confirmed before any new action, per the standing
+   duplicate-work-avoidance rule.
+2. App re-seeded (yorunoshirube skin + animal-starter deck) via
+   Claude-in-Chrome.
+3. `Cmd+F5` sent again with VoiceOverユーティリティ frontmost.
+   Screenshot confirmed: **no quickstart dialog appeared this time**
+   (the "起動時にようこそダイアログを表示" checkbox was now unchecked,
+   matching what the user described).
+4. However, the very next computer-use action (a left-click on a
+   checkbox inside VoiceOverユーティリティ's own window, which has
+   `full` access) failed with: `"Click at these coordinates would land
+   on 'VoiceOver', which is not in the allowed applications."` —
+   **VoiceOver itself**, not a specific dialog this time, is now
+   reported as the frontmost application for every click/key action.
+   `request_access` for `"VoiceOver"` and `"com.apple.VoiceOver"` both
+   failed to resolve (same "not installed/indexed" result as the
+   quickstart dialog in Attempt 1).
+5. computer-use `screenshot` (a read-only action) continued to work
+   throughout — only click/key actions were blocked.
+6. Pivoted to driving the app via **Claude-in-Chrome's own keyboard
+   dispatch** (`Tab`, sent to the specific tab, which does not go
+   through computer-use's frontmost-app gate at all) while using
+   computer-use screenshots to look for VoiceOver's caption panel.
+   The follow-up screenshot showed an orange-highlighted focus box —
+   but zoomed inspection showed it had landed on a **macOS Dock item
+   tooltip**, not inside the Chrome page content. No caption-panel text
+   describing any soro-pon UI element was ever visible.
+7. Conclusion: computer-use is structurally unable to interact with
+   anything while VoiceOver is active (VoiceOver itself, as a
+   system-wide overlay, cannot be added to the app-allowlist), and
+   routing keyboard input through Claude-in-Chrome instead does not
+   reliably keep VoiceOver's focus inside the target page. **Zero
+   VoiceOver caption/speech content was confirmed observed.**
+
+Per the user's own contingency plan, this attempt's stopping point was
+to propose a human-operator/agent-recorder collaborative mode. The user
+initially received that proposal, then — in place of doing the manual
+walkthrough — asked for a further Claude-Code-only attempt (Attempt 3)
+using OS-level automation APIs instead of computer-use.
+
+## Attempt 3 (same-day, Claude-Code-only, no user manual operation)
+
+Per explicit instruction, five alternative automation routes were
+evaluated for their ability to either (a) drive VoiceOver's own
+keyboard navigation, or (b) read VoiceOver's actual focus/caption
+output — not merely inspect the browser's DOM or accessibility tree.
+Full step-by-step detail: `docs/qa/evidence/batch-8/attempt-3-claude-code-only.json`.
+
+| Route | Result | Classification |
+|---|---|---|
+| macOS Accessibility API (`AXIsProcessTrusted()` via ctypes) | Returned `0` (false) — this process is not Accessibility-trusted | Environment limitation |
+| AppleScript / System Events (`osascript`) | `-1743`: "System Eventsに Apple Eventsを送信する権限がありません" (Automation permission not granted) | Environment limitation |
+| Self-remediation via System Settings (computer-use) | `request_access` for System Settings **denied** | Environment limitation — no path to grant the needed permission without human GUI interaction, which was unavailable |
+| CGEvent keyboard injection (`CGEventPost`, ctypes) | Event created and posted without an API-visible error, but `CGEventPost` has no success/failure return value, and Apple's documented behavior is that synthetic events to the HID event tap have no effect from an untrusted process (already confirmed untrusted above) — no verifiable effect | Environment limitation (same root cause) |
+| Playwright / CDP (`page.accessibility` snapshot, `keyboard.press`, locator focus) | Fully functional, but explicitly **does not exercise or observe VoiceOver at all** — it drives/inspects the browser directly via CDP, independent of any screen reader. Not used as a substitute claim, per this batch's own rule that accessibility-tree snapshots do not count as real VoiceOver confirmation. | Available, but insufficient by the batch's own acceptance criteria |
+
+**All three permission-gated routes (AX API, AppleScript/System Events,
+self-remediation via System Settings) are blocked by the same root
+cause: this session's Claude Code process holds neither the macOS
+Accessibility trust nor the Automation (Apple Events) trust required,
+and no path exists within this session to grant either without a human
+directly clicking "Allow" in a System Settings permission dialog** —
+access to System Settings itself was denied. CGEvent injection depends
+on the same Accessibility trust and is therefore equally blocked in
+practice (its API doesn't confirm failure, but Apple's documented
+behavior makes success without that trust exceedingly unlikely, and no
+observed effect confirms this).
+
+**Result: BLOCKED again.** Zero VoiceOver focus movement or
+caption/speech output was observed via any of the five routes
+evaluated. The TOP-screen minimal-success condition (Phase 5: reach web
+content, VoiceOver recognizes the page title/h1, VoiceOver can move
+through the 5 main buttons, with real VoiceOver evidence for each) was
+not met, so the batch did not proceed to the 20-flow walkthrough.
+
 ## Side effect disclosed to the user
 
 Because the block occurred *after* VoiceOver was toggled on and *while*
@@ -133,16 +215,37 @@ VoiceOver limitations:  1 — once VoiceOver's own onboarding dialog
                          by any name tried), and while frontmost it
                          blocked all further computer-use interaction
                          with the entire desktop, not just the browser.
-Environment limitations: 1 — the combination of (a) computer-use's
-                         browser-interaction restriction and (b) the
-                         unindexed VoiceOver quickstart dialog together
-                         made real VoiceOver acceptance testing
-                         unreachable in this specific session/machine
-                         configuration. A session with either a fully
-                         pre-configured VoiceOver (quickstart dialog
-                         permanently disabled beforehand) or a different
-                         interaction toolchain could plausibly succeed
-                         where this attempt did not.
+Environment limitations: 4, across all 3 attempts —
+                         (1) Attempt 1: unindexed VoiceOver quickstart
+                             dialog blocked all computer-use interaction
+                             once frontmost.
+                         (2) Attempt 2 (after the user pre-disabled the
+                             quickstart dialog): computer-use is
+                             structurally unable to interact with
+                             anything while VoiceOver itself is active,
+                             since VoiceOver — not a specific dialog —
+                             is reported as the frontmost app and cannot
+                             be allowlisted.
+                         (3) Attempt 3: this session's process holds
+                             neither macOS Accessibility trust nor
+                             Automation (Apple Events) trust, blocking
+                             AXUIElement, AppleScript/System Events, and
+                             (very likely) CGEvent injection.
+                         (4) Attempt 3: no path exists to self-grant
+                             those permissions — System Settings access
+                             via computer-use was denied.
+                         A session with VoiceOver's onboarding fully
+                         pre-completed AND either a different
+                         interaction toolchain (not gated by
+                         computer-use's app-allowlist) or the necessary
+                         TCC permissions pre-granted could plausibly
+                         succeed where these three attempts did not.
+Tooling limitations:    1 — computer-use's app-permission model assumes
+                         every on-screen actor is a discrete, indexable
+                         "application"; VoiceOver is a system-wide
+                         accessibility overlay that doesn't fit that
+                         model, so it can never be added to the
+                         allowlist by any name.
 Test defects:            0
 Documentation defects:   0
 ```
@@ -211,11 +314,14 @@ Batch 7 reports.
 ```text
 docs/qa/evidence/batch-8/:
   PNG:      0
-  JSON:     1  (attempt-log.json — the full step-by-step record of what
-                was tried and exactly where/why it was blocked)
+  JSON:     2  (attempt-log.json — Attempts 1 and 2's full step-by-step
+                  records;
+                attempt-3-claude-code-only.json — Attempt 3's route-by-
+                  route evaluation of AX API / AppleScript / System
+                  Settings self-remediation / CGEvent / Playwright-CDP)
   Markdown: 0
   Logs:     0
-  Total:    1  (git-tracked)
+  Total:    2  (git-tracked)
 ```
 
 No screenshots were saved to disk from the computer-use session (the
@@ -247,10 +353,13 @@ Firefox, and Playwright WebKit all validated, 0 P0/P1/P2/P3.
 testing, VoiceOver or otherwise, was not achievable in this
 environment — see "Method" and "Safari Functional Scope" above).
 
-**VoiceOver readiness**: **not validated, BLOCKED**. Zero real
-screen-reader signal was gathered. This is explicitly different from
-"validated and found acceptable" or "validated and found broken" — it
-is "not validated at all."
+**VoiceOver readiness**: **not validated, BLOCKED — across all 3
+attempts this batch** (VoiceOver+Chrome via computer-use, the same
+method retried after the user pre-dismissed the quickstart dialog, and
+a Claude-Code-only attempt via OS-level Accessibility/Automation APIs).
+Zero real screen-reader signal was gathered in any of them. This is
+explicitly different from "validated and found acceptable" or
+"validated and found broken" — it is "not validated at all."
 
 **Validated public-demo scope**: unchanged from Batch 7 — Chromium,
 Firefox, and Playwright WebKit (desktop, engine-level), both official
@@ -269,9 +378,9 @@ either). The gap this batch targeted remains exactly as open as it was
 before this batch started.
 
 **Batch 8 formally closed: yes, as BLOCKED** (not CONDITIONAL — zero
-flows were completed, so there is no partial real data to justify a
-CONDITIONAL classification; not COMPLETE, since the batch's actual
-objective was never reached).
+flows were completed across all 3 attempts, so there is no partial real
+data to justify a CONDITIONAL classification; not COMPLETE, since the
+batch's actual objective was never reached by any tooling route tried).
 
 ## Next Fixed Task
 
@@ -279,22 +388,26 @@ objective was never reached).
 Next task: unresolved VoiceOver remediation
 
 Reason: Batch 8's specific objective (real VoiceOver acceptance) was
-not achieved due to environment/tooling constraints, not because the
-app was found deficient. The gap remains open and is the most direct
-continuation of this batch's own goal.
+not achieved across 3 independent attempts using 2 fundamentally
+different toolchains (computer-use/Claude-in-Chrome, and OS-level
+Accessibility/Automation APIs), due to environment/tooling constraints,
+not because the app was found deficient. The gap remains open and is
+the most direct continuation of this batch's own goal.
 
-What a future attempt would need to succeed where this one could not,
-based on what was learned this batch:
-  - A way to pre-disable VoiceOver's first-launch quickstart dialog
-    before ever toggling VoiceOver on (e.g., if the user has already
-    completed VoiceOver's onboarding once on this machine outside of
-    an agent session, the dialog may not reappear), or
-  - A session environment where VoiceOver's own UI processes are
-    indexed and grantable through request_access, or
+What a future attempt would need to succeed where these three could
+not, based on what was learned this batch:
+  - The macOS Accessibility (AXUIElement/CGEvent) and/or Automation
+    (Apple Events) TCC permissions granted to the Claude Code process
+    ahead of time — this requires a human clicking "Allow" in a System
+    Settings dialog, which was not available in any of this batch's
+    session environments, or
+  - A computer-use-equivalent tool whose permission model can
+    accommodate VoiceOver as a system-wide overlay rather than treating
+    it as a discrete, indexable application, or
   - The user driving VoiceOver directly themselves while sharing
-    screen/narrating findings for the agent to record, rather than the
-    agent attempting to drive VoiceOver's keyboard-modifier navigation
-    itself.
+    screen/narrating findings for the agent to record — this was
+    proposed after Attempt 2 and explicitly declined in favor of
+    Attempt 3's Claude-Code-only approach, which also did not succeed.
 
 Entry condition: explicit instruction to retry VoiceOver acceptance,
 ideally after one of the above conditions can be arranged, or explicit
