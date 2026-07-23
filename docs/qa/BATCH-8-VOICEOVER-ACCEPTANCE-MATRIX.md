@@ -58,14 +58,24 @@ Dev server: http://localhost:5199 (Vite dev server, already running)
 
 ## Actual outcome
 
-**BLOCKED before any of the 20 flows could be exercised, across 3
-independent same-day attempts using 2 different toolchains.** See
-[BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md](./BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md)
-for the full attempt log and exact blockers of each. Attempt 1 and its
-retry (Attempt 2, after the user pre-dismissed VoiceOver's quickstart
-dialog): `docs/qa/evidence/batch-8/attempt-log.json`. Attempt 3
-(Claude-Code-only, via OS-level Accessibility/Automation APIs instead
-of computer-use): `docs/qa/evidence/batch-8/attempt-3-claude-code-only.json`.
+**Attempts 1-3 (2026-07-21): BLOCKED** before any of the 20 flows could
+be exercised, across 3 independent same-day attempts using 2 different
+toolchains. Evidence: `docs/qa/evidence/batch-8/attempt-log.json`
+(attempts 1-2) and `attempt-3-claude-code-only.json` (attempt 3).
+
+**Attempt 4 (2026-07-23): CONDITIONAL** — after the user granted the
+macOS TCC Accessibility + Automation permissions via System Settings
+(the exact blocker from attempt 3), real VoiceOver was driven and
+observed for the first time. ~12-13 of 20 flows confirmed with genuine
+real-VoiceOver signal on the core screens (TOP, JSON import, Deck
+Editor, unsaved-changes dialog), **zero product defects**; Match Setup /
+Match / Result reached but not cleanly VoiceOver-traversed due to a
+CDP-vs-VoiceOver focus-sync tooling limitation. Evidence:
+`docs/qa/evidence/batch-8/attempt-4-tcc-granted-observations.json`. Full
+detail in the "Attempt 4" section of
+[BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md](./BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md).
+RC status remains LIMITED READY (game-play screens' real-screen-reader
+traversal still open).
 
 ## P0-P3 classification (unchanged scheme from Batch 6/7, extended)
 

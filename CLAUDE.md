@@ -213,21 +213,43 @@ Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
   (typecheck/unit 330/skin:validate 18/asset:image:test 92/build/
   Chromium visual 70/Firefox機能25/WebKit機能25/Firefox a11y 21/
   WebKit a11y 21/cross-browser visual 96)は全て再実行し無退行を確認。
-  RC readiness: LIMITED READY変更なし(対象gapを閉じられなかったため
-  昇格なし、製品側の新規欠陥もないため降格もなし)。証跡:
+  (attempts 1-3時点の判定はBLOCKED)。
+  attempt 4(2026-07-23、CONDITIONAL): ユーザーがmacOS TCC権限
+  (Accessibility/Automation)をSystem Settings GUIで付与したため、
+  attempt 3で特定したblockerが解消。osascript経由のSystem Eventsで
+  実VoiceOverコマンド(VO+矢印=ctrl+opt+key code124、VO+Space activate=
+  ctrl+opt+key code49、Tab/Escape)を送信し、各操作後にChromeプロセスの
+  AXFocusedUIElementのrole/name/valueを読み取ることで、VoiceOverカーソル
+  追従を実証跡化。VoiceOver + Chrome(Safariではない。Safariはread tier
+  のまま)。20フロー中約12-13を実VoiceOver信号付きで確認: TOP(タイトル+
+  主要5ボタンがAXButtonとして正しいaccessible name付きでDOM順に到達)、
+  JSON import(textareaのdescription=デッキJSON、validation error I2002)、
+  Deck Editor(tab stripがAXRadioButton群・件数付き名称・roving selected、
+  form fieldがdescription=デッキ名/説明+現在値)、未保存変更dialog
+  (もどるで開き初期focusが名前付きボタンへ)。**実VoiceOverで到達した全要素に
+  正しいaccessible name/role/valueがあり、focus trap・name欠落・読み上げ
+  不能なcontrolは皆無。製品defect(P0/P1/P2/P3)は0件**。Match Setup/Match/
+  Result画面は到達したが、CDP経由の画面遷移後にVoiceOverカーソル/
+  AXFocusedUIElement/DOM focusが非同期化(AXFocusedUIElementがnull)した
+  ため、VoiceOverカーソルでのcleanな走査が記録できず(=tooling limitation、
+  製品defectではない)。VoiceOverはセッション終了時にCmd+F5でOFFにし
+  プロセス停止を確認。attempt 4判定: CONDITIONAL(core screensで
+  実質的な実VoiceOver受入達成・製品defect 0件、ただしgame-play screensの
+  実screen-reader走査は未完)。
+  RC readiness: LIMITED READY変更なし(attempt 4でscreen-reader gapは
+  core screens分だけ縮小したが、game-play screens分が未完のため昇格なし。
+  製品defect 0件のため降格もなし)。証跡:
   docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-MATRIX.md、
   docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md、
-  docs/qa/evidence/batch-8/(JSON2件、試行ログ×2)。
-  次の固定タスク(未着手・要明示指示): 実screen reader受入の再挑戦
-  (macOS Accessibility/Automation権限を事前にGUIで付与した状態を
-  用意する、computer-use相当ツールがVoiceOverをシステム全体の
-  オーバーレイとして扱えるようにする、またはユーザー自身が実VoiceOver
-  を操作しエージェントが記録に専念する形を取るなど、3回の試行で判明した
-  制約を踏まえた別アプローチが必要)、実iPhone/iPad Safari検証、
-  実Android検証、長時間memory soak、実deploy環境rollback rehearsalの
-  いずれかを明示指示で着手するか、Gate 7/8を対象機能が実際に計画された
-  時点で開始する。docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdの
-  Next Fixed Task参照。
+  docs/qa/evidence/batch-8/(JSON3件: attempt-log/attempt-3/attempt-4)。
+  次の固定タスク(未着手・要明示指示): 実screen reader受入の残り
+  (Match Setup/Match/Resultをread時にVoiceOverカーソルとの同期を保つ経路
+  ——CDPクリックを使わずVoiceOverカーソル操作のみで画面遷移する、または
+  ユーザーが実VoiceOverを操作しエージェントが記録に専念する)、
+  実iPhone/iPad Safari検証、実Android検証、長時間memory soak、
+  実deploy環境rollback rehearsalのいずれかを明示指示で着手するか、
+  Gate 7/8を対象機能が実際に計画された時点で開始する。
+  docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdのNext Fixed Task参照。
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。

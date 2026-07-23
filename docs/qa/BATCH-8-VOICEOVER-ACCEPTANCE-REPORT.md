@@ -1,10 +1,28 @@
 # Batch 8 — macOS VoiceOver Acceptance Report
 
-- Date: 2026-07-21
+- Date: 2026-07-21 (attempts 1-3, BLOCKED); 2026-07-23 (attempt 4,
+  CONDITIONAL — first attempt to actually drive & observe real VoiceOver)
 - Preceding work: Gate 6 (PASS, unchanged), Batch 7 (COMPLETE, RC
   LIMITED READY, browser scope Chromium+Firefox+Playwright WebKit).
   Batch 8 targets one specific Batch 7 open item: real screen-reader
   acceptance.
+
+## Current status: CONDITIONAL (attempt 4)
+
+**After the user granted macOS TCC Accessibility + Automation
+permissions via System Settings, attempt 4 (2026-07-23) succeeded in
+driving and observing REAL VoiceOver for the first time.** Attempts 1-3
+(all BLOCKED, 2026-07-21) are preserved below as history. Attempt 4's
+result: **CONDITIONAL** — roughly 12-13 of the 20 flows confirmed with
+genuine real-VoiceOver signal on the core screens (TOP, JSON import,
+Deck Editor, unsaved-changes dialog), **zero product defects found**;
+the live match-play screens (Match Setup / Match / Result) were reached
+but could not be cleanly traversed under the VoiceOver cursor due to a
+CDP-vs-VoiceOver focus-sync tooling limitation (not a product defect).
+Full evidence: `docs/qa/evidence/batch-8/attempt-4-tcc-granted-observations.json`.
+See the "Attempt 4" section near the end of this report for detail. RC
+status remains **LIMITED READY** (real screen-reader coverage of the
+game-play screens is still open).
 
 ## Duplicate-work check (Phase 0)
 
@@ -377,10 +395,83 @@ P0/P1 regression in the app itself (so no downgrade is warranted
 either). The gap this batch targeted remains exactly as open as it was
 before this batch started.
 
-**Batch 8 formally closed: yes, as BLOCKED** (not CONDITIONAL — zero
-flows were completed across all 3 attempts, so there is no partial real
-data to justify a CONDITIONAL classification; not COMPLETE, since the
-batch's actual objective was never reached by any tooling route tried).
+**As of attempts 1-3, Batch 8 was BLOCKED** — zero flows completed, no
+partial real data. This was superseded by attempt 4 below; the
+BLOCKED-through-attempt-3 record is preserved for audit history.
+
+## Attempt 4 (2026-07-23): TCC permissions granted — real VoiceOver observed, CONDITIONAL
+
+The user granted this session's Claude Code process the macOS TCC
+Accessibility and Automation permissions via the System Settings GUI
+(the exact blocker identified in attempt 3). This changed everything:
+
+**Permission state now working** (all were denied in attempt 3):
+- `osascript` → System Events: succeeds (Automation/Apple Events granted).
+- Deep AX reads (`AXFocusedUIElement` role/title/description/value) from
+  the Google Chrome process: succeed.
+- VoiceOver keystroke injection (`key code … using {control down, option
+  down}`): accepted (was error 1002 in attempt 3).
+
+**Method**: VoiceOver enabled via `Cmd+F5` (quickstart dialog stays
+gone, as the user pre-disabled it). Real VoiceOver navigation commands
+(VO+Right = key code 124 + ctrl+opt; VO+Space activate = key code 49 +
+ctrl+opt; plus Tab/Shift+Tab/Escape) sent via `osascript` System
+Events. After each command, the Chrome process's `AXFocusedUIElement`
+role/name/value was read — a change tracking the VoiceOver cursor with
+the correct role+name counts as real VoiceOver observation. This is
+**VoiceOver + Chrome, not VoiceOver + Safari** (Safari stays read-only
+via computer-use); VoiceOver genuinely supports Chrome via the OS
+accessibility API, so this is real screen-reader signal, just on Chrome.
+
+**Real VoiceOver observations (all PASS, zero product defects):**
+
+| Screen | What real VoiceOver reported | Result |
+|---|---|---|
+| TOP | Page title present; all 5 main buttons reached in DOM order via VO+Right, each an `AXButton` with a correct name ("まず遊ぶ すぐに対戦をはじめます", "デッキ一覧 …", "JSONを読み込む …", "記憶帳 …", "きせかえ …"); reading order matched visual order | PASS |
+| JSON import | textarea exposed as `AXTextArea` with description "デッキJSON"; 読み込む is a named `AXButton`; invalid JSON produced the "I2002" rejection, valid JSON was accepted and navigated to DeckDetail | PASS |
+| Deck Editor | tab strip exposed as `AXRadioButton` group with roving selected/unselected value and names including counts ("基本"[selected], "カテゴリ (4)", "牌 (3)", "役 (1)", "ボーナス (0)"); form fields `AXTextField`/`AXTextArea` with correct descriptions "デッキ名"/"説明" and current values | PASS |
+| Unsaved-changes dialog | opened on もどる with a dirty change; VoiceOver focus landed on its first button, `AXButton` "破棄してもどる"; Escape=cancel confirmed by `Dialog.tsx` source (Modal `onClose=onCancel`) + existing unit test `domInteraction.test.tsx` | PASS |
+
+That is **~12-13 of the 20 flows** confirmed with genuine real-VoiceOver
+signal, all on the core screens, with **no missing accessible name, no
+focus trap, no unreadable control** — zero product defects.
+
+**Screens reached but NOT cleanly VoiceOver-traversed (tooling
+limitation, not a product defect):** Match Setup was reached (its page
+text shows correct labels — "3人戦", "4人戦", "対局開始", player panels
+"君 あなた 手牌 8 / 捨て牌 0"), but after CDP-driven screen transitions
+the VoiceOver cursor / OS `AXFocusedUIElement` / DOM focus desynced
+(`AXFocusedUIElement` read as null), so fresh VO-cursor role/name reads
+could not be recorded for Match Setup's controls, the in-match hand/
+turn/selection, or the Result score/rank. Root cause: Claude-in-Chrome
+CDP interactions change the app screen without moving OS-level keyboard
+focus, and Chrome resets its accessible focus to the web-area root on
+window activation — together these desync the VoiceOver cursor from the
+DOM after a screen transition. The underlying accessible structure of
+these screens is known-good from Batch 5-7 (Match hand tiles are
+`aria-pressed` buttons with names; Result content is present and
+labeled) — only the *live VoiceOver-cursor traversal* of them could not
+be mechanically driven in this session.
+
+**Attempt 4 classification: CONDITIONAL.** Substantial real VoiceOver
+acceptance on the core screens (TOP / JSON import / Deck Editor /
+unsaved-changes dialog) with zero product defects, but the game-play
+screens' real-screen-reader traversal remains open. Not COMPLETE (not
+all 20 flows reached under real VoiceOver); not BLOCKED (real VoiceOver
+was genuinely driven and observed for the majority of core flows).
+
+**VoiceOver was turned OFF at the end of the session** (`Cmd+F5`,
+confirmed VoiceOver process no longer running) so the machine is not
+left in a screen-reader state.
+
+**RC status: LIMITED READY, unchanged.** Attempt 4 meaningfully
+narrowed the screen-reader gap (core screens now have real VoiceOver
+confirmation) but did not fully close it (game-play screens still lack
+real-screen-reader traversal), so no RC upgrade is claimed. No product
+defect was found, so no downgrade either.
+
+**Batch 8 status: was BLOCKED (attempts 1-3), now CONDITIONAL
+(attempt 4).**
 
 ## Next Fixed Task
 

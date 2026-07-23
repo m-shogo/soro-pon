@@ -47,39 +47,38 @@ Batch 7 (Cross-Browser & Screen Reader Acceptance): complete
     but real-device and real-screen-reader verification remain open).
   See docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md for full evidence and
     decision record.
-Batch 8 (macOS VoiceOver Acceptance): BLOCKED (3 attempts, same day)
-  Targeted the specific Batch 7 open item of real screen-reader
-    acceptance. Real Safari is only viewable (not drivable) via the
-    available automation tooling in this environment, so the attempt
-    pivoted to VoiceOver + Chrome instead (a real, if less conventional,
-    pairing — VoiceOver does support Chrome).
-  Attempt 1: VoiceOver's first-launch quickstart dialog became
-    frontmost and could not be dismissed (unindexed by Spotlight),
-    blocking all further computer-use interaction.
-  Attempt 2 (retry, after the user manually pre-dismissed and disabled
-    the quickstart dialog): the dialog no longer appeared, but
-    computer-use is structurally unable to interact with anything while
-    VoiceOver itself is active (VoiceOver, not a specific dialog, is
-    reported as the frontmost app and can't be allowlisted); routing
-    keyboard input through Claude-in-Chrome instead sent VoiceOver's
-    focus to the macOS Dock rather than the page.
-  Attempt 3 (Claude-Code-only, no user manual operation, using OS-level
-    APIs instead of computer-use): macOS Accessibility trust and
-    Automation (Apple Events) trust are both unavailable to this
-    session's process, blocking AXUIElement, AppleScript/System Events,
-    and (per Apple's documented behavior) CGEvent injection; no path
-    exists to self-grant those permissions without a human clicking
-    "Allow" in System Settings, which was not available.
-  Zero of the planned 20 acceptance flows were exercised across all 3
-    attempts — recorded as BLOCKED, not as a partial pass and not as
-    "automated checks substitute for screen-reader verified."
-  No product code changed (nothing was found to test, so nothing was
-    found to fix). All existing suites re-verified green, zero
-    regressions.
-  RC readiness: unchanged, still LIMITED READY (neither upgraded nor
-    downgraded — the targeted gap remains exactly as open as before).
+Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 4)
+    — was BLOCKED across attempts 1-3, then CONDITIONAL on attempt 4
+    after the user granted macOS TCC Accessibility + Automation
+    permissions. Targeted the specific Batch 7 open item of real
+    screen-reader acceptance. Real Safari is only viewable (not drivable)
+    via the available automation tooling, so this used VoiceOver + Chrome
+    (a real pairing — VoiceOver does support Chrome; NOT VoiceOver +
+    Safari).
+  Attempts 1-3 (2026-07-21, BLOCKED): the VoiceOver quickstart dialog,
+    then VoiceOver-as-frontmost blocking computer-use, then missing
+    macOS Accessibility/Automation trust — none of the 20 flows reached.
+  Attempt 4 (2026-07-23, CONDITIONAL): with TCC permissions granted,
+    real VoiceOver was driven via osascript System Events (VO+arrow,
+    VO+Space, Tab/Escape) and observed via AXFocusedUIElement reads.
+    ~12-13 of 20 flows confirmed with genuine real-VoiceOver signal on
+    the core screens — TOP (title + all 5 main buttons as named
+    AXButtons), JSON import (textarea label "デッキJSON" + validation
+    error), Deck Editor (tabs as an AXRadioButton group with counts,
+    form fields with correct labels/values), and the unsaved-changes
+    dialog (opens with focus on a named button). Zero product defects
+    found. Match Setup / Match / Result were reached but could not be
+    cleanly traversed under the VoiceOver cursor due to a
+    CDP-vs-VoiceOver focus-sync tooling limitation (not a product
+    defect). VoiceOver was turned off at session end.
+  No product code changed (no defect was found to fix). All existing
+    suites remain green, zero regressions.
+  RC readiness: unchanged, still LIMITED READY — attempt 4 narrowed the
+    screen-reader gap (core screens now have real VoiceOver
+    confirmation) but did not close it (game-play screens' real
+    screen-reader traversal is still open).
   See docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md for the full
-    attempt log and decision record.
+    attempt log (incl. the Attempt 4 section) and decision record.
 Current phase: further RC hardening (not yet scoped — see
   "Next Fixed Task" in docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md)
 ```
