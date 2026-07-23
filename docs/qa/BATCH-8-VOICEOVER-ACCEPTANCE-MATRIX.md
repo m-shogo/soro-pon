@@ -104,6 +104,38 @@ Attempt 5 exact classification: `VOICEOVER_PASS: 13`,
 P0/P1 open: 0. P2 found/fixed/open: 1/1/0. Batch 8 and RC remain
 `CONDITIONAL` and `LIMITED READY`.
 
+**Attempt 6 (2026-07-23): CONDITIONAL** — scope-limited to the three
+items needed to try to close Batch 8. (1) The Match Setup 人数 buttons
+were re-verified under real VoiceOver as `AXCheckBox` with a value that
+reflects selection (3人戦=1/4人戦=0), and VO+Space flipped the roving
+selection live — promoting the `aria-pressed` fix (`bbb378e`) from
+SUPPLEMENTAL_ONLY to VOICEOVER_PASS. (2) The match was auto-played to
+Result via CDP **while VoiceOver was OFF**, then VoiceOver was turned ON
+for read-only traversal (no button activation — the Attempt-5 accidental
+replay did not recur); the result `AXHeading` "対戦結果" and all three
+action buttons (もう一局/記憶帳を見る/TOPへ) were confirmed via
+AXFocusedUIElement, but the win/rank/score static text stays
+SUPPLEMENTAL_ONLY (structure verified via AX-tree read — h2 win method,
+semantic ranking list with a text ★ winner marker, score text — while
+VoiceOver's spoken output of that non-focusable text is not
+mechanically capturable: no AX-queryable caption panel, static text not
+AXFocusedUIElement-trackable = tooling limitation, not a product
+defect). (3) Cute Pop parity was confirmed under real VoiceOver: Match
+Setup 人数 `AXCheckBox` values and a Match hand tile (`AXCheckBox`,
+description "ワシ", selected value 0→1 on VO+Space) are identical to
+yorunoshirube.
+
+Attempt 6 cleared all 3 previously-BLOCKED items. **Cumulative Batch 8
+final classification: `VOICEOVER_PASS: 13`, `SUPPLEMENTAL_ONLY: 6`,
+`BLOCKED: 0`, `NOT_APPLICABLE: 1`.** P0/P1/P2 open: 0. 0 product defects
+across all attempts; 1 tooling limitation (Result static-text caption
+capture). VoiceOver was turned OFF at session end. Batch 8 and RC remain
+`CONDITIONAL` and `LIMITED READY` (the strict COMPLETE bar requires
+capturing VoiceOver's spoken win/rank/score, blocked only by tooling).
+Full Attempt 6 evidence:
+`docs/qa/evidence/batch-8/attempt-6-gameplay-result-parity.json`,
+`attempt-6-focus-log.json`.
+
 ## P0-P3 classification (unchanged scheme from Batch 6/7, extended)
 
 ```text

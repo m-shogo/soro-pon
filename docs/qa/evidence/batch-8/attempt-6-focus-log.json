@@ -1,0 +1,57 @@
+{
+  "attempt": 6,
+  "description": "Raw AXFocusedUIElement logs captured while sending real VoiceOver commands via osascript System Events. Each line: '<step>: <AXRole>|<name/title>|value=<AXValue>'. These are the live focus reads used to classify VOICEOVER_PASS items.",
+  "result_vo_right_read_only_first_pass": [
+    "1: AXHeading|対戦結果|value=1",
+    "2: AXHeading|対戦結果|value=1",
+    "3: AXHeading|対戦結果|value=1",
+    "4: AXHeading|対戦結果|value=1",
+    "5: AXHeading|対戦結果|value=1",
+    "6: AXHeading|対戦結果|value=1",
+    "7: AXHeading|対戦結果|value=1",
+    "8: AXHeading|対戦結果|value=1",
+    "9: AXHeading|対戦結果|value=1",
+    "10: AXHeading|対戦結果|value=1",
+    "11: AXHeading|対戦結果|value=1",
+    "12: AXHeading|対戦結果|value=1",
+    "13: AXHeading|対戦結果|value=1",
+    "14: AXHeading|対戦結果|value=1",
+    "15: AXHeading|対戦結果|value=1",
+    "16: AXHeading|対戦結果|value=1",
+    "17: AXHeading|対戦結果|value=1",
+    "18: AXHeading|対戦結果|value=1",
+    "19: AXHeading|対戦結果|value=1",
+    "20: AXHeading|対戦結果|value=1"
+  ],
+  "result_vo_right_after_tabindex_removed": [
+    "1: AXWebArea|soro-pon|value=",
+    "2: AXWebArea|soro-pon|value=",
+    "3: AXWebArea|soro-pon|value=",
+    "4: AXWebArea|soro-pon|value=",
+    "5: AXWebArea|soro-pon|value=",
+    "6: AXWebArea|soro-pon|value=",
+    "7: AXWebArea|soro-pon|value=",
+    "8: AXWebArea|soro-pon|value=",
+    "9: AXWebArea|soro-pon|value=",
+    "10: AXWebArea|soro-pon|value=",
+    "11: AXWebArea|soro-pon|value=",
+    "12: AXWebArea|soro-pon|value=",
+    "13: AXWebArea|soro-pon|value=",
+    "14: AXWebArea|soro-pon|value=",
+    "15: AXWebArea|soro-pon|value=",
+    "16: AXWebArea|soro-pon|value="
+  ],
+  "result_tab_action_buttons": [
+    "1: AXButton|もう一局 同じメンバーで再戦する|value=",
+    "2: AXButton|記憶帳を見る|value=",
+    "3: AXButton|TOPへ|value="
+  ],
+  "cutepop_match_hand_tiles_tab": [
+    "1: AXCheckBox||value=0",
+    "2: AXCheckBox||value=0",
+    "3: AXCheckBox||value=0",
+    "4: AXCheckBox||value=0",
+    "5: AXCheckBox||value=0",
+    "6: AXCheckBox||value=0"
+  ]
+}

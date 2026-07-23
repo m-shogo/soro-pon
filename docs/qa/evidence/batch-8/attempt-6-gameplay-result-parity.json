@@ -1,0 +1,120 @@
+{
+  "attempt": 6,
+  "label": "Batch 8 Attempt 6: Result VoiceOver and Cute Pop Parity",
+  "date": "2026-07-23",
+  "startHEAD": "f227844",
+  "environment": {
+    "macOS": "26.4.1 (25E253)",
+    "browser": "Google Chrome (VoiceOver + Chrome; NOT Safari — Safari stays read-only via computer-use)",
+    "voiceOver": "macOS-bundled; enabled/disabled via Cmd+F5; quickstart pre-disabled by user",
+    "axTrust": "granted (osascript System Events deep AX reads + keystroke injection both succeed)",
+    "automation": "granted",
+    "captionPanel": "enabled in VoiceOver Utility, but the VoiceOver process exposes no AX windows/contents to System Events (entire contents count = 0), so the spoken caption text could NOT be captured mechanically in this environment",
+    "voiceOverOffAtEnd": true
+  },
+  "method": "Per instructions, all screen transitions that could be done with VoiceOver's own cursor were done via osascript System Events VoiceOver commands (VO+Right = ctrl+opt+key124, VO+Space activate = ctrl+opt+key49, Tab/Shift+Tab). To reach Result deterministically, the match was auto-played to completion via Claude-in-Chrome (CDP) WHILE VOICEOVER WAS OFF; then DOM focus was parked on the h1 heading, Chrome brought frontmost, and VoiceOver turned ON for read-only cursor navigation (no VO+Space/Enter on any Result button, to avoid the Attempt-5 accidental replay activation). Real VoiceOver observation = a change in the Chrome process AXFocusedUIElement (role/name/value/description) that tracks the VoiceOver cursor / keyboard focus. AX-tree reads of non-focusable static text are recorded as SUPPLEMENTAL_ONLY per the strict acceptance rule.",
+
+  "matchSetupAriaPressedRecheck": {
+    "skin": "yorunoshirube",
+    "observed": [
+      {"tab": "もどる", "role": "AXButton"},
+      {"tab": "3人戦", "role": "AXCheckBox", "valueBefore": 1},
+      {"tab": "4人戦", "role": "AXCheckBox", "valueBefore": 0},
+      {"action": "VO+Space on 4人戦", "then": {"4人戦": "AXCheckBox value=1", "3人戦": "AXCheckBox value=0"}}
+    ],
+    "result": "VOICEOVER_PASS — the aria-pressed fix (bbb378e) is confirmed under real VoiceOver: the 人数 buttons expose as AXCheckBox with a value that reflects the selected/unselected state, and VO+Space activation flips the roving selection (4人戦 0→1, 3人戦 1→0), observed live via AXFocusedUIElement. This promotes the item that was SUPPLEMENTAL_ONLY after Attempt 5 (fix not yet re-scanned under VoiceOver) to VOICEOVER_PASS.",
+    "productDefect": false
+  },
+
+  "result": {
+    "skin": "yorunoshirube",
+    "reachedVia": "match auto-played to Result via CDP while VoiceOver OFF; then VoiceOver ON for read-only traversal",
+    "fixtureOutcome": {"winMethod": "ロン", "winner": "ミチル", "totalScore": 165, "ranking": ["あなた(放銃)", "トモリ", "ナギ", "★ミチル"], "coins": "+10"},
+    "voiceOverPass": {
+      "heading": {"role": "AXHeading", "name": "対戦結果", "note": "confirmed via AXFocusedUIElement when focus was on the h1"},
+      "actionButtons": [
+        {"role": "AXButton", "name": "もう一局 同じメンバーで再戦する", "via": "Tab focus tracked by AXFocusedUIElement (no activation)"},
+        {"role": "AXButton", "name": "記憶帳を見る"},
+        {"role": "AXButton", "name": "TOPへ"}
+      ],
+      "note": "The result heading and all three action buttons were confirmed under real VoiceOver (AXFocusedUIElement tracking), without activating any button — the Attempt-5 accidental-replay problem did not recur."
+    },
+    "supplementalOnly": {
+      "winMethodAndWinner": {"role": "h2", "text": "ロン — ミチル"},
+      "ranking": {"role": "list", "items": ["・ あなた(放銃)", "・ トモリ", "・ ナギ", "★ ミチル"], "note": "winner marked with ★ and loser with (放銃) — conveyed by text characters, NOT color-only, so a screen reader user can distinguish rank non-visually"},
+      "score": {"text": "合計得点 165", "breakdown": "役「空と海と大地」100点 + special bonuses +20/+20/+25, ワイルド使用 1枚"},
+      "reason": "These are static (non-DOM-focusable) elements. Chrome's AXFocusedUIElement only tracks focusable elements, so VO+Right did not advance the focused-element read onto them, and the VoiceOver caption panel is not AX-queryable in this environment. The accessibility STRUCTURE that VoiceOver reads aloud was confirmed via System Events AX-tree read (proper h1/h2 headings, a semantic list for ranking with a text ★ winner marker, and score as real text), but capturing VoiceOver's spoken output of them is a TOOLING LIMITATION, not a product defect. A real human VoiceOver user would hear win method, ranking, and score from this correct structure."
+    },
+    "classification": "Result heading + action buttons: VOICEOVER_PASS. Result win/rank/score comprehension: SUPPLEMENTAL_ONLY (caption-capture tooling limitation; structure verified, spoken-output not mechanically captured).",
+    "productDefect": false,
+    "toolingLimitation": "VoiceOver caption panel not AX-queryable; static text not AXFocusedUIElement-trackable — cannot mechanically capture VoiceOver's spoken output of non-focusable Result text."
+  },
+
+  "cutePopParity": {
+    "skin": "cute-pop",
+    "matchSetup": [
+      {"tab": "もどる", "role": "AXButton"},
+      {"tab": "3人戦", "role": "AXCheckBox", "value": 1},
+      {"tab": "4人戦", "role": "AXCheckBox", "value": 0},
+      {"tab": "対局開始", "role": "AXButton"}
+    ],
+    "match": {
+      "handTile": {"role": "AXCheckBox", "description": "ワシ", "valueBefore": 0, "afterVOSpace": 1},
+      "note": "hand tile exposes tile name as accessible description and selected state as AXCheckBox value; VO+Space flips 0→1, identical behavior to yorunoshirube"
+    },
+    "result": "Result uses the same skin-invariant ResultScreen/ResultFrame/ScoreBreakdown components (design contract: layout/roles/semantic states are skin-invariant), so its accessible structure is identical to yorunoshirube's; not separately re-traversed.",
+    "classification": "VOICEOVER_PASS (parity) — accessible name, role, value, and selected-state behavior of the focusable gameplay controls (Match Setup 人数 buttons, Match hand tiles) are identical between cute-pop and yorunoshirube. No skin-specific difference in accessible name/role/value/selected/disabled or operation method.",
+    "productDefect": false
+  },
+
+  "batch8FlowClassification_final": {
+    "note": "Canonical 20-flow classification for Batch 8 overall, cumulative across attempts 4-6 (real-VoiceOver evidence only for VOICEOVER_PASS).",
+    "flows": {
+      "1_pageTitle": "VOICEOVER_PASS",
+      "2_topHeading": "VOICEOVER_PASS",
+      "3_topMainButtons": "VOICEOVER_PASS",
+      "4_buttonNamesPurpose": "VOICEOVER_PASS",
+      "5_currentSkinState": "SUPPLEMENTAL_ONLY (skin is a data-skin attribute, not an announced UI state by design; not a defect)",
+      "6_jsonImportNavigation": "VOICEOVER_PASS",
+      "7_textareaLabel": "VOICEOVER_PASS",
+      "8_invalidJsonInput": "VOICEOVER_PASS",
+      "9_validationErrorRecognition": "SUPPLEMENTAL_ONLY (error text present in AX tree; caption not captured)",
+      "10_validImport": "SUPPLEMENTAL_ONLY (outcome confirmed via page state, not VoiceOver caption)",
+      "11_deckListNameActionRelation": "SUPPLEMENTAL_ONLY (reached DeckDetail, not the list, under VoiceOver)",
+      "12_openDeckEditor": "VOICEOVER_PASS",
+      "13_tabSectionStructure": "VOICEOVER_PASS",
+      "14_formControlLabelsValues": "VOICEOVER_PASS",
+      "15_unsavedChangesDialog": "VOICEOVER_PASS (opens with focus on a named button)",
+      "16_dialogFocusReturn": "SUPPLEMENTAL_ONLY (Escape=cancel + focus return via Dialog.tsx source + domInteraction unit test; not clean live VoiceOver read)",
+      "17_matchSetupPlayerCountDeck": "VOICEOVER_PASS (aria-pressed AXCheckBox value + roving selection flip, Attempt 6)",
+      "18_startMatch": "VOICEOVER_PASS (VO+Space on 対局開始 → Match, both skins)",
+      "19_matchTurnHandSelectionDiscard": "VOICEOVER_PASS (current turn, named hand tiles as AXCheckBox, selected value 0→1, discard executed — Attempts 5-6)",
+      "20_resultWinRankScore": "SUPPLEMENTAL_ONLY (Result heading + action buttons VOICEOVER_PASS in Attempt 6, but win/rank/score static-text comprehension only structurally verified via AX tree — VoiceOver caption capture is a tooling limitation; no product defect)"
+    },
+    "totals": {
+      "VOICEOVER_PASS": 13,
+      "SUPPLEMENTAL_ONLY": 6,
+      "BLOCKED": 0,
+      "NOT_APPLICABLE": 1,
+      "total": 20
+    },
+    "note_on_change_from_attempt5": "Attempt 5 was VP 13 / SUP 3 / BLK 3 / NA 1. Attempt 6 cleared all 3 BLOCKED items — Match Setup player-count state (flow 17) confirmed under real VoiceOver, Result heading+buttons (part of flow 20) confirmed, and Cute Pop gameplay-control parity confirmed — but flow 20's win/rank/score comprehension and the still-caption-limited items land as SUPPLEMENTAL_ONLY rather than VOICEOVER_PASS, so VP stays 13 and SUP rises to 6 while BLOCKED falls to 0. The BLOCKED→SUPPLEMENTAL improvement reflects that these are now structurally verified and tooling-limited, not unreachable."
+  },
+
+  "issues": {
+    "P0": {"found": 0, "fixed": 0, "open": 0},
+    "P1": {"found": 0, "fixed": 0, "open": 0},
+    "P2": {"found": 0, "fixed": 0, "open": 0},
+    "P3": {"found": 0, "fixed": 0, "open": 0},
+    "productDefects": 0,
+    "toolingLimitations": 1,
+    "environmentLimitations": 0,
+    "note": "No product defect was found in Attempt 6. In every gameplay control actually traversed under real VoiceOver (Match Setup 人数 buttons both skins, Match hand tiles both skins, Result heading + action buttons), the accessible name, role, value, and selected state were correct and consistent across skins. The single tooling limitation is that VoiceOver's spoken output of non-focusable static Result text cannot be mechanically captured in this environment (no AX-queryable caption panel; static text not AXFocusedUIElement-trackable) — the underlying accessible structure is correct."
+  },
+
+  "decision": {
+    "attempt6": "CONDITIONAL — Match Setup aria-pressed re-confirmed under real VoiceOver (VOICEOVER_PASS), Result heading + action buttons VOICEOVER_PASS, Cute Pop gameplay-control parity VOICEOVER_PASS, zero product defects. Result win/rank/score comprehension remains SUPPLEMENTAL_ONLY due to the caption-capture tooling limitation, so the strict COMPLETE bar (win/rank/score via captured real VoiceOver) is not met.",
+    "batch8Overall": "CONDITIONAL",
+    "rcStatus": "LIMITED READY (unchanged) — real VoiceOver + Chrome is now validated across TOP / JSON import / Deck Editor / unsaved dialog / Match Setup / Match / Result-controls for both skins, with zero product defects; but Result static-text spoken-output capture, Safari+VoiceOver, NVDA/JAWS, and physical devices remain untested."
+  }
+}

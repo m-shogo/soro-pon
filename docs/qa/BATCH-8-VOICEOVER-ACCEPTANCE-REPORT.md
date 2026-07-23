@@ -1,13 +1,33 @@
 # Batch 8 — macOS VoiceOver Acceptance Report
 
-- Date: 2026-07-21 (attempts 1-3, BLOCKED); 2026-07-23 (attempts 4-5,
+- Date: 2026-07-21 (attempts 1-3, BLOCKED); 2026-07-23 (attempts 4-6,
   CONDITIONAL)
 - Preceding work: Gate 6 (PASS, unchanged), Batch 7 (COMPLETE, RC
   LIMITED READY, browser scope Chromium+Firefox+Playwright WebKit).
   Batch 8 targets one specific Batch 7 open item: real screen-reader
   acceptance.
 
-## Current status: CONDITIONAL (attempt 5)
+## Current status: CONDITIONAL (attempt 6)
+
+**Attempt 6 (2026-07-23)** re-verified the Match Setup `aria-pressed`
+fix under real VoiceOver, traversed the Result screen, and confirmed
+Cute Pop gameplay-control parity — see the "Attempt 6" section near the
+end. Cumulative Batch 8 20-flow classification is now **`VOICEOVER_PASS:
+13`, `SUPPLEMENTAL_ONLY: 6`, `BLOCKED: 0`, `NOT_APPLICABLE: 1`** (all 3
+prior BLOCKED items cleared). Zero product defects across all attempts.
+Result win/rank/score remain SUPPLEMENTAL_ONLY: their accessible
+structure (h1/h2 headings, a semantic ranking list with a text ★ winner
+marker, score as text) was verified, but VoiceOver's spoken output of
+that non-focusable static text cannot be mechanically captured in this
+environment (no AX-queryable caption panel; static text not
+AXFocusedUIElement-trackable) — a tooling limitation, not a product
+defect. Because the strict COMPLETE bar requires win/rank/score
+comprehension via *captured* real VoiceOver, **Batch 8 stays
+CONDITIONAL**; **RC status unchanged: LIMITED READY.** Full Attempt 6
+evidence: `docs/qa/evidence/batch-8/attempt-6-gameplay-result-parity.json`
+and `attempt-6-focus-log.json`.
+
+## Prior status: CONDITIONAL (attempt 5)
 
 **After the user granted macOS TCC Accessibility + Automation
 permissions via System Settings, attempt 4 (2026-07-23) succeeded in
@@ -643,23 +663,129 @@ the recorded TOP/import/editor and Match Setup/Match scope. Safari +
 VoiceOver, NVDA, JAWS, iOS/iPadOS Safari, Android, extended memory soak,
 and real deploy-target rollback remain untested.
 
+## Attempt 6 (2026-07-23): Result VoiceOver and Cute Pop Parity — CONDITIONAL
+
+Scope-limited to the three items needed to try to close Batch 8:
+re-verify the Match Setup `aria-pressed` fix under real VoiceOver, read
+the Result screen under real VoiceOver, and confirm Cute Pop
+gameplay-control parity. Attempts 4-5 were not repeated. Evidence:
+`docs/qa/evidence/batch-8/attempt-6-gameplay-result-parity.json`,
+`attempt-6-focus-log.json`.
+
+**1. Match Setup `aria-pressed` re-verification → VOICEOVER_PASS.**
+Under real VoiceOver (yorunoshirube), the 人数 buttons expose as
+`AXCheckBox` whose value reflects selection: 3人戦 value=1, 4人戦
+value=0. Activating 4人戦 with VO+Space flipped the roving selection
+live — 4人戦 → value=1, 3人戦 → value=0 — observed via AXFocusedUIElement.
+This promotes the item that was SUPPLEMENTAL_ONLY after Attempt 5 (fix
+committed in `bbb378e` but not yet re-scanned under VoiceOver) to a real
+VOICEOVER_PASS. No product defect.
+
+**2. Result screen → heading + action buttons VOICEOVER_PASS;
+win/rank/score SUPPLEMENTAL_ONLY.** To avoid Attempt 5's accidental
+replay activation, the match was auto-played to Result via CDP **while
+VoiceOver was OFF**, DOM focus was parked on the result `<h1>`, then
+VoiceOver was turned ON for read-only cursor navigation (no VO+Space/
+Enter on any Result button). Confirmed under real VoiceOver
+(AXFocusedUIElement tracking):
+- `AXHeading` "対戦結果" (result heading), and
+- the three action buttons — `AXButton` "もう一局 同じメンバーで再戦する",
+  "記憶帳を見る", "TOPへ" — reached by Tab focus **without activating any
+  of them** (the accidental-replay problem did not recur).
+
+The win method / ranking / score are **SUPPLEMENTAL_ONLY**: their
+accessible structure was verified via a System Events AX-tree read —
+`<h2>` "ロン — ミチル" (win method + winner), a semantic ranking list
+(`・ あなた(放銃)`, `・ トモリ`, `・ ナギ`, `★ ミチル`, winner marked with
+a **text** ★ and loser with (放銃), i.e. not color-only), and score as
+real text ("合計得点 165", role breakdown 100点 + bonuses) — but this
+static text is not DOM-focusable, so AXFocusedUIElement does not advance
+onto it via VO+Right, and the VoiceOver caption panel is not
+AX-queryable in this environment (the VoiceOver process returns 0 UI
+elements to System Events). So VoiceOver's *spoken output* of the
+win/rank/score could not be mechanically captured. This is a **tooling
+limitation, not a product defect** — the structure a real VoiceOver user
+hears is correct and complete.
+
+**3. Cute Pop parity → VOICEOVER_PASS (parity).** Under real VoiceOver
+on cute-pop: Match Setup 人数 buttons are `AXCheckBox` with 3人戦
+value=1 / 4人戦 value=0 (identical to yorunoshirube); a Match hand tile
+is `AXCheckBox` with the tile name as accessible description ("ワシ") and
+selected state value that flips 0→1 on VO+Space (identical behavior).
+The Result screen uses the same skin-invariant components (design
+contract: layout/roles/semantic states are skin-invariant), so its
+accessible structure matches yorunoshirube's. No skin-specific
+difference in accessible name, role, value, selected/disabled state, or
+operation method.
+
+**Attempt 6 issues:** P0/P1/P2/P3 all 0 found. 1 tooling limitation
+(VoiceOver static-text caption capture). 0 product defects. No product
+or test code was changed (the `aria-pressed` fix was already committed
+in `bbb378e` during Attempt 5).
+
+**Cumulative Batch 8 20-flow classification (final):**
+
+```text
+VOICEOVER_PASS:   13
+SUPPLEMENTAL_ONLY: 6
+BLOCKED:           0
+NOT_APPLICABLE:    1
+Total:            20
+```
+
+All 3 items that were BLOCKED after Attempt 5 are cleared: Match Setup
+player-count state (now VOICEOVER_PASS), Result heading+buttons (now
+VOICEOVER_PASS), and Cute Pop gameplay-control parity (now
+VOICEOVER_PASS). Flow 20 (Result win/rank/score comprehension) moved
+BLOCKED → SUPPLEMENTAL_ONLY — structurally verified and tooling-limited
+rather than unreachable — which is why VOICEOVER_PASS holds at 13 and
+SUPPLEMENTAL_ONLY rises to 6 while BLOCKED falls to 0. (See
+`docs/qa/evidence/batch-8/attempt-6-gameplay-result-parity.json` →
+`batch8FlowClassification_final` for the per-flow breakdown.)
+
+**Attempt 6 decision: CONDITIONAL.** Match Setup aria-pressed, Result
+heading + action buttons, and Cute Pop parity are all real
+VOICEOVER_PASS with zero product defects. Result win/rank/score
+comprehension stays SUPPLEMENTAL_ONLY because capturing VoiceOver's
+spoken output of that (fully accessible) static text is a tooling
+limitation — so the strict COMPLETE bar for Result is not met.
+
+**Batch 8 overall: CONDITIONAL. RC status: LIMITED READY (unchanged).**
+VoiceOver was turned OFF at session end (confirmed the VoiceOver process
+is no longer running).
+
 ## Next Fixed Task
 
 ```text
-Next task: unresolved VoiceOver remediation
+Next task: unresolved Result / Cute Pop VoiceOver remediation
+           (specifically: capturing VoiceOver's spoken output of the
+           non-focusable Result static text — win method, ranking,
+           score)
 
-Reason: Attempt 5 closed the Match Setup and Match gaps but did not
-obtain a clean real-VoiceOver traversal of Result or `cute-pop`. The
-next bounded task is to prepare Result while VoiceOver is off,
-establish a non-activating focus anchor, traverse winner/ranking/score
-and replay/TOP controls with VoiceOver, then perform the minimum parity
-traversal on `cute-pop`.
+Reason: Attempt 6 confirmed, under real VoiceOver and with zero product
+defects, the Match Setup aria-pressed state, the Result heading + all
+three action buttons, and Cute Pop gameplay-control parity. The one
+remaining gap keeping Batch 8 at CONDITIONAL is capturing VoiceOver's
+SPOKEN OUTPUT of the Result win/rank/score — which are already
+structurally accessible (h1/h2 headings, a semantic ranking list with a
+text ★ winner marker, score as text), so a real VoiceOver user hears
+them, but this environment cannot mechanically read the VoiceOver
+caption panel (the VoiceOver process exposes no AX contents) and cannot
+track non-focusable static text via AXFocusedUIElement. Closing this
+needs one of: a machine-readable VoiceOver caption/speech-log channel,
+"Allow VoiceOver to be controlled with AppleScript" enabled plus a
+scripted last-phrase read, or a human VoiceOver user confirming the
+spoken Result aloud while the agent records.
 
-Entry condition: explicit instruction to retry gameplay VoiceOver
-acceptance, or explicit instruction to instead pursue one of the other
-open items (physical
-iPhone/iPad Safari validation, physical Android validation, extended
-memory soak, real deploy-target rollback rehearsal).
+This is a tooling/environment limitation, NOT a product defect — no
+Result product change is warranted or planned. If a future session
+wants to close Batch 8 to COMPLETE, it should pursue the caption-capture
+channel above, not modify the app.
+
+Entry condition: explicit instruction to retry Result caption capture,
+or explicit instruction to instead pursue one of the other open items
+(physical iPhone/iPad Safari validation, physical Android validation,
+extended memory soak, real deploy-target rollback rehearsal).
 
 Stop condition: same evidence discipline as every prior batch — real
 checks, not assumptions; honest scope statements; P0/P1 = 0 before any

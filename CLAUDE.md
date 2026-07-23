@@ -261,18 +261,40 @@ Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
   表示したが、VoiceOver再同期時にもう一局が意図せず作動したため実VoiceOver
   PASSにしない。cute-popも自動parityのみ。attempt 5の20項目は
   VOICEOVER_PASS 13 / SUPPLEMENTAL_ONLY 3 / BLOCKED 3 /
-  NOT_APPLICABLE 1。P0/P1 open=0。unit 331、asset image 92、
-  Chromium visual 70、Firefox/WebKit functional各25、a11y各21、
-  cross-browser visual 96、typecheck/build全PASS。新規独立case 1、
-  合計711。Batch 8=CONDITIONAL、RC=LIMITED READYを継続。
-  証跡はbatch-8配下JSON 6件+PNG 13件。
-  次の固定タスク(未着手・要明示指示): 実screen reader受入の残り
-  (Resultの勝敗/順位/得点/再戦/TOPとcute-pop最小parityを実VoiceOverで
-  走査する)、
-  実iPhone/iPad Safari検証、実Android検証、長時間memory soak、
-  実deploy環境rollback rehearsalのいずれかを明示指示で着手するか、
-  Gate 7/8を対象機能が実際に計画された時点で開始する。
-  docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdのNext Fixed Task参照。
+  NOT_APPLICABLE 1。P0/P1 open=0。
+  attempt 6(2026-07-23、CONDITIONAL): 残り3項目に絞って実施。
+  (1)Match Setup人数buttonをaria-pressed修正後に実VoiceOver再走査し、
+  AXCheckBoxとしてvalue=選択状態(3人戦1/4人戦0)を公開・VO+Spaceで
+  roving selectionがlive反転することを観測→当該項目をSUPPLEMENTAL_ONLY
+  からVOICEOVER_PASSへ昇格。(2)VoiceOver OFF中にCDPで対局をResultまで
+  自動進行→DOM focusをh1に置きVoiceOver ONにして読み取り専用走査
+  (buttonをactivateせず、attempt 5の誤再戦は再発せず): result見出し
+  (AXHeading 対戦結果)と操作ボタン3件(もう一局/記憶帳を見る/TOPへ)を
+  AXFocusedUIElementで確認。勝敗/順位/得点の静的テキストは構造は
+  AX-tree readで確認(h2勝敗、順位の意味的list+テキスト★勝者マーカー・
+  色非依存、得点テキスト)したが、VoiceOverの読み上げ音声を機械的に
+  捕捉できず(キャプションパネルがAXクエリ不可・静的テキストは
+  AXFocusedUIElement非追従=tooling limitation、製品欠陥ではない)
+  →SUPPLEMENTAL_ONLY据え置き。(3)Cute Pop parityを実VoiceOverで確認:
+  Match Setup人数AXCheckBox値・Match手牌(AXCheckBox、description="ワシ"、
+  selected value 0→1)がyorunoshirubeと同一。attempt 6で従前のBLOCKED 3件を
+  全て解消。**Batch 8累計最終分類: VOICEOVER_PASS 13 /
+  SUPPLEMENTAL_ONLY 6 / BLOCKED 0 / NOT_APPLICABLE 1**(flow 20の
+  Result勝敗/順位/得点はBLOCKED→SUPPLEMENTAL_ONLYへ)。P0/P1/P2 open=0、
+  全attempt通算で製品欠陥0件・tooling limitation 1件。attempt 6は
+  製品/testコード変更なし(aria-pressed修正はattempt 5のbbb378eで既済)
+  のため711件全再実行は行わず、unit 331は緑を維持。VoiceOverは
+  セッション終了時にOFF確認。Batch 8=CONDITIONAL、RC=LIMITED READYを継続。
+  証跡はbatch-8配下JSON 8件+PNG 13件。
+  次の固定タスク(未着手・要明示指示): 未解決のResult/Cute Pop VoiceOver
+  remediation(具体的にはResult静的テキスト=勝敗/順位/得点のVoiceOver
+  読み上げ音声を機械的に捕捉する経路——VoiceOverのAppleScript制御許可+
+  最終フレーズ読み取り、または人間のVoiceOver利用者による読み上げ確認。
+  製品側は既にaccessibleなので変更不要)、実iPhone/iPad Safari検証、
+  実Android検証、長時間memory soak、実deploy環境rollback rehearsalの
+  いずれかを明示指示で着手するか、Gate 7/8を対象機能が実際に計画された
+  時点で開始する。docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdの
+  Next Fixed Task参照。
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。

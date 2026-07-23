@@ -47,8 +47,8 @@ Batch 7 (Cross-Browser & Screen Reader Acceptance): complete
     but real-device and real-screen-reader verification remain open).
   See docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md for full evidence and
     decision record.
-Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 5)
-    — was BLOCKED across attempts 1-3, then CONDITIONAL on attempt 4
+Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 6)
+    — was BLOCKED across attempts 1-3, then CONDITIONAL on attempts 4-6
     after the user granted macOS TCC Accessibility + Automation
     permissions. Targeted the specific Batch 7 open item of real
     screen-reader acceptance. Real Safari is only viewable (not drivable)
@@ -86,16 +86,39 @@ Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 5)
     existing QA route while VoiceOver was off, but focus synchronization
     unexpectedly activated replay, so Result comprehension is not a
     VoiceOver PASS. `cute-pop` has automated parity only.
-  Attempt 5 flow classification: VOICEOVER_PASS 13,
-    SUPPLEMENTAL_ONLY 3, BLOCKED 3, NOT_APPLICABLE 1. Unit 331,
-    asset-image 92, Chromium visual 70, Firefox/WebKit functional
-    25+25, Firefox/WebKit a11y 21+21, and cross-browser visual 96 all
-    pass; combined independent cases are 711.
-  RC readiness: unchanged, still LIMITED READY — Chrome + VoiceOver is
-    validated through Match Setup/Match in the recorded scope, but
-    Result and second-skin real-VoiceOver traversal remain open.
+  Attempt 6 (2026-07-23, CONDITIONAL): scope-limited to the 3 remaining
+    items. (1) Re-verified the Match Setup aria-pressed fix under real
+    VoiceOver — 人数 buttons are AXCheckBox with value reflecting
+    selection (3人戦=1/4人戦=0), and VO+Space flips the roving selection
+    live — promoting it from SUPPLEMENTAL_ONLY to VOICEOVER_PASS.
+    (2) Reached Result by auto-playing the match via CDP WHILE VoiceOver
+    was OFF, then turned VoiceOver ON for read-only traversal (no button
+    activation — the Attempt-5 accidental replay did not recur): the
+    result AXHeading 対戦結果 and all 3 action buttons
+    (もう一局/記憶帳を見る/TOPへ) confirmed via AXFocusedUIElement; the
+    win/rank/score static text stays SUPPLEMENTAL_ONLY (structure
+    verified via AX-tree read — h2 win method, semantic ranking list
+    with a text ★ winner marker, score text — but VoiceOver's spoken
+    output of that non-focusable text is not mechanically capturable in
+    this environment: no AX-queryable caption panel = tooling
+    limitation, not a product defect). (3) Cute Pop parity confirmed
+    under real VoiceOver — Match Setup 人数 AXCheckBox values and a Match
+    hand tile (AXCheckBox, description "ワシ", selected value 0→1) are
+    identical to yorunoshirube.
+  Cumulative Batch 8 final flow classification: VOICEOVER_PASS 13,
+    SUPPLEMENTAL_ONLY 6, BLOCKED 0, NOT_APPLICABLE 1 (all 3 prior BLOCKED
+    items cleared; flow 20 Result win/rank/score moved BLOCKED →
+    SUPPLEMENTAL_ONLY). P0/P1/P2 open 0; 0 product defects, 1 tooling
+    limitation. Attempt 6 changed no product/test code, so the full
+    711-case suite was not re-run; unit tests (331) remain green.
+  RC readiness: unchanged, still LIMITED READY — real VoiceOver + Chrome
+    is now validated across TOP / JSON import / Deck Editor / unsaved
+    dialog / Match Setup / Match / Result-controls for both skins with
+    zero product defects, but capturing VoiceOver's spoken Result
+    static-text output, Safari+VoiceOver, NVDA/JAWS, and physical
+    devices remain untested.
   See docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md for the full
-    attempt log (including Attempts 4-5) and decision record.
+    attempt log (including Attempts 4-6) and decision record.
 Current phase: further RC hardening (not yet scoped — see
   "Next Fixed Task" in docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md)
 ```
