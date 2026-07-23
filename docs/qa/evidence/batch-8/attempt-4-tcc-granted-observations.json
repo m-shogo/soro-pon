@@ -50,8 +50,9 @@
     "unsavedChangesDialog": {
       "trigger": "made a dirty change to デッキ名, then activated もどる",
       "observation": "a confirmation dialog opened and VoiceOver's focus landed on its first button, AXButton named '破棄してもどる' (discard and go back); the cancel button '編集をつづける' was also present",
-      "escapeBehavior": "Dialog.tsx wraps Modal with onClose=onCancel, so Escape maps to CANCEL (not the destructive confirm) — this is verified by the existing unit test src/ui/components/domInteraction.test.tsx and by source inspection; the live run had some AX-focus-sync noise after CDP-driven transitions but showed no evidence of Escape triggering the destructive action",
-      "result": "PASS (dialog opens with focus placed on a named button); Escape=cancel confirmed by source + existing unit test rather than by a clean live VO read"
+      "escapeBehavior": "SUPPLEMENTAL_ONLY — Dialog.tsx wraps Modal with onClose=onCancel, so Escape maps to CANCEL (not the destructive confirm). This is verified by the existing unit test src/ui/components/domInteraction.test.tsx and source inspection, not by a clean live VoiceOver observation.",
+      "focusReturn": "SUPPLEMENTAL_ONLY — focus return after closing the dialog was not cleanly synchronized in the live VoiceOver run and is supported only by implementation/unit-test evidence.",
+      "result": "VOICEOVER_PASS only for dialog opening and initial focus on a named button. Escape cancellation and focus return are SUPPLEMENTAL_ONLY."
     }
   },
   "screensReachedButNotFullyVoiceOverTraversed": {
@@ -65,11 +66,28 @@
     "productDefects_P1": 0,
     "productDefects_P2": 0,
     "productDefects_P3": 0,
-    "note": "Every element actually traversed under real VoiceOver had a correct, meaningful accessible name, role, and (where applicable) value/state. No focus trap, no missing name, no unreadable control was found in TOP / JSON import / Deck Editor / the unsaved-changes dialog. No product defect was observed.",
+    "note": "In the TOP, JSON Import, Deck Editor, and unsaved-dialog portions actually traversed under real VoiceOver, no accessible-name omission, role omission, unreadable control, or clear focus trap was observed. This statement does not cover Match Setup, Match, or Result.",
     "toolingLimitations": 1,
     "environmentLimitations": 0
   },
-  "flowsWithRealVoiceOverEvidence": ["1 page title", "2 TOP heading (title present)", "3 TOP main buttons", "4 button names+purpose", "6 JSON import navigation", "7 textarea label", "8 invalid JSON input", "9 validation error present", "10 valid deck import", "12 open Deck Editor", "13 tab/section structure", "14 form control labels+values", "15 unsaved-changes dialog opens with focus"],
-  "flowsReachedButNotVoiceOverTraversed": ["5 current skin state (not explicitly queried)", "11 Deck List deck-name/action relation (went via DeckDetail, not the list)", "16 dialog focus-return (source+unit-test verified, not clean live read)", "17 Match Setup controls", "18 start 3p/4p match", "19 in-match hand/turn/selection", "20 Result win/rank/score"],
-  "conclusion": "Attempt 4 is the first attempt to successfully drive and observe REAL VoiceOver against the app. Roughly 12-13 of the 20 flows were confirmed with genuine real-VoiceOver signal (AXFocusedUIElement tracking the VoiceOver cursor with correct role/name/value), all on the core screens (TOP, JSON import, Deck Editor, unsaved-changes dialog), with ZERO product defects found. The live match-play screens (MatchSetup/Match/Result) were reached but could not be cleanly traversed under the VoiceOver cursor due to a CDP-vs-VoiceOver focus-sync tooling limitation, not a product defect. This is recorded as CONDITIONAL: substantial real VoiceOver acceptance on core screens, with the game-play screens' screen-reader traversal still open. RC status remains LIMITED READY."
+  "flowClassification": {
+    "VOICEOVER_PASS": {
+      "count": 9,
+      "flows": [3, 4, 6, 7, 8, 12, 13, 14, 15]
+    },
+    "SUPPLEMENTAL_ONLY": {
+      "count": 5,
+      "flows": [1, 2, 9, 10, 16]
+    },
+    "BLOCKED": {
+      "count": 6,
+      "flows": [5, 11, 17, 18, 19, 20]
+    },
+    "NOT_APPLICABLE": {
+      "count": 0,
+      "flows": []
+    },
+    "total": 20
+  },
+  "conclusion": "Attempt 4 is the first attempt to successfully drive and observe real VoiceOver against the app. Exact classification: VOICEOVER_PASS 9, SUPPLEMENTAL_ONLY 5, BLOCKED 6, NOT_APPLICABLE 0. In the TOP, JSON Import, Deck Editor, and unsaved-dialog portions actually traversed with real VoiceOver, no product defect was observed. Escape cancellation and focus return are supplemental source/unit-test checks, not VoiceOver passes. Match Setup/Match/Result remain blocked by a CDP-vs-VoiceOver focus-sync tooling limitation. Attempt 4 remains CONDITIONAL and RC remains LIMITED READY."
 }

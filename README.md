@@ -61,16 +61,21 @@ Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 4)
   Attempt 4 (2026-07-23, CONDITIONAL): with TCC permissions granted,
     real VoiceOver was driven via osascript System Events (VO+arrow,
     VO+Space, Tab/Escape) and observed via AXFocusedUIElement reads.
-    ~12-13 of 20 flows confirmed with genuine real-VoiceOver signal on
-    the core screens — TOP (title + all 5 main buttons as named
-    AXButtons), JSON import (textarea label "デッキJSON" + validation
-    error), Deck Editor (tabs as an AXRadioButton group with counts,
+    The 20 flows were audit-reclassified as VOICEOVER_PASS 9,
+    SUPPLEMENTAL_ONLY 5, BLOCKED 6, NOT_APPLICABLE 0. Real-VoiceOver
+    passes covered observed portions of the core screens — TOP (all 5
+    main buttons as named AXButtons), JSON import (textarea label
+    "デッキJSON" + invalid-input action), Deck Editor (tabs as an
+    AXRadioButton group with counts,
     form fields with correct labels/values), and the unsaved-changes
-    dialog (opens with focus on a named button). Zero product defects
-    found. Match Setup / Match / Result were reached but could not be
-    cleanly traversed under the VoiceOver cursor due to a
-    CDP-vs-VoiceOver focus-sync tooling limitation (not a product
-    defect). VoiceOver was turned off at session end.
+    dialog (opens with focus on a named button). In that traversed scope,
+    zero product defects were observed. Validation-error recognition,
+    successful-import observation, Escape cancellation, and dialog
+    focus return are supplemental only. Match Setup was reached but not
+    cleanly traversed; Match and Result were not reached under a clean
+    VoiceOver cursor due to a CDP-vs-VoiceOver focus-sync tooling
+    limitation (not a product defect). VoiceOver was turned off at
+    session end.
   No product code changed (no defect was found to fix). All existing
     suites remain green, zero regressions.
   RC readiness: unchanged, still LIMITED READY — attempt 4 narrowed the

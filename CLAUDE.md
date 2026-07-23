@@ -221,15 +221,21 @@ Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
   ctrl+opt+key code49、Tab/Escape)を送信し、各操作後にChromeプロセスの
   AXFocusedUIElementのrole/name/valueを読み取ることで、VoiceOverカーソル
   追従を実証跡化。VoiceOver + Chrome(Safariではない。Safariはread tier
-  のまま)。20フロー中約12-13を実VoiceOver信号付きで確認: TOP(タイトル+
+  のまま)。20フローは監査上 `VOICEOVER_PASS 9 /
+  SUPPLEMENTAL_ONLY 5 / BLOCKED 6 / NOT_APPLICABLE 0` に確定:
+  実VoiceOver PASSはTOP(
   主要5ボタンがAXButtonとして正しいaccessible name付きでDOM順に到達)、
   JSON import(textareaのdescription=デッキJSON、validation error I2002)、
   Deck Editor(tab stripがAXRadioButton群・件数付き名称・roving selected、
   form fieldがdescription=デッキ名/説明+現在値)、未保存変更dialog
-  (もどるで開き初期focusが名前付きボタンへ)。**実VoiceOverで到達した全要素に
-  正しいaccessible name/role/valueがあり、focus trap・name欠落・読み上げ
-  不能なcontrolは皆無。製品defect(P0/P1/P2/P3)は0件**。Match Setup/Match/
-  Result画面は到達したが、CDP経由の画面遷移後にVoiceOverカーソル/
+  (もどるで開き初期focusが名前付きボタンへ)。Escapeキャンセルとfocus復帰は
+  実VoiceOverでは同期観測できず、Dialog.tsxと既存unit testによる
+  SUPPLEMENTAL_ONLY。**実VoiceOverで走査できたTOP、JSON Import、
+  Deck Editor、未保存dialogの範囲では、accessible name/role欠落、
+  読み上げ不能なcontrol、明確なfocus trapは確認されなかった。**
+  この記述はMatch Setup/Match/Resultを保証しない。走査済み範囲の
+  製品defect(P0/P1/P2/P3)は0件。Match Setup画面は到達したが、
+  Match/ResultはcleanなVoiceOver cursor下では未到達。CDP経由の画面遷移後にVoiceOverカーソル/
   AXFocusedUIElement/DOM focusが非同期化(AXFocusedUIElementがnull)した
   ため、VoiceOverカーソルでのcleanな走査が記録できず(=tooling limitation、
   製品defectではない)。VoiceOverはセッション終了時にCmd+F5でOFFにし

@@ -66,15 +66,21 @@ toolchains. Evidence: `docs/qa/evidence/batch-8/attempt-log.json`
 **Attempt 4 (2026-07-23): CONDITIONAL** — after the user granted the
 macOS TCC Accessibility + Automation permissions via System Settings
 (the exact blocker from attempt 3), real VoiceOver was driven and
-observed for the first time. ~12-13 of 20 flows confirmed with genuine
-real-VoiceOver signal on the core screens (TOP, JSON import, Deck
-Editor, unsaved-changes dialog), **zero product defects**; Match Setup /
-Match / Result reached but not cleanly VoiceOver-traversed due to a
-CDP-vs-VoiceOver focus-sync tooling limitation. Evidence:
+observed for the first time. The 20 flows were reclassified from the
+recorded evidence as `VOICEOVER_PASS: 9`, `SUPPLEMENTAL_ONLY: 5`,
+`BLOCKED: 6`, `NOT_APPLICABLE: 0`. The real-VoiceOver passes cover the
+observed portions of TOP, JSON import, Deck Editor, and the
+unsaved-changes dialog. Match Setup was reached but not cleanly
+VoiceOver-traversed; Match and Result were not reached under a clean
+VoiceOver cursor due to a CDP-vs-VoiceOver focus-sync tooling
+limitation. Evidence:
 `docs/qa/evidence/batch-8/attempt-4-tcc-granted-observations.json`. Full
 detail in the "Attempt 4" section of
 [BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md](./BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md).
-RC status remains LIMITED READY (game-play screens' real-screen-reader
+The dialog opening and initial focus were observed with real VoiceOver;
+Escape cancellation and focus return were supplemental source/unit-test
+checks and are not included in the 9 VoiceOver passes. RC status remains
+LIMITED READY (game-play screens' real-screen-reader
 traversal still open).
 
 ## P0-P3 classification (unchanged scheme from Batch 6/7, extended)
@@ -95,9 +101,9 @@ Environment limitation: cannot be verified in this environment —
   objective, since VoiceOver itself could never be reached
 ```
 
-No P0-P3 findings exist this batch because no walkthrough occurred to
-produce any. This is explicitly different from "0 found because
-verified clean" — it is "0 found because 0 verified."
+No P0-P3 finding was observed in the TOP, JSON Import, Deck Editor, and
+unsaved-dialog portions actually traversed with VoiceOver. This does
+not make a claim about the blocked Match Setup / Match / Result flows.
 
 ## Decision criteria
 

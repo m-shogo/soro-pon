@@ -13,12 +13,14 @@
 permissions via System Settings, attempt 4 (2026-07-23) succeeded in
 driving and observing REAL VoiceOver for the first time.** Attempts 1-3
 (all BLOCKED, 2026-07-21) are preserved below as history. Attempt 4's
-result: **CONDITIONAL** — roughly 12-13 of the 20 flows confirmed with
-genuine real-VoiceOver signal on the core screens (TOP, JSON import,
-Deck Editor, unsaved-changes dialog), **zero product defects found**;
-the live match-play screens (Match Setup / Match / Result) were reached
-but could not be cleanly traversed under the VoiceOver cursor due to a
-CDP-vs-VoiceOver focus-sync tooling limitation (not a product defect).
+result: **CONDITIONAL** — the 20 flows are now classified exactly as
+`VOICEOVER_PASS: 9`, `SUPPLEMENTAL_ONLY: 5`, `BLOCKED: 6`,
+`NOT_APPLICABLE: 0`. The VoiceOver passes cover observed portions of
+TOP, JSON import, Deck Editor, and the unsaved-changes dialog; no
+product defect was observed in that traversed scope.
+Match Setup was reached but not cleanly traversed; Match and Result were
+not reached under a clean VoiceOver cursor due to a CDP-vs-VoiceOver
+focus-sync tooling limitation (not a product defect).
 Full evidence: `docs/qa/evidence/batch-8/attempt-4-tcc-granted-observations.json`.
 See the "Attempt 4" section near the end of this report for detail. RC
 status remains **LIMITED READY** (real screen-reader coverage of the
@@ -430,11 +432,53 @@ accessibility API, so this is real screen-reader signal, just on Chrome.
 | TOP | Page title present; all 5 main buttons reached in DOM order via VO+Right, each an `AXButton` with a correct name ("まず遊ぶ すぐに対戦をはじめます", "デッキ一覧 …", "JSONを読み込む …", "記憶帳 …", "きせかえ …"); reading order matched visual order | PASS |
 | JSON import | textarea exposed as `AXTextArea` with description "デッキJSON"; 読み込む is a named `AXButton`; invalid JSON produced the "I2002" rejection, valid JSON was accepted and navigated to DeckDetail | PASS |
 | Deck Editor | tab strip exposed as `AXRadioButton` group with roving selected/unselected value and names including counts ("基本"[selected], "カテゴリ (4)", "牌 (3)", "役 (1)", "ボーナス (0)"); form fields `AXTextField`/`AXTextArea` with correct descriptions "デッキ名"/"説明" and current values | PASS |
-| Unsaved-changes dialog | opened on もどる with a dirty change; VoiceOver focus landed on its first button, `AXButton` "破棄してもどる"; Escape=cancel confirmed by `Dialog.tsx` source (Modal `onClose=onCancel`) + existing unit test `domInteraction.test.tsx` | PASS |
+| Unsaved-changes dialog | opened on もどる with a dirty change; VoiceOver focus landed on its first button, `AXButton` "破棄してもどる" | VOICEOVER_PASS for opening and initial focus |
 
-That is **~12-13 of the 20 flows** confirmed with genuine real-VoiceOver
-signal, all on the core screens, with **no missing accessible name, no
-focus trap, no unreadable control** — zero product defects.
+The unsaved-changes dialog display and initial focus were confirmed with
+real VoiceOver. Escape cancellation and focus return could not be
+cleanly synchronized in the live VoiceOver observation; they were
+supplementally confirmed from `Dialog.tsx` (`onClose={onCancel}`) and
+the existing `src/ui/components/domInteraction.test.tsx` tests. Escape
+and focus return are therefore not counted as VoiceOver passes.
+
+In the TOP, JSON Import, Deck Editor, and unsaved-dialog portions
+actually traversed with real VoiceOver, no accessible-name omission,
+role omission, unreadable control, or clear focus trap was observed.
+Match Setup / Match / Result were not traversed and are outside that
+statement's scope.
+
+### Attempt 4 exact flow classification
+
+| # | Flow | Classification | Evidence basis |
+|---:|---|---|---|
+| 1 | Page title | SUPPLEMENTAL_ONLY | Chrome window title observed; no recorded VoiceOver focus/caption for the title |
+| 2 | TOP heading | SUPPLEMENTAL_ONLY | Heading/title presence recorded, but no VoiceOver-focused heading observation |
+| 3 | TOP main-button order | VOICEOVER_PASS | VO+Right and AXButton focus sequence recorded |
+| 4 | TOP button names and purposes | VOICEOVER_PASS | VoiceOver-following AX role/name recorded for all five buttons |
+| 5 | Current skin state | BLOCKED | Not explicitly queried |
+| 6 | Reach JSON Import | VOICEOVER_PASS | VoiceOver traversal continued into the screen and focused its textarea |
+| 7 | JSON textarea label | VOICEOVER_PASS | AXTextArea description `デッキJSON` recorded under VoiceOver |
+| 8 | Trigger invalid JSON | VOICEOVER_PASS | Named `読み込む` button activation and rejection transition recorded |
+| 9 | Recognize validation error | SUPPLEMENTAL_ONLY | Error presence confirmed by accessibility tree, screenshot, and page text, not a VoiceOver focus/caption |
+| 10 | Successful import | SUPPLEMENTAL_ONLY | Acceptance/navigation observed, but no corresponding VoiceOver focus/caption record |
+| 11 | Deck List deck-name/action relation | BLOCKED | Deck List was bypassed via Deck Detail |
+| 12 | Open Deck Editor | VOICEOVER_PASS | VoiceOver traversal was recorded on the resulting editor controls |
+| 13 | Tab/section structure | VOICEOVER_PASS | AXRadioButton role/name/selected values recorded |
+| 14 | Form labels and values | VOICEOVER_PASS | AXTextField/AXTextArea descriptions and values recorded |
+| 15 | Unsaved dialog opens with initial focus | VOICEOVER_PASS | Dialog opened and VoiceOver focus landed on named AXButton |
+| 16 | Dialog close and focus return | SUPPLEMENTAL_ONLY | Escape/cancel and focus return supported by source/unit tests; live synchronization was unstable |
+| 17 | Match Setup controls | BLOCKED | Screen reached, but no clean VoiceOver cursor traversal |
+| 18 | Start 3p/4p match | BLOCKED | Not executed under a clean VoiceOver cursor |
+| 19 | In-match hand/turn/selection | BLOCKED | Not reached under a clean VoiceOver cursor |
+| 20 | Result win/rank/score | BLOCKED | Not reached under a clean VoiceOver cursor |
+
+```text
+VOICEOVER_PASS:     9
+SUPPLEMENTAL_ONLY:  5
+BLOCKED:            6
+NOT_APPLICABLE:     0
+TOTAL:             20
+```
 
 **Screens reached but NOT cleanly VoiceOver-traversed (tooling
 limitation, not a product defect):** Match Setup was reached (its page
