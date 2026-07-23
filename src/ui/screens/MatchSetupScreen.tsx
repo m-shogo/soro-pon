@@ -42,6 +42,7 @@ export function MatchSetupScreen({
                 <Button
                   key={count}
                   variant={playerCount === count ? 'paper' : 'ghost'}
+                  aria-pressed={playerCount === count}
                   disabled={!supported.includes(count)}
                   onClick={() => setPlayerCount(count)}
                 >

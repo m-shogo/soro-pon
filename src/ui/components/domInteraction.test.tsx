@@ -3,6 +3,9 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { DeckProject } from '../../domain/deck';
+import type { DeckVariant } from '../../domain/variant';
+import { MatchSetupScreen } from '../screens/MatchSetupScreen';
 import { applyDocumentSkin } from '../skins/skinDom';
 import { AppErrorBoundary } from './AppErrorBoundary';
 import { Button } from './Button';
@@ -14,6 +17,43 @@ import { TileCard } from './TileCard';
 // engine/schemaテストはnode環境のまま(ADR-013)。
 
 afterEach(cleanup);
+
+describe('MatchSetupScreen: 人数選択状態', () => {
+  const variant = {
+    id: 'normal',
+    name: '通常版',
+    label: '通常版',
+    ruleConfig: {
+      supportedPlayerCounts: [3, 4],
+      handSizeNormal: 8,
+    },
+  } as unknown as DeckVariant;
+  const deck = {
+    name: '動物スターター',
+    tiles: [{ count: 36 }],
+  } as unknown as DeckProject;
+
+  it('現在の人数をaria-pressedで伝え、選択変更に追従する', async () => {
+    const user = userEvent.setup();
+    render(
+      <MatchSetupScreen
+        deck={deck}
+        variant={variant}
+        onStart={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    const threePlayers = screen.getByRole('button', { name: '3人戦' });
+    const fourPlayers = screen.getByRole('button', { name: '4人戦' });
+    expect(threePlayers.getAttribute('aria-pressed')).toBe('true');
+    expect(fourPlayers.getAttribute('aria-pressed')).toBe('false');
+
+    await user.click(fourPlayers);
+    expect(threePlayers.getAttribute('aria-pressed')).toBe('false');
+    expect(fourPlayers.getAttribute('aria-pressed')).toBe('true');
+  });
+});
 
 function ModalHarness() {
   const [open, setOpen] = useState(false);
