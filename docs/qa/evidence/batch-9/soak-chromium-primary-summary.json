@@ -1,0 +1,231 @@
+{
+  "label": "chromium-primary",
+  "browser": "chromium",
+  "base": "http://localhost:5199",
+  "startedAt": "2026-07-23T13:17:02.159Z",
+  "durationMinutes": 62.3,
+  "cyclesCompleted": 74,
+  "maxMinutes": 60,
+  "maxCycles": 200,
+  "aborted": null,
+  "scenarioCounts": {
+    "S1": 6,
+    "S9": 6,
+    "S8": 6,
+    "S2": 6,
+    "S7": 6,
+    "S10": 6,
+    "S3": 6,
+    "S11": 6,
+    "S5": 6,
+    "S4": 5,
+    "S12": 5,
+    "S13": 5,
+    "S14": 5
+  },
+  "matchesReachedResult": 28,
+  "matchesFailedResult": 1,
+  "cyclesWithNote": 0,
+  "totalPageErrors": 0,
+  "totalConsoleErrors": 0,
+  "totalFailedRequests": 45,
+  "errorSamples": [
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/base/skin.json :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: net::ERR_ABORTED"
+    }
+  ],
+  "warmupExcluded": {
+    "cycles": 10,
+    "policy": "first 5min OR first 10 cycles (longer wins)"
+  },
+  "trends": {
+    "heapUsedBytes": {
+      "first10Median": 6450764,
+      "last10Median": 8257916,
+      "growthPct": 28
+    },
+    "domNodes": {
+      "first10Median": 197,
+      "last10Median": 222,
+      "growthPct": 12.7
+    },
+    "jsListeners": {
+      "first10Median": 184,
+      "last10Median": 186,
+      "growthPct": 1.1
+    },
+    "liveTimers": {
+      "first10Median": 1,
+      "last10Median": 1,
+      "growthPct": 0
+    },
+    "localStorageBytes": {
+      "first10Median": 19211,
+      "last10Median": 24887,
+      "growthPct": 29.5
+    },
+    "matchCyclePerf": {
+      "firstP95": 240380,
+      "lastP95": 320673,
+      "slowdownPct": 33.4
+    }
+  },
+  "memoryAuthority": "authoritative (CDP, post-GC)"
+}

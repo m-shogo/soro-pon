@@ -248,3 +248,12 @@ RC readiness terms (unchanged scheme): `READY` / `LIMITED READY` /
 `NOT READY` — see the Report for the actual decision. Batch 9 does not by
 itself promote RC to READY (real screen-reader Result capture,
 physical-device, and real-deploy-rollback items remain open regardless).
+
+## Actual outcome
+
+The soak was run on 2026-07-23 after this matrix was fixed. Decision:
+**COMPLETE** (Chromium 62.3 min / 74 cycles, all thresholds PASS after
+INVESTIGATE resolution, product defects 0; Firefox and WebKit 20/20
+cycles each, stable). Full results, per-threshold judgments, and finding
+classification:
+[BATCH-9-EXTENDED-SOAK-REPORT.md](./BATCH-9-EXTENDED-SOAK-REPORT.md).

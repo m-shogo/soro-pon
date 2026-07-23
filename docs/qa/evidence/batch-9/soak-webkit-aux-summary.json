@@ -1,0 +1,95 @@
+{
+  "label": "webkit-aux",
+  "browser": "webkit",
+  "base": "http://localhost:5199",
+  "startedAt": "2026-07-23T14:20:50.473Z",
+  "durationMinutes": 19.8,
+  "cyclesCompleted": 20,
+  "maxMinutes": 45,
+  "maxCycles": 20,
+  "aborted": null,
+  "scenarioCounts": {
+    "S1": 2,
+    "S9": 2,
+    "S8": 2,
+    "S2": 2,
+    "S7": 2,
+    "S10": 2,
+    "S3": 2,
+    "S11": 1,
+    "S5": 1,
+    "S4": 1,
+    "S12": 1,
+    "S13": 1,
+    "S14": 1
+  },
+  "matchesReachedResult": 7,
+  "matchesFailedResult": 1,
+  "cyclesWithNote": 0,
+  "totalPageErrors": 0,
+  "totalConsoleErrors": 0,
+  "totalFailedRequests": 2,
+  "errorSamples": [
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/SKIN-MANIFEST.json :: cancelled"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/SKIN-MANIFEST.json :: cancelled"
+    },
+    {
+      "kind": "pageerror",
+      "text": "Fetch API cannot load http: /localhost:5199/assets/ui/soro-pon/skins/base/skin.json due to access control checks."
+    },
+    {
+      "kind": "pageerror",
+      "text": "Fetch API cannot load http: /localhost:5199/assets/ui/soro-pon/skins/yorunoshirube/skin.json due to access control checks."
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/skin.json :: cancelled"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:5199/assets/ui/soro-pon/skins/cute-pop/skin.json :: cancelled"
+    }
+  ],
+  "warmupExcluded": {
+    "cycles": 6,
+    "policy": "first 5min OR first 10 cycles (longer wins)"
+  },
+  "trends": {
+    "heapUsedBytes": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "domNodes": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "jsListeners": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "liveTimers": {
+      "first10Median": 1,
+      "last10Median": 1,
+      "growthPct": 0
+    },
+    "localStorageBytes": {
+      "first10Median": 19015,
+      "last10Median": 19309,
+      "growthPct": 1.5
+    },
+    "matchCyclePerf": {
+      "firstP95": null,
+      "lastP95": null,
+      "slowdownPct": null
+    }
+  },
+  "memoryAuthority": "not measured (stability-only run, per matrix)"
+}

@@ -131,11 +131,40 @@ Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 6)
     untested.
   See docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md for the full
     attempt log (including Attempts 4-6) and decision record.
-Current phase: further RC hardening — next fixed task is Batch 9
-  (extended memory / runtime stability soak). Batch 8 is formally fixed
-  as CONDITIONAL (a tooling limitation on VoiceOver caption capture, not
-  a product defect); capturing VoiceOver's spoken Result text is not a
-  product remediation item.
+Batch 9 (Extended Memory & Runtime Stability Soak) is COMPLETE
+  (2026-07-23). Design fixed before running
+  (docs/qa/BATCH-9-EXTENDED-SOAK-MATRIX.md), then executed with
+  scripts/qa/run-batch9-soak.mjs:
+  - Chromium primary (memory-authoritative: CDP post-GC JSHeapUsedSize +
+    DOM/listener counters + timer shim): 62.3 min continuous, 74 cycles,
+    both skins x 3p/4p, 28/29 matches to Result, 0 page/console errors.
+    All matrix thresholds PASS — heap oscillates 5.8-8.1MB with no
+    monotonic climb, DOM/listener/timer flat or bounded, localStorage
+    growth is the by-design capped match-record store, and the
+    deterministic scenarios show zero runtime slowdown over the hour
+    (match-duration p95 movement is game-length variance).
+  - Firefox 20/20 and WebKit 20/20 auxiliary cycles: stability-only
+    (no memory claim), 0 errors, benign navigation-abort fetches only.
+  - Product defects: 0 (P0-P3 all zero; no product code changed in
+    Batch 9). 2 harness defects were found in the pre-run smoke and
+    fixed harness-side; 2 of 37 match attempts hit the harness's own
+    4-min autoplay cap (harness limitation, not product).
+  - Extended soak is NOT added to CI (manual pre-release gate; see
+    docs/release/SOAK-RUNBOOK.md). Report:
+    docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md. Evidence:
+    docs/qa/evidence/batch-9/ (14 PNG + 8 JSON/JSONL = 22 files).
+  Scope: the memory claim covers Chromium on the dev server for this
+    run's duration; Firefox/WebKit are stability-only; real
+    Safari/mobile devices remain untested.
+RC readiness: LIMITED READY (unchanged as a status) — the extended
+  memory-soak open item tracked since Batch 6 is now CLOSED. Remaining
+  open: real iPhone/iPad Safari / Android devices, real deploy-target
+  rollback, Safari+VoiceOver, NVDA/JAWS, Batch 8's tooling-limited
+  Result static-text speech capture.
+Current phase: further RC hardening. Batch 8 remains CONDITIONAL
+  (tooling limitation, not a product defect). No fixed next batch is
+  scheduled; the remaining RC open items above start only on explicit
+  instruction.
 ```
 
 正確な現在地と実装順:

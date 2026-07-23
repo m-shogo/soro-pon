@@ -294,13 +294,33 @@ Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
   parityのみ確認、Cute Pop Resultの実VoiceOver走査は未実施。
   「両スキンでResult検証済み」「全ゲーム画面を完全走査」等の全範囲保証は
   しない。
-  次の固定タスク(未着手・要明示指示): **Batch 9: Extended Memory and
-  Runtime Stability Soak**(長時間対局・再戦・画面遷移でのmemory leak/
-  DOM・listener・timer増殖/性能劣化の有無を検証)。Result静的テキストの
-  VoiceOver音声捕捉は製品remediationではなくtooling limitationとして
-  Batch 8のCONDITIONALに固定済み(製品側は既にaccessible、変更不要)。
-  その他の未検証項目(実iPhone/iPad Safari・実Android・実deploy rollback・
-  Safari+VoiceOver・NVDA/JAWS)は明示指示があった時点で着手する。
+Batch 9(Extended Memory & Runtime Stability Soak)は完了(2026-07-23、
+  COMPLETE)。設計を実行前にmatrixへ固定
+  (docs/qa/BATCH-9-EXTENDED-SOAK-MATRIX.md)してから
+  scripts/qa/run-batch9-soak.mjsで実施。Chromium本走(memory正:
+  CDP post-GC JSHeapUsedSize+Memory.getDOMCounters+timer shim)は
+  62.3分連続・74 cycle・両skin×3p/4p・match 28/29 Result完走・
+  page/console error 0。全しきい値PASS — heapは5.8-8.1MBで振動し
+  単調増加なし(first10/last10の+28%はwindowing artifactでbucket中央値は
+  plateau)、DOM/listener/timerはフラットまたは有界振動、localStorage増は
+  by-designのrecords 100件cap蓄積、決定的シナリオの所要時間は1時間で
+  完全フラット(match p95 +33.4%はゲーム長の乱数分散であり実行時劣化では
+  ない)。Firefox 20/20・WebKit 20/20の補助走は安定性のみ(memory主張
+  なし)でerror 0・navigation中断系abortのみ(Batch 7既知の良性パターン)。
+  製品欠陥0件(P0-P3全て0、Batch 9で製品コード変更なし)。harness欠陥2件は
+  事前smokeで発見しharness側で修正(S10 getByLabel二重解決/読み込む
+  substring誤一致)。37 match中2件がharness自身の4分autoplay上限に到達
+  (harness limitation、製品欠陥ではない)。extended soakはCIに入れない
+  (手動プレリリースゲート、docs/release/SOAK-RUNBOOK.md参照)。
+  レポート: docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md。証跡:
+  docs/qa/evidence/batch-9/(PNG 14+JSON/JSONL 8=22件)。
+  memory主張のscopeはdev server上のChromium・本走の時間範囲のみ。
+  RC readiness: LIMITED READY継続 — ただしBatch 6以来trackedだった
+  「長時間memory soak」open itemはCLOSED。
+  残る未検証項目(実iPhone/iPad Safari・実Android・実deploy rollback・
+  Safari+VoiceOver・NVDA/JAWS・Batch 8のResult静的テキスト音声捕捉=
+  tooling limitation)は明示指示があった時点で着手する。次の固定タスクは
+  未設定。
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
