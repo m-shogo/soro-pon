@@ -633,10 +633,14 @@ evidence: `docs/qa/BATCH-5-QA-MATRIX.md`,
 (138 files: 131 PNG + 7 JSON, re-verified by direct enumeration
 2026-07-21 after an earlier miscount of 121+7 in the original report).
 
-**Fixed next task: Release Candidate track — Gate 6.** Entry condition:
-explicit instruction to begin Gate 6. Stop condition: Gate 6 requirements
-(migration, storage recovery, performance caps, asset caching, rollback,
-accessibility acceptance) verified, blocking defects fixed, tests/CI
-green, release-candidate decision recorded.
+**Release-candidate track status (updated 2026-07-23):** Gate 6 is
+complete and PASS; Batch 7 is complete; Batch 8 Attempt 5 is
+CONDITIONAL. Real Chrome + VoiceOver now covers the recorded core
+screens plus Match Setup and one in-match tile selection/discard.
+Result comprehension and the minimum `cute-pop` real-VoiceOver parity
+traversal remain open. RC status remains LIMITED READY. The fixed next
+task is unresolved gameplay VoiceOver remediation; do not start
+physical-device validation, extended memory soak, or deploy rollback
+without explicit instruction.
 
 Cross-referenced from docs/IMPLEMENTATION-WORKFLOW.md.

@@ -247,11 +247,28 @@ Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
   製品defect 0件のため降格もなし)。証跡:
   docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-MATRIX.md、
   docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md、
-  docs/qa/evidence/batch-8/(JSON3件: attempt-log/attempt-3/attempt-4)。
+  docs/qa/evidence/batch-8/(attempt 4時点のJSON:
+  attempt-log/attempt-3/attempt-4)。
+  attempt 5(2026-07-23、CONDITIONAL): 実VoiceOverのみでTOP→Match Setup
+  →Matchへ遷移し、対局開始、現在手番/残り牌/player情報/役候補/名前付き手牌を
+  確認。手牌1枚のselected AX valueを0→1へ変更し、捨てるbuttonのdisabled→
+  enabled変化を確認してVO+Spaceで1枚捨て、残り牌56→55・自分の捨て牌0→1を
+  観測した。Match Setupの人数buttonは現在選択値を読み上げず、aria-pressed
+  欠落のP2 product defectと確定。aria-pressed追加+component testで修正し、
+  P2 found/fixed/open=1/1/0。修正後の実VoiceOver再走査は未実施のため当該1項目
+  はSUPPLEMENTAL_ONLY。ResultはVoiceOver OFF中に既存QA経路で
+  対戦結果/ロン・あなた/順位(あなた・トモリ・ナギ)/145点/もう一局/TOPへを
+  表示したが、VoiceOver再同期時にもう一局が意図せず作動したため実VoiceOver
+  PASSにしない。cute-popも自動parityのみ。attempt 5の20項目は
+  VOICEOVER_PASS 13 / SUPPLEMENTAL_ONLY 3 / BLOCKED 3 /
+  NOT_APPLICABLE 1。P0/P1 open=0。unit 331、asset image 92、
+  Chromium visual 70、Firefox/WebKit functional各25、a11y各21、
+  cross-browser visual 96、typecheck/build全PASS。新規独立case 1、
+  合計711。Batch 8=CONDITIONAL、RC=LIMITED READYを継続。
+  証跡はbatch-8配下JSON 6件+PNG 13件。
   次の固定タスク(未着手・要明示指示): 実screen reader受入の残り
-  (Match Setup/Match/Resultをread時にVoiceOverカーソルとの同期を保つ経路
-  ——CDPクリックを使わずVoiceOverカーソル操作のみで画面遷移する、または
-  ユーザーが実VoiceOverを操作しエージェントが記録に専念する)、
+  (Resultの勝敗/順位/得点/再戦/TOPとcute-pop最小parityを実VoiceOverで
+  走査する)、
   実iPhone/iPad Safari検証、実Android検証、長時間memory soak、
   実deploy環境rollback rehearsalのいずれかを明示指示で着手するか、
   Gate 7/8を対象機能が実際に計画された時点で開始する。

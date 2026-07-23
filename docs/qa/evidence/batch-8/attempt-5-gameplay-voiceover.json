@@ -1,0 +1,89 @@
+{
+  "name": "Batch 8 Attempt 5: Gameplay VoiceOver Acceptance",
+  "date": "2026-07-23",
+  "startHead": "9d0f9fb",
+  "environment": {
+    "macOS": "26.4.1 (25E253)",
+    "browser": "Google Chrome 150.0.7871.129",
+    "voiceOver": "macOS bundled VoiceOver with caption panel enabled",
+    "axTrust": true,
+    "automation": true,
+    "url": "http://localhost:5199",
+    "fixture": "samples/animal-starter.deck.json",
+    "primarySkin": "yorunoshirube",
+    "secondarySkin": "cute-pop (automated regression only; no clean real-VoiceOver traversal)"
+  },
+  "result": "CONDITIONAL",
+  "screens": {
+    "matchSetup": {
+      "reachedWithVoiceOver": true,
+      "startActivatedWithVoiceOver": true,
+      "observed": [
+        "対局設定 heading",
+        "動物スターター / 通常版",
+        "3人戦 button",
+        "4人戦 button",
+        "player panels",
+        "対局開始 button"
+      ],
+      "finding": "The selected player count was not announced during the live traversal because the toggle buttons lacked aria-pressed.",
+      "remediation": "Added aria-pressed to the 3人戦/4人戦 buttons and one component regression test.",
+      "retestScope": "Source/unit/browser regressions passed; the remediated selected state was not re-run with real VoiceOver in Attempt 5."
+    },
+    "match": {
+      "reachedWithVoiceOver": true,
+      "observed": [
+        "残り牌 56",
+        "手番 あなた",
+        "捨てる牌を選ぶ",
+        "player discard summaries",
+        "named hand tiles exposed as AXCheckBox/toggle controls",
+        "selected tile AX value changed from 0 to 1",
+        "捨てる changed from dimmed/disabled to enabled",
+        "one discard was activated with VO+Space",
+        "remaining tiles changed from 56 to 55 and the human discard count changed from 0 to 1"
+      ]
+    },
+    "result": {
+      "reachedByExistingQaRouteWithVoiceOverOff": true,
+      "visualStateObserved": [
+        "対戦結果",
+        "ロン / あなた",
+        "ranking: あなた, トモリ, ナギ",
+        "合計得点 145",
+        "もう一局",
+        "TOPへ"
+      ],
+      "realVoiceOverTraversal": false,
+      "reason": "When VoiceOver was re-enabled and synchronized to keyboard focus, the replay action was unexpectedly activated and a new match opened. The Result content therefore remains supplemental/blocked, not a VoiceOver pass."
+    }
+  },
+  "flowClassification": {
+    "total": 20,
+    "voiceOverPass": 13,
+    "supplementalOnly": 3,
+    "blocked": 3,
+    "notApplicable": 1
+  },
+  "issues": {
+    "p0": { "found": 0, "fixed": 0, "open": 0 },
+    "p1": { "found": 0, "fixed": 0, "open": 0 },
+    "p2": { "found": 1, "fixed": 1, "open": 0 },
+    "p3": { "found": 0, "fixed": 0, "open": 0 },
+    "productDefects": [
+      "Match Setup player-count toggle did not expose its selected state to VoiceOver; fixed with aria-pressed."
+    ],
+    "toolingLimitations": [
+      "Chrome/VoiceOver/DOM focus synchronization remained unstable after Result preparation.",
+      "The secondary skin did not receive a clean real-VoiceOver gameplay traversal."
+    ],
+    "environmentLimitations": [
+      "Safari + VoiceOver was not drivable in this environment."
+    ]
+  },
+  "decision": {
+    "batch8": "CONDITIONAL",
+    "rc": "LIMITED READY",
+    "nextFixedTask": "unresolved gameplay VoiceOver remediation"
+  }
+}

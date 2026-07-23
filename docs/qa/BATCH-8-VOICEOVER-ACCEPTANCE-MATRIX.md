@@ -83,6 +83,27 @@ checks and are not included in the 9 VoiceOver passes. RC status remains
 LIMITED READY (game-play screens' real-screen-reader
 traversal still open).
 
+**Attempt 5 (2026-07-23): CONDITIONAL** — real VoiceOver navigated
+TOP → Match Setup → Match without an external click after activation.
+Match Setup controls, selected deck name, and start action were
+reached. Match exposed turn/remaining-tile/player/role information and
+named hand-tile toggle controls. One tile changed AX selected value
+`0 → 1` and was discarded with `VO+Space`; the remaining-tile and
+discard counts changed afterward.
+
+The player-count toggle did not announce its current selection. This
+confirmed P2 was fixed with `aria-pressed` and a component regression
+test, but the fixed state was not re-run under real VoiceOver. Result
+was populated through the existing QA route while VoiceOver was off,
+but replay unexpectedly activated during VoiceOver focus
+resynchronization; Result comprehension remains blocked. `cute-pop`
+has automated parity evidence only.
+
+Attempt 5 exact classification: `VOICEOVER_PASS: 13`,
+`SUPPLEMENTAL_ONLY: 3`, `BLOCKED: 3`, `NOT_APPLICABLE: 1`.
+P0/P1 open: 0. P2 found/fixed/open: 1/1/0. Batch 8 and RC remain
+`CONDITIONAL` and `LIMITED READY`.
+
 ## P0-P3 classification (unchanged scheme from Batch 6/7, extended)
 
 ```text
@@ -101,9 +122,10 @@ Environment limitation: cannot be verified in this environment —
   objective, since VoiceOver itself could never be reached
 ```
 
-No P0-P3 finding was observed in the TOP, JSON Import, Deck Editor, and
-unsaved-dialog portions actually traversed with VoiceOver. This does
-not make a claim about the blocked Match Setup / Match / Result flows.
+No P0-P3 finding was observed in the Attempt 4 traversal scope.
+Attempt 5 found and fixed one P2 selected-state defect in Match Setup.
+No P0/P1 is open. Result and second-skin real-VoiceOver coverage remain
+unverified; automated checks do not close those gaps.
 
 ## Decision criteria
 

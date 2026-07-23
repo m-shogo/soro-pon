@@ -1,0 +1,53 @@
+{
+  "attempt": 5,
+  "date": "2026-07-23",
+  "observations": [
+    {
+      "screen": "TOP",
+      "caption": "まず遊ぶ すぐに対戦をはじめます",
+      "role": "button"
+    },
+    {
+      "screen": "Match Setup",
+      "caption": "3人戦, ボタン, グループ",
+      "role": "button"
+    },
+    {
+      "screen": "Match Setup",
+      "caption": "4人戦, ボタン, グループ",
+      "role": "button"
+    },
+    {
+      "screen": "Match Setup",
+      "caption": "対局開始, ボタン",
+      "role": "button"
+    },
+    {
+      "screen": "Match",
+      "caption": "残り牌 56",
+      "role": "text"
+    },
+    {
+      "screen": "Match",
+      "caption": "「かわいいトリオ」はボーナスなので、これだけではあがれません。",
+      "role": "text"
+    },
+    {
+      "screen": "Match",
+      "caption": "あなたの捨て牌0 トモリの捨て牌0 ナギの捨て牌0",
+      "role": "text"
+    },
+    {
+      "screen": "Match",
+      "caption": "クマ, 切り替えボタン",
+      "role": "toggle"
+    },
+    {
+      "screen": "Match",
+      "caption": "捨てる 選んだ牌を捨てる、淡色表示、ボタン、グループ",
+      "role": "disabled button"
+    }
+  ],
+  "resultCaptionObserved": false,
+  "resultClassification": "BLOCKED"
+}

@@ -47,7 +47,7 @@ Batch 7 (Cross-Browser & Screen Reader Acceptance): complete
     but real-device and real-screen-reader verification remain open).
   See docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md for full evidence and
     decision record.
-Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 4)
+Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 5)
     — was BLOCKED across attempts 1-3, then CONDITIONAL on attempt 4
     after the user granted macOS TCC Accessibility + Automation
     permissions. Targeted the specific Batch 7 open item of real
@@ -76,14 +76,26 @@ Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 4)
     VoiceOver cursor due to a CDP-vs-VoiceOver focus-sync tooling
     limitation (not a product defect). VoiceOver was turned off at
     session end.
-  No product code changed (no defect was found to fix). All existing
-    suites remain green, zero regressions.
-  RC readiness: unchanged, still LIMITED READY — attempt 4 narrowed the
-    screen-reader gap (core screens now have real VoiceOver
-    confirmation) but did not close it (game-play screens' real
-    screen-reader traversal is still open).
+  Attempt 5 (2026-07-23, CONDITIONAL): real VoiceOver navigated
+    TOP → Match Setup → Match, activated 対局開始, exposed the current
+    turn/remaining tiles/player information/named hand tiles, changed a
+    tile's selected AX value 0→1, and executed one discard. Match Setup
+    player-count buttons did not announce the selected value; this P2
+    was fixed with `aria-pressed` and a component regression test
+    (P2 found/fixed/open: 1/1/0). Result was populated through the
+    existing QA route while VoiceOver was off, but focus synchronization
+    unexpectedly activated replay, so Result comprehension is not a
+    VoiceOver PASS. `cute-pop` has automated parity only.
+  Attempt 5 flow classification: VOICEOVER_PASS 13,
+    SUPPLEMENTAL_ONLY 3, BLOCKED 3, NOT_APPLICABLE 1. Unit 331,
+    asset-image 92, Chromium visual 70, Firefox/WebKit functional
+    25+25, Firefox/WebKit a11y 21+21, and cross-browser visual 96 all
+    pass; combined independent cases are 711.
+  RC readiness: unchanged, still LIMITED READY — Chrome + VoiceOver is
+    validated through Match Setup/Match in the recorded scope, but
+    Result and second-skin real-VoiceOver traversal remain open.
   See docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md for the full
-    attempt log (incl. the Attempt 4 section) and decision record.
+    attempt log (including Attempts 4-5) and decision record.
 Current phase: further RC hardening (not yet scoped — see
   "Next Fixed Task" in docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md)
 ```

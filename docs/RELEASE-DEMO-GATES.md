@@ -160,6 +160,25 @@ asset caching/version behavior accepted
 skin package failure/rollback behavior accepted
 ```
 
+## Current RC Readiness (2026-07-23)
+
+```text
+Gate 6: PASS
+Batch 7: COMPLETE
+Batch 8 Attempt 5: CONDITIONAL
+RC status: LIMITED READY
+Chrome + VoiceOver validated: TOP/import/editor and Match Setup/Match
+Real-VoiceOver gaps: Result comprehension and cute-pop gameplay parity
+Other untested scope: Safari + VoiceOver, NVDA, JAWS, physical iOS/
+  iPadOS Safari, physical Android, extended memory soak, real
+  deploy-target rollback
+Next fixed task: unresolved gameplay VoiceOver remediation
+```
+
+Attempt 5 found one P2 selected-state defect in Match Setup and fixed it
+with `aria-pressed`; no P0/P1 remains open. Automated browser parity
+does not substitute for the remaining real-VoiceOver checks.
+
 ## Gate 7: Installed / Paid Skin Ready
 
 Audience:

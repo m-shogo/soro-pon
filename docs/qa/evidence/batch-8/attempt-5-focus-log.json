@@ -1,0 +1,48 @@
+{
+  "attempt": 5,
+  "date": "2026-07-23",
+  "route": [
+    {
+      "screen": "TOP",
+      "command": "VO+Shift+F4",
+      "observation": "AXButton まず遊ぶ すぐに対戦をはじめます"
+    },
+    {
+      "screen": "TOP -> Match Setup",
+      "command": "VO+Space",
+      "observation": "Match Setup opened without an external page click"
+    },
+    {
+      "screen": "Match Setup",
+      "command": "VO+Right",
+      "observation": "3人戦, 4人戦 and 対局開始 were reached in visual/DOM order as buttons"
+    },
+    {
+      "screen": "Match Setup -> Match",
+      "command": "VO+Space on 対局開始",
+      "observation": "Match opened and VoiceOver remained in the Chrome web area"
+    },
+    {
+      "screen": "Match",
+      "command": "VO+Right",
+      "observation": "hand tiles were reached as named AXCheckBox/toggle controls"
+    },
+    {
+      "screen": "Match",
+      "command": "VO+Space on クマ",
+      "before": "AXCheckBox クマ value 0",
+      "after": "AXCheckBox クマ value 1"
+    },
+    {
+      "screen": "Match",
+      "command": "VO+Right then VO+Space on 捨てる",
+      "observation": "the enabled discard action executed; focus stayed within the app web area"
+    },
+    {
+      "screen": "Result",
+      "command": "re-enable VoiceOver, then synchronize to keyboard focus",
+      "observation": "the replay action was unexpectedly activated and a new match opened",
+      "classification": "BLOCKED_TOOLING_LIMITATION"
+    }
+  ]
+}

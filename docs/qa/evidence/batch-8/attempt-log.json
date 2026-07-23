@@ -40,12 +40,42 @@
       ],
       "outcome": "BLOCKED again — computer-use is structurally unable to interact with anything while VoiceOver is active (VoiceOver cannot be allowlisted), and routing keyboard input through Claude-in-Chrome instead does not reliably keep VoiceOver's focus inside the target page.",
       "nextStep": "Per the user's own contingency plan, a human-operator/agent-recorder collaborative mode was proposed. The user instead requested a further Claude-Code-only attempt using OS-level automation APIs — see attempt-3-claude-code-only.json for that attempt (numbered separately since it used entirely different tooling)."
+    },
+    {
+      "attempt": 4,
+      "date": "2026-07-23",
+      "method": "System Events VoiceOver commands plus AX role/name/value observations after TCC Accessibility and Automation were granted",
+      "outcome": "CONDITIONAL",
+      "classification": {
+        "voiceOverPass": 9,
+        "supplementalOnly": 5,
+        "blocked": 6,
+        "notApplicable": 0
+      },
+      "evidence": "attempt-4-tcc-granted-observations.json"
+    },
+    {
+      "attempt": 5,
+      "date": "2026-07-23",
+      "method": "VoiceOver-only TOP -> Match Setup -> Match navigation and one discard; existing QA route with VoiceOver off to prepare Result; VoiceOver re-enabled for Result traversal",
+      "outcome": "CONDITIONAL",
+      "classification": {
+        "voiceOverPass": 13,
+        "supplementalOnly": 3,
+        "blocked": 3,
+        "notApplicable": 1
+      },
+      "evidence": [
+        "attempt-5-gameplay-voiceover.json",
+        "attempt-5-focus-log.json",
+        "attempt-5-caption-log.json"
+      ]
     }
   ],
-  "flowsCompleted": 0,
+  "flowsCompleted": 13,
   "flowsPlanned": 20,
   "voiceOverCaptionPanelPreConfigured": true,
   "chromeTabSeeded": true,
-  "actualSpeechOrCaptionContentObserved": false,
-  "conclusion": "No VoiceOver acceptance data was gathered. This is recorded honestly as BLOCKED (environment/tooling limitation), not as a partial pass or as an automated-check substitute."
+  "actualSpeechOrCaptionContentObserved": true,
+  "conclusion": "Attempt 5 closed the real-VoiceOver Match Setup and Match gaps, including one tile selection and discard. Result and the secondary-skin real-VoiceOver traversal remain blocked by Chrome/VoiceOver focus synchronization, so Batch 8 remains CONDITIONAL."
 }

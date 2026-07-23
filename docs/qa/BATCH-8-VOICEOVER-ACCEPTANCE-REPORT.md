@@ -1,13 +1,13 @@
 # Batch 8 — macOS VoiceOver Acceptance Report
 
-- Date: 2026-07-21 (attempts 1-3, BLOCKED); 2026-07-23 (attempt 4,
-  CONDITIONAL — first attempt to actually drive & observe real VoiceOver)
+- Date: 2026-07-21 (attempts 1-3, BLOCKED); 2026-07-23 (attempts 4-5,
+  CONDITIONAL)
 - Preceding work: Gate 6 (PASS, unchanged), Batch 7 (COMPLETE, RC
   LIMITED READY, browser scope Chromium+Firefox+Playwright WebKit).
   Batch 8 targets one specific Batch 7 open item: real screen-reader
   acceptance.
 
-## Current status: CONDITIONAL (attempt 4)
+## Current status: CONDITIONAL (attempt 5)
 
 **After the user granted macOS TCC Accessibility + Automation
 permissions via System Settings, attempt 4 (2026-07-23) succeeded in
@@ -23,8 +23,10 @@ not reached under a clean VoiceOver cursor due to a CDP-vs-VoiceOver
 focus-sync tooling limitation (not a product defect).
 Full evidence: `docs/qa/evidence/batch-8/attempt-4-tcc-granted-observations.json`.
 See the "Attempt 4" section near the end of this report for detail. RC
-status remains **LIMITED READY** (real screen-reader coverage of the
-game-play screens is still open).
+status remains **LIMITED READY**. Attempt 5 subsequently closed the
+Match Setup and Match interaction gaps, but Result and the secondary
+skin still lack a clean real-VoiceOver traversal; see the Attempt 5
+section below.
 
 ## Duplicate-work check (Phase 0)
 
@@ -514,39 +516,148 @@ confirmation) but did not fully close it (game-play screens still lack
 real-screen-reader traversal), so no RC upgrade is claimed. No product
 defect was found, so no downgrade either.
 
-**Batch 8 status: was BLOCKED (attempts 1-3), now CONDITIONAL
-(attempt 4).**
+**After Attempt 4, Batch 8 status changed from BLOCKED (attempts 1-3)
+to CONDITIONAL. Attempt 5 below preserves that overall status.**
+
+## Attempt 5 (2026-07-23): Gameplay VoiceOver Acceptance — CONDITIONAL
+
+Start HEAD: `9d0f9fb`.
+
+The formal route used real VoiceOver in Chrome without a CDP or
+Playwright click after VoiceOver was enabled:
+
+1. Keyboard focus was prepared on TOP while VoiceOver was off.
+2. VoiceOver was enabled, synchronized to `まず遊ぶ`, and `VO+Space`
+   opened Match Setup.
+3. `VO+Right` traversed Match Setup and `VO+Space` on `対局開始`
+   opened Match.
+4. VoiceOver traversed the turn, remaining tiles, players,
+   role-candidate text, and named hand-tile controls.
+5. `クマ` changed from AX value `0` to `1`; `捨てる` changed from
+   disabled to enabled; `VO+Space` discarded it. Remaining tiles
+   changed from 56 to 55 and the human discard count from 0 to 1.
+
+### Match Setup
+
+Real VoiceOver reached the `対局設定` heading, `動物スターター / 通常版`,
+the `3人戦` and `4人戦` buttons, player panels, and `対局開始`. The
+product intentionally supports only 3-4 players; no 2-player control
+exists. The current player-count selection was not announced because
+the toggle buttons lacked a selected state. This confirmed **P2 product
+defect** was fixed by adding `aria-pressed`; a component test verifies
+the initial state and 3→4 transition. The fix passed all regressions,
+but was not re-run with real VoiceOver, so this criterion remains
+`SUPPLEMENTAL_ONLY`.
+
+### Match
+
+Real VoiceOver exposed `残り牌 56`, `手番 あなた`, `捨てる牌を選ぶ`,
+player/discard information, role-candidate text, and hand tiles as
+named toggle controls. One tile was selected and discarded entirely
+with VoiceOver commands. The selected state and discard-button
+disabled/enabled transition were observed through caption and AX value
+changes. Focus stayed in the web area during the formal operation.
+
+### Result and second skin
+
+With VoiceOver off, the existing product QA route reached a populated
+Result: `対戦結果`, `ロン / あなた`, ranking `あなた / トモリ / ナギ`,
+total `145`, `もう一局`, and `TOPへ` were visually present. When
+VoiceOver was re-enabled and synchronized to keyboard focus, replay was
+unexpectedly activated and a new match opened. Result is therefore not
+counted as a VoiceOver pass.
+
+`yorunoshirube` received the formal real-VoiceOver traversal.
+`cute-pop` passed unit, Chromium, Firefox, Playwright WebKit, automated
+accessibility, and visual regressions, but no clean real-VoiceOver
+gameplay traversal. Automated parity is supplemental only.
+
+### Attempt 5 exact flow classification
+
+| # | Flow | Classification |
+|---:|---|---|
+| 1 | Match Setup heading | VOICEOVER_PASS |
+| 2 | Selected deck name | VOICEOVER_PASS |
+| 3 | 3-player control | VOICEOVER_PASS |
+| 4 | 4-player control | VOICEOVER_PASS |
+| 5 | Current player-count selection | SUPPLEMENTAL_ONLY (P2 fixed; no real-VO retest) |
+| 6 | 2-player control | NOT_APPLICABLE (unsupported by design; control absent) |
+| 7 | Start match | VOICEOVER_PASS |
+| 8 | Reach Match / identify screen | VOICEOVER_PASS |
+| 9 | Current turn and remaining tiles | VOICEOVER_PASS |
+| 10 | Player information | VOICEOVER_PASS |
+| 11 | Hand and tile names | VOICEOVER_PASS |
+| 12 | Selected tile state | VOICEOVER_PASS |
+| 13 | Discard disabled/enabled state | VOICEOVER_PASS |
+| 14 | Execute discard and observe change | VOICEOVER_PASS |
+| 15 | Role-candidate information | VOICEOVER_PASS |
+| 16 | Win controls (ロン/ツモ) | SUPPLEMENTAL_ONLY |
+| 17 | Reach populated Result | SUPPLEMENTAL_ONLY |
+| 18 | Understand winner/result summary | BLOCKED |
+| 19 | Understand ranking/scores | BLOCKED |
+| 20 | Replay / return to TOP focus order | BLOCKED |
+
+```text
+VOICEOVER_PASS:     13
+SUPPLEMENTAL_ONLY:   3
+BLOCKED:             3
+NOT_APPLICABLE:      1
+TOTAL:              20
+```
+
+```text
+P0 found/fixed/open: 0/0/0
+P1 found/fixed/open: 0/0/0
+P2 found/fixed/open: 1/1/0
+P3 found/fixed/open: 0/0/0
+
+Unit:                        331/331 PASS
+skin:validate:                18/18 PASS (unit subset)
+Asset image:                  92/92 PASS
+Chromium visual:              70/70 PASS
+Firefox functional:           25/25 PASS
+Playwright WebKit functional: 25/25 PASS
+Firefox accessibility:        21/21 PASS
+Playwright WebKit a11y:       21/21 PASS
+Cross-browser visual:         96/96 PASS
+typecheck/build:              PASS
+New independent cases:        1
+Combined independent cases:  711
+```
+
+Chromium visual initially passed 67/70; three known non-deterministic
+Result-reachability timeouts passed on a targeted single-worker rerun.
+
+Evidence: `attempt-5-gameplay-voiceover.json`,
+`attempt-5-focus-log.json`, `attempt-5-caption-log.json`, and 13 PNGs
+under `docs/qa/evidence/batch-8/`.
+
+**Attempt 5: CONDITIONAL. Batch 8 overall: CONDITIONAL.** Match Setup
+and Match are materially validated with real VoiceOver, the confirmed
+P2 was fixed, and no P0/P1 is open. COMPLETE is not claimed because
+Result comprehension and second-skin gameplay remain unverified with
+real VoiceOver.
+
+**RC status: LIMITED READY.** Chrome + VoiceOver is validated only for
+the recorded TOP/import/editor and Match Setup/Match scope. Safari +
+VoiceOver, NVDA, JAWS, iOS/iPadOS Safari, Android, extended memory soak,
+and real deploy-target rollback remain untested.
 
 ## Next Fixed Task
 
 ```text
 Next task: unresolved VoiceOver remediation
 
-Reason: Batch 8's specific objective (real VoiceOver acceptance) was
-not achieved across 3 independent attempts using 2 fundamentally
-different toolchains (computer-use/Claude-in-Chrome, and OS-level
-Accessibility/Automation APIs), due to environment/tooling constraints,
-not because the app was found deficient. The gap remains open and is
-the most direct continuation of this batch's own goal.
+Reason: Attempt 5 closed the Match Setup and Match gaps but did not
+obtain a clean real-VoiceOver traversal of Result or `cute-pop`. The
+next bounded task is to prepare Result while VoiceOver is off,
+establish a non-activating focus anchor, traverse winner/ranking/score
+and replay/TOP controls with VoiceOver, then perform the minimum parity
+traversal on `cute-pop`.
 
-What a future attempt would need to succeed where these three could
-not, based on what was learned this batch:
-  - The macOS Accessibility (AXUIElement/CGEvent) and/or Automation
-    (Apple Events) TCC permissions granted to the Claude Code process
-    ahead of time — this requires a human clicking "Allow" in a System
-    Settings dialog, which was not available in any of this batch's
-    session environments, or
-  - A computer-use-equivalent tool whose permission model can
-    accommodate VoiceOver as a system-wide overlay rather than treating
-    it as a discrete, indexable application, or
-  - The user driving VoiceOver directly themselves while sharing
-    screen/narrating findings for the agent to record — this was
-    proposed after Attempt 2 and explicitly declined in favor of
-    Attempt 3's Claude-Code-only approach, which also did not succeed.
-
-Entry condition: explicit instruction to retry VoiceOver acceptance,
-ideally after one of the above conditions can be arranged, or explicit
-instruction to instead pursue one of the other open items (physical
+Entry condition: explicit instruction to retry gameplay VoiceOver
+acceptance, or explicit instruction to instead pursue one of the other
+open items (physical
 iPhone/iPad Safari validation, physical Android validation, extended
 memory soak, real deploy-target rollback rehearsal).
 
