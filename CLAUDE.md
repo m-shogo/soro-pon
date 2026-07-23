@@ -281,20 +281,26 @@ Batch 8(macOS VoiceOver Acceptance)はBLOCKED(2026-07-21)。Batch 7の
   全て解消。**Batch 8累計最終分類: VOICEOVER_PASS 13 /
   SUPPLEMENTAL_ONLY 6 / BLOCKED 0 / NOT_APPLICABLE 1**(flow 20の
   Result勝敗/順位/得点はBLOCKED→SUPPLEMENTAL_ONLYへ)。P0/P1/P2 open=0、
-  全attempt通算で製品欠陥0件・tooling limitation 1件。attempt 6は
-  製品/testコード変更なし(aria-pressed修正はattempt 5のbbb378eで既済)
-  のため711件全再実行は行わず、unit 331は緑を維持。VoiceOverは
-  セッション終了時にOFF確認。Batch 8=CONDITIONAL、RC=LIMITED READYを継続。
-  証跡はbatch-8配下JSON 8件+PNG 13件。
-  次の固定タスク(未着手・要明示指示): 未解決のResult/Cute Pop VoiceOver
-  remediation(具体的にはResult静的テキスト=勝敗/順位/得点のVoiceOver
-  読み上げ音声を機械的に捕捉する経路——VoiceOverのAppleScript制御許可+
-  最終フレーズ読み取り、または人間のVoiceOver利用者による読み上げ確認。
-  製品側は既にaccessibleなので変更不要)、実iPhone/iPad Safari検証、
-  実Android検証、長時間memory soak、実deploy環境rollback rehearsalの
-  いずれかを明示指示で着手するか、Gate 7/8を対象機能が実際に計画された
-  時点で開始する。docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.mdの
-  Next Fixed Task参照。
+  **実VoiceOverで走査した範囲およびsemantic structure・既存自動テストで
+  補助確認した範囲では open product defect 0件**・tooling limitation 1件。
+  attempt 6は製品/testコード変更なし(aria-pressed修正はattempt 5の
+  bbb378eで既済)のため711件全再実行は行わず、unit 331は緑を維持。
+  VoiceOverはセッション終了時にOFF確認。Batch 8=CONDITIONAL、
+  RC=LIMITED READYを継続。証跡はbatch-8配下JSON 8件+PNG 13件。
+  実VoiceOver検証scopeの正確な範囲: Yorunoshirube=TOP/JSON Import/
+  Deck Editor/Match Setup/Match/Result見出し+操作controlを実走査、
+  Result勝敗/順位/得点の静的テキストは補助確認(caption/speech未捕捉)。
+  Cute Pop=Match SetupとMatchの主要control(人数button/手牌)の実VoiceOver
+  parityのみ確認、Cute Pop Resultの実VoiceOver走査は未実施。
+  「両スキンでResult検証済み」「全ゲーム画面を完全走査」等の全範囲保証は
+  しない。
+  次の固定タスク(未着手・要明示指示): **Batch 9: Extended Memory and
+  Runtime Stability Soak**(長時間対局・再戦・画面遷移でのmemory leak/
+  DOM・listener・timer増殖/性能劣化の有無を検証)。Result静的テキストの
+  VoiceOver音声捕捉は製品remediationではなくtooling limitationとして
+  Batch 8のCONDITIONALに固定済み(製品側は既にaccessible、変更不要)。
+  その他の未検証項目(実iPhone/iPad Safari・実Android・実deploy rollback・
+  Safari+VoiceOver・NVDA/JAWS)は明示指示があった時点で着手する。
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。

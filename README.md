@@ -108,19 +108,34 @@ Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 6)
   Cumulative Batch 8 final flow classification: VOICEOVER_PASS 13,
     SUPPLEMENTAL_ONLY 6, BLOCKED 0, NOT_APPLICABLE 1 (all 3 prior BLOCKED
     items cleared; flow 20 Result win/rank/score moved BLOCKED →
-    SUPPLEMENTAL_ONLY). P0/P1/P2 open 0; 0 product defects, 1 tooling
-    limitation. Attempt 6 changed no product/test code, so the full
+    SUPPLEMENTAL_ONLY). P0/P1/P2 open 0. In the range actually traversed
+    under real VoiceOver, plus the range supplementally confirmed via
+    semantic structure and existing automated tests, open product
+    defects are 0; 1 tooling limitation (Result static-text caption
+    capture). Attempt 6 changed no product/test code, so the full
     711-case suite was not re-run; unit tests (331) remain green.
-  RC readiness: unchanged, still LIMITED READY — real VoiceOver + Chrome
-    is now validated across TOP / JSON import / Deck Editor / unsaved
-    dialog / Match Setup / Match / Result-controls for both skins with
-    zero product defects, but capturing VoiceOver's spoken Result
-    static-text output, Safari+VoiceOver, NVDA/JAWS, and physical
-    devices remain untested.
+  Scope of real-VoiceOver validation (precise):
+    - Yorunoshirube: TOP, JSON Import, Deck Editor, Match Setup, Match,
+      and the Result heading + action controls were traversed under real
+      VoiceOver. The Result win/rank/score STATIC TEXT is supplemental
+      only (semantic structure confirmed; VoiceOver caption/speech not
+      mechanically captured).
+    - Cute Pop: only the Match Setup and Match key controls (人数
+      buttons, hand tile) were confirmed for real-VoiceOver parity.
+      Cute Pop's Result was NOT traversed under real VoiceOver.
+    - Not claimed: "both skins' Result validated", "all game screens
+      fully traversed", or any general "no VoiceOver issues" statement.
+  RC readiness: unchanged, still LIMITED READY. Capturing VoiceOver's
+    spoken Result static-text output, Cute Pop Result real-VoiceOver
+    traversal, Safari+VoiceOver, NVDA/JAWS, and physical devices remain
+    untested.
   See docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md for the full
     attempt log (including Attempts 4-6) and decision record.
-Current phase: further RC hardening (not yet scoped — see
-  "Next Fixed Task" in docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md)
+Current phase: further RC hardening — next fixed task is Batch 9
+  (extended memory / runtime stability soak). Batch 8 is formally fixed
+  as CONDITIONAL (a tooling limitation on VoiceOver caption capture, not
+  a product defect); capturing VoiceOver's spoken Result text is not a
+  product remediation item.
 ```
 
 正確な現在地と実装順:

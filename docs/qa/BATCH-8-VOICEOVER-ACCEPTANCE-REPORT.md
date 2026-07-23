@@ -14,8 +14,12 @@ fix under real VoiceOver, traversed the Result screen, and confirmed
 Cute Pop gameplay-control parity — see the "Attempt 6" section near the
 end. Cumulative Batch 8 20-flow classification is now **`VOICEOVER_PASS:
 13`, `SUPPLEMENTAL_ONLY: 6`, `BLOCKED: 0`, `NOT_APPLICABLE: 1`** (all 3
-prior BLOCKED items cleared). Zero product defects across all attempts.
-Result win/rank/score remain SUPPLEMENTAL_ONLY: their accessible
+prior BLOCKED items cleared). In the range actually traversed under real
+VoiceOver, plus the range supplementally confirmed via semantic
+structure and existing automated tests, open product defects are 0 (this
+is scoped to what was traversed/confirmed — not a blanket "no VoiceOver
+issues anywhere" claim). Result win/rank/score remain SUPPLEMENTAL_ONLY:
+their accessible
 structure (h1/h2 headings, a semantic ranking list with a text ★ winner
 marker, score as text) was verified, but VoiceOver's spoken output of
 that non-focusable static text cannot be mechanically captured in this

@@ -127,11 +127,23 @@ yorunoshirube.
 
 Attempt 6 cleared all 3 previously-BLOCKED items. **Cumulative Batch 8
 final classification: `VOICEOVER_PASS: 13`, `SUPPLEMENTAL_ONLY: 6`,
-`BLOCKED: 0`, `NOT_APPLICABLE: 1`.** P0/P1/P2 open: 0. 0 product defects
-across all attempts; 1 tooling limitation (Result static-text caption
+`BLOCKED: 0`, `NOT_APPLICABLE: 1`.** P0/P1/P2 open: 0. In the range
+actually traversed under real VoiceOver, plus the range supplementally
+confirmed via semantic structure and existing automated tests, open
+product defects are 0; 1 tooling limitation (Result static-text caption
 capture). VoiceOver was turned OFF at session end. Batch 8 and RC remain
 `CONDITIONAL` and `LIMITED READY` (the strict COMPLETE bar requires
 capturing VoiceOver's spoken win/rank/score, blocked only by tooling).
+
+**Precise real-VoiceOver validation scope:** Yorunoshirube — TOP, JSON
+Import, Deck Editor, Match Setup, Match, and the Result heading + action
+controls were traversed under real VoiceOver; the Result win/rank/score
+static text is supplemental only. Cute Pop — only the Match Setup and
+Match key controls (人数 buttons, hand tile) were confirmed for
+real-VoiceOver parity; Cute Pop's Result was NOT traversed under real
+VoiceOver. Not claimed: "both skins' Result validated" or "all game
+screens fully traversed".
+
 Full Attempt 6 evidence:
 `docs/qa/evidence/batch-8/attempt-6-gameplay-result-parity.json`,
 `attempt-6-focus-log.json`.
