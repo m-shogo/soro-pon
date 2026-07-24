@@ -323,7 +323,12 @@ export function AppRoot() {
   };
 
   const handleExport = (deck: DeckProject) => {
-    const text = deckStore.exportDeck(deck.id);
+    let text: string | null = null;
+    if (!tryWrite(() => {
+      text = deckStore.exportDeck(deck.id);
+    })) {
+      return;
+    }
     if (text === null) {
       appendSaveNotice('書き出すデッキが見つかりませんでした。');
       return;
