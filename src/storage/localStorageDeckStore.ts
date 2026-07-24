@@ -42,8 +42,6 @@ type SalvageCandidate = {
   originalIndex: number;
 };
 
-// outer payloadのstrict parseが1件の壊れた/旧schemaのdeckで失敗しても、
-// 正常なdeckを巻き添えにしない。現行parse -> 既存v0 migration -> dropの順。
 function salvageDecks(
   rawDecks: unknown[],
   now: () => number,
@@ -116,7 +114,6 @@ function salvageDecks(
   };
 }
 
-// localStorage自体が読み書きを拒否しても、回復処理を例外停止させない。
 export function createLocalStorageDeckStore(
   storage: KeyValueStorage,
   now: () => number = () => Date.now(),
@@ -283,7 +280,7 @@ export function createLocalStorageDeckStore(
     const result = readPayload();
     if (result.readFailureCause !== undefined) {
       throw new StorageWriteError(
-        '保存済みデッキを読み込めないため、既存データを保護する目的で変更を保存しませんでした。ブラウザの保存領域設定を確認してください。',
+        '保存済みデッキを読み込めないため、既存データを保護する目的で操作を中止しました。ブラウザの保存領域設定を確認してください。',
         result.readFailureCause,
       );
     }
@@ -291,8 +288,15 @@ export function createLocalStorageDeckStore(
   };
 
   const writePayload = (payload: StoredDecksPayload): void => {
+    const parsed = storedDecksPayloadSchema.safeParse(payload);
+    if (!parsed.success) {
+      throw new StorageWriteError(
+        'デッキの保存内容が内部契約を満たさないため、既存データを保護して保存を中止しました。',
+        parsed.error,
+      );
+    }
     safeWrite(
-      () => storage.setItem(DECKS_STORAGE_KEY, JSON.stringify(payload)),
+      () => storage.setItem(DECKS_STORAGE_KEY, JSON.stringify(parsed.data)),
       '保存に失敗しました(空き容量が不足している可能性があります)。デッキの変更は保存されていません。',
     );
   };
@@ -329,7 +333,7 @@ export function createLocalStorageDeckStore(
     },
 
     exportDeck(deckId: string): string | null {
-      const { payload } = readPayload();
+      const payload = requireReadablePayload();
       const entry = payload.decks.find((d) => d.deck.id === deckId);
       if (!entry) {
         return null;
