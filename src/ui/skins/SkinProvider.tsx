@@ -65,7 +65,7 @@ export function SkinProvider({ children }: { children: ReactNode }) {
       try {
         const { resolved, issues } = await loaderRef.current.loadResolvedSkin(targetId);
         if (seq !== requestSeqRef.current) {
-          return; // 後発の切り替えが優先
+          return; // 後発の切り替え、またはunmountが優先
         }
         // 対象が読めなかった場合はdefault、それも失敗ならbaseへ
         let finalResolved = resolved;
@@ -75,6 +75,9 @@ export function SkinProvider({ children }: { children: ReactNode }) {
           const fallback = await loaderRef.current.loadResolvedSkin(
             currentRegistry.defaultSkinId,
           );
+          if (seq !== requestSeqRef.current) {
+            return;
+          }
           finalResolved = fallback.resolved;
           finalId = currentRegistry.defaultSkinId;
           finalIssues.push(...fallback.issues, `defaultスキンへ復旧しました: ${finalId}`);
@@ -143,11 +146,15 @@ export function SkinProvider({ children }: { children: ReactNode }) {
       }
       await applySkin(sanitizeSkinId(stored, loadedRegistry), loadedRegistry);
     })().catch(() => {
-      // applySkin自体も防御しているが、provider初期化の外側も起動を止めない。
-      setSkinStatus('ready');
+      if (!cancelled) {
+        // applySkin自体も防御しているが、provider初期化の外側も起動を止めない。
+        setSkinStatus('ready');
+      }
     });
     return () => {
       cancelled = true;
+      // 開始済みのload/preloadを失効させ、unmount後のDOM適用を防ぐ。
+      requestSeqRef.current += 1;
     };
   }, [applySkin]);
 
