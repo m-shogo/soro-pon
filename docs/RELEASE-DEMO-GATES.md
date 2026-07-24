@@ -13,6 +13,7 @@ Playwright WebKit != Safari
 historical PASS != newer product HEAD verification
 best-effort corrupt backup != user restore
 optimistic localStorage fingerprint != transactional multi-tab CAS
+manifest origin string != installer-owned trust
 ```
 
 ## Gate 1 — Internal Build
@@ -55,7 +56,7 @@ QA passes for the stated scope
 main landscape sizes reviewed
 both official skins usable
 import failure/migration/overwrite UX understandable
-invalid or ambiguous-ID decks cannot start
+invalid or ambiguous-ID/membership/scoring decks cannot start
 recoverable error/reset paths exist
 known issue list is current
 ```
@@ -73,6 +74,7 @@ no account/payment/cloud promise
 shared export excludes local/private metadata
 reset/recovery path is visible and truthful
 missing/corrupt route entities recover instead of staying blank
+destructive actions require safe confirmation
 ```
 
 A Gate 5 PASS is qualified by its exact browser/device/artifact scope.
@@ -83,10 +85,10 @@ A Gate 5 PASS is qualified by its exact browser/device/artifact scope.
 schema migration and visible confirmation tested
 storage read/write/recovery/reset failure paths tested
 match record/reward atomicity tested
-persisted collection limits and old over-limit salvage tested
+persisted collection limits and old/partial salvage tested
 write-boundary runtime schemas tested
-nested variant/role/bonus ID integrity tested
-same-ID and stale-editor overwrite conflicts tested
+nested IDs, membership sets, group fields, and score caps tested
+same-ID and stale update/delete conflicts tested
 known severe bugs fixed
 visual/accessibility basics accepted
 performance/resource caps tested
@@ -98,7 +100,7 @@ Gate 6 was historically passed in Batch 6. Later findings do not erase
 that historical decision, but newer code must be reverified before it is
 presented as the current RC artifact.
 
-## Current RC Readiness — 2026-07-24
+## Current RC Readiness — 2026-07-25
 
 ```text
 Historical Gate 6: PASS
@@ -116,6 +118,7 @@ Review reports:
 ```text
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
+docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 ```
 
 ### Historical evidence retained
@@ -141,11 +144,17 @@ read denial could be used as an empty Store during mutation
 records/settings raw backup and warning gaps
 record/coin and match-achievement persistence was not atomic
 app could write more entries than its own schema accepted
-old over-limit payloads lacked bounded upgrade recovery
+old/partial payloads lacked bounded salvage
 same-ID import silently overwrote an existing deck
-stale import/editor state could overwrite another tab's deck
+stale import/editor/detail state could overwrite or delete newer data
 new deck IDs could collide
 variant/role/bonus duplicate-ID validation was incomplete
+tile membership duplicates could inflate feasibility counts
+group fields ignored by the engine could survive persistence
+ScoreBonus cap could contradict one award
+valid deck body could be lost because wrapper metadata was damaged
+one malformed match row could wipe all progress
+persisted duplicate deck IDs were ambiguous
 write paths lacked final runtime schema validation
 failed achievement persistence could appear unlocked
 missing deck/variant blank route
@@ -153,7 +162,15 @@ silent legacy v0 migration persistence
 browser-fragile export Blob URL lifecycle
 storage error-code collision risk
 reset omitted backup keys or presented partial failure as success
-obsolete Batch 11 baseline and stale entry/risk/performance docs
+ErrorBoundary emergency reset retained false-success behavior
+deck deletion lacked confirmation and restore guidance
+danger Dialog initially focused the destructive action
+important Dialog copy lacked aria-describedby association
+skin preload/unmount race failures could leave stale/loading state
+skin inheritance exact-limit check was off by one
+runtime external-SVG and registry integrity checks were incomplete
+unsafe import diagnostics were unbounded
+obsolete Batch 11 baseline and stale entry/risk/performance/distribution docs
 ```
 
 ### Current controls
@@ -162,31 +179,41 @@ obsolete Batch 11 baseline and stale entry/risk/performance docs
 L9005 storage-read fallback; every mutation/export fails closed
 L9006 bootstrap-write warning
 L9007 old over-limit payload backup and bounded normalization
+L9008 duplicate persisted deck-ID consolidation
 independently guarded backup/cleanup
 strict schema parse immediately before each persisted write
 atomic match record/coin/role/achievement commit
 shared collection limits: 200/100/500/100/20
-nested variant/role/bonus ID checks at import/save/start/store boundaries
+nested ID + membership + ignored-field + score-cap validation
 same-ID import requires unchanged input + unchanged stored-entry fingerprint
-stale Editor save is rejected and old draft is unmounted
+stale Editor/detail update/delete is rejected
+valid deck body survives wrapper metadata damage
+valid records/progress survive isolated malformed history rows
 all store boot issues visible
 safe missing-entity route recovery
 legacy migration review + unchanged second-action persistence
 attached export anchor + deferred URL revocation
 reset covers active/backup/skin keys and reports partial failure
+danger Dialog starts on cancellation and describes irreversible copy
+skin preload failures retain previous/fallback state
+skin registry rejects duplicate/future contract entries
+external-evaluated SVG rejected at runtime validation
+unsafe import diagnostics capped with I2011 while import remains rejected
 ```
 
-Review-added integrity tests: **38 committed cases**, not yet executed on
-the final exact SHA.
+Review-added integrity test definitions: **79 committed cases**, not yet
+executed on the final exact SHA.
 
 ### Current verification required
 
 ```text
+stop concurrent writers
+freeze clean HEAD == origin/main
 pnpm install --frozen-lockfile
-run the named Critical integrity contracts suite
+run Integrity Contracts workflow equivalent
+confirm all 79 review-added cases are collected and pass
 pnpm typecheck
 pnpm test
-confirm all 38 review-added cases are collected and pass
 pnpm skin:validate
 pnpm build
 complete Batch 11 on the same SHA/artifact
@@ -198,7 +225,7 @@ restarts the sequence.
 ### Still open / unclaimed
 
 ```text
-exact-current-SHA verification
+exact-current-SHA verification and observed GitHub Actions result
 Batch 11 production Firefox/WebKit
 physical iPhone Safari / iPad / Android
 real deploy to selected hosting
@@ -208,24 +235,28 @@ NVDA / JAWS
 remaining Batch 8 Result/Cute Pop VoiceOver evidence
 user-facing backup restore
 true transaction/version model for advertised concurrent multi-tab editing
-Editor live validation-panel integration for cross-variant ID errors
+installer-owned external skin trust/signature/entitlement
+MatchSession remount key migration from bounded seed to matchSessionId
 ```
 
 ## Gate 7 — Installed / Paid Skin Ready
 
 ```text
-external package trust policy enforced
+installer-owned package trust policy enforced
+manifest cannot self-promote external package to official
 arbitrary CSS/JS/HTML/URL/font blocked
-unapproved external SVG blocked
+external SVG blocked
 file/dimension/byte/geometry limits enforced
 versioned/content-hashed assets
 required preload and atomic apply
 previous skin retained on failure
-package identity/integrity/upgrade/rollback/uninstall defined
+signature/hash/identity/upgrade/rollback/uninstall implemented
 marketplace/payment reviewed separately
 ```
 
-Do not advertise paid-skin distribution before this gate.
+Current official bundled-skin loading does not satisfy Gate 7. The external
+installer, trusted-origin binding, signature verification, entitlement, and
+lifecycle UI are not built. Do not advertise paid-skin distribution.
 
 ## Gate 8 — Match Restore / Replay Ready
 
@@ -279,16 +310,17 @@ same-ID import can silently replace an existing deck
 storage read denial can lead to an empty-based overwrite
 record and reward persistence can partially commit
 app can write a payload outside its own read schema
-nested entity IDs can remain ambiguous and start a match
-stale editor/import state can overwrite a detected newer entry
+nested IDs/memberships/group fields/score caps can remain ambiguous
+stale UI can overwrite/delete a detected newer entry
 2-player mode appears selectable
 an unfinished variant can start
 score cannot be explained
-skin failure can blank/brick the app
+skin failure can blank/brick or remain loading
 recovery can throw a raw storage exception
 recovery warnings are discarded
 unpersisted rewards are shown as saved
 reset claims success after partial deletion failure
+destructive action has no explicit safe confirmation
 old artifact evidence is presented as current
 ```
 
