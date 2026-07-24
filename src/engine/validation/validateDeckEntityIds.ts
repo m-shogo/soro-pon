@@ -1,4 +1,5 @@
 import type { DeckProject } from '../../domain/deck';
+import type { GroupRequirement } from '../../domain/group';
 import type { ValidationIssue } from '../../domain/validation';
 
 type SeenEntity = {
@@ -40,6 +41,24 @@ function duplicateValues(values: readonly string[]): string[] {
   return [...duplicates];
 }
 
+function ignoredRequirementFields(requirement: GroupRequirement): string[] {
+  const fields: string[] = [];
+  const allowCategory = requirement.groupType === 'sameCategory';
+  const allowTag = requirement.groupType === 'sameTag';
+  const allowTileIds = requirement.groupType === 'specificSet';
+
+  if (!allowCategory && requirement.categoryId !== undefined) {
+    fields.push('categoryId');
+  }
+  if (!allowTag && requirement.tag !== undefined) {
+    fields.push('tag');
+  }
+  if (!allowTileIds && requirement.tileIds !== undefined) {
+    fields.push('tileIds');
+  }
+  return fields;
+}
+
 /**
  * 永続化・import・対局開始の前に必要なdeck全体のidentity整合性を検証する。
  *
@@ -49,6 +68,7 @@ function duplicateValues(values: readonly string[]): string[] {
  *
  * tileのcategory/tag membershipは集合として評価される。配列内重複を許すと、
  * 一部の検証処理だけが同じ牌を複数枚分として数えるため明示的に拒否する。
+ * groupTypeで使わない余剰フィールドも、保存されてもエンジンが無視するため拒否する。
  */
 export function validateDeckEntityIds(deck: DeckProject): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
@@ -89,6 +109,18 @@ export function validateDeckEntityIds(deck: DeckProject): ValidationIssue[] {
       issues,
     );
 
+    const duplicatePlayerCounts = duplicateValues(
+      variant.ruleConfig.supportedPlayerCounts.map(String),
+    );
+    if (duplicatePlayerCounts.length > 0) {
+      issues.push({
+        code: 'V3013',
+        severity: 'error',
+        path: `$.variants[${variantIndex}].ruleConfig.supportedPlayerCounts`,
+        message: `対応人数が重複しています: ${duplicatePlayerCounts.join(', ')}。3人・4人はそれぞれ1回だけ指定してください。`,
+      });
+    }
+
     variant.winRoles.forEach((role, roleIndex) => {
       recordUniqueId(
         roles,
@@ -100,6 +132,19 @@ export function validateDeckEntityIds(deck: DeckProject): ValidationIssue[] {
         '役',
         issues,
       );
+
+      role.requiredGroups.forEach((requirement, requirementIndex) => {
+        const ignoredFields = ignoredRequirementFields(requirement);
+        if (ignoredFields.length > 0) {
+          issues.push({
+            code: 'R4011',
+            severity: 'error',
+            path: `$.variants[${variantIndex}].winRoles[${roleIndex}].requiredGroups[${requirementIndex}]`,
+            message: `${requirement.groupType}では ${ignoredFields.join(', ')} を使用しません。保存してもエンジンが無視する曖昧な条件のため削除してください。`,
+            fixHint: 'groupTypeに対応する条件フィールドだけを残してください。',
+          });
+        }
+      });
     });
 
     variant.specialBonuses.forEach((bonus, bonusIndex) => {
