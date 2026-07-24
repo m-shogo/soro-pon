@@ -14,8 +14,6 @@ export type SettingsStore = {
   save(settings: SettingsPayload): void;
 };
 
-// 設定の読み込みもschema経由。壊れていたらdefaultへ回復する。
-// 保存領域そのものが読み書きを拒否しても、起動処理は例外停止させない。
 export function createLocalStorageSettingsStore(storage: KeyValueStorage): SettingsStore {
   return {
     load() {
@@ -88,8 +86,15 @@ export function createLocalStorageSettingsStore(storage: KeyValueStorage): Setti
           cause,
         );
       }
+      const parsed = settingsPayloadSchema.safeParse(settings);
+      if (!parsed.success) {
+        throw new StorageWriteError(
+          '設定の保存内容が内部契約を満たさないため、既存データを保護して保存を中止しました。',
+          parsed.error,
+        );
+      }
       safeWrite(
-        () => storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings)),
+        () => storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(parsed.data)),
         '設定の保存に失敗しました(空き容量が不足している可能性があります)。',
       );
     },
