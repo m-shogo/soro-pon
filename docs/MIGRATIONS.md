@@ -2,47 +2,60 @@
 
 ## Purpose
 
-Soro-pon decks may live for a long time.
+Soro-pon decks and browser-local records may outlive one application
+version. Migration must preserve known-safe meaning, reject ambiguity, and
+never hide a behavioral change from the user.
 
-Schema changes must not silently break old decks or import unsafe data.
+Current implementation supports one real shared-deck migration:
 
-## Version Fields
+```text
+version 0 -> current version 1
+```
+
+Do not build a generic migration framework until another real version
+exists.
+
+## Version Ownership
 
 Current shared deck JSON uses:
 
 ```text
-version
+version: integer
 ```
 
-Implementation may internally map this to schema version handling.
+Do not add a parallel `schemaVersion` without an explicit compatibility
+and migration plan.
 
-Future versions should prefer explicit naming if needed:
+Other versioned boundaries:
 
 ```text
-schemaVersion
+localStorage payload version
+skin contract version
+skin package version
+versioned/content-hashed asset URL
+application artifact commit SHA
 ```
 
-Do not introduce both without a migration plan.
-
-## Migration Principle
-
-Migrations must be:
+## Migration Principles
 
 ```text
 deterministic
 explainable
-tested
+strictly tested
 safe by default
+visible to the user
+idempotent where re-read/retry is possible
 ```
 
 Forbidden:
 
 ```text
 silent behavior change
-unsafe field preservation
-automatic image/url import
-automatic score change without notice
-automatic count-only winRole conversion when ambiguous
+unknown/unsafe field preservation
+automatic image/URL import
+automatic score or wildcard behavior change
+automatic count-only role conversion when ambiguous
+pretending a failed write committed the migration
 ```
 
 ## Import Version Behavior
@@ -50,37 +63,32 @@ automatic count-only winRole conversion when ambiguous
 | Case | Behavior |
 |---|---|
 | current version | strict parse and validate |
-| older known safe version | migrate with notice, then validate |
-| older ambiguous version | import as blocked draft or reject |
-| newer version | reject with explanation |
-| missing version | reject |
-| invalid version | reject |
+| known safe version 0 | deterministic migration, visible change review, explicit second action to save |
+| older ambiguous/unknown version | reject with `I2009` |
+| newer version | reject with `I2007` and require app update |
+| missing/non-integer version | reject with `I2009` |
+| unsafe/deep/oversize payload | reject before expensive migration/validation |
 
-## Allowed Auto-fixes
+## Current v0 -> v1 Migration
 
-Allowed without user review:
-
-```text
-trim whitespace in display names
-normalize empty optional description
-add scoreBudget default for known older safe schema
-rename legacy safe field only when exact mapping exists
-```
-
-## Forbidden Auto-fixes
+Allowed transformation:
 
 ```text
-remove unsafe fields and continue silently
-convert imageUrl to local image
-convert count-only winRole to group-backed role without review
-change role points silently
-change wildcard behavior silently
-convert 2-player deck to 3-player deck silently
+apply the known scoreBudget default for each variant
+set version 0 -> 1
 ```
 
-## Migration Notice
+Not allowed:
 
-Migration result should include:
+```text
+convert count-only normal win roles to group-backed roles
+change points
+change wildcard behavior
+remove unsafe fields and continue
+repair unknown references by guessing
+```
+
+`migrateLegacyDeck()` returns:
 
 ```ts
 type MigrationNotice = {
@@ -91,53 +99,109 @@ type MigrationNotice = {
 };
 ```
 
-UI should show a short summary before committing import.
+If a count-only role is found, migration fails closed with `R4001` /
+`I2009`-class context rather than inventing groups.
 
-## Old Count-first Schema
+## User Confirmation Contract
 
-Older count-first normal winRoles are not automatically safe.
+A successful migration parse is not immediately persisted.
 
-If a role can be deterministically mapped to group-backed requiredGroups, migration may propose it.
-
-If not:
+`AppRoot` import flow:
 
 ```text
-import as draft with blocking R4001
-or reject with explanation
+first click:
+  parse and migrate in memory
+  show fromVersion/toVersion
+  show each changed item and migration warnings
+  keep modal and pasted JSON open
+
+second click with unchanged input:
+  persist migrated current-version deck
+  show completion notice
+  navigate only after successful write
+
+input changes after review:
+  invalidate prior review
+  require parse/review again
 ```
 
-Do not pretend count-only role is a valid normal MVP winRole.
+This prevents silent migration and prevents a stale approval from being
+applied to edited JSON.
 
-## Local Data Migration
+## Local Storage Migration / Recovery
 
-Local storage migration must:
+Canonical details:
+`docs/release/STORAGE-RECOVERY-POLICY.md`.
+
+Required behavior:
 
 ```text
-parse old data safely
-backup or preserve broken payload for debug export when possible
+strict-parse persisted values
 migrate only known shapes
-fall back to safe starter state if unrecoverable
-show recoverable error
+salvage healthy deck entries independently
+attempt raw corrupt backup when storage permits
+never throw because backup/cleanup itself failed
+read denial -> L9005 + empty/default session fallback
+bootstrap/default write failure -> L9006
+show recovery issues from decks, records, and settings
 ```
 
-App boot must not crash because of old local data.
+Fallback differs by store:
+
+```text
+decks: recovered entries or empty list; starter persistence attempted
+records: normalized current payload or empty records
+settings: current payload or defaults
+skin: sanitized built-in ID fallback
+```
+
+Do not describe all unrecoverable data as “restored to starter”; that is
+only relevant to deck bootstrapping.
+
+## Rollback Compatibility
+
+There is no generic down-migration framework. Before a release changes
+persisted output:
+
+```text
+1. build the intended previous release artifact
+2. seed previous-format fixtures
+3. open/migrate/write with the new artifact
+4. open the resulting state with the intended rollback artifact
+5. prove readability or explicitly mark rollback incompatible
+6. record both artifact SHAs/hashes and storage fixtures
+```
+
+A git checkout or source revert is not proof that deployed old code can
+read data written by new code.
 
 ## Test Requirements
 
+Current/required cases:
+
 ```text
 current version imports without migration notice
-known older safe version applies scoreBudget default
+known v0 applies exact scoreBudget defaults
+migration notice lists every changed item
+first UI action reviews migration without saving
+second unchanged action saves migrated deck
+editing input invalidates migration review
 newer version rejected
-missing version rejected
-unsafe old version rejected
-count-only normal role not silently accepted
+missing/invalid version rejected
+unknown old version rejected
+count-only role not silently accepted
+unsafe fields not preserved
 corrupt localStorage recovers
-migration notice lists changed fields
-unknown fields are not preserved
+storage read/backup/remove failures do not crash recovery
+migration write failure keeps modal/input and does not navigate
 ```
+
+The parser/migration unit tests and storage tests cover the lower layers.
+The UI confirmation flow requires DOM/browser coverage before current HEAD
+is called verified.
 
 ## Final Decision
 
-Migration exists to protect users, not to accept everything.
-
-When unsure, reject or import as blocked draft with clear explanation.
+Migration exists to protect meaning and user data, not to maximize import
+acceptance. When mapping is not exact, reject with a stable code and clear
+explanation.
