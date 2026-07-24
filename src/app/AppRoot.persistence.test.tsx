@@ -24,6 +24,23 @@ function legacyDeckJson(id = 'legacy-review-test'): string {
   return JSON.stringify(legacy);
 }
 
+function currentDeck(id: string, name: string): Record<string, unknown> {
+  const deck = JSON.parse(JSON.stringify(starterRaw)) as Record<string, unknown>;
+  deck['id'] = id;
+  deck['name'] = name;
+  return deck;
+}
+
+function seedStoredDeck(deck: Record<string, unknown>): void {
+  window.localStorage.setItem(
+    DECKS_STORAGE_KEY,
+    JSON.stringify({
+      version: 1,
+      decks: [{ deck, source: 'created', updatedAtMs: 1 }],
+    }),
+  );
+}
+
 function storedDeckById(id: string): Record<string, unknown> | undefined {
   const raw = window.localStorage.getItem(DECKS_STORAGE_KEY);
   if (raw === null) {
@@ -74,6 +91,41 @@ describe('AppRoot persistence integrity', () => {
     fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
     expect(screen.getByRole('button', { name: '変換して読み込む' })).toBeTruthy();
     expect(storedDeckById('legacy-review-edit-test')).toBeUndefined();
+  });
+
+  it('同じdeck IDのimportは1回目で上書きせず、明示確認後だけ置換する', () => {
+    const id = 'existing-import-conflict';
+    seedStoredDeck(currentDeck(id, '保存済みデッキ'));
+    render(<AppRoot />);
+
+    const incoming = JSON.stringify(currentDeck(id, '読み込んだ更新版'));
+    fireEvent.click(screen.getByRole('button', { name: 'JSONを読み込む' }));
+    fireEvent.change(screen.getByLabelText('デッキJSON'), { target: { value: incoming } });
+    fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
+
+    expect(screen.getByText(/同じID .* のデッキ「保存済みデッキ」が保存されています/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: '上書きして読み込む' })).toBeTruthy();
+    expect(storedDeckById(id)?.['name']).toBe('保存済みデッキ');
+
+    fireEvent.click(screen.getByRole('button', { name: '上書きして読み込む' }));
+    expect(storedDeckById(id)?.['name']).toBe('読み込んだ更新版');
+  });
+
+  it('上書き確認後にJSONを変更したら承認を失効させる', () => {
+    const id = 'overwrite-review-edit-test';
+    seedStoredDeck(currentDeck(id, '保存済みデッキ'));
+    render(<AppRoot />);
+
+    const incoming = JSON.stringify(currentDeck(id, '更新版'));
+    fireEvent.click(screen.getByRole('button', { name: 'JSONを読み込む' }));
+    const textarea = screen.getByLabelText('デッキJSON');
+    fireEvent.change(textarea, { target: { value: incoming } });
+    fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
+    expect(screen.getByRole('button', { name: '上書きして読み込む' })).toBeTruthy();
+
+    fireEvent.change(textarea, { target: { value: `${incoming}\n` } });
+    expect(screen.getByRole('button', { name: '読み込む' })).toBeTruthy();
+    expect(storedDeckById(id)?.['name']).toBe('保存済みデッキ');
   });
 
   it('recordsとsettingsの破損回復noticeを起動時に捨てず表示する', () => {
