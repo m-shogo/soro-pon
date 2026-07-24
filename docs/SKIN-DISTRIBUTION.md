@@ -1,56 +1,110 @@
 # Skin Distribution Contract (P2-3)
 
-インストール型/販売スキンを導入する前に確定させる契約。現時点では設計のみで、課金・配信の実装は行わない。
+インストール型／販売スキンを導入する前に確定させる契約です。
+現時点では公式同梱スキンの安全な読み込み基盤まで実装済みで、外部packageの
+install・署名・entitlement・trust付与は未実装です。Gate 7は未達です。
 
 ## Package Identity
 
 ```text
-identity = (id, version, origin, author)
+identity = (id, version, trustedOrigin, author)
 id: 小文字英数字とハイフン。公式と衝突するidのインストールは拒否
-version: 単調増加のinteger。asset URLの?v=に使われる(P2-2実装済み)
-origin: official | external。externalはtrust制限が常に適用される
+version: 単調増加のsafe integer。asset URLの?v=に使う
+trustedOrigin: official | external
 ```
+
+**重要:** `trustedOrigin` はmanifest自身に決めさせません。
+manifestの `origin` は記述値にすぎず、将来のinstaller／registryが署名・配布元・
+予約済みIDを検証した後に付与する信頼区分を正本とします。外部packageが
+`origin: official` と自己申告してもofficial権限へ昇格してはいけません。
+
+現在のruntimeは、manifestが `external` として評価された場合にPNG/WebP以外、
+特にSVGを拒否します。しかし、外部installer自体が未実装のため、manifestの
+自己申告を外部package trustの根拠として使える状態ではありません。
 
 ## Contract Version
 
 ```text
-skinContractVersion: アプリ側のSKIN_CONTRACT_VERSIONより新しいスキンは受理しない(実装済み)
-古いスキンで不足するslotはbase skinへfallbackする(実装済み)
-contract更新時: slot追加は後方互換、slot削除・幾何変更はcontractVersionを上げる
+skinContractVersion: アプリ側より新しいregistry/skinは受理しない
+古いスキンで不足するslotはbase skinへfallbackする
+registry内のskin IDは一意でなければならない
+継承はbaseを除いて最大3段。上限ちょうどは有効、4段目が必要なら拒否
 ```
+
+contract更新時は、slot追加を後方互換として扱い、slot削除・意味・幾何契約の
+破壊的変更ではcontractVersionを上げます。
 
 ## Integrity / Signature Strategy
 
 ```text
 配布パッケージにはmanifest+tokens+画像のcontent hash一覧(SHA-256)を含める
-インストール時に全ファイルのhashを検証し、1件でも不一致なら全体を拒否する
-署名(公式ストア鍵)は配信基盤導入時に追加。hash検証はその前提となる
-インストール後もロード時にmanifestのschema検証+token allowlist検証を毎回行う(実装済みの検証を再利用)
-公式アセットのhashは生成記録(docs/IMAGE-ASSET-WORKFLOW.md参照)のcontentHashと一致させる
+installerが展開前に全ファイルhashを検証する
+公式扱いは公式store署名／予約ID／配布元検証を全て通ったpackageだけ
+1件でも不一致ならpackage全体を拒否する
+ロード時にもmanifest schema・token allowlist・file policyを毎回検証する
+```
+
+現在実装済み:
+
+```text
+公式同梱packageのfilesystem validator
+runtime manifest schema validation
+runtime token allowlist
+external評価時のSVG拒否
+safe filename / path traversal / external URL拒否
+versioned URL / preload / atomic visual application
+```
+
+未実装:
+
+```text
+外部package installer
+installer-owned trustedOrigin binding
+署名／公開鍵管理
+content-hash manifestのinstall-time検証
+package保存領域
+entitlement
+外部package upgrade / uninstall UI
 ```
 
 ## Installation / Entitlement Boundary
 
 ```text
-installed skinはアプリ管理領域(将来: IndexedDB/専用ディレクトリ)にのみ置く
-entitlement(所有権)はスキンパッケージの外で管理する。スキン自身は自分の
-  所有状態を主張できない
-スキンはengine/game state/records/storage/payment/networkへアクセスできない
-  (検証済みtoken値と登録済み画像のみ。実装済みの境界を維持)
+installed skinはアプリ管理領域にのみ展開する
+package自身は所有権・公式性・署名成功を主張できない
+entitlementはpackage外で管理する
+skinはengine/game state/records/storage/payment/networkへアクセスできない
+検証済みtoken値と登録済み画像だけをpresentationへ渡す
 ```
 
 ## Upgrade / Rollback / Uninstall
 
-```text
-upgrade: 新versionを別領域へ展開→hash検証→atomic切替(P2-2のpreload+一括適用)
-rollback: 直前versionのパッケージを保持し、切替失敗時は前スキン維持(実装済み)
-uninstall: パッケージ削除+選択中だった場合はdefaultスキンへ復旧(sanitizeSkinIdが処理)
-```
-
-## Trust-level File Policy (P2-1)
+将来の実装順:
 
 ```text
-official(レビュー済み): PNG/WebP/SVG(SVGはレビュー必須)
-external/販売: PNG/WebPのみ。SVG/CSS/JS/HTML/外部URL/外部フォントは常に拒否
-(pnpm skin:validateとparseSkinTokens/validateSkinManifestで実装済み)
+1. 新versionを隔離領域へ展開
+2. identity / trustedOrigin / contract / hash / signatureを検証
+3. required assetをpreload
+4. tokens/assetsをatomic切替
+5. 成功後だけactive pointerを更新
+6. 失敗時は直前versionを維持
+7. uninstall時に選択中ならdefaultへ復旧
 ```
+
+`git checkout`、manifest文字列の変更、またはmanifestの `origin: official` は
+trust付与・package rollback・install成功の証明ではありません。
+
+## Trust-level File Policy
+
+```text
+official（installer／同梱buildが信頼を付与）:
+  PNG / WebP / review済みSVG
+
+external:
+  PNG / WebPのみ
+  SVG / CSS slot / JS / HTML / 外部URL / 外部fontは拒否
+```
+
+runtime validatorとfilesystem validatorの両方でexternal SVGを拒否します。
+ただし「誰がexternal／officialか」を安全に決めるinstaller-owned trust bindingは
+未実装であり、Gate 7 READYを名乗ってはいけません。
