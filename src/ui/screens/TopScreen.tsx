@@ -33,6 +33,8 @@ export function TopScreen({
 }) {
   const [skinModalOpen, setSkinModalOpen] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+
   return (
     <div className="sp-screen">
       <div className="sp-screen__header">
@@ -75,10 +77,20 @@ export function TopScreen({
             <br />
             夜の帳が下りた、記憶の欠片を集める頃。
           </p>
-          {/* データが壊れた時に必ず見える復旧経路(P1-4) */}
-          <Button variant="ghost" onClick={() => setResetConfirmOpen(true)}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setResetError(null);
+              setResetConfirmOpen(true);
+            }}
+          >
             ローカルデータを初期化…
           </Button>
+          {resetError !== null && (
+            <p role="alert" className="sp-form-error" style={{ marginTop: 'var(--sp-space-8)' }}>
+              {resetError}
+            </p>
+          )}
         </div>
         <div className="sp-screen__spacer" />
         {recentRecords.length > 0 && (
@@ -104,12 +116,19 @@ export function TopScreen({
       <Dialog
         open={resetConfirmOpen}
         title="ローカルデータの初期化"
-        message="デッキ・対局記録・実績・設定・スキン選択を全て削除して最初の状態に戻します。この操作は取り消せません。"
+        message="デッキ・対局記録・実績・設定・スキン選択・破損データの退避コピーを全て削除して最初の状態に戻します。この操作は取り消せません。"
         confirmLabel="全て削除して初期化する"
         cancelLabel="やめる"
         danger
         onConfirm={() => {
-          resetAllLocalData(window.localStorage);
+          const result = resetAllLocalData(window.localStorage);
+          if (result.failedKeys.length > 0) {
+            setResetConfirmOpen(false);
+            setResetError(
+              `一部のローカルデータを削除できませんでした（${result.failedKeys.length}件）。ブラウザの保存領域設定を確認して、もう一度お試しください。`,
+            );
+            return;
+          }
           window.location.reload();
         }}
         onCancel={() => setResetConfirmOpen(false)}
