@@ -1,0 +1,92 @@
+{
+  "batch": 10,
+  "label": "Batch 10 environment availability probe",
+  "probedAt": "2026-07-24",
+  "commit": "eb1f16a04163812b1e5066b4fcf659cba6839f57",
+  "note": "Every entry below was probed with a real command, not assumed. Device identifiers, hostnames, serial numbers, and account information are deliberately excluded.",
+
+  "host": {
+    "os": "macOS 26.4.1 (25E253)",
+    "node": "v24.15.0",
+    "pnpm": "11.1.2",
+    "chromium": "149.0.7827.55 (Playwright-bundled)",
+    "safari": "26.4 (installed)",
+    "xcode": "present at /Applications/Xcode.app"
+  },
+
+  "realDevices": {
+    "iPhone": {
+      "present": true,
+      "model": "iPhone 16 (iPhone17,3)",
+      "os": "iOS 18.7.8 (22H352)",
+      "connectionState": "connected",
+      "probeCommand": "xcrun devicectl list devices / device info details",
+      "identifierRecorded": false,
+      "drivable": false,
+      "blockerDetail": "devicectl exposes copy/info/notification/orientation/process/reboot/sysdiagnose/install/uninstall — it has NO screenshot, NO open-URL, and NO input-injection subcommand for a real device. Safari Web Inspector requires driving the macOS Safari GUI, and browsers are granted only computer-use 'read' tier in this session (screenshots allowed, clicks/typing blocked). The visual/interaction judgments required by B10-IOS-01..03 additionally require a human observer.",
+      "classification": "ENVIRONMENT_BLOCKER"
+    },
+    "iPad": {
+      "present": false,
+      "probeCommand": "xcrun devicectl list devices",
+      "classification": "ENVIRONMENT_BLOCKER"
+    },
+    "android": {
+      "present": false,
+      "adbInstalled": false,
+      "probeCommand": "which adb",
+      "classification": "ENVIRONMENT_BLOCKER"
+    },
+    "cloudDeviceService": {
+      "present": false,
+      "probeCommand": "repo-wide grep for browserstack/saucelabs/lambdatest",
+      "classification": "ENVIRONMENT_BLOCKER"
+    }
+  },
+
+  "safariAutomation": {
+    "safaridriverBinaryPresent": true,
+    "path": "/System/Cryptexes/App/usr/bin/safaridriver",
+    "sessionCreationAttempted": true,
+    "sessionCreated": false,
+    "exactError": "Could not create a session: You must enable 'Allow remote automation' in the Developer section of Safari Settings to control Safari via WebDriver.",
+    "unblock": "In Safari: Settings → Advanced → 'Show features for web developers', then Develop → 'Allow Remote Automation'. `safaridriver --enable` additionally requires admin authentication via a GUI password prompt, which this session cannot perform.",
+    "importantCaveat": "Even once Safari is drivable via WebDriver, that does NOT capture VoiceOver's spoken output. Driving Safari and hearing VoiceOver are two separate capabilities; the latter remains the Batch 8 tooling limitation.",
+    "classification": "ENVIRONMENT_BLOCKER"
+  },
+
+  "windows": {
+    "machineOrVm": false,
+    "vmSoftwareInstalled": false,
+    "probeCommand": "ls /Applications for Parallels/VMware/UTM/VirtualBox/Windows App; find for *.pvm/*.vmwarevm/*.utm",
+    "nvda": { "available": false, "reason": "requires Windows", "classification": "ENVIRONMENT_BLOCKER" },
+    "jaws": { "available": false, "reason": "requires Windows and a valid JAWS license", "classification": "ENVIRONMENT_BLOCKER" }
+  },
+
+  "deployTarget": {
+    "present": false,
+    "hostingProviderConfig": "none (no vercel/netlify/firebase/wrangler/gh-pages config)",
+    "deployScript": "none in package.json",
+    "serviceWorker": "none",
+    "configuredBasePath": "none (vite.config.ts has no base)",
+    "ciDeployJob": "none (.github/workflows/ci.yml ends at pnpm build)",
+    "secretsConfigured": false,
+    "targetUrl": null,
+    "classification": "ENVIRONMENT_BLOCKER",
+    "note": "Provisioning a hosting provider is explicitly out of scope for this batch. A local `vite preview` is NOT a deploy target and is never recorded as a deploy PASS."
+  },
+
+  "executableInThisEnvironment": [
+    "B10-PROD-01 production build generation",
+    "B10-PROD-02 production preview core flows",
+    "B10-PROD-03 production build soak (Chromium)"
+  ],
+  "blockedInThisEnvironment": [
+    "B10-IOS-01", "B10-IOS-02", "B10-IOS-03",
+    "B10-IPAD-01", "B10-IPAD-02",
+    "B10-ANDROID-01", "B10-ANDROID-02",
+    "B10-DEPLOY-01", "B10-DEPLOY-02",
+    "B10-ROLLBACK-01", "B10-ROLLBACK-02",
+    "B10-AX-SAFARI-01", "B10-AX-NVDA-01", "B10-AX-JAWS-01"
+  ]
+}

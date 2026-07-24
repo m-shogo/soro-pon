@@ -1,0 +1,110 @@
+{
+  "testId": "B10-PROD-02",
+  "base": "http://localhost:4199",
+  "buildType": "production (vite build → vite preview)",
+  "commit": "eb1f16a04163812b1e5066b4fcf659cba6839f57",
+  "browser": "Chromium (Playwright-bundled)",
+  "ranAt": "2026-07-24T01:30:26.024Z",
+  "results": [
+    {
+      "id": "B10-PROD-02.1",
+      "label": "TOP renders on production artifact",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.2",
+      "label": "JSON Import rejects invalid JSON with visible reasons",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.3",
+      "label": "JSON Import accepts a valid deck and lands on Deck Detail",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.4",
+      "label": "Deck Editor opens from Deck Detail",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.4b",
+      "label": "Deck Editor もどる returns to Deck Detail",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.5",
+      "label": "3-player match reaches Result on production build",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.6",
+      "label": "Result → TOP navigation works",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.7",
+      "label": "Skin switch to cute-pop applies on production build",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.8",
+      "label": "4-player match reaches Result on production build (cute-pop)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B10-PROD-02.9",
+      "label": "reload restores skin, decks and records from localStorage",
+      "ok": true,
+      "detail": "{\"before\":{\"skin\":\"cute-pop\",\"decks\":1,\"records\":2},\"after\":{\"skin\":\"cute-pop\",\"decks\":1,\"records\":2},\"skinKept\":\"cute-pop\"}"
+    },
+    {
+      "id": "B10-PROD-02.10",
+      "label": "no page errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "id": "B10-PROD-02.11",
+      "label": "no console errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "id": "B10-PROD-02.12",
+      "label": "no unhandled promise rejections",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "id": "B10-PROD-02.13",
+      "label": "no non-benign failed requests (asset 404 etc.)",
+      "ok": true,
+      "detail": "benign(navigation-cancelled)=1 nonBenign=0 []"
+    }
+  ],
+  "errorCounts": {
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "unhandledRejections": 0,
+    "failedRequestsBenign": 1,
+    "failedRequestsNonBenign": 0
+  },
+  "errorSamples": {
+    "pageErrors": [],
+    "consoleErrors": [],
+    "failedRequests": [
+      "http://localhost:4199/assets/ui/soro-pon/skins/base/skin.json :: net::ERR_ABORTED"
+    ]
+  },
+  "claimScope": "Chromium against a local production preview of this commit only. Does NOT extend to real Safari, Firefox, WebKit, real devices, or a deployed environment.",
+  "pass": true
+}

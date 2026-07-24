@@ -1,0 +1,13 @@
+=== production artifact inventory ===
+commit: eb1f16a04163812b1e5066b4fcf659cba6839f57
+built: 2026-07-24T01:23:43Z
+
+528f1ff72d560732  419657  dist/assets/index-DYarRbgb.js
+b71c0f55f3205cea  25817  dist/assets/index-o4gla2TO.css
+e85ec287f9425c9e  211  dist/assets/ui/soro-pon/skins/base/tokens.css
+11e34501a0b1691b  4694  dist/assets/ui/soro-pon/skins/cute-pop/tokens.css
+f17f5f10720c39da  4185  dist/assets/ui/soro-pon/skins/yorunoshirube/tokens.css
+10434bed598c3d4c  477  dist/index.html
+
+total files in dist: 51
+dist size: 8.5M

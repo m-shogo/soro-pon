@@ -1,0 +1,119 @@
+{
+  "label": "b10-prod-soak",
+  "browser": "chromium",
+  "base": "http://localhost:4199",
+  "startedAt": "2026-07-24T01:30:31.928Z",
+  "durationMinutes": 35,
+  "cyclesCompleted": 47,
+  "maxMinutes": 35,
+  "maxCycles": 200,
+  "aborted": null,
+  "scenarioCounts": {
+    "S1": 4,
+    "S9": 4,
+    "S8": 4,
+    "S2": 4,
+    "S7": 4,
+    "S10": 4,
+    "S3": 4,
+    "S11": 4,
+    "S5": 3,
+    "S4": 3,
+    "S12": 3,
+    "S13": 3,
+    "S14": 3
+  },
+  "matchesReachedResult": 17,
+  "matchesFailedResult": 1,
+  "cyclesWithNote": 0,
+  "totalPageErrors": 0,
+  "totalConsoleErrors": 0,
+  "totalFailedRequests": 11,
+  "errorSamples": [
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/base/skin.json :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/tokens.css :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png?v=5 :: net::ERR_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/tokens.css :: net::ERR_ABORTED"
+    }
+  ],
+  "warmupExcluded": {
+    "cycles": 10,
+    "policy": "first 5min OR first 10 cycles (longer wins)"
+  },
+  "trends": {
+    "heapUsedBytes": {
+      "first10Median": 5323684,
+      "last10Median": 5099684,
+      "growthPct": -4.2
+    },
+    "domNodes": {
+      "first10Median": 203,
+      "last10Median": 201,
+      "growthPct": -1
+    },
+    "jsListeners": {
+      "first10Median": 183,
+      "last10Median": 183,
+      "growthPct": 0
+    },
+    "liveTimers": {
+      "first10Median": 0,
+      "last10Median": 0,
+      "growthPct": null
+    },
+    "localStorageBytes": {
+      "first10Median": 18728,
+      "last10Median": 21917,
+      "growthPct": 17
+    },
+    "matchCyclePerf": {
+      "firstP95": 310091,
+      "lastP95": 176752,
+      "slowdownPct": -43
+    }
+  },
+  "memoryAuthority": "authoritative (CDP, post-GC)"
+}

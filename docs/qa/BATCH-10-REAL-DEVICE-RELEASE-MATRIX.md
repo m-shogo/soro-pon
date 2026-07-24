@@ -78,7 +78,7 @@ in by the report.
 | BLOCK | build fails | preview cannot serve | preview unstable |
 | Claim scope | this commit's production artifact only | production preview on Chromium only | production preview, Chromium, this run's duration only — NOT generalizable to other browsers/devices/environments |
 | Executable? | YES | YES | YES |
-| Result | *(report)* | *(report)* | *(report)* |
+| Result | **PASS** — build clean, artifacts hashed | **PASS 14/14** — 0 page/console/rejection/non-benign-request errors | **PASS** — 35.0 min, 47 cycles, 17/18 matches to Result, all thresholds met |
 
 ### Real iPhone (device connected, observation path absent)
 
@@ -97,7 +97,7 @@ in by the report.
 | BLOCK | no way to drive the device and observe its screen from this session | same | same |
 | Claim scope | real iPhone Safari only; never generalized to iPad/Android/Simulator | same | same |
 | Executable? | **NO — BLOCKED_ENVIRONMENT** (see below) | **NO — BLOCKED_ENVIRONMENT** | **NO — BLOCKED_ENVIRONMENT** |
-| Result | *(report)* | *(report)* | *(report)* |
+| Result | `BLOCKED_ENVIRONMENT` — 0 flows executed | `BLOCKED_ENVIRONMENT` — 0 matches executed | `BLOCKED_ENVIRONMENT` — 0 checks executed |
 
 Blocker detail (all three): the iPhone is paired and visible to
 `devicectl`, but `devicectl` offers no screenshot, no URL-open, and no
@@ -126,7 +126,7 @@ judgments. Resume point: B10-IOS-01 step 1.
 | BLOCK | no iPad hardware | no iPad hardware | no Android hardware, adb absent | same |
 | Claim scope | real iPad only | real iPad only | real Android only | real Android only |
 | Executable? | **NO — BLOCKED_ENVIRONMENT** | **NO** | **NO — BLOCKED_ENVIRONMENT** | **NO** |
-| Result | *(report)* | *(report)* | *(report)* | *(report)* |
+| Result | `BLOCKED_ENVIRONMENT` (no iPad) | `BLOCKED_ENVIRONMENT` | `BLOCKED_ENVIRONMENT` (no Android, no adb) | `BLOCKED_ENVIRONMENT` |
 
 Unblock (iPad): connect an iPad and repeat the B10-IOS unblock steps.
 Unblock (Android): connect an Android device with USB debugging, install
@@ -147,7 +147,7 @@ Simulators and Chrome device emulation do **not** unblock these.
 | BLOCK | repo has no hosting provider, deploy script, credentials, or target URL; creating one is out of scope for this batch | same | same | same |
 | Claim scope | only the environment actually deployed to | same | deployed-artifact rollback only — a local build/git checkout is NOT this | same |
 | Executable? | **NO — BLOCKED_ENVIRONMENT** | **NO** | **NO — BLOCKED_ENVIRONMENT** | **NO** |
-| Result | *(report)* | *(report)* | *(report)* | *(report)* |
+| Result | `BLOCKED_ENVIRONMENT` — no deploy performed | `BLOCKED_ENVIRONMENT` | `BLOCKED_ENVIRONMENT` — no rollback performed | `BLOCKED_ENVIRONMENT` |
 
 Executable substitute performed instead (recorded as its own, weaker
 claim, not as a deploy PASS): production artifact generation, artifact
@@ -176,7 +176,7 @@ order. Resume point: B10-DEPLOY-01 step 1.
 | BLOCK | Safari is read-tier in this session (no clicks/typing), so Safari cannot be driven; VoiceOver quickstart/permission dialogs are environment constraints, never product defects | no Windows machine or VM | no Windows machine, no JAWS license |
 | Claim scope | real Safari+VoiceOver only — Batch 8's VoiceOver+**Chrome** results are separate and are not extended by this item | real NVDA only; never inferred from VoiceOver | real JAWS only; never inferred from NVDA |
 | Executable? | **NO — BLOCKED_ENVIRONMENT** | **NO — BLOCKED_ENVIRONMENT** | **NO — BLOCKED_ENVIRONMENT** |
-| Result | *(report)* | *(report)* | *(report)* |
+| Result | `BLOCKED_ENVIRONMENT` — 0 screens traversed; a real WebDriver session was attempted and refused ("Allow Remote Automation" disabled) | `BLOCKED_ENVIRONMENT` — 0 screens | `BLOCKED_ENVIRONMENT` — 0 screens |
 
 Unblock (Safari+VoiceOver): grant Safari an automation tier that permits
 clicking/typing, or have a human operator drive Safari with VoiceOver on
@@ -219,3 +219,12 @@ RC readiness terms are the existing ones only (`READY` /
 Promotion to `READY` requires every mandatory Gate 6 requirement plus
 the real-environment items above; while real-device, real-deploy, and
 real-AT items remain BLOCKED, RC **stays LIMITED READY** by rule.
+
+## Actual outcome
+
+Executed 2026-07-24 after this matrix was fixed. Decision:
+**CONDITIONAL** — PASS 3 / BLOCKED_ENVIRONMENT 14 / FAIL 0 / NOT_RUN 0.
+The production build was validated end-to-end and soaked 35 min / 47
+cycles with 0 product defects; the 14 blocked items each carry a tested
+unblock path. RC readiness: **LIMITED READY, unchanged**. Full results:
+[BATCH-10-REAL-DEVICE-RELEASE-REPORT.md](./BATCH-10-REAL-DEVICE-RELEASE-REPORT.md).
