@@ -9,6 +9,7 @@ import {
 import { safeWrite, type KeyValueStorage } from './keyValueStorage';
 
 export const RECORDS_STORAGE_KEY = 'soro-pon.records.v1';
+export const RECORDS_BACKUP_KEY = 'soro-pon.records.v1.corrupt-backup';
 
 // docs/29: 獲得コイン = totalPoints(上限500)。流局/敗北は参加報酬10。
 export const COIN_CAP_PER_MATCH = 500;
@@ -28,7 +29,22 @@ export type RecordsStore = {
 
 export function createLocalStorageRecordsStore(storage: KeyValueStorage): RecordsStore {
   const read = (): { records: RecordsPayload; issues: ValidationIssue[] } => {
-    const raw = storage.getItem(RECORDS_STORAGE_KEY);
+    let raw: string | null;
+    try {
+      raw = storage.getItem(RECORDS_STORAGE_KEY);
+    } catch {
+      return {
+        records: EMPTY_RECORDS,
+        issues: [
+          {
+            code: 'L9004',
+            severity: 'warning',
+            message:
+              'ブラウザの保存領域から対局記録を読み込めないため、このセッションでは空の記録として扱います。保存領域の設定を確認してください。',
+          },
+        ],
+      };
+    }
     if (raw === null) {
       return { records: EMPTY_RECORDS, issues: [] };
     }
@@ -41,14 +57,34 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     } catch {
       // 回復処理へ
     }
-    storage.removeItem(RECORDS_STORAGE_KEY);
+
+    let backupSaved = true;
+    let activeRemoved = true;
+    try {
+      storage.setItem(RECORDS_BACKUP_KEY, raw);
+    } catch {
+      backupSaved = false;
+    }
+    try {
+      storage.removeItem(RECORDS_STORAGE_KEY);
+    } catch {
+      activeRemoved = false;
+    }
+    const failures: string[] = [];
+    if (!backupSaved) {
+      failures.push('バックアップを保存できませんでした');
+    }
+    if (!activeRemoved) {
+      failures.push('壊れた記録を削除できませんでした');
+    }
+    const suffix = failures.length > 0 ? ` ただし、${failures.join('。')}。` : '';
     return {
       records: EMPTY_RECORDS,
       issues: [
         {
           code: 'L9001',
           severity: 'warning',
-          message: '対局記録が壊れていたため初期化しました。',
+          message: `対局記録が壊れていたため初期化しました。元データは可能な限りバックアップに退避しています。${suffix}`,
         },
       ],
     };
