@@ -27,17 +27,10 @@ export type DeckStore = {
 };
 
 const EMPTY_PAYLOAD: StoredDecksPayload = { version: 1, decks: [] };
-
 const DECK_SOURCES: readonly DeckSource[] = ['official', 'created', 'imported'];
 
-// 個々のdeck entryをできる限り復元する(Gate 6 migration/storage recovery)。
-// 目的: outer payloadのstrict parseが1件の壊れた/旧schemaのdeckのせいで
-// 失敗した場合、他の正常なdeckまで巻き添えで全消去しない。
-// - 通常のstoredDeckSchemaでparseできればそのまま採用
-// - deck本体だけmigrateLegacyDeck(version 0 -> 現行)で救えるなら救う
-//   (import経路と同じ決定的migrationを再利用する。新しいmigration
-//   frameworkは導入しない)
-// - それでも壊れているentryは個別に捨てる(全体は道連れにしない)
+// outer payloadのstrict parseが1件の壊れた/旧schemaのdeckで失敗しても、
+// 正常なdeckを巻き添えにしない。現行parse -> 既存v0 migration -> dropの順。
 function salvageDecks(rawDecks: unknown[]): { decks: StoredDeck[]; recoveredCount: number; droppedCount: number } {
   const decks: StoredDeck[] = [];
   let droppedCount = 0;
@@ -78,8 +71,6 @@ function salvageDecks(rawDecks: unknown[]): { decks: StoredDeck[]; recoveredCoun
   return { decks, recoveredCount, droppedCount };
 }
 
-// localStorageのdeck保管庫。読み込みは必ずZod strict parseを通し、
-// 破損データは可能な限りバックアップへ退避して空の状態から回復する。
 // localStorage自体が読み書きを拒否しても、回復処理を例外停止させない。
 export function createLocalStorageDeckStore(
   storage: KeyValueStorage,
@@ -114,7 +105,10 @@ export function createLocalStorageDeckStore(
     return failures.length > 0 ? ` ただし、${failures.join('。')}。` : '';
   };
 
-  const quarantineAndReset = (raw: string, message: string): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
+  const quarantineAndReset = (
+    raw: string,
+    message: string,
+  ): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
     const backupSaved = tryBackup(raw);
     const activeRemoved = tryRemoveActive();
     return {
@@ -138,7 +132,7 @@ export function createLocalStorageDeckStore(
         payload: EMPTY_PAYLOAD,
         issues: [
           {
-            code: 'L9004',
+            code: 'L9005',
             severity: 'warning',
             message:
               'ブラウザの保存領域を読み込めないため、デッキを一時的な空の状態で開きました。再読み込みやブラウザ設定の確認後も続く場合、保存機能は利用できません。',
@@ -149,6 +143,7 @@ export function createLocalStorageDeckStore(
     if (raw === null) {
       return { payload: EMPTY_PAYLOAD, issues: [] };
     }
+
     let json: unknown;
     try {
       json = JSON.parse(raw);
@@ -158,12 +153,12 @@ export function createLocalStorageDeckStore(
         '保存データが壊れていたため初期化しました。壊れたデータは可能な限りバックアップに退避しています。',
       );
     }
+
     const parsed = storedDecksPayloadSchema.safeParse(json);
     if (parsed.success) {
       return { payload: parsed.data, issues: [] };
     }
-    // outer shapeがstrict parseを通らなかった場合でも、
-    // decks配列自体が存在するなら1件ずつ救済を試みる。
+
     const maybeDecks =
       json !== null && typeof json === 'object' && Array.isArray((json as Record<string, unknown>)['decks'])
         ? ((json as Record<string, unknown>)['decks'] as unknown[])
@@ -174,9 +169,9 @@ export function createLocalStorageDeckStore(
         '保存データが壊れていたため初期化しました。壊れたデータは可能な限りバックアップに退避しています。',
       );
     }
+
     const { decks, recoveredCount, droppedCount } = salvageDecks(maybeDecks);
     if (decks.length === 0 && maybeDecks.length > 0) {
-      // 何も救えなかった場合は従来通りの全消去メッセージにする
       return quarantineAndReset(
         raw,
         '保存データが壊れていたため初期化しました。壊れたデータは可能な限りバックアップに退避しています。',
@@ -184,15 +179,9 @@ export function createLocalStorageDeckStore(
     }
 
     const backupSaved = tryBackup(raw);
-    // outer payload自体はstrict parseを通らなかった(未知フィールド/不正な
-    // versionなど)ため、無警告で黙って正規化はしない — 何が起きたかを常に
-    // 可視化する。3パターンに分ける:
-    // - droppedCount > 0: 実際にdeck entryを失った(L9003)
-    // - droppedCount === 0 かつ recoveredCount > 0: 旧形式からの自動変換の
-    //   みで、データは失っていない(L9002)
-    // - それ以外: outer shapeのみの問題で、deck自体は無事(L9001、既存の
-    //   L9001系呼び出し元/テストとの互換を保つ)
-    const backupSuffix = backupSaved ? '' : ' ただし、元データのバックアップは保存できませんでした。';
+    const backupSuffix = backupSaved
+      ? ''
+      : ' ただし、元データのバックアップは保存できませんでした。';
     const issues: ValidationIssue[] =
       droppedCount > 0
         ? [
@@ -221,12 +210,12 @@ export function createLocalStorageDeckStore(
                   `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
               },
             ];
-    // 救済結果を書き戻す(ベストエフォート)。失敗しても今回の読み込み結果は
-    // そのまま返す — 次回起動時に同じ救済処理を再実行するだけなので安全。
+
+    // 書き戻しはbest-effort。失敗しても今回のin-memory救済結果を返す。
     try {
       storage.setItem(DECKS_STORAGE_KEY, JSON.stringify({ version: 1, decks }));
     } catch {
-      // quotaなどで書き戻せなくても、今回のin-memory復元結果は利用できる。
+      // 次回loadで同じ救済を再試行する。
     }
     return { payload: { version: 1, decks }, issues };
   };
@@ -267,7 +256,6 @@ export function createLocalStorageDeckStore(
       if (!entry) {
         return null;
       }
-      // DeckProjectそのものだけを書き出す。ローカル状態は共有JSONに入れない。
       return JSON.stringify(entry.deck, null, 2);
     },
   };
