@@ -3,6 +3,7 @@ import type { ValidationIssue } from '../domain/validation';
 import { migrateLegacyDeck } from '../engine/import/migrateLegacyDeck';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
 import {
+  MAX_STORED_DECKS,
   storedDeckSchema,
   storedDecksPayloadSchema,
   type StoredDeck,
@@ -253,9 +254,17 @@ export function createLocalStorageDeckStore(
 
     saveDeck(deck: DeckProject, source: DeckSource): void {
       const payload = requireReadablePayload();
+      const existing = payload.decks.some((stored) => stored.deck.id === deck.id);
+      if (!existing && payload.decks.length >= MAX_STORED_DECKS) {
+        throw new StorageWriteError(
+          `保存できるデッキは最大${MAX_STORED_DECKS}件です。不要なデッキを削除してから、もう一度保存してください。`,
+          new Error('deck storage entry limit reached'),
+        );
+      }
+
       const entry: StoredDeck = { deck, source, updatedAtMs: now() };
-      const decks = payload.decks.some((d) => d.deck.id === deck.id)
-        ? payload.decks.map((d) => (d.deck.id === deck.id ? entry : d))
+      const decks = existing
+        ? payload.decks.map((stored) => (stored.deck.id === deck.id ? entry : stored))
         : [...payload.decks, entry];
       writePayload({ version: 1, decks });
     },
