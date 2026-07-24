@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import starterRaw from '../../samples/animal-starter.deck.json';
+import { deckProjectSchema } from '../schemas/deckProjectSchema';
+import { StorageWriteError } from './keyValueStorage';
 import {
   createLocalStorageDeckStore,
   DECKS_BACKUP_KEY,
   DECKS_STORAGE_KEY,
 } from './localStorageDeckStore';
 import {
+  buildMatchRecord,
   createLocalStorageRecordsStore,
   RECORDS_BACKUP_KEY,
   RECORDS_STORAGE_KEY,
@@ -48,6 +52,10 @@ function createFaultingStorage(initial: Record<string, string>, faults: Faults =
   };
 }
 
+function starterDeck() {
+  return deckProjectSchema.parse(starterRaw);
+}
+
 describe('storage recovery operation failures', () => {
   it('deck破損時にbackup書き込みが失敗してもloadAllは例外停止しない', () => {
     const storage = createFaultingStorage({ [DECKS_STORAGE_KEY]: '{broken' }, { set: true });
@@ -82,6 +90,16 @@ describe('storage recovery operation failures', () => {
     expect(result.issues[0]?.message).toContain('保存領域を読み込めない');
   });
 
+  it('deck storageを読めない時はsave/removeを空payload基準で実行せず既存rawを保護する', () => {
+    const original = '{"unknown":"existing data"}';
+    const storage = createFaultingStorage({ [DECKS_STORAGE_KEY]: original }, { get: true });
+    const store = createLocalStorageDeckStore(storage);
+
+    expect(() => store.saveDeck(starterDeck(), 'created')).toThrow(StorageWriteError);
+    expect(() => store.removeDeck('official-animal-starter')).toThrow(StorageWriteError);
+    expect(storage.peek(DECKS_STORAGE_KEY)).toBe(original);
+  });
+
   it('壊れたrecordsは原文をbackupしてactive keyを除去する', () => {
     const raw = 'null';
     const storage = createFaultingStorage({ [RECORDS_STORAGE_KEY]: raw });
@@ -105,6 +123,24 @@ describe('storage recovery operation failures', () => {
     expect(result.records.records).toEqual([]);
     expect(result.issues[0]?.message).toContain('バックアップを保存できませんでした');
     expect(result.issues[0]?.message).toContain('壊れた記録を削除できませんでした');
+  });
+
+  it('records storageを読めない時はrecord/achievementを空状態で上書きしない', () => {
+    const original = '{"unknown":"existing records"}';
+    const storage = createFaultingStorage({ [RECORDS_STORAGE_KEY]: original }, { get: true });
+    const store = createLocalStorageRecordsStore(storage);
+    const record = buildMatchRecord({
+      dateMs: 1,
+      deckId: 'deck',
+      deckName: 'Deck',
+      reason: 'draw',
+      winnerName: '',
+      humanWon: false,
+    });
+
+    expect(() => store.addRecord(record, 'session:draw:draw')).toThrow(StorageWriteError);
+    expect(() => store.unlockAchievements(['draw-round'])).toThrow(StorageWriteError);
+    expect(storage.peek(RECORDS_STORAGE_KEY)).toBe(original);
   });
 
   it('settings storageのgetItem自体が拒否されてもL9005とdefaultへ落とす', () => {
