@@ -1,6 +1,10 @@
 import type { ValidationIssue } from '../domain/validation';
 import {
   EMPTY_RECORDS,
+  MAX_RECENT_MATCH_KEYS,
+  MAX_ROLE_COLLECTION_ENTRIES,
+  MAX_STORED_ACHIEVEMENTS,
+  MAX_STORED_MATCH_RECORDS,
   normalizeRecordsPayload,
   recordsPayloadSchema,
   type MatchRecord,
@@ -25,6 +29,7 @@ export type MatchCommitResult = {
   records: RecordsPayload;
   added: boolean;
   newlyUnlockedIds: string[];
+  roleCollectionLimitReached: boolean;
 };
 
 export type RecordsStore = {
@@ -73,7 +78,6 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     try {
       const parsed = recordsPayloadSchema.safeParse(JSON.parse(raw) as unknown);
       if (parsed.success) {
-        // 旧データのoptionalフィールド欠落を安全なdefaultへ正規化する
         return { records: normalizeRecordsPayload(parsed.data), issues: [] };
       }
     } catch {
@@ -133,28 +137,52 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     record: MatchRecord,
     matchKey: string,
     wonRoleKey?: string,
-  ): { records: RecordsPayload; added: boolean } => {
+  ): { records: RecordsPayload; added: boolean; roleCollectionLimitReached: boolean } => {
     const recentKeys = current.recentMatchKeys ?? [];
     if (matchKey === current.lastMatchKey || recentKeys.includes(matchKey)) {
-      return { records: current, added: false };
+      return { records: current, added: false, roleCollectionLimitReached: false };
     }
+
+    const isNewRole = wonRoleKey !== undefined && !current.roleCollection.includes(wonRoleKey);
+    const roleCollectionLimitReached =
+      isNewRole && current.roleCollection.length >= MAX_ROLE_COLLECTION_ENTRIES;
     const roleCollection =
-      wonRoleKey !== undefined && !current.roleCollection.includes(wonRoleKey)
+      isNewRole && !roleCollectionLimitReached
         ? [...current.roleCollection, wonRoleKey]
         : current.roleCollection;
+
     return {
       added: true,
+      roleCollectionLimitReached,
       records: {
         version: 1,
         coins: current.coins + record.coinsEarned,
-        records: [record, ...current.records].slice(0, 100),
+        records: [record, ...current.records].slice(0, MAX_STORED_MATCH_RECORDS),
         roleCollection,
         achievements: current.achievements ?? [],
         totalMatches: (current.totalMatches ?? 0) + 1,
         lastMatchKey: matchKey,
-        recentMatchKeys: [matchKey, ...recentKeys].slice(0, 20),
+        recentMatchKeys: [matchKey, ...recentKeys].slice(0, MAX_RECENT_MATCH_KEYS),
       },
     };
+  };
+
+  const mergeAchievementIds = (
+    current: string[],
+    requested: string[],
+  ): { achievements: string[]; newlyUnlockedIds: string[] } => {
+    const known = new Set(current);
+    const achievements = [...current];
+    const newlyUnlockedIds: string[] = [];
+    for (const id of requested) {
+      if (known.has(id) || achievements.length >= MAX_STORED_ACHIEVEMENTS) {
+        continue;
+      }
+      known.add(id);
+      achievements.push(id);
+      newlyUnlockedIds.push(id);
+    }
+    return { achievements, newlyUnlockedIds };
   };
 
   const commitMatch = (
@@ -166,25 +194,28 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     const current = requireReadableRecords();
     const nextMatch = buildNextMatchRecords(current, record, matchKey, wonRoleKey);
     if (!nextMatch.added) {
-      return { records: current, added: false, newlyUnlockedIds: [] };
+      return {
+        records: current,
+        added: false,
+        newlyUnlockedIds: [],
+        roleCollectionLimitReached: false,
+      };
     }
 
-    const known = new Set(nextMatch.records.achievements ?? []);
-    const achievements = [...(nextMatch.records.achievements ?? [])];
-    const newlyUnlockedIds: string[] = [];
-    for (const id of resolveAchievementIds(nextMatch.records)) {
-      if (!known.has(id)) {
-        known.add(id);
-        achievements.push(id);
-        newlyUnlockedIds.push(id);
-      }
-    }
-
+    const merged = mergeAchievementIds(
+      nextMatch.records.achievements ?? [],
+      resolveAchievementIds(nextMatch.records),
+    );
     const records = write(
-      { ...nextMatch.records, achievements },
+      { ...nextMatch.records, achievements: merged.achievements },
       '対局結果の保存に失敗しました(空き容量が不足している可能性があります)。今回の記録・コイン・役コレクション・実績は保存されていません。',
     );
-    return { records, added: true, newlyUnlockedIds };
+    return {
+      records,
+      added: true,
+      newlyUnlockedIds: merged.newlyUnlockedIds,
+      roleCollectionLimitReached: nextMatch.roleCollectionLimitReached,
+    };
   };
 
   return {
@@ -201,16 +232,9 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
 
     unlockAchievements(ids: string[]): RecordsPayload {
       const current = requireReadableRecords();
-      const known = new Set(current.achievements ?? []);
-      const merged = [...(current.achievements ?? [])];
-      for (const id of ids) {
-        if (!known.has(id)) {
-          known.add(id);
-          merged.push(id);
-        }
-      }
+      const merged = mergeAchievementIds(current.achievements ?? [], ids);
       return write(
-        { ...current, achievements: merged },
+        { ...current, achievements: merged.achievements },
         '実績の保存に失敗しました(空き容量が不足している可能性があります)。操作自体や、すでに保存済みの対局記録・コインは失われていません。',
       );
     },
