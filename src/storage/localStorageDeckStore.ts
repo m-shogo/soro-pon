@@ -8,7 +8,7 @@ import {
   type StoredDeck,
   type StoredDecksPayload,
 } from '../schemas/storageSchema';
-import { safeWrite, type KeyValueStorage } from './keyValueStorage';
+import { safeWrite, StorageWriteError, type KeyValueStorage } from './keyValueStorage';
 
 export const DECKS_STORAGE_KEY = 'soro-pon.decks.v1';
 export const DECKS_BACKUP_KEY = 'soro-pon.decks.v1.corrupt-backup';
@@ -29,9 +29,18 @@ export type DeckStore = {
 const EMPTY_PAYLOAD: StoredDecksPayload = { version: 1, decks: [] };
 const DECK_SOURCES: readonly DeckSource[] = ['official', 'created', 'imported'];
 
+type ReadPayloadResult = {
+  payload: StoredDecksPayload;
+  issues: ValidationIssue[];
+  readFailureCause?: unknown;
+};
+
 // outer payloadのstrict parseが1件の壊れた/旧schemaのdeckで失敗しても、
 // 正常なdeckを巻き添えにしない。現行parse -> 既存v0 migration -> dropの順。
-function salvageDecks(rawDecks: unknown[]): { decks: StoredDeck[]; recoveredCount: number; droppedCount: number } {
+function salvageDecks(
+  rawDecks: unknown[],
+  now: () => number,
+): { decks: StoredDeck[]; recoveredCount: number; droppedCount: number } {
   const decks: StoredDeck[] = [];
   let droppedCount = 0;
   let recoveredCount = 0;
@@ -59,7 +68,7 @@ function salvageDecks(rawDecks: unknown[]): { decks: StoredDeck[]; recoveredCoun
     const updatedAtMs =
       typeof record['updatedAtMs'] === 'number' && Number.isFinite(record['updatedAtMs'])
         ? (record['updatedAtMs'] as number)
-        : Date.now();
+        : now();
     if (deckParsed.success) {
       decks.push({ deck: deckParsed.data, source, updatedAtMs });
       recoveredCount += 1;
@@ -105,10 +114,7 @@ export function createLocalStorageDeckStore(
     return failures.length > 0 ? ` ただし、${failures.join('。')}。` : '';
   };
 
-  const quarantineAndReset = (
-    raw: string,
-    message: string,
-  ): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
+  const quarantineAndReset = (raw: string, message: string): ReadPayloadResult => {
     const backupSaved = tryBackup(raw);
     const activeRemoved = tryRemoveActive();
     return {
@@ -123,13 +129,14 @@ export function createLocalStorageDeckStore(
     };
   };
 
-  const readPayload = (): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
+  const readPayload = (): ReadPayloadResult => {
     let raw: string | null;
     try {
       raw = storage.getItem(DECKS_STORAGE_KEY);
-    } catch {
+    } catch (cause) {
       return {
         payload: EMPTY_PAYLOAD,
+        readFailureCause: cause,
         issues: [
           {
             code: 'L9005',
@@ -170,7 +177,7 @@ export function createLocalStorageDeckStore(
       );
     }
 
-    const { decks, recoveredCount, droppedCount } = salvageDecks(maybeDecks);
+    const { decks, recoveredCount, droppedCount } = salvageDecks(maybeDecks, now);
     if (decks.length === 0 && maybeDecks.length > 0) {
       return quarantineAndReset(
         raw,
@@ -220,6 +227,17 @@ export function createLocalStorageDeckStore(
     return { payload: { version: 1, decks }, issues };
   };
 
+  const requireReadablePayload = (): StoredDecksPayload => {
+    const result = readPayload();
+    if (result.readFailureCause !== undefined) {
+      throw new StorageWriteError(
+        '保存済みデッキを読み込めないため、既存データを保護する目的で変更を保存しませんでした。ブラウザの保存領域設定を確認してください。',
+        result.readFailureCause,
+      );
+    }
+    return result.payload;
+  };
+
   const writePayload = (payload: StoredDecksPayload): void => {
     safeWrite(
       () => storage.setItem(DECKS_STORAGE_KEY, JSON.stringify(payload)),
@@ -234,7 +252,7 @@ export function createLocalStorageDeckStore(
     },
 
     saveDeck(deck: DeckProject, source: DeckSource): void {
-      const { payload } = readPayload();
+      const payload = requireReadablePayload();
       const entry: StoredDeck = { deck, source, updatedAtMs: now() };
       const decks = payload.decks.some((d) => d.deck.id === deck.id)
         ? payload.decks.map((d) => (d.deck.id === deck.id ? entry : d))
@@ -243,7 +261,7 @@ export function createLocalStorageDeckStore(
     },
 
     removeDeck(deckId: string): void {
-      const { payload } = readPayload();
+      const payload = requireReadablePayload();
       writePayload({
         version: 1,
         decks: payload.decks.filter((d) => d.deck.id !== deckId),
