@@ -37,9 +37,11 @@ type ReadPayloadResult = {
   readFailureCause?: unknown;
 };
 
+type RecoveryKind = 'none' | 'metadata' | 'migration';
+
 type SalvageCandidate = {
   deck: StoredDeck;
-  recovered: boolean;
+  recoveryKind: RecoveryKind;
   originalIndex: number;
 };
 
@@ -61,12 +63,21 @@ function preferredDuplicateCandidate(
   return candidate.originalIndex < current.originalIndex ? candidate : current;
 }
 
+function normalizedSource(raw: unknown): DeckSource {
+  return DECK_SOURCES.includes(raw as DeckSource) ? (raw as DeckSource) : 'created';
+}
+
+function normalizedUpdatedAt(raw: unknown, now: () => number): number {
+  return typeof raw === 'number' && Number.isSafeInteger(raw) && raw >= 0 ? raw : now();
+}
+
 function salvageDecks(
   rawDecks: unknown[],
   now: () => number,
 ): {
   decks: StoredDeck[];
-  recoveredCount: number;
+  metadataRecoveredCount: number;
+  migratedCount: number;
   droppedCount: number;
   overflowCount: number;
   duplicateCount: number;
@@ -77,31 +88,40 @@ function salvageDecks(
   rawDecks.forEach((entry, originalIndex) => {
     const direct = storedDeckSchema.safeParse(entry);
     if (direct.success) {
-      candidates.push({ deck: direct.data, recovered: false, originalIndex });
+      candidates.push({ deck: direct.data, recoveryKind: 'none', originalIndex });
       return;
     }
     if (entry === null || typeof entry !== 'object') {
       droppedCount += 1;
       return;
     }
+
     const record = entry as Record<string, unknown>;
+    const source = normalizedSource(record['source']);
+    const updatedAtMs = normalizedUpdatedAt(record['updatedAtMs'], now);
+
+    // デッキ本体が現行schemaで正常なら、wrapper metadataだけを正規化して救う。
+    // ここを飛ばしてlegacy migrationへ回すと、version 1の正常なユーザーデッキまで落ちる。
+    const currentDeck = deckProjectSchema.safeParse(record['deck']);
+    if (currentDeck.success) {
+      candidates.push({
+        deck: { deck: currentDeck.data, source, updatedAtMs },
+        recoveryKind: 'metadata',
+        originalIndex,
+      });
+      return;
+    }
+
     const migrated = migrateLegacyDeck(record['deck']);
     if (!migrated.ok) {
       droppedCount += 1;
       return;
     }
-    const deckParsed = deckProjectSchema.safeParse(migrated.migrated);
-    const source = DECK_SOURCES.includes(record['source'] as DeckSource)
-      ? (record['source'] as DeckSource)
-      : 'created';
-    const updatedAtMs =
-      typeof record['updatedAtMs'] === 'number' && Number.isFinite(record['updatedAtMs'])
-        ? (record['updatedAtMs'] as number)
-        : now();
-    if (deckParsed.success) {
+    const migratedDeck = deckProjectSchema.safeParse(migrated.migrated);
+    if (migratedDeck.success) {
       candidates.push({
-        deck: { deck: deckParsed.data, source, updatedAtMs },
-        recovered: true,
+        deck: { deck: migratedDeck.data, source, updatedAtMs },
+        recoveryKind: 'migration',
         originalIndex,
       });
     } else {
@@ -144,7 +164,9 @@ function salvageDecks(
 
   return {
     decks: selected.map((candidate) => candidate.deck),
-    recoveredCount: selected.filter((candidate) => candidate.recovered).length,
+    metadataRecoveredCount: selected.filter((candidate) => candidate.recoveryKind === 'metadata')
+      .length,
+    migratedCount: selected.filter((candidate) => candidate.recoveryKind === 'migration').length,
     droppedCount,
     overflowCount,
     duplicateCount,
@@ -247,8 +269,14 @@ export function createLocalStorageDeckStore(
       );
     }
 
-    const { decks, recoveredCount, droppedCount, overflowCount, duplicateCount } =
-      salvageDecks(maybeDecks, now);
+    const {
+      decks,
+      metadataRecoveredCount,
+      migratedCount,
+      droppedCount,
+      overflowCount,
+      duplicateCount,
+    } = salvageDecks(maybeDecks, now);
     if (decks.length === 0 && maybeDecks.length > 0) {
       return quarantineAndReset(
         raw,
@@ -260,8 +288,12 @@ export function createLocalStorageDeckStore(
     const backupSuffix = backupSaved
       ? ''
       : ' ただし、元データのバックアップは保存できませんでした。';
-    const recoveredSuffix =
-      recoveredCount > 0 ? ` うち${recoveredCount}件は旧形式から自動変換しました。` : '';
+    const migratedSuffix =
+      migratedCount > 0 ? ` うち${migratedCount}件は旧形式から自動変換しました。` : '';
+    const metadataSuffix =
+      metadataRecoveredCount > 0
+        ? ` ${metadataRecoveredCount}件はデッキ本体を保持したまま保存メタデータを正規化しました。`
+        : '';
     const duplicateSuffix =
       duplicateCount > 0
         ? ` 同じデッキIDの重複${duplicateCount}件は、公式デッキを優先し、同じsource内では更新日時の新しい内容を優先して1件へ統合しました。`
@@ -279,7 +311,8 @@ export function createLocalStorageDeckStore(
                   ? `さらに保存上限を超えた${overflowCount}件はactive一覧から除外しました。`
                   : '') +
                 duplicateSuffix +
-                recoveredSuffix +
+                metadataSuffix +
+                migratedSuffix +
                 `元データは可能な限りバックアップに退避しています。${backupSuffix}`,
             },
           ]
@@ -290,7 +323,7 @@ export function createLocalStorageDeckStore(
                 severity: 'warning',
                 message:
                   `デッキ保存数が上限${MAX_STORED_DECKS}件を超えていたため、公式デッキと更新日時の新しいデッキを優先して${decks.length}件へ正規化しました。` +
-                  `${overflowCount}件はactive一覧から除外しました。${duplicateSuffix}${recoveredSuffix}` +
+                  `${overflowCount}件はactive一覧から除外しました。${duplicateSuffix}${metadataSuffix}${migratedSuffix}` +
                   `元データは可能な限りバックアップに退避しています。${backupSuffix}`,
               },
             ]
@@ -301,25 +334,35 @@ export function createLocalStorageDeckStore(
                   severity: 'warning',
                   message:
                     `保存データに同じデッキIDが複数あったため、${duplicateCount}件の重複を公式デッキ優先・同じsource内では更新日時優先で統合しました。` +
-                    `${recoveredSuffix}元データは可能な限りバックアップに退避しています。${backupSuffix}`,
+                    `${metadataSuffix}${migratedSuffix}元データは可能な限りバックアップに退避しています。${backupSuffix}`,
                 },
               ]
-            : recoveredCount > 0
+            : metadataRecoveredCount > 0
               ? [
-                  {
-                    code: 'L9002',
-                    severity: 'warning',
-                    message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。${backupSuffix}`,
-                  },
-                ]
-              : [
                   {
                     code: 'L9001',
                     severity: 'warning',
                     message:
-                      `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
+                      `保存メタデータに問題があった${metadataRecoveredCount}件のデッキを、デッキ本体を保持したまま正規化しました。` +
+                      `${migratedSuffix}元データは可能な限りバックアップに退避しています。${backupSuffix}`,
                   },
-                ];
+                ]
+              : migratedCount > 0
+                ? [
+                    {
+                      code: 'L9002',
+                      severity: 'warning',
+                      message: `${migratedCount}件のデッキを旧形式から自動変換しました。データは保持されています。${backupSuffix}`,
+                    },
+                  ]
+                : [
+                    {
+                      code: 'L9001',
+                      severity: 'warning',
+                      message:
+                        `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
+                    },
+                  ];
 
     try {
       storage.setItem(DECKS_STORAGE_KEY, JSON.stringify({ version: 1, decks }));
