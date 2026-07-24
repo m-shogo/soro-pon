@@ -72,13 +72,13 @@ describe('storage recovery operation failures', () => {
     expect(storage.peek(DECKS_STORAGE_KEY)).toBe(raw);
   });
 
-  it('deck storageのgetItem自体が拒否されてもL9004と空payloadへ落とす', () => {
+  it('deck storageのgetItem自体が拒否されてもL9005と空payloadへ落とす', () => {
     const storage = createFaultingStorage({}, { get: true });
 
     const result = createLocalStorageDeckStore(storage).loadAll();
 
     expect(result.decks).toEqual([]);
-    expect(result.issues[0]?.code).toBe('L9004');
+    expect(result.issues[0]?.code).toBe('L9005');
     expect(result.issues[0]?.message).toContain('保存領域を読み込めない');
   });
 
@@ -95,7 +95,10 @@ describe('storage recovery operation failures', () => {
   });
 
   it('recordsのbackup・削除が両方失敗しても空記録へ回復する', () => {
-    const storage = createFaultingStorage({ [RECORDS_STORAGE_KEY]: 'null' }, { set: true, remove: true });
+    const storage = createFaultingStorage(
+      { [RECORDS_STORAGE_KEY]: 'null' },
+      { set: true, remove: true },
+    );
 
     const result = createLocalStorageRecordsStore(storage).load();
 
@@ -104,13 +107,13 @@ describe('storage recovery operation failures', () => {
     expect(result.issues[0]?.message).toContain('壊れた記録を削除できませんでした');
   });
 
-  it('settings storageのgetItem自体が拒否されてもL9004とdefaultへ落とす', () => {
+  it('settings storageのgetItem自体が拒否されてもL9005とdefaultへ落とす', () => {
     const storage = createFaultingStorage({}, { get: true });
 
     const result = createLocalStorageSettingsStore(storage).load();
 
     expect(result.settings.insightMode).toBe('normal');
-    expect(result.issues[0]?.code).toBe('L9004');
+    expect(result.issues[0]?.code).toBe('L9005');
     expect(storage.peek(SETTINGS_BACKUP_KEY)).toBeNull();
     expect(storage.peek(SETTINGS_STORAGE_KEY)).toBeNull();
   });
