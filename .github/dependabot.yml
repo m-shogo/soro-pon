@@ -1,0 +1,47 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    groups:
+      test-tooling:
+        patterns:
+          - '@playwright/*'
+          - '@testing-library/*'
+          - 'vitest'
+          - 'jsdom'
+      vite-tooling:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+    labels:
+      - dependencies
+
+  - package-ecosystem: pip
+    directory: /tools/asset-factory/soro-pon-ui
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:15'
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - asset-pipeline
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:30'
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - ci
