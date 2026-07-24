@@ -52,4 +52,37 @@ describe('tile membership integrity', () => {
       expect(result.issues.some((issue) => issue.code === 'V3013')).toBe(true);
     }
   });
+
+  it('supportedPlayerCountsの重複をV3013で拒否する', () => {
+    const deck = minimalDeck();
+    deck.variants[0]!.ruleConfig.supportedPlayerCounts = [3, 3];
+
+    const issues = validateDeckEntityIds(deck);
+
+    expect(issues.some((issue) => issue.code === 'V3013')).toBe(true);
+    expect(validateDeckForUse(deck).status).toBe('draft');
+  });
+
+  it('groupTypeが使わない余剰フィールドをR4011で拒否する', () => {
+    const deck = minimalDeck();
+    const requirement = deck.variants[0]!.winRoles[0]!.requiredGroups[0]!;
+    requirement.tileIds = ['apple', 'banana', 'grape'];
+
+    const issues = validateDeckEntityIds(deck);
+
+    expect(issues.some((issue) => issue.code === 'R4011')).toBe(true);
+    expect(validateDeckForUse(deck).status).toBe('draft');
+  });
+
+  it('エンジンが無視する余剰条件を含む共有JSONはimport拒否する', () => {
+    const deck = minimalDeck();
+    deck.variants[0]!.winRoles[0]!.requiredGroups[0]!.tag = 'ignored-tag';
+
+    const result = parseDeckImport({ rawText: JSON.stringify(deck) });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.issues.some((issue) => issue.code === 'R4011')).toBe(true);
+    }
+  });
 });
