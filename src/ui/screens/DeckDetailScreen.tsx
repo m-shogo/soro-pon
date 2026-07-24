@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import type { DeckProject } from '../../domain/deck';
 import type { DeckValidationResult } from '../../domain/validation';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { CategoryChip } from '../components/CategoryChip';
+import { Dialog } from '../components/Dialog';
 import { PaperPanel } from '../components/PaperPanel';
 import { RoleCard } from '../components/RoleCard';
 import { SectionHeader } from '../components/SectionHeader';
@@ -26,6 +28,7 @@ export function DeckDetailScreen({
   onExport: () => void;
   onDelete: () => void;
 }) {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const normalVariant = deck.variants.find((v) => v.id === deck.activeVariantId);
   const canPlay = validation.status === 'playable' || validation.status === 'playableWithWarnings';
   const categoryById = new Map(deck.categories.map((c) => [c.id, c]));
@@ -50,7 +53,7 @@ export function DeckDetailScreen({
             <Button variant="ink" onClick={onExport}>
               エクスポート
             </Button>
-            <Button variant="ghost" onClick={onDelete}>
+            <Button variant="ghost" onClick={() => setDeleteConfirmOpen(true)}>
               削除
             </Button>
             <Button variant="ghost" onClick={onBack}>
@@ -119,6 +122,19 @@ export function DeckDetailScreen({
           </PaperPanel>
         </div>
       </div>
+      <Dialog
+        open={deleteConfirmOpen}
+        title="デッキを削除"
+        message={`「${deck.name}」を削除します。この操作は取り消せず、現在は削除済みデッキを復元する画面もありません。必要なら先にエクスポートしてください。`}
+        confirmLabel="削除する"
+        cancelLabel="やめる"
+        danger
+        onConfirm={() => {
+          setDeleteConfirmOpen(false);
+          onDelete();
+        }}
+        onCancel={() => setDeleteConfirmOpen(false)}
+      />
     </div>
   );
 }
