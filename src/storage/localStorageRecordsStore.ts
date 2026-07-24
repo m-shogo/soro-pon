@@ -21,6 +21,12 @@ type ReadRecordsResult = {
   readFailureCause?: unknown;
 };
 
+export type MatchCommitResult = {
+  records: RecordsPayload;
+  added: boolean;
+  newlyUnlockedIds: string[];
+};
+
 export type RecordsStore = {
   load(): { records: RecordsPayload; issues: ValidationIssue[] };
   /**
@@ -28,6 +34,16 @@ export type RecordsStore = {
    * 処理済みmatchKeyならno-op(コイン/records/totalMatchesを増やさない)。
    */
   addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload;
+  /**
+   * 対局記録・コイン・役コレクション・対局由来実績を1回のwriteで確定する。
+   * resolveAchievementIdsには、今回の記録を反映済みの累計状態を渡す。
+   */
+  commitMatch(
+    record: MatchRecord,
+    matchKey: string,
+    wonRoleKey: string | undefined,
+    resolveAchievementIds: (nextRecords: RecordsPayload) => string[],
+  ): MatchCommitResult;
   /** 実績を解放して保存する。既知のIDは重複しない。 */
   unlockAchievements(ids: string[]): RecordsPayload;
 };
@@ -112,6 +128,65 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     return next;
   };
 
+  const buildNextMatchRecords = (
+    current: RecordsPayload,
+    record: MatchRecord,
+    matchKey: string,
+    wonRoleKey?: string,
+  ): { records: RecordsPayload; added: boolean } => {
+    const recentKeys = current.recentMatchKeys ?? [];
+    if (matchKey === current.lastMatchKey || recentKeys.includes(matchKey)) {
+      return { records: current, added: false };
+    }
+    const roleCollection =
+      wonRoleKey !== undefined && !current.roleCollection.includes(wonRoleKey)
+        ? [...current.roleCollection, wonRoleKey]
+        : current.roleCollection;
+    return {
+      added: true,
+      records: {
+        version: 1,
+        coins: current.coins + record.coinsEarned,
+        records: [record, ...current.records].slice(0, 100),
+        roleCollection,
+        achievements: current.achievements ?? [],
+        totalMatches: (current.totalMatches ?? 0) + 1,
+        lastMatchKey: matchKey,
+        recentMatchKeys: [matchKey, ...recentKeys].slice(0, 20),
+      },
+    };
+  };
+
+  const commitMatch = (
+    record: MatchRecord,
+    matchKey: string,
+    wonRoleKey: string | undefined,
+    resolveAchievementIds: (nextRecords: RecordsPayload) => string[],
+  ): MatchCommitResult => {
+    const current = requireReadableRecords();
+    const nextMatch = buildNextMatchRecords(current, record, matchKey, wonRoleKey);
+    if (!nextMatch.added) {
+      return { records: current, added: false, newlyUnlockedIds: [] };
+    }
+
+    const known = new Set(nextMatch.records.achievements ?? []);
+    const achievements = [...(nextMatch.records.achievements ?? [])];
+    const newlyUnlockedIds: string[] = [];
+    for (const id of resolveAchievementIds(nextMatch.records)) {
+      if (!known.has(id)) {
+        known.add(id);
+        achievements.push(id);
+        newlyUnlockedIds.push(id);
+      }
+    }
+
+    const records = write(
+      { ...nextMatch.records, achievements },
+      '対局結果の保存に失敗しました(空き容量が不足している可能性があります)。今回の記録・コイン・役コレクション・実績は保存されていません。',
+    );
+    return { records, added: true, newlyUnlockedIds };
+  };
+
   return {
     load() {
       const { records, issues } = read();
@@ -119,31 +194,10 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     },
 
     addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload {
-      const current = requireReadableRecords();
-      // 同じ結果確定イベントを二重記録しない(冪等)。
-      // P2-4: 直近1件だけでなく処理済みキー一覧(最大20件)と照合する。
-      const recentKeys = current.recentMatchKeys ?? [];
-      if (matchKey === current.lastMatchKey || recentKeys.includes(matchKey)) {
-        return current;
-      }
-      const roleCollection =
-        wonRoleKey !== undefined && !current.roleCollection.includes(wonRoleKey)
-          ? [...current.roleCollection, wonRoleKey]
-          : current.roleCollection;
-      return write(
-        {
-          version: 1,
-          coins: current.coins + record.coinsEarned,
-          records: [record, ...current.records].slice(0, 100),
-          roleCollection,
-          achievements: current.achievements ?? [],
-          totalMatches: (current.totalMatches ?? 0) + 1,
-          lastMatchKey: matchKey,
-          recentMatchKeys: [matchKey, ...recentKeys].slice(0, 20),
-        },
-        '対局結果の保存に失敗しました(空き容量が不足している可能性があります)。今回の記録・コイン・役コレクションは保存されていません。',
-      );
+      return commitMatch(record, matchKey, wonRoleKey, () => []).records;
     },
+
+    commitMatch,
 
     unlockAchievements(ids: string[]): RecordsPayload {
       const current = requireReadableRecords();
