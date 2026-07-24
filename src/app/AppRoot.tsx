@@ -13,7 +13,8 @@ import type { DeckProject } from '../domain/deck';
 import type { MatchState } from '../domain/match';
 import type { DeckValidationResult } from '../domain/validation';
 import { parseDeckImport } from '../engine/import/parseDeckImport';
-import { validateDeckProject } from '../engine/validation/validateDeckProject';
+import { validateDeckEntityIds } from '../engine/validation/validateDeckEntityIds';
+import { validateDeckForUse } from '../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
 import { StorageWriteError } from '../storage/keyValueStorage';
 import { createLocalStorageDeckStore } from '../storage/localStorageDeckStore';
@@ -22,6 +23,7 @@ import {
   type MatchCommitResult,
 } from '../storage/localStorageRecordsStore';
 import { createLocalStorageSettingsStore } from '../storage/localStorageSettingsStore';
+import { MAX_ROLE_COLLECTION_ENTRIES } from '../schemas/storageSchema';
 import { Badge } from '../ui/components/Badge';
 import { Button } from '../ui/components/Button';
 import { TextField } from '../ui/components/FormField';
@@ -55,7 +57,6 @@ type Screen =
 
 const OFFICIAL_STARTER_ID = 'official-animal-starter';
 
-// 対局セッション。keyでremountしてcontrollerを初期化する。
 function MatchSession({
   deck,
   playerCount,
@@ -112,18 +113,9 @@ function MatchSession({
 }
 
 export function AppRoot() {
-  const deckStore = useMemo(
-    () => createLocalStorageDeckStore(window.localStorage),
-    [],
-  );
-  const settingsStore = useMemo(
-    () => createLocalStorageSettingsStore(window.localStorage),
-    [],
-  );
-  const recordsStore = useMemo(
-    () => createLocalStorageRecordsStore(window.localStorage),
-    [],
-  );
+  const deckStore = useMemo(() => createLocalStorageDeckStore(window.localStorage), []);
+  const settingsStore = useMemo(() => createLocalStorageSettingsStore(window.localStorage), []);
+  const recordsStore = useMemo(() => createLocalStorageRecordsStore(window.localStorage), []);
 
   const [saveNotices, setSaveNotices] = useState<string[]>([]);
   const appendSaveNotice = useCallback((message: string) => {
@@ -201,7 +193,7 @@ export function AppRoot() {
   const validations = useMemo(() => {
     const map = new Map<string, DeckValidationResult>();
     for (const stored of decks) {
-      map.set(stored.deck.id, validateDeckProject({ deck: stored.deck }));
+      map.set(stored.deck.id, validateDeckForUse(stored.deck));
     }
     return map;
   }, [decks]);
@@ -210,7 +202,6 @@ export function AppRoot() {
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState('');
   const [importIssues, setImportIssues] = useState<string[]>([]);
-  // 旧形式は1回目の押下で変換内容を表示し、同じ入力の2回目だけ保存する。
   const [migrationReviewText, setMigrationReviewText] = useState<string | null>(null);
 
   const resetImportReview = useCallback(() => {
@@ -225,6 +216,18 @@ export function AppRoot() {
 
   const deckOf = (deckId: string): DeckProject | undefined =>
     decks.find((stored) => stored.deck.id === deckId)?.deck;
+
+  const moveToMatchSetup = useCallback(
+    (deckId: string) => {
+      const validation = validations.get(deckId);
+      if (!validation || validation.status === 'draft' || validation.status === 'blocked') {
+        appendSaveNotice('このデッキには修正が必要なため、対局を開始できません。検証内容を確認してください。');
+        return;
+      }
+      setScreen({ kind: 'matchSetup', deckId });
+    },
+    [appendSaveNotice, validations],
+  );
 
   useEffect(() => {
     const needsDeck =
@@ -249,9 +252,9 @@ export function AppRoot() {
 
     if (
       (screen.kind === 'matchSetup' || screen.kind === 'match') &&
-      !deck.variants.some((variant) => variant.id === deck.activeVariantId)
+      (validateDeckForUse(deck).status === 'draft' || validateDeckForUse(deck).status === 'blocked')
     ) {
-      appendSaveNotice('有効なルール設定が見つからないため、対局を開始せずTOPへ戻りました。');
+      appendSaveNotice('デッキの整合性に問題があるため、対局を中止してTOPへ戻りました。');
       setScreen({ kind: 'top' });
     }
   }, [appendSaveNotice, decks, screen]);
@@ -363,12 +366,17 @@ export function AppRoot() {
       }
 
       setRecordsVersion((v) => v + 1);
+      if (committed.roleCollectionLimitReached) {
+        appendSaveNotice(
+          `役コレクションは保存上限${MAX_ROLE_COLLECTION_ENTRIES}件に達したため、新しい役だけ追加されませんでした。対局記録・コイン・実績は保存されています。`,
+        );
+      }
       const newlyUnlocked = ACHIEVEMENTS.filter((achievement) =>
         committed?.newlyUnlockedIds.includes(achievement.id),
       );
       return { coinsEarned: built.record.coinsEarned, newlyUnlocked };
     },
-    [decks, recordsStore, tryWrite],
+    [appendSaveNotice, decks, recordsStore, tryWrite],
   );
 
   const importModal = (
@@ -427,7 +435,7 @@ export function AppRoot() {
         return (
           <TopScreen
             hasPlayableDeck={playable}
-            onPlayNow={() => setScreen({ kind: 'matchSetup', deckId: OFFICIAL_STARTER_ID })}
+            onPlayNow={() => moveToMatchSetup(OFFICIAL_STARTER_ID)}
             onDeckList={() => setScreen({ kind: 'deckList' })}
             onImport={() => setImportOpen(true)}
             onCollection={() => setScreen({ kind: 'collection' })}
@@ -466,7 +474,7 @@ export function AppRoot() {
             deck={deck}
             validation={validation}
             onBack={() => setScreen({ kind: 'deckList' })}
-            onStartSetup={() => setScreen({ kind: 'matchSetup', deckId: deck.id })}
+            onStartSetup={() => moveToMatchSetup(deck.id)}
             onEdit={() => setScreen({ kind: 'deckEditor', deckId: deck.id })}
             onExport={() => handleExport(deck)}
             onDelete={() => {
@@ -489,12 +497,17 @@ export function AppRoot() {
           <DeckEditorScreen
             deck={deck}
             onSave={(updated) => {
+              const entityIdIssues = validateDeckEntityIds(updated);
+              if (entityIdIssues.length > 0) {
+                appendSaveNotice(entityIdIssues[0]?.message ?? 'IDの重複を修正してから保存してください。');
+                return;
+              }
               const saveSource = source === 'official' ? 'created' : source;
               if (!tryWrite(() => deckStore.saveDeck(updated, saveSource))) {
                 return;
               }
               refreshDecks();
-              const savedValidation = validateDeckProject({ deck: updated });
+              const savedValidation = validateDeckForUse(updated);
               processAchievements({
                 type: 'deckSaved',
                 source: saveSource,
@@ -518,6 +531,11 @@ export function AppRoot() {
             variant={variant}
             onBack={() => setScreen({ kind: 'top' })}
             onStart={(playerCount) => {
+              const validation = validateDeckForUse(deck);
+              if (validation.status === 'draft' || validation.status === 'blocked') {
+                appendSaveNotice('デッキの整合性に問題があるため、対局を開始できません。');
+                return;
+              }
               if (decks.find((stored) => stored.deck.id === deck.id)?.source === 'created') {
                 processAchievements({ type: 'matchStartedWithCreatedDeck' });
               }
