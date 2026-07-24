@@ -78,12 +78,14 @@ function MatchSession({
     coinsEarned: number;
     newlyUnlocked: AchievementDef[];
   } | null>(null);
+
   useEffect(() => {
     if (controller.state.phase === 'result' && !recordedRef.current) {
       recordedRef.current = true;
       setResultReward(onResult(controller.state));
     }
   }, [controller.state, onResult]);
+
   if (controller.state.phase === 'result') {
     return (
       <ResultScreen
@@ -101,6 +103,7 @@ function MatchSession({
       />
     );
   }
+
   return <MatchScreen deck={deck} controller={controller} onExit={onExit} />;
 }
 
@@ -118,42 +121,57 @@ export function AppRoot() {
     [],
   );
 
-  // 保存系書き込みをquota超過等から安全に包む(Gate 6 storage recovery)。
-  // 失敗時は生のDOMExceptionをそのまま投げず、理解可能な通知として
-  // saveNoticesへ積み、falseを返す。呼び出し側はfalseなら「保存された前提の
-  // 後続処理(画面遷移やdirty解除)」を行わない。
   const [saveNotices, setSaveNotices] = useState<string[]>([]);
-  const tryWrite = useCallback((fn: () => void): boolean => {
-    try {
-      fn();
-      return true;
-    } catch (err) {
-      if (err instanceof StorageWriteError) {
-        setSaveNotices((prev) => [...prev, err.message]);
-        return false;
+  const appendSaveNotice = useCallback((message: string) => {
+    setSaveNotices((prev) => {
+      if (prev.at(-1) === message) {
+        return prev;
       }
-      throw err;
-    }
+      return [...prev, message].slice(-5);
+    });
   }, []);
 
+  // 保存系書き込みをquota超過等から安全に包む。
+  // falseなら呼び出し側は保存成功前提の遷移・表示を行わない。
+  const tryWrite = useCallback(
+    (fn: () => void): boolean => {
+      try {
+        fn();
+        return true;
+      } catch (err) {
+        if (err instanceof StorageWriteError) {
+          appendSaveNotice(err.message);
+          return false;
+        }
+        throw err;
+      }
+    },
+    [appendSaveNotice],
+  );
+
   const [bootNotices] = useState<string[]>(() => {
-    // 初回起動: 公式スターターを保存(strict parse経由)
-    const { decks, issues } = deckStore.loadAll();
-    if (!decks.some((d) => d.deck.id === OFFICIAL_STARTER_ID)) {
+    const deckLoad = deckStore.loadAll();
+    const recordsLoad = recordsStore.load();
+    const settingsLoad = settingsStore.load();
+    const issues = [...deckLoad.issues, ...recordsLoad.issues, ...settingsLoad.issues];
+
+    // 初回起動: 公式スターターを保存(strict parse経由)。
+    if (!deckLoad.decks.some((d) => d.deck.id === OFFICIAL_STARTER_ID)) {
       const parsed = deckProjectSchema.safeParse(starterRaw);
       if (parsed.success) {
         try {
           deckStore.saveDeck(parsed.data, 'official');
         } catch (err) {
           if (err instanceof StorageWriteError) {
-            issues.push({ code: 'L9002', severity: 'warning', message: err.message });
+            issues.push({ code: 'L9006', severity: 'warning', message: err.message });
           } else {
             throw err;
           }
         }
       }
     }
-    return issues.map((issue) => issue.message);
+
+    return [...new Set(issues.map((issue) => issue.message))];
   });
 
   const [recordsVersion, setRecordsVersion] = useState(0);
@@ -163,17 +181,19 @@ export function AppRoot() {
   const settings = useMemo(() => settingsStore.load().settings, [settingsStore]);
   const refreshDecks = useCallback(() => setDecksVersion((v) => v + 1), []);
 
-  // 実績評価: eventを渡して新規解放を保存し、解放された定義を返す
+  // 実績は永続化に成功した場合だけ「新規解放」としてUIへ返す。
   const processAchievements = useCallback(
     (event: AchievementEvent): AchievementDef[] => {
       const current = recordsStore.load().records;
       const gained = computeNewAchievements(current.achievements ?? [], event, current);
-      if (gained.length > 0) {
-        if (tryWrite(() => recordsStore.unlockAchievements(gained))) {
-          setRecordsVersion((v) => v + 1);
-        }
+      if (gained.length === 0) {
+        return [];
       }
-      return ACHIEVEMENTS.filter((a) => gained.includes(a.id));
+      if (!tryWrite(() => recordsStore.unlockAchievements(gained))) {
+        return [];
+      }
+      setRecordsVersion((v) => v + 1);
+      return ACHIEVEMENTS.filter((achievement) => gained.includes(achievement.id));
     },
     [recordsStore, tryWrite],
   );
@@ -192,11 +212,40 @@ export function AppRoot() {
   const [importIssues, setImportIssues] = useState<string[]>([]);
 
   const deckOf = (deckId: string): DeckProject | undefined =>
-    decks.find((d) => d.deck.id === deckId)?.deck;
+    decks.find((stored) => stored.deck.id === deckId)?.deck;
 
-  // MatchSessionはkey={seed}でマウント管理されるため、seedは対局ごとに一意である必要がある。
-  // Date.now()だけだと同一ミリ秒(高速な「もう一局」連打)で衝突しうるため、
-  // セッション内で単調増加するカウンタを混ぜて衝突を防ぐ。
+  // 保存データの回復・削除・別タブ操作で表示中entityが消えてもblank screenにしない。
+  useEffect(() => {
+    const needsDeck =
+      screen.kind === 'deckDetail' ||
+      screen.kind === 'deckEditor' ||
+      screen.kind === 'matchSetup' ||
+      screen.kind === 'match';
+    if (!needsDeck) {
+      return;
+    }
+
+    const deck = deckOf(screen.deckId);
+    if (!deck) {
+      appendSaveNotice('表示対象のデッキが見つからないため、安全な画面へ戻りました。');
+      setScreen(
+        screen.kind === 'deckDetail' || screen.kind === 'deckEditor'
+          ? { kind: 'deckList' }
+          : { kind: 'top' },
+      );
+      return;
+    }
+
+    if (
+      (screen.kind === 'matchSetup' || screen.kind === 'match') &&
+      !deck.variants.some((variant) => variant.id === deck.activeVariantId)
+    ) {
+      appendSaveNotice('有効なルール設定が見つからないため、対局を開始せずTOPへ戻りました。');
+      setScreen({ kind: 'top' });
+    }
+  }, [appendSaveNotice, decks, screen]);
+
+  // MatchSessionはkey={seed}でremountする。同一msの再戦でも衝突させない。
   const seedCounterRef = useRef(0);
   const newSeed = useCallback(() => {
     seedCounterRef.current += 1;
@@ -209,9 +258,8 @@ export function AppRoot() {
       setImportIssues(result.issues.map((issue) => `${issue.code}: ${issue.message}`));
       return;
     }
-    const validation = validateDeckProject({ deck: result.deck });
     if (!tryWrite(() => deckStore.saveDeck(result.deck, 'imported'))) {
-      // 保存に失敗した場合はimport modalを開いたままにし、入力内容も失わない。
+      // modalと入力を保持する。
       return;
     }
     refreshDecks();
@@ -219,16 +267,13 @@ export function AppRoot() {
     setImportOpen(false);
     setImportText('');
     setImportIssues([]);
-    if (result.migrationNotice) {
-      setImportIssues([]);
-    }
     setScreen({ kind: 'deckDetail', deckId: result.deck.id });
-    void validation;
   };
 
   const handleExport = (deck: DeckProject) => {
     const text = deckStore.exportDeck(deck.id);
     if (text === null) {
+      appendSaveNotice('書き出すデッキが見つかりませんでした。');
       return;
     }
     const blob = new Blob([text], { type: 'application/json' });
@@ -236,19 +281,21 @@ export function AppRoot() {
     const anchor = document.createElement('a');
     anchor.href = url;
     anchor.download = `${deck.id}.deck.json`;
+    anchor.hidden = true;
+    document.body.append(anchor);
     anchor.click();
-    URL.revokeObjectURL(url);
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
     processAchievements({ type: 'deckExported' });
   };
 
-  // 対局終了時の記録。決着の組み立ては純関数(matchRecording.ts)に委譲し、
-  // storage層のmatchKey冪等性で同じ結果の二重加算を防ぐ(結果確定イベント単位で一度だけ)。
+  // 対局終了時の記録。storage層のmatchKey冪等性で二重加算を防ぐ。
   const recordMatch = useCallback(
     (
       finalState: MatchState,
       matchSessionId?: string,
     ): { coinsEarned: number; newlyUnlocked: AchievementDef[] } => {
-      const stored = decks.find((d) => d.deck.id === finalState.deckProjectId);
+      const stored = decks.find((entry) => entry.deck.id === finalState.deckProjectId);
       if (!stored) {
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
@@ -262,8 +309,7 @@ export function AppRoot() {
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
       if (!tryWrite(() => recordsStore.addRecord(built.record, built.matchKey, built.roleKey))) {
-        // 保存に失敗しても対局結果画面自体はin-memory stateから描画できるため、
-        // Result画面を止めない。コイン/実績だけが保存されない。
+        // Resultはin-memory stateで表示し、未保存報酬は0として明示する。
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
       setRecordsVersion((v) => v + 1);
@@ -386,14 +432,13 @@ export function AppRoot() {
         if (!deck) {
           return null;
         }
-        const source = decks.find((d) => d.deck.id === deck.id)?.source ?? 'created';
+        const source = decks.find((stored) => stored.deck.id === deck.id)?.source ?? 'created';
         return (
           <DeckEditorScreen
             deck={deck}
             onSave={(updated) => {
               const saveSource = source === 'official' ? 'created' : source;
               if (!tryWrite(() => deckStore.saveDeck(updated, saveSource))) {
-                // 保存に失敗した場合はDeckEditorに留まり、draftを失わせない。
                 return;
               }
               refreshDecks();
@@ -411,7 +456,7 @@ export function AppRoot() {
       }
       case 'matchSetup': {
         const deck = deckOf(screen.deckId);
-        const variant = deck?.variants.find((v) => v.id === deck.activeVariantId);
+        const variant = deck?.variants.find((item) => item.id === deck.activeVariantId);
         if (!deck || !variant) {
           return null;
         }
@@ -421,7 +466,7 @@ export function AppRoot() {
             variant={variant}
             onBack={() => setScreen({ kind: 'top' })}
             onStart={(playerCount) => {
-              if (decks.find((d) => d.deck.id === deck.id)?.source === 'created') {
+              if (decks.find((stored) => stored.deck.id === deck.id)?.source === 'created') {
                 processAchievements({ type: 'matchStartedWithCreatedDeck' });
               }
               setScreen({
@@ -445,7 +490,8 @@ export function AppRoot() {
         );
       case 'match': {
         const deck = deckOf(screen.deckId);
-        if (!deck) {
+        const variant = deck?.variants.find((item) => item.id === deck.activeVariantId);
+        if (!deck || !variant) {
           return null;
         }
         return (
