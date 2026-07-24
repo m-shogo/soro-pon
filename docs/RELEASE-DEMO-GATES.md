@@ -2,17 +2,17 @@
 
 ## Purpose
 
-This document separates internal implementation, skin-foundation readiness, image-production readiness, user test, public demo, and installed-skin distribution.
+This document separates internal implementation, skin-foundation
+readiness, image-production readiness, user testing, public demo scope,
+release-candidate evidence, and installed-skin distribution.
 
-A local build is not a public demo.
+A local build is not a public demo. A local production preview is not a
+deploy. Playwright WebKit is not Safari. Historical PASS evidence does
+not automatically validate a newer product HEAD.
 
 ## Gate 1: Internal Build
 
-Audience:
-
-```text
-developer only
-```
+Audience: developer only.
 
 Requirements:
 
@@ -24,22 +24,9 @@ local data may be reset
 active skin failure still leaves a usable fallback
 ```
 
-Not required:
-
-```text
-polished UI
-full viewport QA
-stable image assets
-public recovery copy
-```
-
 ## Gate 2: Gameplay First Playable
 
-Audience:
-
-```text
-developer and trusted tester watching live
-```
+Audience: developer and trusted tester watching live.
 
 Requirements:
 
@@ -53,27 +40,20 @@ no existing IP assets
 
 ## Gate 3: Skin Foundation Image-ready
 
-Audience:
-
-```text
-developer/design reviewer
-```
+Audience: developer/design reviewer.
 
 Requirements:
 
 ```text
 all P0 items in docs/SKIN-FOUNDATION-HARDENING.md complete
-explicit typed token allowlist enforced
+typed token allowlist enforced
 pnpm skin:validate passes
-Cute Pop and Yorunoshirube contrast accepted
+both official skins meet semantic contrast rules
 Gallery and user-facing SkinSelector work without reload
 skin switch preserves screen/match/editor state
 layered SkinSurface keeps content/focus/hit areas invariant
-panel and button nine-slice proof accepted at five sizes
 candidate-first asset workflow exists
 ```
-
-Only after this gate may broad image production start.
 
 Image flow:
 
@@ -88,18 +68,14 @@ Never generate directly into final.
 
 ## Gate 4: User Test Ready
 
-Audience:
-
-```text
-small trusted testers
-```
+Audience: small trusted tester group.
 
 Requirements:
 
 ```text
-manual QA checklist passes enough for stated test scope
+manual/automated QA passes for the explicitly stated scope
 main landscape sizes reviewed
-both official skins usable without final images or with reviewed assets
+both official skins usable
 import failure UX understandable
 invalid decks cannot start
 ErrorBoundary and recoverable ErrorState exist
@@ -110,120 +86,157 @@ known issue list is current
 
 ## Gate 5: Public Demo Ready
 
-Audience:
-
-```text
-limited public link
-```
+Audience: limited public link.
 
 Requirements:
 
 ```text
-CI passing
-build passing
-skin validation passing
-component/DOM tests passing
-visual regression accepted for demo scope
-manual QA passing for target browsers
+CI, typecheck, tests, skin validation, and build passing
+visual regression accepted for the target scope
+manual QA passing for target browsers/devices
 keyboard/focus basics accepted
-both official skins or the explicitly demoed subset are stable
+supported skin set explicitly stated
 no existing IP assets
 no remote image loading from user decks or skins
 no login/payment/cloud promise
-export excludes local/private data
-README includes demo limitations
-reset local data path is visible
-common missing/corrupt entity paths show recovery, not blank screens
-skin switching updates light/dark browser color scheme
+export excludes local/private metadata
+README includes exact demo limitations
+reset/recovery path is visible
+missing/corrupt entity paths show recovery, not blank screens
+skin switching updates browser color scheme
 ```
 
-If one skin is not ready, do not silently include it in the public selector. State the supported demo skin set explicitly.
+A Gate 5 PASS is always qualified by its tested browser/device scope. If
+one skin or browser is not ready, do not silently include it in the
+public promise.
 
 ## Gate 6: Release Candidate
 
-Audience:
-
-```text
-broader users
-```
+Audience: broader users.
 
 Requirements:
 
 ```text
 schema migration policy tested
-storage recovery tested
+storage read/write recovery tested
 known severe bugs fixed
 visual polish accepted
 accessibility basics accepted
 performance caps tested
 asset caching/version behavior accepted
 skin package failure/rollback behavior accepted
+release claim matches the exact tested artifact SHA
 ```
+
+Gate 6 was historically passed in Batch 6. Later batches extend or
+constrain RC readiness; they do not rewrite the original evidence.
 
 ## Current RC Readiness (2026-07-24)
 
 ```text
-Gate 6: PASS
+Historical Gate 6 decision: PASS
 Batch 7: COMPLETE
-Batch 8 (VoiceOver acceptance, attempts 1-6): CONDITIONAL
+Batch 8 (real VoiceOver + Chrome, attempts 1-6): CONDITIONAL
 Batch 9 (extended memory/runtime soak): COMPLETE
-Batch 10 (real device / production release validation): CONDITIONAL
+Batch 10 (production preview / real-device release validation): CONDITIONAL
+Batch 11 (production Firefox/WebKit auxiliary validation):
+  CONTRACT DEFINED / NOT YET EXECUTED
 RC status: LIMITED READY
-
-Validated with real VoiceOver + CHROME (not Safari), Batch 8:
-  yorunoshirube TOP/JSON import/Deck Editor/Match Setup/Match and the
-  Result heading + action controls; cute-pop only the Match Setup and
-  Match key controls. Result win/rank/score static text is supplemental
-  only (caption capture is a tooling limitation, not a product defect).
-Validated on the DEV SERVER in Chromium, Batch 9: 62.3 min / 74 cycle
-  soak, no heap/DOM/listener/timer growth. Firefox and WebKit are
-  stability-only there; no memory claim for them.
-Validated on a LOCAL PRODUCTION PREVIEW in Chromium, Batch 10: clean
-  build, 14/14 core flows, and a 35 min / 47 cycle soak with 0 errors.
-  This is a local preview of the production artifact — NOT a deploy.
-
-CLOSED open items: extended memory soak (Batch 9); production-build
-  validation on Chromium (Batch 10).
-Still untested scope: physical iPhone Safari (device present but not
-  drivable/observable in the automation environment), physical iPad,
-  physical Android, real deploy to a hosting target, deployed-artifact
-  rollback, Safari + VoiceOver, NVDA, JAWS, and production-build
-  behavior in Firefox/WebKit.
-Next fixed task: none scheduled. The items above start on explicit
-  instruction; unblock paths are recorded in
-  docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md §12 and
-  docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md.
+Current product HEAD after storage integrity fixes:
+  verification pending; do not claim the historical green suite applies
+  until CI/local commands run on the exact current SHA
 ```
 
-Batch 8 Attempt 5 found one P2 selected-state defect in Match Setup and
-fixed it with `aria-pressed`; Attempt 6 re-confirmed the fix under real
-VoiceOver. No P0/P1/P2 remains open, and Batches 9 and 10 each found 0
-product defects and changed no product code. Automated browser parity,
-AX-tree inspection, simulators, and device emulation do **not**
-substitute for the remaining real-device and real-screen-reader checks,
-and a local preview does not substitute for a deploy.
+### Evidence already established
+
+```text
+Batch 8, real VoiceOver + Chrome (not Safari):
+  yorunoshirube TOP/JSON Import/Deck Editor/Match Setup/Match and Result
+  heading/action controls; cute-pop Match Setup and Match key controls.
+  Result win/rank/score static speech is supplemental only.
+
+Batch 9, DEV SERVER:
+  Chromium 62.3 min / 74 cycles memory-authoritative soak.
+  Firefox/WebKit auxiliary stability only, no memory claim.
+
+Batch 10, LOCAL PRODUCTION PREVIEW in Chromium:
+  production build, 14/14 core flows, 35 min / 47 cycle soak, 0 recorded
+  product errors. This was not a deploy.
+```
+
+### Integrity review after Batch 10
+
+The post-Batch-10 review found a real recovery-contract gap: normal
+writes were wrapped, but corruption recovery used raw
+`getItem/setItem/removeItem` operations. A compound state such as
+corrupted payload plus quota/storage-policy rejection could make the
+recovery path itself throw.
+
+Changes committed:
+
+```text
+deck/records/settings read denial now falls back with L9004
+corrupt backup and active-key cleanup are independently best-effort
+records/settings raw corrupt values receive backup keys when possible
+six storage-operation failure-path unit tests added
+storage recovery policy corrected
+```
+
+These are code and test changes, not execution evidence. Until the exact
+current HEAD passes typecheck/tests/skin validation/build and Batch 11 is
+run from that same SHA, the repo must not report a new COMPLETE release
+result.
+
+### Still open / unclaimed
+
+```text
+physical iPhone Safari
+physical iPad
+physical Android
+real deploy to a selected hosting target
+rollback of an actually deployed immutable artifact
+Safari + VoiceOver
+NVDA / JAWS
+Batch 8 Result static-text speech capture
+Cute Pop Result traversal under real VoiceOver
+production-build Firefox/WebKit result (Batch 11 pending)
+```
+
+### Next executable work
+
+```text
+1. Freeze exact HEAD == origin/main and confirm clean worktree.
+2. Run CI-equivalent commands on that SHA:
+   pnpm install --frozen-lockfile
+   pnpm typecheck
+   pnpm test
+   pnpm skin:validate
+   pnpm build
+3. Confirm the new storage failure-path tests execute and pass.
+4. Execute the complete Batch 11 matrix from the same SHA.
+5. Commit report/evidence and then synchronize README/CLAUDE/gates.
+```
+
+No result from commit `6a844dd`, `c9b18b6`, or another older artifact may
+be relabeled as validation of the post-review product HEAD.
 
 ## Gate 7: Installed / Paid Skin Ready
 
-Audience:
-
-```text
-users receiving separately installed or purchased skins
-```
+Audience: users receiving separately installed or purchased skins.
 
 Requirements:
 
 ```text
 external package trust policy enforced
-external arbitrary CSS/JS/HTML/URL/font blocked
+arbitrary CSS/JS/HTML/URL/font blocked
 external SVG blocked by default or proven sanitized
 PNG/WebP/dimension/byte limits enforced
 versioned or content-hashed assets
 required assets preload
 skin applies atomically or previous skin remains
-package identity, ownership/source, contract version, integrity strategy defined
+package identity/source/contract version/integrity defined
 upgrade/rollback/uninstall defined
-entitlement does not grant execution privileges
+entitlement grants no execution privileges
 marketplace/payment security reviewed separately
 ```
 
@@ -241,11 +254,12 @@ storage migration is backward compatible
 A -> B -> duplicate A test passes
 ```
 
-The current immediate duplicate defense is not sufficient proof for restore/replay.
+The current idempotency baseline does not itself mean match restore or
+replay is implemented.
 
 ## Demo Limitations Copy
 
-Public demo should state:
+Public demo copy must state at minimum:
 
 ```text
 This is a local-first demo.
@@ -253,41 +267,46 @@ Decks and progress are stored locally in your browser.
 Imported decks are validated before play.
 Local/private image data is not included in shared JSON.
 Online multiplayer and accounts are not included.
-Only the listed skins/features are supported in this demo.
+Only the listed browsers, devices, skins, and features are supported.
 ```
 
 ## Never Demo If
 
 ```text
+current HEAD has no green CI-equivalent verification
 unsafe import fields are accepted
 existing IP assets are included
 2-player mode appears selectable
-extended pending variant can start
+an unfinished variant can start
 score cannot be explained
-reload crashes common flow
+reload crashes a common flow
 skin failure can blank or brick the app
 active skin can change layout/hit areas/game state
 contrast/focus makes core controls unreadable
 reset/recovery path is unavailable
-CI/skin validation status is unknown but claimed as passing
+storage recovery can throw an unhandled raw exception
+an older artifact's PASS is presented as current-HEAD evidence
 ```
 
 ## Reporting
 
-Every gate decision records:
+Every gate or Batch decision records:
 
 ```text
-commit
+exact commit SHA
 scope
-local commands and results
-CI run or unavailable
-browser/device/viewport
+commands and results
+CI run or explicitly unavailable
+browser/device/viewport and versions
 skin(s)
-manual/visual evidence
+manual/automated/visual evidence type
 known exclusions
-pass / blocked / limited pass
+pass / conditional / blocked
+artifact hash for production/deploy claims
 ```
 
 ## Final Decision
 
-A demo or paid skin is a promise. Expose only the parts whose rules, recovery, accessibility, skin contract, and visual behavior are actually verified.
+A demo or release is a promise. Expose only the portions whose rules,
+recovery, accessibility, skin contract, deployment status, and visual
+behavior are verified on the exact artifact being presented.
