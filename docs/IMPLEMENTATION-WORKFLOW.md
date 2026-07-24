@@ -2,369 +2,229 @@
 
 ## Purpose
 
-This file tracks the real repository state, completed phases, active work, and completion gates.
+This file is the compact operational view of the repository: completed
+foundations, current release state, and the next executable work. Detailed
+history belongs in the referenced Batch reports and asset approval packs;
+it must not be duplicated here as a second source of truth.
 
 ```text
-Product/spec truth: docs/MASTER-SPEC.md
-Implementation guide: docs/IMPLEMENTATION.md
-Active hardening plan: docs/SKIN-FOUNDATION-HARDENING.md
+Product/spec truth:          docs/MASTER-SPEC.md
+Release/readiness truth:     docs/RELEASE-DEMO-GATES.md
+Current executable QA:       docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+Storage recovery contract:   docs/release/STORAGE-RECOVERY-POLICY.md
+UI/skin foundation detail:   docs/SKIN-FOUNDATION-HARDENING.md
+Asset history:               docs/ASSET-PRODUCTION-ROADMAP.md
 ```
 
-## Current Status
+## Current Status — 2026-07-24
 
 ```text
 Gameplay MVP phases 1-14: complete
 Multi-skin runtime baseline: complete
-Skin-foundation hardening H1-H11: complete (docs/SKIN-FOUNDATION-HARDENING.md)
-Image production pipeline: ready and proven; request 007 (cute-pop /
-  badge.info.background) closed; 3 final assets exist on cute-pop, 0 on
-  yorunoshirube
-Active work: official asset production — see docs/ASSET-PRODUCTION-ROADMAP.md
-  for slot classification, batches, and the single next task
-Release/demo gates: docs/RELEASE-DEMO-GATES.md — Gate 3 (Skin Foundation
-  Image-ready) is satisfied; Gates 4+ depend on asset-production batches
+Skin-foundation hardening H1-H11: complete
+Official finals: 18 total
+  yorunoshirube: 9 finals, skin v4
+  cute-pop: 9 finals, skin v5
+Asset requests/batches through Batch 4: closed
+Gate 4: PASS
+Gate 5: PASS within its recorded demo/browser scope
+Gate 6: PASS historically
+RC status: LIMITED READY
+Batch 7: COMPLETE
+Batch 8 real VoiceOver + Chrome: CONDITIONAL
+Batch 9 extended soak: COMPLETE
+Batch 10 production preview / real-device validation: CONDITIONAL
+Batch 11 production Firefox/WebKit:
+  contract defined, not yet executed
 ```
 
-## Completed Gameplay Phases
+The current phase is **RC integrity and evidence closure**, not MVP
+construction, H1 implementation, or a new asset-generation batch.
 
-| Phase | Scope | Status | Representative commit |
-|---|---|---|---|
-| 1 | package setup | complete | `3a50861` |
-| 2 | domain types + strict schemas | complete | `0a64f59` |
-| 3 | strict import + validation + fixtures | complete | `4663167` |
-| 4 | group engine + wildcard partition | complete | `cd2d7db` |
-| 5 | role analysis + waits + ranking | complete | `caca9cd` |
-| 6 | tsumo/ron scoring + breakdown | complete | `1ad7dec` |
-| 7 | insights + pure discard preview | complete | `4eea582` |
-| 8 | match reducer + CPU + seeded RNG | complete | `1efe9fd` |
-| 9 | localStorage parsing/recovery | complete | `8aa22c7` |
-| 10 | first UI foundation + asset slots + Gallery | complete | `452b54f` |
-| 11 | main screens and playable flow | complete | `5645471` |
-| 12 | Collection/editor expansion/asset requests/manual QA | complete | `9e1b244` |
-| 13 | achievements/titles/bonus editor/specificSet/motion | complete | `6c5c858` |
-| 14 | record/seed/specificSet/reducer hardening | complete | `5f44ff4` |
+Post-Batch-10 review changed product code in the storage recovery layer.
+Therefore historical green commands and Batch-10 artifacts do not prove
+the current HEAD. The next validation must use one frozen current SHA for
+all commands and Batch-11 evidence.
 
-Last recorded gameplay hardening:
+## Completed Foundations
+
+### Gameplay phases 1-14
+
+Completed areas include strict deck schemas/import, group and wildcard
+engine, role/wait/scoring analysis, seeded match reducer and CPU,
+localStorage persistence, all main screens, deck editor, collection,
+achievements, records, and match-record idempotency groundwork.
+
+Historical phase/commit mapping remains in Git history and earlier
+implementation reports. Do not restart phases 1-14.
+
+### Skin hardening H1-H11
 
 ```text
-218 tests green
-typecheck green
-build green
-browser flow and reload/idempotency QA passed
+H1 typed token allowlist                              complete
+H2 package/contract validator + CI                    complete
+H3 semantic contrast                                  complete
+H4 runtime SkinSelector                               complete
+H5 layered surfaces and nine-slice proof              complete
+H6 renderer modes where proven necessary              complete
+H7 shared component/CSS responsibility                complete
+H8 DOM/accessibility/recovery baseline                complete
+H9 Playwright visual regression                       complete
+H10 versioned/preloaded/atomic skin loading           complete
+H11 persistent match-session idempotency baseline     complete
 ```
 
-Later skin work added additional tests, but every implementation report must state its own exact current count and commands.
+Foundation contracts must be preserved, not rebuilt. Restore/replay and
+marketplace/payment remain future features; H10/H11 do not claim those
+products exist.
 
-## Existing Multi-skin Baseline
+### Asset production
 
-Present:
+The candidate → review → final pipeline is implemented and proven.
+Both official skins have 9 promoted finals. Requests 007-016 and asset
+Batches 1-4 are historical closed work. Batch 5 was whole-product QA,
+not a pending asset-generation task.
 
 ```text
-docs/DESIGN-SYSTEM.md
-docs/SKIN-SYSTEM.md
-docs/SKIN-AUTHORING-GUIDE.md
-docs/UI-COMPONENT-CONTRACT.md
-public/assets/ui/soro-pon/SKIN-MANIFEST.json
-public/assets/ui/soro-pon/SKIN-CONTRACT.json
-public/assets/ui/soro-pon/skins/base
-public/assets/ui/soro-pon/skins/yorunoshirube
-public/assets/ui/soro-pon/skins/cute-pop
-src/ui/skins/*
-SkinProvider runtime switching
-basic SkinSurface
-initial shared component slot integration
-core/package skin tests
+generate -> generated/candidates -> inspect -> human approval
+-> generated/final -> skin.json version bump -> validation
 ```
 
-This baseline must be preserved and hardened, not replaced.
+Never write directly to `generated/final`. Start another asset batch only
+when explicitly requested and after checking the current roadmap against
+release status.
 
-## Completed Hardening (H1-H11)
+## Current Integrity Review
 
-All 11 items are complete. Full requirement lists, documented exceptions,
-and future-scope callouts live in `docs/SKIN-FOUNDATION-HARDENING.md`
-(P0/P1/P2 sections) — this section is a status summary only.
+The post-Batch-10 review found that normal storage writes were guarded,
+but read/recovery operations could still throw when corruption coincided
+with quota or browser storage denial.
 
-### H1 — Token allowlist and typed validation
-
-Status: **complete**. Explicit skinable token registry with structural
-vs skinable separation and per-token type/range validation in place.
-External skins cannot override spacing/font-size/line-height/z-index/
-touch/layout/pointer behavior.
-
-### H2 — Contract validator and CI
-
-Status: **complete**. `pnpm skin:validate` (`vitest run
-src/ui/skins/skinValidate.test.ts`) validates files, bytes, dimensions,
-slice/safe-area geometry, trust-level file type, render-mode permission,
-status/path consistency, and all official packages.
-
-### H3 — Semantic contrast
-
-Status: **complete**. Semantic text tokens, Cute Pop CTA correction, focus
-contrast correction, and category foreground selection implemented.
-
-### H4 — Skin selection
-
-Status: **complete**. `SkinSelector`/`SkinPreviewCard` work in Component
-Gallery and the normal user-facing flow, with loading/failure/default
-states, no reload, and no match/editor/UI state loss.
-
-### H5 — Layered SkinSurface and nine-slice proof
-
-Status: **complete**. `panel.paper.default` and `button.primary.background`
-proofs accepted at five sizes with separated source slice / rendered
-border width.
-
-### H6 — Central render-mode completion
-
-Status: **complete with documented policy**. Policy is "implement an
-additional render mode only when a real slot proves it necessary" — this
-is not "implement every candidate mode unconditionally." No screen-local
-render-mode implementations exist. Re-open only if a specific asset
-requires a mode not yet supported.
-
-### H7 — Shared component and CSS responsibility migration
-
-Status: **complete**. `IconButton`, `Dialog`, `SectionHeader`,
-`ValidationIssueList`, form fields, `EmptyState`/`ErrorState`,
-`SkinSelector`/`SkinPreviewCard` are shared components. CSS is split into
-foundations/components/layouts/screens/motion with cascade-layer
-protection.
-
-### H8 — DOM/accessibility/recovery
-
-Status: **complete**. Component/interaction test environment, Modal focus
-trap/return, Tabs keyboard model, Tile selected/emphasis ARIA,
-`AppErrorBoundary`, recoverable `ErrorState`, missing-entity fallback,
-visible local-data reset, and skin-driven browser color scheme are all
-implemented.
-
-### H9 — Visual regression and five-size QA
-
-Status: **complete**. Playwright visual regression is implemented:
-32 test cases total (30 screenshot cases across TOP/Gallery/MatchSetup x
-2 skins x 5 sizes, plus 2 non-screenshot skin-asset-ready assertions) in
-`tests/visual/`. Additional screens can be added to the matrix as asset
-production reaches them (see docs/ASSET-PRODUCTION-ROADMAP.md batches).
-
-### H10 — Installed/paid skin hardening
-
-Status: **complete for engineering scope; marketplace/commerce remains
-future scope**. Versioned/content-hashed asset URLs, preload, atomic
-switching, and failure fallback (previous skin retained) are implemented.
-Package identity/integrity/upgrade/rollback/uninstall design is documented
-in `docs/SKIN-DISTRIBUTION.md`. Actual marketplace, payment, and
-entitlement systems are not built and remain future scope — H10 is about
-the loading/security mechanism, which is done.
-
-### H11 — Match recording idempotency
-
-Status: **complete for engineering scope; restore/replay feature is
-non-MVP**. Persistent `matchSessionId`, recent-processed-ID tracking, a
-pure recording builder with injected timestamp/ID, and backward-compatible
-storage migration are implemented. The match restore/replay/resend
-*feature* itself is out of current MVP scope (docs/MASTER-SPEC.md
-"Not current MVP") — H11 exists so that feature can be built safely later,
-not to ship it now.
-
-## Image Production — Active
-
-H1-H11 and all P0 gates are complete. Asset production is the current
-phase.
+Fixed on current `main`:
 
 ```text
-Codex CLI起点で画像を生成する
--> skins/<id>/generated/candidates
--> preview and screenshot review
--> human approval
--> generated/final
--> manifest update (skin.json + version bump)
+deck recovery guards getItem, corrupt backup, and active-key removal
+records/settings preserve corrupt raw payloads when possible
+all recovery cleanup is best-effort and independently classified
+L9004 represents storage read denial with safe empty/default fallback
+six failure-path unit tests cover compound storage faults
+storage policy and release documentation match implementation
 ```
 
-Never generate directly into `final`. First proof-of-concept cycle
-(request 007, cute-pop / badge.info.background) is closed — candidate B
-promoted, A/C not-selected. Full slot classification, batch order, and the
-current single next task: `docs/ASSET-PRODUCTION-ROADMAP.md`.
+These changes require fresh verification on the exact current HEAD.
 
-R1 (request 008/009: cute-pop tile.face.base / tile.back.base /
-button.primary.background) is **closed** (2026-07-16). Round 1 candidates
-(A/B/C) were rejected by human review (CSS-reproducible designs); round 2
-candidates (D/E/F) were approved — tile.face.base: D, tile.back.base: E,
-button.primary.background: D — and promoted to final, registered in
-cute-pop/skin.json v4, and verified in production consumers. Decision
-record and evidence: `docs/asset-requests/R1-APPROVAL-PACK.md`. Cute Pop
-now has 6 of 21 contract slots final. Tile state slots (selected/ron/tsumo)
-are composited over the base face per ADR-015 — do not generate separate
-full-face art for them.
+## Next Executable Work
 
-Batch 2 (request 010/011: cute-pop table.background / panel.modal.background
-/ panel.result.frame) is **closed** (2026-07-16). Human review approved
-table.background: A, panel.modal.background: B, panel.result.frame: B
-(candidate A for panel.result.frame was rejected on technical grounds — a
-9-slice stretch artifact under tall content, confirmed by the reviewer —
-not preference). All three are promoted to final, registered in
-cute-pop/skin.json (version 4 -> 5), and verified in production consumers
-(GameTableLayout, Modal, ResultFrame) across 5 viewports plus real
-modal/result content. A shared art direction
-(`docs/asset-requests/BATCH-2-ART-DIRECTION.md`) governed all 3 slots as
-one material family. Decision record and promotion evidence:
-`docs/asset-requests/BATCH-2-APPROVAL-PACK.md`. Cute Pop now has 9 of 21
-contract slots final — all 6 A-class slots targeted by Batch 1+2 are done.
+Follow this order without substituting old evidence:
 
-Batch 3 (requests 012-015: yorunoshirube table.background /
-panel.paper.default / panel.modal.background / panel.result.frame /
-button.primary.background / button.secondary.background / tile.face.base /
-tile.back.base) is **complete** (2026-07-16), including a same-day
-technical remediation. Human review approved table.background: C,
-panel.paper.default: A, panel.modal.background: B, panel.result.frame: B,
-button.primary.background: A, button.secondary.background: B,
-tile.face.base: A, tile.back.base: A. All 8 are promoted to final,
-registered in yorunoshirube/skin.json (version 1 -> 2 -> 3), and verified
-in production consumers across 5 viewports. Two of the eight
-(panel.paper.default, panel.result.frame) were initially **BLOCKED_BY_
-TECHNICAL_VALIDATION** — their fit-to-canvas opaque content spanned only
-43-48% of canvas width (vs. 92-96% on the other 6), producing a visibly
-shrunken card under real nine-slice rendering (confirmed on MatchSetup,
-not a Gallery-only artifact). Rather than silently swap candidates, the
-standing human approval was preserved, a content-occupancy validator was
-added to `validate_candidate.py` (see `docs/IMAGE-ASSET-WORKFLOW.md`), and
-both were regenerated with the same approved concept but a corrected
-landscape full-bleed composition — passing the new validator with no
-visual-identity drift, then promoted under the same standing approval.
-Full record, including 3 machine content-review rejections during
-original generation (wafu-architecture, black-gold-luxury-UI, a
-Cute-Pop-quilt-resembling pattern — all regenerated before review) and the
-full remediation timeline: `docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md`.
-Yorunoshirube had 8 of 21 contract slots final at that point (all Batch 3
-core slots).
+```text
+1. Confirm clean worktree and HEAD == origin/main.
+2. Record exact SHA and tool versions.
+3. Run:
+   pnpm install --frozen-lockfile
+   pnpm typecheck
+   pnpm test
+   pnpm skin:validate
+   pnpm build
+4. Confirm storageRecoveryFailurePaths.test.ts is included and passes.
+5. Execute all Batch 11 Firefox/WebKit production-preview items from the
+   same SHA.
+6. Classify findings before changing product code.
+7. If product code changes, invalidate partial Batch 11 evidence and
+   restart from step 1.
+8. Commit report/evidence, then synchronize README/AGENTS/CODEX/CLAUDE,
+   docs/README, this file, and RELEASE-DEMO-GATES.
+```
 
-Batch 4 (request 016: yorunoshirube badge.info.background) is **complete**
-(2026-07-17). The decoration/effects classification was re-audited on real
-screens for all 5 candidate slots first: badge.info.background stayed
-A-class (Cute Pop parity gap); the other 4 (badge.warning.background,
-table.overlay.ink, table.overlay.light, panel.paper.emphasis) were
-confirmed sufficient as CSS-token/shared overlay with no change needed
-(contrast, opacity, and focus-collision checks all passed). 3
-badge.info.background candidates (atlas index tab / glassine record label
-/ photographic-film heading strip) were generated and passed all automated
-validation, including a badge-specific content-occupancy threshold
-distinct from the panel-family threshold added during Batch 3 remediation.
-Human review approved candidate A ("夜の索引タブ",
-`approvalSource: user-provided-human-decision`, 2026-07-17); B and C are
-recorded not-selected with reasons (archives kept). Candidate A was
-promoted to final and yorunoshirube/skin.json published atomically
-(version 3 -> 4) — all 9 slots (the 8 Batch 3 core plus badge.info.background)
-now resolve at `?v=4`. Production consumers verified across 5 viewports;
-the temporary Gallery review UI was removed. Full record:
-`docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md`. Both skins
-now have 9 official finals each (18 total). Next fixed task: Batch 5
-(full-screen integration / manual QA pass) — not more generation, both
-skins' core and parity assets are complete; the remaining gate is
-whole-product visual/interaction QA.
+Batch 11 cannot promote RC to READY. Real devices, real Safari,
+Safari+VoiceOver, Windows screen readers, and real deploy/rollback remain
+separate open evidence.
 
 ## Verification Commands
 
-Currently available:
+Core CI-equivalent verification:
 
 ```bash
 pnpm typecheck
 pnpm test
+pnpm skin:validate
 pnpm build
 ```
 
-Required after H2:
+Browser suites where relevant:
 
 ```bash
-pnpm skin:validate
+pnpm test:visual
+pnpm test:visual:crossbrowser
 ```
 
-Required after H8/H9 according to ADR:
+Extended soak is a manual pre-release gate, not a default CI command. See
+`docs/release/SOAK-RUNBOOK.md`.
+
+Never report a command as green unless it was executed against the exact
+reported SHA. `pnpm test` already includes any matching `src/**/*.test.*`
+file; the separate `skin:validate` command remains an explicit release
+gate even where its tests overlap the full unit suite.
+
+## UI / Skin Work Rules
 
 ```text
-component/DOM tests
-Playwright flow and screenshot tests
+one shared screen/component/layout system
+no skin-specific screen copies
+layout, hit areas, focus, z-index, and game meaning are skin-invariant
+skins change only typed allowlisted presentation values
+all generic controls are shared components
+all renderer/slice behavior is centralized
+both official skins and fallback behavior must remain usable
 ```
 
-## Review Sizes
+For any UI/skin change, read the mandatory documents listed in
+`AGENTS.md` and add Gallery/test coverage before broad rollout.
+
+## Architecture Boundaries
 
 ```text
-844x390
-852x393
-932x430
-1024x600
-1366x768
+UI does not judge roles, score, or wildcard assignment
+engine does not import React, DOM, localStorage, or CSS
+skin does not access engine, schema, storage, records, or network
+shared deck JSON contains no executable or image/URL injection fields
+localStorage values are parsed before use
 ```
 
-Minimum matrix:
+## Release Claim Boundaries
 
 ```text
-all screens: 844x390
-major screens: all five sizes
-Component Gallery: both official skins
-TOP / Deck Editor / Match / Result / Collection: both official skins
+local production preview != deploy
+Playwright WebKit != Safari
+emulation/simulator != physical-device pass
+AX-tree automation != real screen-reader acceptance
+unavailable metric = null/not_available, never 0
+old artifact PASS != current HEAD verification
 ```
 
-## Completion Gates
-
-### Before image production — passed
+## Known Open Scope
 
 ```text
-all P0 items complete
-typecheck/test/build/skin:validate green
-both skins selectable without reload
-state preserved through switch
-contrast accepted
-real nine-slice proof accepted
-candidate-first workflow ready (proven via request 007)
-```
-
-### Before public demo — in progress (asset production, see docs/ASSET-PRODUCTION-ROADMAP.md)
-
-```text
-all applicable P1 items complete            done
-component/DOM tests green                   done
-visual regression accepted                  done for current 3-screen matrix; extends as new screens get final assets
-accessibility/recovery/reset path accepted  done
-release/demo checklist passed               pending — most slots still placeholder (see roadmap)
-```
-
-### Before installed/paid skins
-
-```text
-all P2 skin-distribution items complete     done (engineering scope; commerce is future scope)
-trust-level policy enforced                 done
-atomic/versioned loading accepted           done
-integrity and lifecycle rules documented/tested  documented in docs/SKIN-DISTRIBUTION.md; marketplace/payment implementation is future scope
-```
-
-## Known Pending Areas
-
-```text
-extendedRoleSpan remains pending and blocked by E7008 (non-MVP, unchanged)
-skin hardening H1-H11: complete (see above) — no longer pending
-official skin final images: 9 of 21 contract slots done on cute-pop
-  (Batch 1+2 closed 2026-07-16, all 6 A-class cute-pop slots final);
-  9 of 21 done on yorunoshirube (Batch 3's 8 core slots, closed 2026-07-16
-  including panel.paper.default/panel.result.frame's same-day technical
-  remediation of an initial shrunken-card nine-slice defect — see
-  docs/IMAGE-ASSET-WORKFLOW.md for the content-occupancy validator this
-  added — plus badge.info.background, Batch 4, closed 2026-07-17).
-  Official finals across skins: 18 (both skins now have 9 each)
-  (next: Batch 5, full-screen integration/manual QA pass — asset
-  production for both skins' core+parity slots is complete; this is a
-  whole-product QA gate, not more generation)
-candidate/final validation: implemented and proven (request 007 closed);
-  ongoing per-batch use is expected, not "unfinished"
-match restore/replay/resend feature: non-MVP; H11 idempotency groundwork
-  for it is complete but the feature itself is not built
+physical iPhone Safari, iPad, Android
+real hosting target and immutable artifact deployment
+rollback of an actually deployed artifact
+Safari + VoiceOver
+NVDA / JAWS
+Batch 8 Result static-text spoken-output capture
+Cute Pop Result under real VoiceOver
+Batch 11 production Firefox/WebKit execution
+match restore/replay/resend feature (non-MVP)
+marketplace/payment/entitlement product (future scope)
+extendedRoleSpan variant (non-MVP, blocked by its existing contract)
 ```
 
 ## Work Rule
 
 ```text
-one H item at a time
-one purpose per commit
-relevant tests and docs in the same change
-commit and push before moving on
-report local results separately from CI status
+one purpose per commit where tooling permits
+small testable changes
+implementation and contract docs updated together
+never silently weaken historical evidence scope
+never infer CI success from a successful push
+report local results separately from GitHub Actions
 ```
