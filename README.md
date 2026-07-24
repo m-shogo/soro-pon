@@ -1,55 +1,52 @@
 # soro-pon
 
 `soro-pon` は、プレイヤーがデッキ・牌・役・得点を自由に作れる、3〜4人用の
-ローカルファーストなカスタム牌ゲームです。Vamp-pon世界の中で遊ばれている
-「記憶札遊び」として扱います。
+ローカルファーストなカスタム牌ゲームです。Vamp-pon世界の「記憶札遊び」
+として扱います。
 
 ## Current Status — 2026-07-24
 
 ```text
 Gameplay MVP phases 1-14: complete
 Multi-skin runtime baseline: complete
-Skin foundation hardening H1-H11: complete
+Skin hardening H1-H11: complete
 Official skins:
   yorunoshirube: 9 finals, v4
   cute-pop: 9 finals, v5
-Gate 4: PASS
-Gate 5: PASS within recorded demo/browser scope
-Historical Gate 6: PASS
+Gate 4 / Gate 5 / historical Gate 6: PASS within recorded scopes
 RC status: LIMITED READY
 Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit:
-  contract defined, NOT yet executed
+Batch 11 production Firefox/WebKit: contract defined, NOT executed
+Post-Batch-10 integrity review:
+  product/test/CI/doc fixes committed
+  exact-current-SHA verification pending
 ```
 
-Current `main` contains storage/AppRoot integrity fixes newer than Batch 10.
-Historical results do not automatically validate that newer SHA. Fresh
-verification and Batch 11 evidence must use one exact current commit.
+Deep review report:
+`docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md`.
 
-Canonical status:
+Historical Batch 10 results do not validate the newer product HEAD.
+Fresh verification and Batch 11 evidence must use one frozen exact commit.
 
-```text
-docs/IMPLEMENTATION-WORKFLOW.md
-docs/RELEASE-DEMO-GATES.md
-docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
-```
+## Integrity Review Result
 
-## Integrity Review
-
-A deep review found and fixed these real defects:
+Real defects found and fixed:
 
 ```text
 corruption recovery could throw while backing up/removing broken data
 records/settings corrupt payloads were not preserved
 records/settings recovery warnings were discarded by AppRoot
-failed achievement persistence could still appear as newly unlocked
-missing current deck/active variant could leave a permanent blank route
-export Blob URL lifecycle was fragile across browsers
-L9004 almost collided with a new storage meaning despite already meaning
-  local-image fallback
+failed achievement persistence could appear as newly unlocked
+missing current deck/active variant could leave a blank route
+legacy version 0 import migration happened without visible review
+export Blob URL lifecycle was browser-fragile
+storage error-code collision risk
+“All local data” reset omitted records/settings corrupt backups
+partial reset failure was swallowed and presented as success
+Batch 11 baseline and entry docs were stale
 ```
 
 Current behavior:
@@ -57,22 +54,26 @@ Current behavior:
 ```text
 storage read denial -> L9005 + safe empty/default in-memory fallback
 bootstrap starter write failure -> L9006
-backup and cleanup are independently best-effort
-records/settings raw corrupt backup keys are attempted
-all three store recovery issues appear in boot Toast
-unpersisted achievements/rewards are not shown as saved
+backup creation and active-key cleanup independently best-effort
+all store recovery issues appear in boot Toast
+unpersisted rewards/achievements are not shown as saved
 missing deck/variant returns to a safe screen with warning
+legacy migration requires visible review and an unchanged second action
 export attaches a temporary anchor and defers Blob URL revocation
-six storage-operation failure-path tests added
+reset covers active values, all corrupt backups, and skin selection
+partial reset failure stops reload and shows an error
 ```
 
-See:
+New regression tests committed in this review: **12 cases**.
 
 ```text
-docs/release/STORAGE-RECOVERY-POLICY.md
-docs/ERROR-CODES.md
-docs/RELEASE-DEMO-GATES.md
+6 storage recovery operation-failure cases
+3 AppRoot persistence/migration cases
+3 local reset completeness/result cases
 ```
+
+They are committed but not yet authoritatively executed against the final
+review SHA. No new PASS claim is made.
 
 ## Product Core
 
@@ -85,7 +86,7 @@ no pon / chi / kan
 normal hand: 8 tiles
 on turn: draw to 9, then discard
 win shape: three groups of three
-ron: 8-tile hand + discarded tile
+ron: 8 hand tiles + discarded tile
 self-draw: 9 tiles after draw
 ```
 
@@ -102,12 +103,12 @@ cute-pop
   bright / cute / approachable / pop
 ```
 
-Both skins use one screen, component, layout, focus, hit-area, and game
-state implementation. Skin-specific screen copies are forbidden.
+Both skins share one screen/component/layout/focus/hit-area/game-state
+implementation. Skin-specific screen copies are forbidden.
 
 ## Public Demo / RC Scope
 
-Established evidence:
+Established historical evidence:
 
 ```text
 Batch 7:
@@ -115,7 +116,7 @@ Batch 7:
   Playwright WebKit is not Safari.
 
 Batch 8:
-  real VoiceOver + Chrome with recorded traversed/supplemental boundaries.
+  real VoiceOver + Chrome within recorded traversed/supplemental scope.
   This is not Safari + VoiceOver.
 
 Batch 9:
@@ -127,38 +128,33 @@ Batch 10:
   A local preview is not a deploy.
 ```
 
-Still open and unclaimed:
+Still open/unclaimed:
 
 ```text
-physical iPhone Safari
-physical iPad
-physical Android
+exact-current-SHA install/typecheck/test/skin validation/build
+Batch 11 production Firefox/WebKit execution
+physical iPhone Safari / iPad / Android
 real hosting deployment
 rollback of an actually deployed immutable artifact
 Safari + VoiceOver
 NVDA / JAWS
-Batch 8 Result static-text spoken-output capture
-Cute Pop Result under real VoiceOver
-Batch 11 production Firefox/WebKit execution
+remaining Batch 8 Result/Cute Pop real-VoiceOver evidence
+user-facing backup restore
 ```
 
-RC remains **LIMITED READY**. Simulator, emulation, AX-tree inspection,
-Playwright WebKit, and local preview cannot substitute for the open real
-environments.
+RC remains **LIMITED READY**.
 
 ## Public Demo Notes
 
 ```text
-local-first: decks and progress are stored in this browser's localStorage
-imports are validated before play
+local-first: decks and progress are stored in browser localStorage
+imports are strict-validated before play
+legacy migration shows changes before persistence
 shared deck JSON excludes local/private images and unsafe display fields
 no online multiplayer, accounts, billing, or cloud sync
 supported official skins: yorunoshirube and cute-pop
-reset path is visible from TOP and irreversible after confirmation
+reset is visible, irreversible, and reports partial deletion failure
 ```
-
-The exact browser/device promise must match the published artifact and its
-evidence.
 
 ## Stack
 
@@ -173,37 +169,29 @@ CSS
 localStorage-first persistence
 ```
 
-Major dependency additions require `docs/DEPENDENCY-POLICY.md` review and
-an ADR where applicable.
-
-## Setup
+## Setup / Verification
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Node and package-manager requirements are in `package.json`.
-
-## Verification
-
-CI-equivalent core checks:
+Exact-current-SHA release verification:
 
 ```bash
+pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
 pnpm typecheck
 pnpm test
 pnpm skin:validate
 pnpm build
 ```
 
-Browser suites:
+Browser suites where applicable:
 
 ```bash
 pnpm test:visual
 pnpm test:visual:crossbrowser
 ```
-
-Extended soak follows `docs/release/SOAK-RUNBOOK.md`.
 
 Never report a command as passing unless it ran against the exact reported
 SHA. A successful push is not CI success.
@@ -211,16 +199,15 @@ SHA. A successful push is not CI success.
 ## Current Next Work
 
 ```text
-1. Freeze clean HEAD == origin/main and record SHA/tool versions.
-2. Run install/typecheck/test/skin:validate/build on that SHA.
-3. Confirm storageRecoveryFailurePaths.test.ts is collected and passes.
-4. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
-5. If product code changes, invalidate partial evidence and restart.
-6. Commit report/evidence and synchronize entry documents.
+1. Freeze clean HEAD == origin/main and record exact SHA/tool versions.
+2. Run frozen install and all verification commands.
+3. Confirm all 12 new cases are collected and passing.
+4. Fix any failure; code changes restart exact-SHA verification.
+5. Execute the complete Batch 11 matrix on the same artifact.
+6. Commit evidence/report and only then mark Batch 11 complete.
 ```
 
-Batch 11 cannot itself promote RC to READY because real-device,
-real-Safari, real-AT, and real-deploy evidence remains open.
+New features or asset generation must not bypass this closure work.
 
 ## Design / UI Contract
 
@@ -234,9 +221,7 @@ asset URLs and rendering modes are centralized
 both official skins retain fallback behavior
 ```
 
-For UI work, read the mandatory list in `AGENTS.md`.
-
-Layout policy:
+Layout:
 
 ```text
 844x390 reference
@@ -245,34 +230,35 @@ PC: centered table + outer support
 portrait: rotate prompt or limited utility
 ```
 
-844x390 is not a fixed canvas. Whole-screen `transform: scale()` is
-forbidden.
+Whole-screen `transform: scale()` is forbidden.
 
 ## Asset Production
 
-The pipeline is proven and asset Batches 1-4 are closed. Do not restart
-generation from an old roadmap checkpoint.
+Asset Batches 1-4 are closed. Do not restart generation from an old
+roadmap checkpoint.
 
 ```text
 generate -> generated/candidates -> inspect -> human approval
 -> generated/final -> skin.json version bump -> verification
 ```
 
-Direct generation into final is forbidden. Historical slot/approval
-records live in `docs/ASSET-PRODUCTION-ROADMAP.md` and
-`docs/asset-requests/`.
+Direct generation into final is forbidden.
 
-## Architecture Boundaries
+## Architecture / Operations Boundaries
 
 ```text
-UI does not judge roles, calculate score, or assign wildcards
+UI does not implement role/scoring/wildcard rules
 engine does not import React/DOM/localStorage/CSS
 skin does not access engine/schema/storage/records/network
-import is a strict allowlist
 shared deck JSON contains no image/URL/base64/path/html/script/style fields
 persisted values are schema-parsed before use
-recovery code must not throw while trying to recover
+recovery does not crash merely because cleanup failed
 ```
+
+There is no backend/API. Server rate limiting, distributed tracing, and
+server RPS/load are currently not applicable; they become mandatory if
+login, sync, multiplayer, uploads, telemetry, marketplace, or an API is
+introduced. See `docs/OPERATIONS-READINESS.md`.
 
 ## Documentation
 
@@ -285,32 +271,19 @@ docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
 Priority when documents disagree:
 
 ```text
 1. MASTER-SPEC for product/rule truth
-2. RELEASE-DEMO-GATES for readiness claims
-3. latest evidence-backed Batch matrix/report for exact scope
+2. RELEASE-DEMO-GATES for readiness
+3. latest evidence-backed Batch report/matrix for exact scope
 4. current non-numbered subsystem contracts
 5. IMPLEMENTATION-WORKFLOW for next execution
 6. historical/numbered documents
 ```
 
 Choose the evidence-backed narrower claim, not the more optimistic one.
-
-## Work / Report Policy
-
-```text
-small testable changes
-one purpose per commit where tooling permits
-implementation and contract docs updated together
-never broaden historical evidence silently
-report local results separately from CI
-```
-
-Every completion report includes exact SHA(s), changed files, commands
-actually run, CI status or unavailable, browser/device/version scope,
-affected skins/screens/storage keys, evidence, remaining risks, and the
-next executable step.
