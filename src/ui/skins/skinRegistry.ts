@@ -1,7 +1,12 @@
 import { z } from 'zod';
 import { parseSkinTokens } from './parseSkinTokens';
 import { resolveSkin } from './resolveSkin';
-import { BASE_SKIN_ID, type ResolvedSkin, type SkinManifest } from './skinTypes';
+import {
+  BASE_SKIN_ID,
+  SKIN_CONTRACT_VERSION,
+  type ResolvedSkin,
+  type SkinManifest,
+} from './skinTypes';
 import { validateSkinManifest } from './validateSkinManifest';
 
 export const SKIN_REGISTRY_URL = '/assets/ui/soro-pon/SKIN-MANIFEST.json';
@@ -31,8 +36,8 @@ export const BUILTIN_SKIN_REGISTRY: SkinRegistry = {
 
 const registrySchema = z
   .object({
-    version: z.number().int().min(1),
-    skinContractVersion: z.number().int().min(1),
+    version: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
+    skinContractVersion: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
     defaultSkinId: z.string().regex(/^[a-z0-9][a-z0-9-]*$/),
     skins: z
       .array(
@@ -47,14 +52,30 @@ const registrySchema = z
       .min(1)
       .max(50),
   })
-  .strict();
+  .strict()
+  .superRefine((registry, ctx) => {
+    const seen = new Set<string>();
+    registry.skins.forEach((skin, index) => {
+      if (seen.has(skin.id)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['skins', index, 'id'],
+          message: `skin id "${skin.id}" が重複しています`,
+        });
+      }
+      seen.add(skin.id);
+    });
+  });
 
 export function parseSkinRegistry(raw: unknown): SkinRegistry | null {
   const parsed = registrySchema.safeParse(raw);
   if (!parsed.success) {
     return null;
   }
-  const { defaultSkinId, skins } = parsed.data;
+  const { defaultSkinId, skinContractVersion, skins } = parsed.data;
+  if (skinContractVersion > SKIN_CONTRACT_VERSION) {
+    return null;
+  }
   if (!skins.some((s) => s.id === defaultSkinId)) {
     return null;
   }
@@ -73,7 +94,6 @@ export type SkinPackageIo = {
   loadTokens(skinId: string, tokensFile: string): Promise<string | null>;
 };
 
-// baseを除く継承チェーンとして最大3 skinまで許可する。
 const MAX_INHERITANCE_DEPTH = 3;
 
 export type LoadResolvedSkinResult = {
@@ -148,7 +168,6 @@ export function createSkinLoader(io: SkinPackageIo) {
       current = loaded.manifest.inherits ?? BASE_SKIN_ID;
       depth += 1;
     }
-    // 上限ちょうどでbaseへ到達した正常チェーンは拒否しない。
     if (
       depth >= MAX_INHERITANCE_DEPTH &&
       current !== undefined &&
