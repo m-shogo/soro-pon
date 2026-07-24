@@ -7,7 +7,7 @@ const FOCUSABLE_SELECTOR =
   'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
 // 共通モーダル(P1-3):
-// - 開いたら最初のフォーカス可能要素へ移動
+// - 開いたら指定された安全なフォーカス可能要素へ移動(既定は先頭)
 // - Tab/Shift+Tabはモーダル内で循環(focus trap)
 // - Escapeで閉じる
 // - 閉じたら開く前の要素へフォーカスを戻す
@@ -15,12 +15,14 @@ export function Modal({
   open,
   title,
   ariaDescribedBy,
+  initialFocus = 'first',
   onClose,
   children,
 }: {
   open: boolean;
   title?: ReactNode;
   ariaDescribedBy?: string;
+  initialFocus?: 'first' | 'last';
   onClose: () => void;
   children: ReactNode;
 }) {
@@ -33,10 +35,13 @@ export function Modal({
     }
     const previouslyFocused =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    // 初期フォーカス: モーダル内の最初のフォーカス可能要素(なければ本体)
     const dialog = dialogRef.current;
-    const first = dialog?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
-    (first ?? dialog)?.focus();
+    const focusables = dialog
+      ? [...dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)]
+      : [];
+    const initial =
+      initialFocus === 'last' ? focusables.at(-1) : focusables[0];
+    (initial ?? dialog)?.focus();
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -46,14 +51,15 @@ export function Modal({
       if (event.key !== 'Tab' || !dialog) {
         return;
       }
-      // focus trap: モーダル内で循環させる
-      const focusables = [...dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)];
-      if (focusables.length === 0) {
+      const currentFocusables = [
+        ...dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ];
+      if (currentFocusables.length === 0) {
         event.preventDefault();
         return;
       }
-      const firstEl = focusables[0]!;
-      const lastEl = focusables[focusables.length - 1]!;
+      const firstEl = currentFocusables[0]!;
+      const lastEl = currentFocusables[currentFocusables.length - 1]!;
       const active = document.activeElement;
       if (event.shiftKey && (active === firstEl || !dialog.contains(active))) {
         event.preventDefault();
@@ -68,7 +74,7 @@ export function Modal({
       window.removeEventListener('keydown', onKey);
       previouslyFocused?.focus();
     };
-  }, [open, onClose]);
+  }, [initialFocus, open, onClose]);
 
   if (!open) {
     return null;
