@@ -8,6 +8,7 @@ import {
 } from './achievements';
 import { createDeckTemplate } from './createdDeckTemplate';
 import { buildMatchRecordingResult, newMatchSessionId } from './matchRecording';
+import { newDeckProjectId } from './runtimeIds';
 import type { DeckProject } from '../domain/deck';
 import type { MatchState } from '../domain/match';
 import type { DeckValidationResult } from '../domain/validation';
@@ -16,7 +17,10 @@ import { validateDeckProject } from '../engine/validation/validateDeckProject';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
 import { StorageWriteError } from '../storage/keyValueStorage';
 import { createLocalStorageDeckStore } from '../storage/localStorageDeckStore';
-import { createLocalStorageRecordsStore } from '../storage/localStorageRecordsStore';
+import {
+  createLocalStorageRecordsStore,
+  type MatchCommitResult,
+} from '../storage/localStorageRecordsStore';
 import { createLocalStorageSettingsStore } from '../storage/localStorageSettingsStore';
 import { Badge } from '../ui/components/Badge';
 import { Button } from '../ui/components/Button';
@@ -335,14 +339,36 @@ export function AppRoot() {
       if (!built) {
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
-      if (!tryWrite(() => recordsStore.addRecord(built.record, built.matchKey, built.roleKey))) {
+
+      let committed: MatchCommitResult | undefined;
+      if (
+        !tryWrite(() => {
+          committed = recordsStore.commitMatch(
+            built.record,
+            built.matchKey,
+            built.roleKey,
+            (nextRecords) =>
+              computeNewAchievements(
+                nextRecords.achievements ?? [],
+                built.achievementEvent,
+                nextRecords,
+              ),
+          );
+        })
+      ) {
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
+      if (!committed?.added) {
+        return { coinsEarned: 0, newlyUnlocked: [] };
+      }
+
       setRecordsVersion((v) => v + 1);
-      const newlyUnlocked = processAchievements(built.achievementEvent);
+      const newlyUnlocked = ACHIEVEMENTS.filter((achievement) =>
+        committed?.newlyUnlockedIds.includes(achievement.id),
+      );
       return { coinsEarned: built.record.coinsEarned, newlyUnlocked };
     },
-    [decks, recordsStore, processAchievements, tryWrite],
+    [decks, recordsStore, tryWrite],
   );
 
   const importModal = (
@@ -419,7 +445,8 @@ export function AppRoot() {
             onSelect={(deckId) => setScreen({ kind: 'deckDetail', deckId })}
             onImport={() => setImportOpen(true)}
             onCreate={() => {
-              const id = `created-${Date.now()}`;
+              const latestIds = deckStore.loadAll().decks.map((entry) => entry.deck.id);
+              const id = newDeckProjectId(latestIds);
               if (!tryWrite(() => deckStore.saveDeck(createDeckTemplate(id, '新しいデッキ'), 'created'))) {
                 return;
               }
