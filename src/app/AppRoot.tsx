@@ -16,7 +16,10 @@ import { parseDeckImport } from '../engine/import/parseDeckImport';
 import { validateDeckEntityIds } from '../engine/validation/validateDeckEntityIds';
 import { validateDeckForUse } from '../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
-import { MAX_ROLE_COLLECTION_ENTRIES } from '../schemas/storageSchema';
+import {
+  MAX_ROLE_COLLECTION_ENTRIES,
+  type StoredDeck,
+} from '../schemas/storageSchema';
 import { StorageWriteError } from '../storage/keyValueStorage';
 import { createLocalStorageDeckStore } from '../storage/localStorageDeckStore';
 import {
@@ -54,7 +57,16 @@ type Screen =
       matchSessionId: string;
     };
 
+type OverwriteReview = {
+  inputText: string;
+  existingFingerprint: string;
+};
+
 const OFFICIAL_STARTER_ID = 'official-animal-starter';
+
+function storedDeckFingerprint(entry: StoredDeck): string {
+  return JSON.stringify(entry);
+}
 
 function MatchSession({
   deck,
@@ -126,7 +138,7 @@ export function AppRoot() {
     });
   }, []);
 
-  const tryWrite = useCallback(
+  const tryStorageOperation = useCallback(
     (fn: () => void): boolean => {
       try {
         fn();
@@ -180,13 +192,13 @@ export function AppRoot() {
       if (gained.length === 0) {
         return [];
       }
-      if (!tryWrite(() => recordsStore.unlockAchievements(gained))) {
+      if (!tryStorageOperation(() => recordsStore.unlockAchievements(gained))) {
         return [];
       }
       setRecordsVersion((v) => v + 1);
       return ACHIEVEMENTS.filter((achievement) => gained.includes(achievement.id));
     },
-    [recordsStore, tryWrite],
+    [recordsStore, tryStorageOperation],
   );
 
   const validations = useMemo(() => {
@@ -202,12 +214,12 @@ export function AppRoot() {
   const [importText, setImportText] = useState('');
   const [importIssues, setImportIssues] = useState<string[]>([]);
   const [migrationReviewText, setMigrationReviewText] = useState<string | null>(null);
-  const [overwriteReviewText, setOverwriteReviewText] = useState<string | null>(null);
+  const [overwriteReview, setOverwriteReview] = useState<OverwriteReview | null>(null);
 
   const resetImportReview = useCallback(() => {
     setImportIssues([]);
     setMigrationReviewText(null);
-    setOverwriteReviewText(null);
+    setOverwriteReview(null);
   }, []);
 
   const closeImport = useCallback(() => {
@@ -270,7 +282,7 @@ export function AppRoot() {
     const result = parseDeckImport({ rawText: importText });
     if (!result.ok) {
       setMigrationReviewText(null);
-      setOverwriteReviewText(null);
+      setOverwriteReview(null);
       setImportIssues(result.issues.map((issue) => `${issue.code}: ${issue.message}`));
       return;
     }
@@ -278,7 +290,7 @@ export function AppRoot() {
     if (result.migrationNotice && migrationReviewText !== importText) {
       const notice = result.migrationNotice;
       setMigrationReviewText(importText);
-      setOverwriteReviewText(null);
+      setOverwriteReview(null);
       setImportIssues([
         `I2008: 旧形式 version ${notice.fromVersion} を version ${notice.toVersion} へ変換します。内容を確認し、もう一度ボタンを押してください。`,
         ...notice.changed.map((change) => `変更: ${change}`),
@@ -289,8 +301,13 @@ export function AppRoot() {
 
     const latestDecks = deckStore.loadAll().decks;
     const existing = latestDecks.find((entry) => entry.deck.id === result.deck.id);
-    if (existing !== undefined && overwriteReviewText !== importText) {
-      setOverwriteReviewText(importText);
+    const existingFingerprint = existing === undefined ? null : storedDeckFingerprint(existing);
+    const overwriteConfirmed =
+      existingFingerprint !== null &&
+      overwriteReview?.inputText === importText &&
+      overwriteReview.existingFingerprint === existingFingerprint;
+    if (existing !== undefined && !overwriteConfirmed) {
+      setOverwriteReview({ inputText: importText, existingFingerprint });
       setImportIssues([
         `同じID "${result.deck.id}" のデッキ「${existing.deck.name}」が保存されています。`,
         'もう一度「上書きして読み込む」を押すと、既存デッキの内容はこのJSONで置き換わります。この操作は元に戻せません。',
@@ -298,7 +315,7 @@ export function AppRoot() {
       return;
     }
 
-    if (!tryWrite(() => deckStore.saveDeck(result.deck, 'imported'))) {
+    if (!tryStorageOperation(() => deckStore.saveDeck(result.deck, 'imported'))) {
       return;
     }
 
@@ -324,7 +341,7 @@ export function AppRoot() {
 
   const handleExport = (deck: DeckProject) => {
     let text: string | null = null;
-    if (!tryWrite(() => {
+    if (!tryStorageOperation(() => {
       text = deckStore.exportDeck(deck.id);
     })) {
       return;
@@ -367,7 +384,7 @@ export function AppRoot() {
 
       let committed: MatchCommitResult | undefined;
       if (
-        !tryWrite(() => {
+        !tryStorageOperation(() => {
           committed = recordsStore.commitMatch(
             built.record,
             built.matchKey,
@@ -398,11 +415,11 @@ export function AppRoot() {
       );
       return { coinsEarned: built.record.coinsEarned, newlyUnlocked };
     },
-    [appendSaveNotice, decks, recordsStore, tryWrite],
+    [appendSaveNotice, decks, recordsStore, tryStorageOperation],
   );
 
   const importReviewKind =
-    overwriteReviewText === importText
+    overwriteReview?.inputText === importText
       ? 'overwrite'
       : migrationReviewText === importText
         ? 'migration'
@@ -492,7 +509,7 @@ export function AppRoot() {
             onCreate={() => {
               const latestIds = deckStore.loadAll().decks.map((entry) => entry.deck.id);
               const id = newDeckProjectId(latestIds);
-              if (!tryWrite(() => deckStore.saveDeck(createDeckTemplate(id, '新しいデッキ'), 'created'))) {
+              if (!tryStorageOperation(() => deckStore.saveDeck(createDeckTemplate(id, '新しいデッキ'), 'created'))) {
                 return;
               }
               refreshDecks();
@@ -515,7 +532,7 @@ export function AppRoot() {
             onEdit={() => setScreen({ kind: 'deckEditor', deckId: deck.id })}
             onExport={() => handleExport(deck)}
             onDelete={() => {
-              if (!tryWrite(() => deckStore.removeDeck(deck.id))) {
+              if (!tryStorageOperation(() => deckStore.removeDeck(deck.id))) {
                 return;
               }
               refreshDecks();
@@ -525,22 +542,35 @@ export function AppRoot() {
         );
       }
       case 'deckEditor': {
-        const deck = deckOf(screen.deckId);
-        if (!deck) {
+        const openedEntry = decks.find((stored) => stored.deck.id === screen.deckId);
+        const deck = openedEntry?.deck;
+        if (!deck || !openedEntry) {
           return null;
         }
-        const source = decks.find((stored) => stored.deck.id === deck.id)?.source ?? 'created';
+        const source = openedEntry.source;
+        const openedFingerprint = storedDeckFingerprint(openedEntry);
         return (
           <DeckEditorScreen
             deck={deck}
             onSave={(updated) => {
+              const latestEntry = deckStore.loadAll().decks.find((entry) => entry.deck.id === deck.id);
+              if (
+                latestEntry === undefined ||
+                storedDeckFingerprint(latestEntry) !== openedFingerprint
+              ) {
+                appendSaveNotice(
+                  'このデッキは別タブまたは別画面で変更・削除されたため、古い編集内容では上書きしませんでした。デッキ一覧へ戻って最新状態を開き直してください。',
+                );
+                refreshDecks();
+                return;
+              }
               const entityIdIssues = validateDeckEntityIds(updated);
               if (entityIdIssues.length > 0) {
                 appendSaveNotice(entityIdIssues[0]?.message ?? 'IDの重複を修正してから保存してください。');
                 return;
               }
               const saveSource = source === 'official' ? 'created' : source;
-              if (!tryWrite(() => deckStore.saveDeck(updated, saveSource))) {
+              if (!tryStorageOperation(() => deckStore.saveDeck(updated, saveSource))) {
                 return;
               }
               refreshDecks();
