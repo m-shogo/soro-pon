@@ -100,8 +100,6 @@ function salvageDecks(
     const source = normalizedSource(record['source']);
     const updatedAtMs = normalizedUpdatedAt(record['updatedAtMs'], now);
 
-    // デッキ本体が現行schemaで正常なら、wrapper metadataだけを正規化して救う。
-    // ここを飛ばしてlegacy migrationへ回すと、version 1の正常なユーザーデッキまで落ちる。
     const currentDeck = deckProjectSchema.safeParse(record['deck']);
     if (currentDeck.success) {
       candidates.push({
@@ -173,10 +171,41 @@ function salvageDecks(
   };
 }
 
+function storedDeckFingerprint(entry: StoredDeck): string {
+  return JSON.stringify(entry);
+}
+
 export function createLocalStorageDeckStore(
   storage: KeyValueStorage,
   now: () => number = () => Date.now(),
 ): DeckStore {
+  const observedFingerprints = new Map<string, string>();
+
+  const rememberPayload = (payload: StoredDecksPayload): void => {
+    observedFingerprints.clear();
+    for (const entry of payload.decks) {
+      observedFingerprints.set(entry.deck.id, storedDeckFingerprint(entry));
+    }
+  };
+
+  const assertObservedEntryUnchanged = (
+    payload: StoredDecksPayload,
+    deckId: string,
+    operation: string,
+  ): void => {
+    const expected = observedFingerprints.get(deckId);
+    if (expected === undefined) {
+      return;
+    }
+    const current = payload.decks.find((entry) => entry.deck.id === deckId);
+    if (current === undefined || storedDeckFingerprint(current) !== expected) {
+      throw new StorageWriteError(
+        `このデッキは読み込み後に別タブまたは別画面で変更・削除されたため、古い状態から${operation}しませんでした。デッキ一覧を開き直して最新状態を確認してください。`,
+        new Error('stale observed deck fingerprint'),
+      );
+    }
+  };
+
   const tryBackup = (raw: string): boolean => {
     try {
       storage.setItem(DECKS_BACKUP_KEY, raw);
@@ -400,6 +429,7 @@ export function createLocalStorageDeckStore(
   return {
     loadAll(): LoadDecksResult {
       const { payload, issues } = readPayload();
+      rememberPayload(payload);
       return { decks: payload.decks, issues };
     },
 
@@ -414,8 +444,11 @@ export function createLocalStorageDeckStore(
       }
 
       const payload = requireReadablePayload();
-      const existing = payload.decks.some((stored) => stored.deck.id === deck.id);
-      if (!existing && payload.decks.length >= MAX_STORED_DECKS) {
+      const existingEntry = payload.decks.find((stored) => stored.deck.id === deck.id);
+      if (existingEntry !== undefined) {
+        assertObservedEntryUnchanged(payload, deck.id, '上書き');
+      }
+      if (existingEntry === undefined && payload.decks.length >= MAX_STORED_DECKS) {
         throw new StorageWriteError(
           `保存できるデッキは最大${MAX_STORED_DECKS}件です。不要なデッキを削除してから、もう一度保存してください。`,
           new Error('deck storage entry limit reached'),
@@ -423,18 +456,24 @@ export function createLocalStorageDeckStore(
       }
 
       const entry: StoredDeck = { deck, source, updatedAtMs: now() };
-      const decks = existing
-        ? payload.decks.map((stored) => (stored.deck.id === deck.id ? entry : stored))
-        : [...payload.decks, entry];
-      writePayload({ version: 1, decks });
+      const decks =
+        existingEntry !== undefined
+          ? payload.decks.map((stored) => (stored.deck.id === deck.id ? entry : stored))
+          : [...payload.decks, entry];
+      const next = { version: 1 as const, decks };
+      writePayload(next);
+      rememberPayload(next);
     },
 
     removeDeck(deckId: string): void {
       const payload = requireReadablePayload();
-      writePayload({
-        version: 1,
+      assertObservedEntryUnchanged(payload, deckId, '削除');
+      const next = {
+        version: 1 as const,
         decks: payload.decks.filter((d) => d.deck.id !== deckId),
-      });
+      };
+      writePayload(next);
+      rememberPayload(next);
     },
 
     exportDeck(deckId: string): string | null {
