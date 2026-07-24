@@ -171,6 +171,16 @@ export function validateDeckEntityIds(deck: DeckProject): ValidationIssue[] {
         'ボーナス',
         issues,
       );
+
+      if (bonus.maxPoints !== undefined && bonus.maxPoints < bonus.points) {
+        issues.push({
+          code: 'B6010',
+          severity: 'error',
+          path: `$.variants[${variantIndex}].scoreBonuses[${bonusIndex}].maxPoints`,
+          message: `ScoreBonus「${bonus.name}」のmaxPoints ${bonus.maxPoints}が1回分のpoints ${bonus.points}より小さいため、成立直後から宣言値より低い点数へ切り下がります。`,
+          fixHint: 'maxPointsをpoints以上にするか、maxPointsを削除してください。',
+        });
+      }
     });
   });
 
