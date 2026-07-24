@@ -61,53 +61,67 @@ export function SkinProvider({ children }: { children: ReactNode }) {
       const seq = ++requestSeqRef.current;
       setSkinStatus('loading');
       const targetId = sanitizeSkinId(skinId, currentRegistry);
-      const { resolved, issues } = await loaderRef.current.loadResolvedSkin(targetId);
-      if (seq !== requestSeqRef.current) {
-        return; // 後発の切り替えが優先
-      }
-      // 対象が読めなかった場合はdefault、それも失敗ならbaseへ
-      let finalResolved = resolved;
-      let finalId = targetId;
-      const finalIssues = [...issues];
-      if (resolved.chain.length === 0 && targetId !== currentRegistry.defaultSkinId) {
-        const fallback = await loaderRef.current.loadResolvedSkin(
-          currentRegistry.defaultSkinId,
-        );
-        finalResolved = fallback.resolved;
-        finalId = currentRegistry.defaultSkinId;
-        finalIssues.push(...fallback.issues, `defaultスキンへ復旧しました: ${finalId}`);
-      }
-      // P2-2: 可視アセットを先に読み込み、tokensとassetsを一括で適用する。
-      // 途中失敗で新旧スキンが混ざって表示されるのを防ぐ。
-      const assetUrls = collectSkinAssetUrls(finalResolved);
-      const preloaded = await preloadImages(assetUrls);
-      if (seq !== requestSeqRef.current) {
-        return;
-      }
-      if (!preloaded && appliedSkinIdRef.current !== null) {
-        // 前のスキンを維持し、状態だけ知らせる(初回起動時はfallbackで続行)
+
+      try {
+        const { resolved, issues } = await loaderRef.current.loadResolvedSkin(targetId);
+        if (seq !== requestSeqRef.current) {
+          return; // 後発の切り替えが優先
+        }
+        // 対象が読めなかった場合はdefault、それも失敗ならbaseへ
+        let finalResolved = resolved;
+        let finalId = targetId;
+        const finalIssues = [...issues];
+        if (resolved.chain.length === 0 && targetId !== currentRegistry.defaultSkinId) {
+          const fallback = await loaderRef.current.loadResolvedSkin(
+            currentRegistry.defaultSkinId,
+          );
+          finalResolved = fallback.resolved;
+          finalId = currentRegistry.defaultSkinId;
+          finalIssues.push(...fallback.issues, `defaultスキンへ復旧しました: ${finalId}`);
+        }
+        // P2-2: 可視アセットを先に読み込み、tokensとassetsを一括で適用する。
+        // 途中失敗で新旧スキンが混ざって表示されるのを防ぐ。
+        const assetUrls = collectSkinAssetUrls(finalResolved);
+        const preloaded = await preloadImages(assetUrls);
+        if (seq !== requestSeqRef.current) {
+          return;
+        }
+        if (!preloaded && appliedSkinIdRef.current !== null) {
+          // 前のスキンを維持し、状態だけ知らせる(初回起動時はfallbackで続行)
+          setSkinIssues([
+            ...finalIssues,
+            `スキン ${finalId} の画像を読み込めなかったため切り替えを中止しました`,
+          ]);
+          setSkinStatus('ready');
+          return;
+        }
+
+        applyDocumentSkin(finalId, finalResolved.tokens, {
+          colorScheme: finalResolved.colorScheme,
+          ...(finalResolved.themeColor !== undefined
+            ? { themeColor: finalResolved.themeColor }
+            : {}),
+        });
+        setActiveSkinId(finalId);
+        setResolvedSkin(finalResolved);
+        setSkinIssues(finalIssues);
+        setSkinStatus('ready');
+        appliedSkinIdRef.current = finalId;
+        try {
+          window.localStorage.setItem(SKIN_STORAGE_KEY, finalId);
+        } catch {
+          // 保存できなくても動作は継続
+        }
+      } catch {
+        if (seq !== requestSeqRef.current) {
+          return;
+        }
+        // 想定外のPromise rejectionやDOM適用例外でもloadingへ固定しない。
+        // すでに適用済みのスキン、または初回のbundled fallbackをそのまま維持する。
         setSkinIssues([
-          ...finalIssues,
-          `スキン ${finalId} の画像を読み込めなかったため切り替えを中止しました`,
+          `スキン ${targetId} の読み込み中に予期しない問題が起きたため、現在の見た目を維持しました`,
         ]);
         setSkinStatus('ready');
-        return;
-      }
-      setActiveSkinId(finalId);
-      setResolvedSkin(finalResolved);
-      setSkinIssues(finalIssues);
-      setSkinStatus('ready');
-      appliedSkinIdRef.current = finalId;
-      applyDocumentSkin(finalId, finalResolved.tokens, {
-        colorScheme: finalResolved.colorScheme,
-        ...(finalResolved.themeColor !== undefined
-          ? { themeColor: finalResolved.themeColor }
-          : {}),
-      });
-      try {
-        window.localStorage.setItem(SKIN_STORAGE_KEY, finalId);
-      } catch {
-        // 保存できなくても動作は継続
       }
     },
     [],
@@ -129,7 +143,8 @@ export function SkinProvider({ children }: { children: ReactNode }) {
       }
       await applySkin(sanitizeSkinId(stored, loadedRegistry), loadedRegistry);
     })().catch(() => {
-      // 起動を止めない。bundled tokensのままで動く
+      // applySkin自体も防御しているが、provider初期化の外側も起動を止めない。
+      setSkinStatus('ready');
     });
     return () => {
       cancelled = true;
