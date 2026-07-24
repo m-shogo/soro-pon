@@ -24,8 +24,17 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Storage recovery regression
-        run: pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+      - name: Critical integrity contracts
+        run: |
+          pnpm exec vitest run \
+            src/storage/storageRecoveryFailurePaths.test.ts \
+            src/storage/localStorageRecordsAtomicity.test.ts \
+            src/storage/localStorageCapacity.test.ts \
+            src/storage/storageWriteContract.test.ts \
+            src/storage/resetLocalData.test.ts \
+            src/app/runtimeIds.test.ts \
+            src/app/AppRoot.persistence.test.tsx \
+            src/engine/validation/validateDeckEntityIds.test.ts
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm skin:validate
