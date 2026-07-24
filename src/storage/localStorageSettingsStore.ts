@@ -27,7 +27,7 @@ export function createLocalStorageSettingsStore(storage: KeyValueStorage): Setti
           settings: DEFAULT_SETTINGS,
           issues: [
             {
-              code: 'L9004',
+              code: 'L9005',
               severity: 'warning',
               message:
                 'ブラウザの保存領域から設定を読み込めないため、このセッションでは初期設定を使用します。保存領域の設定を確認してください。',
