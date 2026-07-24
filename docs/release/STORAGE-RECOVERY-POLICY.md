@@ -1,50 +1,59 @@
 # Storage / Migration Recovery Policy
 
-Applies to all localStorage-backed data: `soro-pon.decks.v1`,
-`soro-pon.records.v1`, `soro-pon.settings.v1`, `soro-pon.skin.v1`.
-Established in Gate 6 and hardened during the post-Batch-10 integrity
-review. See `src/storage/storageRecoveryFailurePaths.test.ts` for the new
-compound storage-fault cases.
+Applies to:
+
+```text
+soro-pon.decks.v1
+soro-pon.decks.v1.corrupt-backup
+soro-pon.records.v1
+soro-pon.records.v1.corrupt-backup
+soro-pon.settings.v1
+soro-pon.settings.v1.corrupt-backup
+soro-pon.skin.v1
+```
+
+Established in Gate 6 and hardened by the post-Batch-10 integrity review.
+Review: `docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md`.
 
 ## Principles
 
-1. **Do not destroy unaffected data.** One corrupted or legacy deck entry
-   must not take down the whole deck list.
-2. **Recovery must not become the crash.** `getItem`, backup creation,
-   active-key removal, and normalized writeback may fail independently.
-   No raw storage exception escapes the read/recovery path.
-3. **Do not fail silently.** Read/recovery issues become boot notices;
-   normal write failures become translated `StorageWriteError` notices at
-   the failed action.
-4. **Do not claim a write succeeded when it did not.** Draft-preserving
-   flows stay open, and unpersisted rewards/achievements are not displayed
-   as saved.
-5. **Prefer partial recovery to full reset.** Keep every independently
-   recoverable deck entry.
-6. **Do not invent a migration framework.** Reuse the deterministic
-   existing v0 → v1 deck migration until another real schema migration
-   exists.
+```text
+do not destroy unaffected recoverable data
+recovery must not become the crash
+do not fail silently
+do not claim a write/reset succeeded when it did not
+prefer partial salvage to full reset
+preserve corrupt raw data only when storage permits
+use only known deterministic migrations
+```
 
 ## Guarantee Scope
 
 Recovery is not unconditionally lossless.
 
-- A failed normal write preserves already-persisted state and keeps an
-  open editor/import draft in memory. Reloading still loses an unsaved
-  draft; no separate draft autosave key exists.
-- An unrecoverable deck entry is dropped from active recovered state.
-  The raw original payload is written to
-  `soro-pon.decks.v1.corrupt-backup` only when storage permits it.
-- Corrupted records/settings fall back to empty/default state and attempt
-  raw preservation in `soro-pon.records.v1.corrupt-backup` and
-  `soro-pon.settings.v1.corrupt-backup`.
-- If storage read access itself is denied, the app uses empty/default
-  in-memory state for that store and reports `L9005`.
-- If the built-in starter cannot be persisted during boot, the app
-  reports `L9006`; it does not misuse a migration code or claim that the
-  starter is saved.
-- Backup persistence is best-effort. Quota or browser policy may prevent
-  backup creation, and the warning states that explicitly.
+```text
+failed normal write:
+  persisted state is not replaced by that failed write
+  open editor/import input remains in memory where applicable
+  reload can still lose an unsaved draft
+
+unrecoverable deck entry:
+  dropped from active recovered list
+  raw outer payload backed up only if storage permits
+
+corrupted records/settings:
+  empty/default active state
+  raw corrupt value backed up only if storage permits
+
+storage read denial:
+  L9005 + empty/default in-memory session fallback
+
+starter bootstrap write failure:
+  L9006; app does not claim persistence
+```
+
+`*.corrupt-backup` is forensic best-effort preservation, not a guaranteed
+user backup or restore feature.
 
 ## Read / Recovery Path
 
@@ -59,42 +68,88 @@ src/app/AppRoot.tsx
 
 | Condition | Behavior | Code |
 |---|---|---|
-| Key absent | Empty/default payload, no issue | — |
-| `getItem()` rejected | Empty/default in-memory state; boot warning | `L9005` |
-| Deck JSON/outer shape unrecoverable | Best-effort raw backup + active-key removal, empty deck payload | `L9001` |
-| Deck payload needs only safe legacy migration | Keep all entries, best-effort normalized writeback | `L9002` |
-| Some deck entries unrecoverable | Keep healthy entries, drop only bad entries, preserve raw payload if possible | `L9003` |
-| Records/settings corrupted | Best-effort raw backup + active-key removal, then empty/default state | `L9001` |
-| Backup or cleanup fails | Continue with recovered in-memory state and append exact failed operation to warning | original recovery code |
-| Built-in starter write fails during boot | Continue without claiming persistence; boot warning | `L9006` |
+| key absent | empty/default payload, no issue | — |
+| `getItem()` rejected | empty/default session state; boot warning | `L9005` |
+| deck JSON/outer shape unrecoverable | backup/remove independently attempted; empty deck payload | `L9001` |
+| safe legacy deck migration | keep entries; best-effort normalized writeback | `L9002` |
+| some deck entries unrecoverable | keep healthy entries; drop only bad entries | `L9003` |
+| records/settings corrupted | backup/remove independently attempted; empty/default state | `L9001` |
+| backup or cleanup fails | keep recovered in-memory state and name failed operation | original code |
+| starter persistence fails | continue without false saved claim | `L9006` |
 
-`AppRoot` collects initial issues from decks, records, and settings and
-shows their unique messages through the boot warning `Toast`. It does not
-discard records/settings recovery issues.
-
-A successful deck salvage is written back immediately on a best-effort
-basis. If writeback is rejected, the current call still returns recovered
-in-memory state and a later load may repeat the warning.
+`AppRoot` collects unique initial issues from decks, records, and settings
+and shows them in the boot warning Toast.
 
 ## Normal Write Path
 
-Normal mutations use `safeWrite()` from
-`src/storage/keyValueStorage.ts`. Any `setItem()` failure becomes a
-translated `StorageWriteError`.
+Normal mutations use `safeWrite()` and produce a translated
+`StorageWriteError`.
 
-`AppRoot.tryWrite()` then:
+`AppRoot.tryWrite()`:
 
 ```text
-shows a warning Toast
+shows a warning
 returns false
-prevents success-only navigation/state updates
-keeps editor/import input intact where applicable
-does not display an achievement as unlocked when its persistence failed
+blocks success-only navigation/state changes
+keeps open draft/input where applicable
+does not display an achievement/reward as saved after failure
 ```
 
-Recovery cleanup is deliberately best-effort rather than `safeWrite()`:
-throwing from cleanup would stop the app from reaching usable recovered
-state.
+Recovery cleanup differs: backup/remove/writeback are independently
+best-effort because throwing from cleanup would block recovered state.
+
+## Legacy Import Migration
+
+Parser migration is not immediately persisted.
+
+```text
+first action:
+  show version transition, exact changed items, and warnings
+  retain pasted input
+  do not save
+
+second action with unchanged input:
+  save migrated current-version deck
+  navigate only after successful write
+
+input edit:
+  invalidate prior review and require review again
+```
+
+Canonical detail: `docs/MIGRATIONS.md`.
+
+## Full Local Reset
+
+Implemented in:
+
+```text
+src/storage/resetLocalData.ts
+src/ui/screens/TopScreen.tsx
+```
+
+The TOP action “全て削除して初期化する” covers every known active and
+forensic key plus the selected skin:
+
+```text
+deck active + corrupt backup
+records active + corrupt backup
+settings active + corrupt backup
+skin selection
+```
+
+Rules:
+
+```text
+do not call localStorage.clear(); remove only app-owned known keys
+attempt every key even if one removal throws
+return removedKeys and failedKeys
+reload only when failedKeys is empty
+on partial failure, keep page open and show an explicit error
+never claim all data was deleted after a partial failure
+```
+
+Browser storage APIs cannot prove physical erasure beyond successful
+`removeItem()` completion. The UI truthfully reports API-level failure.
 
 ## Error Code Ownership
 
@@ -102,58 +157,70 @@ state.
 L9001 corrupt/invalid persisted payload recovered or normalized
 L9002 older deck data migrated without dropping entries
 L9003 unrecoverable deck entries dropped during partial recovery
-L9004 local image missing; visual fallback used (existing meaning)
-L9005 browser storage read unavailable; empty/default session fallback
+L9004 local image missing; visual fallback used
+L9005 browser storage read unavailable; session fallback used
 L9006 bootstrap/default data could not be persisted
 ```
 
-Do not reuse `L9004` for storage access. Canonical definitions are in
-`docs/ERROR-CODES.md`.
+`L9004` is not a generic storage-access code.
 
 ## Backup / Restore Reality
 
-`*.corrupt-backup` keys are forensic preservation, not an automatic
-restore product feature.
+Supported:
 
 ```text
-Supported:
-- raw original payload retained when storage permits
-- healthy deck entries salvaged automatically
-- deterministic v0 -> v1 deck migration
-- manual inspection/export through browser developer tools
-
-Not supported:
-- in-app restore button
-- arbitrary backup merge
-- guaranteed backup creation when storage rejects writes
-- cloud/cross-device backup
+raw corrupt payload retained when storage permits
+healthy deck entries salvaged automatically
+deterministic v0 -> v1 deck migration
+manual inspection through browser developer tools
+full local reset includes forensic backup keys
 ```
 
-A future restore UI must strict-parse and migrate the backup. It must not
-copy raw backup text directly over an active key.
+Not supported:
+
+```text
+in-app restore button
+backup merge
+cloud/cross-device backup
+guaranteed backup creation when storage rejects writes
+blind restoration of raw corrupt payload
+```
+
+A future restore UI must strict-parse and migrate. It must never copy raw
+backup text directly over an active key.
 
 ## Skin Storage
 
-`soro-pon.skin.v1` is one ID. `SkinProvider` guards storage read/write and
-`sanitizeSkinId()` falls back to a built-in skin. No structured salvage
-is needed.
+`soro-pon.skin.v1` contains one ID. `SkinProvider` guards read/write and
+sanitizes to a built-in known skin. No structured salvage is required.
 
 ## Tests
 
 ```text
 src/storage/gate6StorageRecovery.test.ts
-  existing salvage, migration, corruption, and normal-write failure cases
+  existing salvage/migration/corruption/normal-write cases
 
 src/storage/storageRecoveryFailurePaths.test.ts
-  backup failure, cleanup failure, read denial, and records/settings raw backup
+  6 backup/cleanup/read-denial compound failure cases
+
+src/app/AppRoot.persistence.test.tsx
+  3 boot-notice and visible migration-confirmation cases
+
+src/storage/resetLocalData.test.ts
+  3 reset completeness/success/partial-failure cases
 
 scripts/gate6-qa-01-migration-storage-recovery.mjs
-  existing Chromium browser recovery checks
+  existing browser recovery checks
 
 tests/visual/gate6-recovery-states.spec.ts
   recovery/reset/toast visual states
 ```
 
-The new failure-path tests are unit-level evidence until rerun on the
-exact current SHA. A real browser with storage access disabled remains a
-target-environment-specific check.
+The 12 new review-added cases are committed but remain unverified until
+executed on the exact current SHA.
+
+## Final Decision
+
+Recovery and reset are release-critical promises. The app must distinguish
+recovered-in-memory, persisted, backed up, partially deleted, and fully
+reset states instead of collapsing them into a generic success message.
