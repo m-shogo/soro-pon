@@ -4,7 +4,7 @@ import {
   settingsPayloadSchema,
   type SettingsPayload,
 } from '../schemas/storageSchema';
-import { safeWrite, type KeyValueStorage } from './keyValueStorage';
+import { safeWrite, StorageWriteError, type KeyValueStorage } from './keyValueStorage';
 
 export const SETTINGS_STORAGE_KEY = 'soro-pon.settings.v1';
 export const SETTINGS_BACKUP_KEY = 'soro-pon.settings.v1.corrupt-backup';
@@ -80,6 +80,14 @@ export function createLocalStorageSettingsStore(storage: KeyValueStorage): Setti
     },
 
     save(settings: SettingsPayload): void {
+      try {
+        storage.getItem(SETTINGS_STORAGE_KEY);
+      } catch (cause) {
+        throw new StorageWriteError(
+          '保存済み設定を読み込めないため、既存データを保護する目的で設定を保存しませんでした。ブラウザの保存領域設定を確認してください。',
+          cause,
+        );
+      }
       safeWrite(
         () => storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings)),
         '設定の保存に失敗しました(空き容量が不足している可能性があります)。',
