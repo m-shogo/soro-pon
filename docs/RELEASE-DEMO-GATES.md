@@ -2,33 +2,28 @@
 
 ## Purpose
 
-This document separates internal implementation, skin-foundation
-readiness, image-production readiness, user testing, public demo scope,
-release-candidate evidence, and installed-skin distribution.
+Separate internal implementation, trusted testing, public-demo scope,
+release-candidate evidence, installed-skin distribution, and future
+network products.
 
-A local build is not a public demo. A local production preview is not a
-deploy. Playwright WebKit is not Safari. Historical PASS evidence does
-not automatically validate a newer product HEAD.
+```text
+local build != public demo
+local production preview != deploy
+Playwright WebKit != Safari
+historical PASS != newer product HEAD verification
+best-effort corrupt backup != user restore
+```
 
-## Gate 1: Internal Build
-
-Audience: developer only.
-
-Requirements:
+## Gate 1 — Internal Build
 
 ```text
 app boots
 basic typecheck/tests/build pass
 known broken features documented
-local data may be reset
-active skin failure still leaves a usable fallback
+active skin failure leaves a usable fallback
 ```
 
-## Gate 2: Gameplay First Playable
-
-Audience: developer and trusted tester watching live.
-
-Requirements:
+## Gate 2 — Gameplay First Playable
 
 ```text
 animal starter completes a round
@@ -38,220 +33,198 @@ reload does not crash
 no existing IP assets
 ```
 
-## Gate 3: Skin Foundation Image-ready
-
-Audience: developer/design reviewer.
-
-Requirements:
+## Gate 3 — Skin Foundation Image-ready
 
 ```text
-all P0 skin-foundation items complete
+skin H1-H11 contracts complete
 typed token allowlist enforced
-pnpm skin:validate passes
+skin validation passes
 both official skins meet semantic contrast rules
-Gallery and user-facing SkinSelector work without reload
-skin switch preserves screen/match/editor state
-layered SkinSurface keeps content/focus/hit areas invariant
-candidate-first asset workflow exists
+SkinSelector/Gallery operate without state reset
+layered surfaces preserve layout/focus/hit areas
+candidate-first asset workflow enforced
 ```
 
 Never generate directly into `generated/final`.
 
-## Gate 4: User Test Ready
-
-Audience: small trusted tester group.
-
-Requirements:
+## Gate 4 — User Test Ready
 
 ```text
-QA passes for the explicitly stated scope
+QA passes for the stated scope
 main landscape sizes reviewed
 both official skins usable
-import failure UX understandable
+import failure and migration UX understandable
 invalid decks cannot start
-ErrorBoundary and recoverable state exist
-visible local-data reset path exists
-skin load failure cannot brick the app
+recoverable error/reset paths exist
 known issue list is current
 ```
 
-## Gate 5: Public Demo Ready
-
-Audience: limited public link.
-
-Requirements:
+## Gate 5 — Public Demo Ready
 
 ```text
-CI, typecheck, tests, skin validation, and build passing
-visual regression accepted for target scope
-manual QA passing for target browsers/devices
+exact artifact CI-equivalent verification passes
+visual/manual QA passes for stated target scope
 keyboard/focus basics accepted
-supported skin set explicitly stated
-no existing IP assets
-no remote image loading from user decks or skins
-no login/payment/cloud promise
-export excludes local/private metadata
-README includes exact demo limitations
-reset/recovery path is visible
-missing/corrupt entity paths recover instead of remaining blank
-skin switching updates browser color scheme
+supported browser/device/skin set explicit
+unsafe import/image/network fields rejected
+no account/payment/cloud promise
+shared export excludes local/private metadata
+reset/recovery path is visible and truthful
+missing/corrupt route entities recover instead of staying blank
 ```
 
-A Gate 5 PASS is always qualified by its tested browser/device scope.
+A Gate 5 PASS is qualified by its exact browser/device/artifact scope.
 
-## Gate 6: Release Candidate
-
-Audience: broader users.
-
-Requirements:
+## Gate 6 — Release Candidate
 
 ```text
-schema migration policy tested
-storage read/write/recovery failure paths tested
+schema migration and visible confirmation tested
+storage read/write/recovery/reset failure paths tested
 known severe bugs fixed
-visual polish accepted
-accessibility basics accepted
-performance caps tested
-asset caching/version behavior accepted
-skin package failure/rollback behavior accepted
-release claim matches the exact tested artifact SHA
+visual/accessibility basics accepted
+performance/resource caps tested
+asset caching/version/fallback accepted
+release claim matches exact artifact SHA
 ```
 
-Gate 6 was historically passed in Batch 6. Later batches extend or
-constrain RC readiness; they do not rewrite the original evidence.
+Gate 6 was historically passed in Batch 6. Later findings do not erase
+that historical decision, but newer code must be reverified before it is
+presented as the current RC artifact.
 
 ## Current RC Readiness — 2026-07-24
 
 ```text
-Historical Gate 6 decision: PASS
+Historical Gate 6: PASS
 Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
-Batch 9 extended memory/runtime soak: COMPLETE
+Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit:
-  CONTRACT DEFINED / NOT YET EXECUTED
+Post-Batch-10 integrity review: fixes committed; verification pending
+Batch 11 production Firefox/WebKit: CONTRACT DEFINED / NOT EXECUTED
 RC status: LIMITED READY
-Current product HEAD:
-  verification pending after storage/AppRoot integrity fixes
 ```
 
-### Evidence already established
+Review report:
+`docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md`.
+
+### Historical evidence retained
 
 ```text
-Batch 8, real VoiceOver + Chrome (not Safari):
-  recorded traversed and supplemental scope for both official skins.
+Batch 8:
+  real VoiceOver + Chrome within recorded scope; not Safari+VoiceOver.
 
-Batch 9, DEV SERVER:
-  Chromium memory-authoritative 62.3 min / 74 cycle soak.
-  Firefox/WebKit stability-only; no memory claim.
+Batch 9:
+  Chromium memory-authoritative dev-server soak;
+  Firefox/WebKit stability only.
 
-Batch 10, LOCAL PRODUCTION PREVIEW in Chromium:
-  clean production build, 14/14 core flows, 35 min / 47 cycle soak,
-  zero recorded product errors. This was not a deploy.
+Batch 10:
+  production build/local production preview in Chromium;
+  not a deploy or physical-device result.
 ```
 
-### Integrity review after Batch 10
-
-The review found multiple real consistency defects:
+### Post-Batch-10 defects fixed
 
 ```text
-1. Corruption recovery used raw storage operations; corruption plus quota
-   or browser-policy denial could make recovery itself throw.
-2. Corrupted records/settings raw values were not preserved.
-3. Records/settings recovery issues were returned but discarded by AppRoot,
-   so recovery could happen without a user-visible boot warning.
-4. Achievement persistence failure could still return the achievement to
-   Result UI as newly unlocked.
-5. Missing/deleted current decks or an invalid active variant could leave
-   a route rendering null indefinitely.
-6. L9004 was almost reused for storage read denial even though it already
-   means local-image fallback; the collision was removed before validation.
-7. Export revoked its Blob URL immediately and did not attach the anchor,
-   a cross-browser reliability risk before Batch 11.
+recovery cleanup could throw after corrupt storage
+records/settings corrupt raw backup absent
+records/settings recovery warnings discarded
+failed achievement persistence shown as unlocked
+missing deck/variant blank route
+silent legacy v0 migration persistence
+browser-fragile export Blob URL lifecycle
+storage error-code collision risk
+reset omitted records/settings corrupt backups
+partial reset failure presented as success
+obsolete Batch 11 baseline and stale entry/risk/performance docs
 ```
 
-Current `main` fixes:
+Current controls:
 
 ```text
-deck/records/settings read denial -> L9005 + safe empty/default fallback
-bootstrap starter write failure -> L9006
-backup and active-key cleanup independently guarded
-records/settings raw corrupt backup keys
-all three stores' initial issues included in boot Toast
-unpersisted achievements are not displayed as unlocked
-missing deck/variant routes return to a safe screen with a warning
-export uses a temporary attached anchor and deferred URL revocation
-six storage-operation failure-path unit tests
-error-code table and storage/release docs synchronized
+L9005 storage-read fallback; L9006 bootstrap-write warning
+independently guarded backup/cleanup
+all store boot issues visible
+false persisted reward/achievement claims blocked
+safe route recovery
+legacy migration review + unchanged second-action persistence
+attached export anchor + deferred URL revocation
+reset covers active/backup/skin keys and reports partial failure
 ```
 
-These are code/test changes, not execution evidence. Current-HEAD commands
-and Batch 11 still must run.
+New review-added tests: **12 committed cases**, not yet executed on the
+final exact SHA.
+
+### Current verification required
+
+```text
+pnpm install --frozen-lockfile
+pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+pnpm typecheck
+pnpm test
+pnpm skin:validate
+pnpm build
+complete Batch 11 on the same SHA/artifact
+```
+
+Any product/test change invalidates partial current-SHA evidence and
+restarts the sequence.
 
 ### Still open / unclaimed
 
 ```text
-physical iPhone Safari
-physical iPad
-physical Android
-real deploy to a selected hosting target
+physical iPhone Safari / iPad / Android
+real deploy to selected hosting
 rollback of an actually deployed immutable artifact
 Safari + VoiceOver
 NVDA / JAWS
-Batch 8 Result static-text spoken-output capture
-Cute Pop Result under real VoiceOver
-production-build Firefox/WebKit result (Batch 11 pending)
+remaining Batch 8 Result/Cute Pop VoiceOver evidence
+user-facing backup restore
 ```
 
-### Next executable work
-
-```text
-1. Freeze exact clean HEAD == origin/main.
-2. Run pnpm install --frozen-lockfile.
-3. Run pnpm typecheck / pnpm test / pnpm skin:validate / pnpm build.
-4. Confirm storageRecoveryFailurePaths.test.ts is collected and passes.
-5. Execute the complete Batch 11 matrix from the same SHA.
-6. If product code changes, invalidate partial evidence and restart.
-7. Commit report/evidence, then synchronize entry documents.
-```
-
-No older artifact result may be relabeled as current-HEAD validation.
-
-## Gate 7: Installed / Paid Skin Ready
-
-Audience: users receiving separately installed or purchased skins.
-
-Requirements:
+## Gate 7 — Installed / Paid Skin Ready
 
 ```text
 external package trust policy enforced
 arbitrary CSS/JS/HTML/URL/font blocked
-external SVG blocked by default or proven sanitized
-PNG/WebP/dimension/byte limits enforced
-versioned or content-hashed assets
-required assets preload
-skin applies atomically or previous skin remains
-package identity/source/contract version/integrity defined
-upgrade/rollback/uninstall defined
-entitlement grants no execution privileges
-marketplace/payment security reviewed separately
+unapproved external SVG blocked
+file/dimension/byte/geometry limits enforced
+versioned/content-hashed assets
+required preload and atomic apply
+previous skin retained on failure
+package identity/integrity/upgrade/rollback/uninstall defined
+marketplace/payment reviewed separately
 ```
 
-Do not advertise paid-skin support before this gate.
+Do not advertise paid-skin distribution before this gate.
 
-## Gate 8: Match Restore / Replay Ready
-
-Before restore/replay/resend features:
+## Gate 8 — Match Restore / Replay Ready
 
 ```text
-persistent matchSessionId exists
-recent processed match IDs prevent non-adjacent duplicates
-recording builders receive timestamp/ID explicitly
-storage migration is backward compatible
-A -> B -> duplicate A test passes
+persistent matchSessionId
+recent processed keys prevent non-adjacent duplicates
+deterministic action/seed replay contract
+backward-compatible persisted state
+A -> B -> duplicate A proof
 ```
 
-The current idempotency baseline does not mean restore/replay is implemented.
+The current idempotency baseline does not mean restore/replay exists.
+
+## Future Network Gate
+
+No backend/API currently exists. Before login, sync, multiplayer, uploads,
+telemetry, marketplace, or another API:
+
+```text
+authentication and authorization
+rate limiting and abuse controls
+privacy-safe observability/metrics/tracing
+capacity/load tests
+timeout/retry/offline/dependency-failure tests
+incident ownership and rollback
+secret management and retention policy
+```
+
+See `docs/OPERATIONS-READINESS.md`.
 
 ## Demo Limitations Copy
 
@@ -259,6 +232,7 @@ The current idempotency baseline does not mean restore/replay is implemented.
 This is a local-first demo.
 Decks and progress are stored locally in your browser.
 Imported decks are validated before play.
+Known legacy data is reviewed before migration is saved.
 Local/private image data is not included in shared JSON.
 Online multiplayer and accounts are not included.
 Only the listed browsers, devices, skins, and features are supported.
@@ -267,42 +241,37 @@ Only the listed browsers, devices, skins, and features are supported.
 ## Never Demo If
 
 ```text
-current HEAD has no green CI-equivalent verification
+current HEAD has no green exact-SHA verification
 unsafe import fields are accepted
-existing IP assets are included
+legacy migration changes are silently persisted
 2-player mode appears selectable
 an unfinished variant can start
 score cannot be explained
-reload crashes a common flow
-skin failure can blank or brick the app
-active skin changes layout/hit areas/game state
-contrast/focus makes core controls unreadable
-reset/recovery path is unavailable
-recovery can throw an unhandled raw storage exception
-recovery warnings are silently discarded
-unpersisted rewards are displayed as saved
-an old artifact PASS is presented as current-HEAD evidence
+skin failure can blank/brick the app
+recovery can throw a raw storage exception
+recovery warnings are discarded
+unpersisted rewards are shown as saved
+reset claims success after partial deletion failure
+old artifact evidence is presented as current
 ```
 
 ## Reporting
 
-Every gate or Batch decision records:
+Every gate/Batch decision records:
 
 ```text
-exact commit SHA
-scope
+exact commit SHA and artifact hash
 commands and results
-CI run or explicitly unavailable
-browser/device/viewport and versions
+CI run/status or explicitly unavailable
+browser/device/viewport/version
 skin(s)
 manual/automated/visual evidence type
 known exclusions
-pass / conditional / blocked
-artifact hash for production/deploy claims
+PASS / CONDITIONAL / BLOCKED
 ```
 
 ## Final Decision
 
-A demo or release is a promise. Expose only the portions whose rules,
-recovery, accessibility, skin contract, deployment status, and visual
-behavior are verified on the exact artifact being presented.
+A release is a promise. Expose only behavior whose rules, recovery,
+compatibility, accessibility, performance authority, and deployment scope
+are verified on the exact artifact being presented.
