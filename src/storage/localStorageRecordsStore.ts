@@ -5,6 +5,7 @@ import {
   MAX_ROLE_COLLECTION_ENTRIES,
   MAX_STORED_ACHIEVEMENTS,
   MAX_STORED_MATCH_RECORDS,
+  matchRecordSchema,
   normalizeRecordsPayload,
   recordsPayloadSchema,
   type MatchRecord,
@@ -74,6 +75,123 @@ function normalizeOverLimitCollections(raw: unknown): {
   return parsed.success ? { records: normalizeRecordsPayload(parsed.data), trimmed } : null;
 }
 
+function safeNonnegativeInteger(value: unknown): number | null {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+function validStrings(value: unknown, maxLength: number, maxItems: number): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .filter(
+      (item): item is string =>
+        typeof item === 'string' && item.length > 0 && item.length <= maxLength,
+    )
+    .slice(0, maxItems);
+}
+
+function validOptionalString(value: unknown, maxLength: number): string | undefined {
+  return typeof value === 'string' && value.length > 0 && value.length <= maxLength
+    ? value
+    : undefined;
+}
+
+function salvageCurrentRecordsPayload(raw: unknown): {
+  records: RecordsPayload;
+  notes: string[];
+} | null {
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+    return null;
+  }
+  const source = raw as Record<string, unknown>;
+  if (source['version'] !== 1) {
+    // 未知versionを現行形式として推測しない。
+    return null;
+  }
+
+  const notes: string[] = [];
+  const rawRecords = Array.isArray(source['records']) ? source['records'] : [];
+  const records = rawRecords
+    .flatMap((entry) => {
+      const parsed = matchRecordSchema.safeParse(entry);
+      return parsed.success ? [parsed.data] : [];
+    })
+    .slice(0, MAX_STORED_MATCH_RECORDS);
+  const droppedRecords = rawRecords.length - records.length;
+  if (droppedRecords > 0) {
+    notes.push(`壊れた/上限超過の対局履歴${droppedRecords}件を除外`);
+  }
+
+  const coins = safeNonnegativeInteger(source['coins']);
+  if (coins === null) {
+    notes.push('不正なコイン値を0へ復旧');
+  }
+
+  const roleCollection = validStrings(
+    source['roleCollection'],
+    160,
+    MAX_ROLE_COLLECTION_ENTRIES,
+  );
+  if (!Array.isArray(source['roleCollection']) || roleCollection.length !== source['roleCollection'].length) {
+    notes.push('役コレクションの不正/上限超過項目を除外');
+  }
+
+  const achievements = validStrings(
+    source['achievements'],
+    64,
+    MAX_STORED_ACHIEVEMENTS,
+  );
+  if (
+    source['achievements'] !== undefined &&
+    (!Array.isArray(source['achievements']) || achievements.length !== source['achievements'].length)
+  ) {
+    notes.push('実績の不正/上限超過項目を除外');
+  }
+
+  const totalMatches = safeNonnegativeInteger(source['totalMatches']);
+  if (source['totalMatches'] !== undefined && totalMatches === null) {
+    notes.push('不正な通算対局数を残存履歴件数へ復旧');
+  }
+
+  const lastMatchKey = validOptionalString(source['lastMatchKey'], 160);
+  if (source['lastMatchKey'] !== undefined && lastMatchKey === undefined) {
+    notes.push('不正な最終対局キーを除外');
+  }
+
+  const recentMatchKeys = validStrings(
+    source['recentMatchKeys'],
+    160,
+    MAX_RECENT_MATCH_KEYS,
+  );
+  if (
+    source['recentMatchKeys'] !== undefined &&
+    (!Array.isArray(source['recentMatchKeys']) ||
+      recentMatchKeys.length !== source['recentMatchKeys'].length)
+  ) {
+    notes.push('処理済み対局キーの不正/上限超過項目を除外');
+  }
+
+  const candidate: RecordsPayload = {
+    version: 1,
+    coins: coins ?? 0,
+    records,
+    roleCollection,
+    achievements,
+    totalMatches: totalMatches ?? records.length,
+    ...(lastMatchKey !== undefined ? { lastMatchKey } : {}),
+    recentMatchKeys,
+  };
+  const parsed = recordsPayloadSchema.safeParse(candidate);
+  if (!parsed.success) {
+    return null;
+  }
+  return {
+    records: normalizeRecordsPayload(parsed.data),
+    notes: notes.length > 0 ? notes : ['保存形式の余剰フィールドを除去'],
+  };
+}
+
 export function createLocalStorageRecordsStore(storage: KeyValueStorage): RecordsStore {
   const read = (): ReadRecordsResult => {
     let raw: string | null;
@@ -139,6 +257,40 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
               code: 'L9007',
               severity: 'warning',
               message: `以前のバージョンで保存上限を超えた記録を正規化しました(${normalized.trimmed.join('、')})。元データは可能な限りバックアップに退避しています。${suffix}`,
+            },
+          ],
+        };
+      }
+
+      const salvaged = salvageCurrentRecordsPayload(json);
+      if (salvaged !== null) {
+        let backupSaved = true;
+        let normalizedWritten = true;
+        try {
+          storage.setItem(RECORDS_BACKUP_KEY, raw);
+        } catch {
+          backupSaved = false;
+        }
+        try {
+          storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(salvaged.records));
+        } catch {
+          normalizedWritten = false;
+        }
+        const failures: string[] = [];
+        if (!backupSaved) {
+          failures.push('元データのバックアップを保存できませんでした');
+        }
+        if (!normalizedWritten) {
+          failures.push('救済した記録を書き戻せませんでした');
+        }
+        const suffix = failures.length > 0 ? ` ただし、${failures.join('。')}。` : '';
+        return {
+          records: salvaged.records,
+          issues: [
+            {
+              code: 'L9001',
+              severity: 'warning',
+              message: `対局記録の一部に問題があったため、利用できる進捗を保持して正規化しました(${salvaged.notes.join('、')})。元データは可能な限りバックアップに退避しています。${suffix}`,
             },
           ],
         };
