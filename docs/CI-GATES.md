@@ -2,132 +2,130 @@
 
 ## Purpose
 
-CI prevents schema, engine, import, UI, and skin-contract drift.
+CI prevents schema, engine, import, persistence, UI-contract, and skin
+package drift. Local command success and GitHub Actions success are
+separate facts. A successful push is not a CI PASS.
 
-Local command success and GitHub Actions success are separate facts. Reports must not claim CI passed when no workflow run is available.
+## Current Automated Workflow
 
-## Required Base Job
+Canonical file: `.github/workflows/ci.yml`.
 
 ```text
+trigger: push to main + pull_request
+permissions: contents read only
+concurrency: newer run cancels obsolete run for the same ref
+job timeout: 20 minutes
+Node: 24
+package manager: packageManager field / pnpm lockfile
+```
+
+Execution order:
+
+```bash
 pnpm install --frozen-lockfile
+pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
 pnpm typecheck
 pnpm test
+pnpm skin:validate
 pnpm build
 ```
 
-Use one package manager consistently.
+The dedicated storage command is intentionally duplicated by the full
+Vitest run. It makes the newly added compound recovery regression visible
+as its own gate while the full suite still proves no broader regression.
 
-Required repository declarations:
+## Required Base Evidence
+
+A CI report records:
 
 ```text
-packageManager version
-supported Node version/engine policy
-committed lockfile
+exact commit SHA
+workflow run URL/ID when available
+job conclusion
+Node and pnpm versions
+install/typecheck/test/skin validation/build results
+cancelled/superseded distinction
 ```
+
+If the connector/API returns no workflow run or status, report CI as
+**unavailable/not observed**, never green.
 
 ## Required Test Groups
 
+The full unit suite must include:
+
 ```text
-schema tests
-import security tests
+schema and golden fixture tests
+import security/unsafe-field tests
 deck validation tests
 group/wildcard/ron/tsumo/scoring tests
 discard preview purity tests
 match reducer and deterministic CPU tests
 localStorage/migration/recovery tests
+compound storage operation failure tests
 achievement/record idempotency tests
+component/DOM/accessibility tests
 skin core/package tests
 ```
 
-## Skin Hardening Gate
+Pure engine tests remain in Node. DOM behavior uses the configured
+browser-like test environment only where needed.
 
-After H2, CI must run:
+## Skin Validation Gate
+
+`pnpm skin:validate` is an explicit release gate even where its test file
+is also collected by `pnpm test`.
+
+It verifies:
+
+```text
+registry/manifest/contract schemas and versions
+known skin/token/slot IDs
+typed token allowlist and value ranges
+inheritance cycle/depth
+package-local safe paths and trust-level file types
+actual file existence/bytes/dimensions
+intrinsicSize, slice, safe-area, minimum render geometry
+render-mode permission
+status/file/candidate/final path consistency
+all official packages and fallback behavior
+```
+
+## Visual / Browser Gates
+
+Playwright visual, cross-browser, soak, real-device, and real-AT suites are
+**pre-release/manual evidence gates**, not currently part of the default
+GitHub Actions job. Reasons include browser installation cost, screenshot
+baseline review, host-specific automation, and real-device requirements.
+
+Commands where applicable:
 
 ```bash
-pnpm skin:validate
+pnpm test:visual
+pnpm test:visual:crossbrowser
 ```
 
-It must check:
+Current executable contract:
+`docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md`.
+
+Do not say “CI covers browsers” merely because browser tests exist in the
+repository.
+
+## Visual Regression Rules
 
 ```text
-registry/manifest/contract schema
-contract version
-known skin/token/slot IDs
-explicit skin-token allowlist and per-token range/type
-inheritance cycles/depth
-safe package-local filenames
-trust-level file types
-actual file existence
-individual and total byte budgets
-actual image dimensions
-intrinsicSize consistency
-slice and safe-area geometry
-minimum render size
-slot-specific render-mode permission
-status/file consistency
-candidate/final path rules
-all official packages
+deterministic data and viewport
+reduced/disabled motion
+stable fonts
+required skin assets loaded before capture
+dynamic timestamps masked or fixed
+human review for meaningful screenshot diffs
+no broad automatic baseline acceptance
 ```
 
-A skin contract is not validated by checking slot names alone.
+## Security Gates
 
-## Component / DOM Gate
-
-After H8, run component/interaction tests selected through ADR.
-
-Minimum:
-
-```text
-Button disabled/loading/state semantics
-Tile selected/emphasis accessibility semantics
-Modal focus entry/trap/return
-Tabs keyboard navigation
-SkinSelector loading/failure/default behavior
-skin switch preserves screen/editor/match state
-ErrorState and reset confirmation
-```
-
-Keep pure engine tests in node environment. Use a separate browser-like test environment for DOM behavior.
-
-## Visual Regression Gate
-
-After H9, run Playwright or the approved equivalent.
-
-Minimum matrix:
-
-```text
-all screens at 844x390
-TOP / Deck Editor / Match / Result / Collection at all five review sizes
-Component Gallery in yorunoshirube and cute-pop
-```
-
-Required controls:
-
-```text
-deterministic data
-fixed timestamps or masked dynamic text
-disabled/reduced motion
-stable font policy
-accepted baseline review
-```
-
-Screenshot changes require human review; do not auto-approve broad visual diffs.
-
-## Golden Tests
-
-CI includes:
-
-```text
-samples/animal-starter.deck.json strict parse
-animal starter validation
-animal starter basic analysis smoke
-all official skin packages load and resolve
-base fallback remains operational
-```
-
-## Security Tests
-
-Deck imports must reject:
+Deck imports reject:
 
 ```text
 imageUrl / imageBase64 / filePath / blobUrl
@@ -135,62 +133,53 @@ url / src / href
 html / style / script / code / function
 prototype pollution keys
 unknown fields
+oversize/deep payloads before expensive analysis
 ```
 
-Skin packages must reject:
+Skin packages reject:
 
 ```text
-unknown token IDs
-structural token override by external skin
+unknown tokens/slots/render modes
+structural token override
 arbitrary CSS/JS/HTML
-external URLs and fonts
+external URLs/fonts
 path traversal
 unapproved external SVG
-unknown slots/render modes
 invalid geometry and over-budget files
 ```
 
 ## Performance Smoke
 
-Use structural assertions rather than flaky device timings:
+Use structural assertions instead of flaky host timings:
 
 ```text
-candidate cap returns warning
-wildcard branch cap returns warning
+candidate and branch caps emit warnings
 large unsafe import rejects before deep validation
-primaryCandidates <= configured maximum
-skin package byte/dimension limits enforced
-skin switch does not perform repeated uncontrolled fetch loops
+primary candidate count is capped
+skin byte/dimension limits are enforced
+stale skin load cannot overwrite newer selection
+failed preload keeps previous/fallback skin
 ```
+
+Long-duration memory/runtime evidence is handled by the soak runbook and
+recorded Batch reports, not the default CI job.
 
 ## Lint / Format
 
-Decide and record through dependency policy/ADR.
+No separate lint/format tool is currently declared. Do not claim one.
+Adoption requires dependency-policy/ADR review and a committed CI command.
+TypeScript strictness and tests are not a substitute for an undocumented
+formatter, and an absent formatter is not automatically a release blocker.
 
-Once adopted, CI must run the configured commands. Do not leave formatting/lint rules as undocumented local conventions.
+## Workflow Security / Maintenance
 
-## Workflow Policy
-
-```text
-require CI before large UI merges when branch protection is enabled
-avoid direct main commits for large implementation batches
-small docs-only commits may remain direct while solo-developing
-```
-
-## CI Report Requirements
-
-Every work report states:
-
-```text
-commands run locally
-local pass/fail
-GitHub Actions run status or unavailable
-known skipped commands
-reason skipped
-skin/screens affected
-visual baseline changed: yes/no
-```
+Current workflow uses read-only repository permission and standard major
+action versions. Before organization-wide or external-contributor use,
+consider an explicit action-SHA pinning policy and Dependabot/Renovate
+policy through ADR; do not invent unverified commit SHAs.
 
 ## Final Decision
 
-CI must prove engine/import safety and the skin/UI contract. A visually correct local screen is not sufficient proof.
+CI proves only the commands actually present in `.github/workflows/ci.yml`
+on the exact reported SHA. Browser/device/AT/deploy claims require their
+own evidence, and missing workflow visibility must remain explicit.
