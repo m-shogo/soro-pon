@@ -15,7 +15,6 @@ import { safeWrite, StorageWriteError, type KeyValueStorage } from './keyValueSt
 export const RECORDS_STORAGE_KEY = 'soro-pon.records.v1';
 export const RECORDS_BACKUP_KEY = 'soro-pon.records.v1.corrupt-backup';
 
-// docs/29: 獲得コイン = totalPoints(上限500)。流局/敗北は参加報酬10。
 export const COIN_CAP_PER_MATCH = 500;
 export const COIN_PARTICIPATION = 10;
 
@@ -34,24 +33,46 @@ export type MatchCommitResult = {
 
 export type RecordsStore = {
   load(): { records: RecordsPayload; issues: ValidationIssue[] };
-  /**
-   * matchKeyは1つの対局結果を一意に指す識別子(結果確定イベント単位)。
-   * 処理済みmatchKeyならno-op(コイン/records/totalMatchesを増やさない)。
-   */
   addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload;
-  /**
-   * 対局記録・コイン・役コレクション・対局由来実績を1回のwriteで確定する。
-   * resolveAchievementIdsには、今回の記録を反映済みの累計状態を渡す。
-   */
   commitMatch(
     record: MatchRecord,
     matchKey: string,
     wonRoleKey: string | undefined,
     resolveAchievementIds: (nextRecords: RecordsPayload) => string[],
   ): MatchCommitResult;
-  /** 実績を解放して保存する。既知のIDは重複しない。 */
   unlockAchievements(ids: string[]): RecordsPayload;
 };
+
+function normalizeOverLimitCollections(raw: unknown): {
+  records: RecordsPayload;
+  trimmed: string[];
+} | null {
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+    return null;
+  }
+  const source = raw as Record<string, unknown>;
+  const candidate: Record<string, unknown> = { ...source };
+  const trimmed: string[] = [];
+
+  const trimArray = (key: string, max: number, label: string): void => {
+    const value = source[key];
+    if (Array.isArray(value) && value.length > max) {
+      candidate[key] = value.slice(0, max);
+      trimmed.push(`${label} ${value.length}件→${max}件`);
+    }
+  };
+
+  trimArray('records', MAX_STORED_MATCH_RECORDS, '対局履歴');
+  trimArray('roleCollection', MAX_ROLE_COLLECTION_ENTRIES, '役コレクション');
+  trimArray('achievements', MAX_STORED_ACHIEVEMENTS, '実績');
+  trimArray('recentMatchKeys', MAX_RECENT_MATCH_KEYS, '処理済み対局キー');
+
+  if (trimmed.length === 0) {
+    return null;
+  }
+  const parsed = recordsPayloadSchema.safeParse(candidate);
+  return parsed.success ? { records: normalizeRecordsPayload(parsed.data), trimmed } : null;
+}
 
 export function createLocalStorageRecordsStore(storage: KeyValueStorage): RecordsStore {
   const read = (): ReadRecordsResult => {
@@ -75,13 +96,53 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     if (raw === null) {
       return { records: EMPTY_RECORDS, issues: [] };
     }
+
+    let json: unknown;
     try {
-      const parsed = recordsPayloadSchema.safeParse(JSON.parse(raw) as unknown);
+      json = JSON.parse(raw) as unknown;
+    } catch {
+      json = undefined;
+    }
+
+    if (json !== undefined) {
+      const parsed = recordsPayloadSchema.safeParse(json);
       if (parsed.success) {
         return { records: normalizeRecordsPayload(parsed.data), issues: [] };
       }
-    } catch {
-      // 回復処理へ
+
+      const normalized = normalizeOverLimitCollections(json);
+      if (normalized !== null) {
+        let backupSaved = true;
+        let normalizedWritten = true;
+        try {
+          storage.setItem(RECORDS_BACKUP_KEY, raw);
+        } catch {
+          backupSaved = false;
+        }
+        try {
+          storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(normalized.records));
+        } catch {
+          normalizedWritten = false;
+        }
+        const failures: string[] = [];
+        if (!backupSaved) {
+          failures.push('元データのバックアップを保存できませんでした');
+        }
+        if (!normalizedWritten) {
+          failures.push('正規化した記録を書き戻せませんでした');
+        }
+        const suffix = failures.length > 0 ? ` ただし、${failures.join('。')}。` : '';
+        return {
+          records: normalized.records,
+          issues: [
+            {
+              code: 'L9007',
+              severity: 'warning',
+              message: `以前のバージョンで保存上限を超えた記録を正規化しました(${normalized.trimmed.join('、')})。元データは可能な限りバックアップに退避しています。${suffix}`,
+            },
+          ],
+        };
+      }
     }
 
     let backupSaved = true;
@@ -241,7 +302,6 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
   };
 }
 
-// Resultから記録を作る補助(coins計算をUIに散らさない)
 export function buildMatchRecord(input: {
   dateMs: number;
   deckId: string;
