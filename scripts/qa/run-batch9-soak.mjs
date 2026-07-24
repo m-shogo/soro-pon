@@ -35,7 +35,9 @@ const MAX_CYCLES = Number(args['max-cycles'] ?? (BROWSER === 'chromium' ? 100 : 
 const LABEL = args.label ?? `${BROWSER}-soak`;
 const BASE = args.base ?? 'http://localhost:5199';
 
-const ROOT = 'docs/qa/evidence/batch-9';
+// 出力先。既定はBatch 9の証跡ディレクトリ(既存の実行方法を変えない)。
+// 他batchから流用する場合のみ --out-root で明示的に切り替える。
+const ROOT = args['out-root'] ?? 'docs/qa/evidence/batch-9';
 mkdirSync(`${ROOT}/shots`, { recursive: true });
 const JSONL = `${ROOT}/soak-${LABEL}.jsonl`;
 writeFileSync(JSONL, ''); // 新規実行で上書き開始
