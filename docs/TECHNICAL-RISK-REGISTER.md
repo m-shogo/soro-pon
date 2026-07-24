@@ -2,578 +2,477 @@
 
 ## Purpose
 
-This document lists technical risks that may still break Soro-pon even after the rule/design docs are strong.
+This register tracks risks that can still break the current product or
+invalidate a release claim. It is not an implementation backlog and must
+not describe completed MVP foundations as future work.
 
-Each risk includes a mitigation and an implementation gate.
+Status vocabulary:
 
-## Current Verdict
-
-The product design is strong enough to start domain/schema/engine implementation.
-
-The remaining risks are mostly implementation risks:
-
-```text
-randomness/replay
-strict import edge cases
-performance caps
-local storage recovery
-image storage later
-schema migration
-test fixture coverage
-CI enforcement
-```
-
-## R1: Randomness Is Not Reproducible
-
-Risk:
-
-```text
-Shuffle/deal/CPU tie-break differs every run, making bugs hard to reproduce.
-```
-
-Mitigation:
-
-```text
-Use a seedable RNG for tests and match replay.
-Store match seed in MatchState.
-Do not use Math.random directly inside engine functions.
-```
-
-Gate:
-
-```text
-Test: same seed produces same deal and CPU tie-break.
-```
-
-## R2: Runtime IDs Are Not Stable Enough
-
-Risk:
-
-```text
-TileInstanceId generation changes between functions, breaking replay or tests.
-```
-
-Mitigation:
-
-```text
-Create tile instances through one function.
-Use deterministic IDs in tests.
-Keep tileId and tileInstanceId separate.
-```
-
-Gate:
-
-```text
-Test: createTileInstances creates stable instance IDs with seed/test mode.
-```
-
-## R3: Strict Import Over-rejects Useful Future Data
-
-Risk:
-
-```text
-Unsafe key scan rejects every url/src key, which is safe for MVP but may block future legitimate fields.
-```
-
-Mitigation:
-
-```text
-MVP keeps strict no-exception policy.
-Future URL-like fields require schema version bump, security review, and explicit allowlist.
-```
-
-Gate:
-
-```text
-Test: current schema rejects url/src anywhere.
-Future change must update MIGRATIONS and ADR.
-```
-
-## R4: Strict Import Under-rejects Nested Payloads
-
-Risk:
-
 ```text
-Unsafe fields hidden deeply inside role conditions or unknown objects pass import.
-```
+CLOSED
+  implementation and representative automated evidence exist
 
-Mitigation:
+MITIGATED
+  controls exist, but future changes can reopen the risk
 
-```text
-Run recursive unsafe key scan before Zod parse.
-Use strict Zod objects everywhere.
-Reject unknown fields.
-```
+OPEN
+  executable work remains
 
-Gate:
+BLOCKED_EVIDENCE
+  product may work, but required target environment/evidence is unavailable
 
-```text
-Test: nested imageUrl/html/script/url/src/filePath rejected.
+NOT_APPLICABLE_CURRENT_ARCHITECTURE
+  no current subsystem exists for the risk; re-open if architecture changes
 ```
 
-## R5: Schema And Domain Types Drift
+Release truth remains `docs/RELEASE-DEMO-GATES.md`. This document records
+risk, mitigation, evidence, and reopen conditions.
 
-Risk:
+## Current Verdict — 2026-07-24
 
 ```text
-Zod schema accepts data that domain types or engine do not support.
+Gameplay/schema/engine/UI foundation risks: mostly CLOSED or MITIGATED
+Storage recovery compound-failure risk: fixed, verification pending
+Current exact-SHA CI-equivalent verification: OPEN
+Batch 11 production Firefox/WebKit: OPEN
+Physical-device / real-Safari / real-AT evidence: BLOCKED_EVIDENCE
+Real deploy and deployed-artifact rollback: BLOCKED_EVIDENCE
+Backend rate limit/distributed trace/server load: NOT_APPLICABLE_CURRENT_ARCHITECTURE
+RC readiness: LIMITED READY
 ```
 
-Mitigation:
+## R1 — Non-deterministic Engine Behavior
 
-```text
-Keep schema output aligned with domain types.
-Add animal-starter parse + validate + analyze smoke test.
-```
+Status: **CLOSED / regression-sensitive**.
 
-Gate:
+Controls:
 
 ```text
-Test: parsed animal starter can run through validation and basic analysis without adapter hacks.
+seedable RNG
+seed stored in match state/session
+stable CPU tie-breaking
+no direct Math.random inside engine decisions
 ```
-
-## R6: Group Search Becomes Too Slow
-
-Risk:
 
-```text
-Custom decks with many roles/wildcards create too many group partitions.
-```
+Reopen if shuffle, CPU, replay, or session-ID generation changes.
 
-Mitigation:
+## R2 — Schema / Domain / Engine Drift
 
-```text
-Use ENGINE_LIMITS.
-Natural groups first.
-One-wildcard groups second.
-Cap partitions and branches.
-Return analyzer warnings.
-```
+Status: **MITIGATED**.
 
-Gate:
+Controls:
 
 ```text
-Test: candidate-explosion fixture returns warning, not timeout.
+strict Zod objects
+shared typed domain contracts
+animal-starter parse/validate/analyze golden coverage
+newer schema reject
+unknown fields reject
 ```
 
-## R7: Candidate Ranking Feels Arbitrary
+Reopen on any schema version, rule model, variant, or import change. Update
+`MASTER-SPEC`, `MIGRATIONS`, fixtures, error codes, and compatibility tests
+together.
 
-Risk:
+## R3 — Unsafe Import / Prototype Pollution / Display Injection
 
-```text
-Engine returns correct candidates but top candidate feels random or unstable.
-```
-
-Mitigation:
-
-```text
-Deterministic rankScore.
-Prefer completed > tenpai > near.
-Prefer natural groups over wildcard-heavy.
-Use deck order as final tie-break.
-```
+Status: **MITIGATED**.
 
-Gate:
+Controls:
 
 ```text
-Test: same hand always returns same primary candidate order.
+byte and depth limits before expensive analysis
+recursive unsafe-key scan
+strict schema parsing
+image/URL/path/blob/html/style/script/code/function fields rejected
+unknown fields rejected
 ```
-
-## R8: Wait Analysis Context Mix-up
 
-Risk:
-
-```text
-afterDrawNineTiles, afterDiscardEightTiles, and ronCheckNineTiles get mixed.
-```
+Future URL/image sharing requires a schema version bump, security review,
+explicit allowlist, migration policy, and new threat tests.
 
-Mitigation:
+## R4 — Group/Wildcard Candidate Explosion
 
-```text
-WaitAnalyzer requires explicit WaitContext.
-Ron always analyzes 8 hand tiles + discarded tile.
-Tsumo always analyzes 9 after draw.
-```
+Status: **MITIGATED**.
 
-Gate:
+Controls:
 
 ```text
-Tests for all three WaitContext values.
+candidate/partition/wildcard branch caps
+natural groups prioritized
+explicit capped warnings
+adversarial fixtures
 ```
 
-## R9: Result Score Is Not Reconstructable
-
-Risk:
-
-```text
-UI shows a score number that cannot be traced to selectedWinRole and bonuses.
-```
+Open evidence: low-end physical-device timings remain unclaimed. Do not
+replace structural caps with flaky CI wall-clock assertions.
 
-Mitigation:
+## R5 — Result Score Cannot Be Reconstructed
 
-```text
-ResultBreakdown contract required.
-No hidden modifiers.
-No silent cap.
-```
+Status: **CLOSED / regression-sensitive**.
 
-Gate:
+Controls:
 
 ```text
-Test: totalPoints equals selectedWinRole.basePoints + bonuses.
+selected role is explicit
+ResultBreakdown is explicit
+no hidden modifier
+score tests reconstruct total from role + bonuses
 ```
 
-## R10: LocalStorage Corruption Breaks Boot
+Reopen on scoring or bonus changes.
 
-Risk:
+## R6 — UI Reimplements Game Rules
 
-```text
-Invalid local data crashes app before user can recover.
-```
+Status: **MITIGATED**.
 
-Mitigation:
+Boundary:
 
 ```text
-All localStorage reads go through schema parse.
-On failure, boot safe fallback and show recoverable notice.
+UI renders engine outputs
+engine owns canRon/canTsumo/waits/score/wildcard meaning
+reducer owns gameplay mutation
+preview remains pure
 ```
-
-Gate:
 
-```text
-Test: corrupt localStorage boots fallback state.
-```
+Reopen during review if rule logic appears under `src/ui` or React code.
 
-## R11: Storage Quota With Future Images
+## R7 — LocalStorage Corruption Breaks Boot
 
-Risk:
+Status: **MITIGATED; fresh verification OPEN**.
 
-```text
-Local images exceed browser storage quota or make backup/export confusing.
-```
+The post-Batch-10 review found that normal writes were guarded but
+corruption recovery used raw storage operations. Compound corruption plus
+quota/storage denial could throw during recovery.
 
-Mitigation:
+Current controls:
 
 ```text
-Do not store images in shared JSON.
-Use IndexedDB later, not localStorage, for image blobs.
-Resize/sanitize images.
-Provide orphan cleanup.
+all values strict-parse before use
+deck partial salvage
+known v0 -> v1 migration only
+getItem denial -> L9005 + safe session fallback
+backup creation and active-key removal guarded independently
+records/settings corrupt raw backup attempted
+AppRoot displays issues from all stores
+six storage-operation failure-path unit tests
 ```
 
-Gate:
+Open:
 
 ```text
-Before image feature: create LocalImageMap tests and quota/error handling tests.
+run current exact-SHA test suite
+real-browser storage-disabled scenario when target matrix is known
 ```
-
-## R12: Object URLs Leak Memory
 
-Risk:
+## R8 — False Success After Persistence Failure
 
-```text
-createObjectURL is used without revokeObjectURL.
-```
+Status: **MITIGATED; fresh verification OPEN**.
 
-Mitigation:
+Previously possible:
 
 ```text
-Object URLs are UI-only temporary values.
-Never persist them.
-Revoke after preview/load lifecycle.
+achievement write fails but Result reports it as newly unlocked
+records/settings recover but warning is discarded
+a missing route entity renders null indefinitely
 ```
 
-Gate:
+Current controls:
 
 ```text
-Image feature tests or review checklist includes revoke behavior.
+tryWrite returns false and blocks success-only follow-up
+unpersisted achievements return [] to Result
+all boot store issues reach warning Toast
+missing deck/variant redirects to safe screen
+starter boot write failure uses L9006
 ```
 
-## R13: UI Accidentally Re-implements Rules
+Reopen on any new persistence call site. Every write must define what UI
+is allowed to claim after failure.
 
-Risk:
+## R9 — Error-Code Collision / Semantic Drift
 
-```text
-React components calculate canRon, score, or wildcard meaning.
-```
+Status: **MITIGATED**.
 
-Mitigation:
-
-```text
-UI only renders engine outputs.
-Add fields to engine result instead of duplicating logic.
-```
+The review caught an attempted collision: `L9004` already means local
+image fallback and could not also mean storage read denial.
 
-Gate:
+Controls:
 
 ```text
-Code review: no rule functions inside src/ui.
+docs/ERROR-CODES.md is canonical
+L9005 = storage read unavailable
+L9006 = bootstrap/default persistence failure
+tests assert codes for storage faults
 ```
 
-## R14: UI State And Match State Are Confused
+Reopen whenever a new issue code is introduced. Search implementation,
+tests, and docs before assignment.
 
-Risk:
+## R10 — Object URL / Export Lifecycle
 
-```text
-Selecting/previewing a tile mutates match state or commits discard accidentally.
-```
-
-Mitigation:
-
-```text
-Preview is pure.
-Reducer owns gameplay mutation.
-Tap selects; discard button commits.
-```
+Status: **MITIGATED; Batch 11 evidence OPEN**.
 
-Gate:
+Controls:
 
 ```text
-Test: discard preview does not mutate MatchState.
+Blob URL is temporary and never persisted
+export anchor is attached before click
+anchor is removed after click
+URL revocation is deferred
 ```
 
-## R15: CPU Appears To Cheat
+Batch 11 Firefox/WebKit production flow must verify actual export behavior.
+Future local-image previews need dedicated lifecycle tests.
 
-Risk:
+## R11 — Skin Package Can Blank, Mix, or Execute Unsafe Content
 
-```text
-CPU uses hidden opponent information or non-deterministic choices.
-```
+Status: **MITIGATED**.
 
-Mitigation:
+Controls:
 
 ```text
-CPU uses same analyzer facts as UI.
-Seeded deterministic tie-break.
-No hidden opponent hand access in MVP.
+typed token allowlist
+filesystem/package validation
+no arbitrary CSS/JS/HTML/external URLs/fonts
+external SVG blocked by default
+versioned asset URLs
+required-asset preload
+atomic apply or previous skin retained
+stale request cannot replace newer selection
+base/bundled fallback
 ```
-
-Gate:
 
-```text
-Test: same state gives same CPU action and no hidden hand dependency.
-```
+Reopen for external package installation, marketplace delivery, or new
+render modes/file types.
 
-## R16: Free Decks Are Technically Valid But Boring
+## R12 — Cross-Browser Landscape / Download / Storage Differences
 
-Risk:
+Status: **OPEN**.
 
-```text
-Deck passes schema but every hand wins, or no hand realistically wins.
-```
+Historical evidence exists, but current product code changed after Batch
+10. Batch 11 must validate production Firefox and Playwright WebKit at one
+exact current SHA.
 
-Mitigation:
+Limits:
 
 ```text
-Deck validation includes feasibility, wildcard dependency, role overlap, score budget, and candidate noise warnings.
+Playwright WebKit is not Safari
+no result generalizes to physical mobile devices
+no memory comparison across engines without equivalent authority
 ```
-
-Gate:
 
-```text
-Adversarial fixtures for too-easy and impossible decks.
-```
+## R13 — Accessibility Evidence Is Overgeneralized
 
-## R17: Error Messages Drift From Tests
+Status: **BLOCKED_EVIDENCE / partially mitigated**.
 
-Risk:
+Established:
 
 ```text
-UI checks message text and breaks after copy edits.
+DOM semantics/component tests
+keyboard/focus behavior
+real VoiceOver + Chrome within Batch 8 recorded scope
 ```
 
-Mitigation:
+Open:
 
 ```text
-Tests assert stable error codes, not full message text.
+Safari + VoiceOver
+NVDA / JAWS
+Batch 8 Result static-text spoken capture
+Cute Pop Result under real VoiceOver
+physical mobile assistive-technology behavior
 ```
 
-Gate:
+Do not call automated AX inspection a real screen-reader pass.
 
-```text
-ValidationIssue includes code and severity.
-```
+## R14 — Memory / Timer / Listener Leak
 
-## R18: Docs Say One Thing, Code Does Another
+Status: **MITIGATED for recorded Chromium scopes; future changes reopen**.
 
-Risk:
+Historical controls/evidence:
 
 ```text
-Implementation silently diverges from MASTER-SPEC.
+Batch 9 extended Chromium soak
+Batch 10 production-preview Chromium soak
+error/timer/listener/DOM/heap evidence with authority labels
 ```
 
-Mitigation:
+Rules:
 
 ```text
-When behavior changes, update docs first or in same commit.
-CI should eventually check sample parse and golden tests.
+unavailable metric = null/not_available, never 0
+Firefox/WebKit stability runs make no memory claim
+new long-lived timers/listeners/effects require cleanup review
 ```
-
-Gate:
 
-```text
-Pull request report includes changed docs or states no spec change.
-```
+## R15 — Performance Targets Exist Without Target-Device Proof
 
-## R19: No CI Gate
+Status: **OPEN / scope-limited**.
 
-Risk:
+Structural caps and desktop automation exist. Physical low-end/common
+phone performance remains unverified. Keep RC LIMITED READY and avoid
+“60fps supported” claims until device evidence exists.
 
-```text
-Tests pass locally once but regress later.
-```
+## R16 — CI Evidence Missing or Detached From Current SHA
 
-Mitigation:
+Status: **OPEN**.
 
-```text
-Add CI after package setup: install, typecheck, test, build.
-```
+Current connector-visible HEAD has no workflow run/status available.
+A push is not CI success.
 
-Gate:
+Required closure:
 
 ```text
-CI required before UI-heavy work.
+freeze clean HEAD == origin/main
+pnpm install --frozen-lockfile
+pnpm typecheck
+pnpm test
+pnpm skin:validate
+pnpm build
+record GitHub Actions run or explicitly unavailable
 ```
 
-## R20: Browser Differences In Landscape Layout
+Any code change invalidates previous exact-SHA verification.
 
-Risk:
-
-```text
-100svw/100svh behaves differently across mobile browsers.
-```
+## R17 — Direct Main Commit Series Is Hard to Review/Roll Back
 
-Mitigation:
+Status: **OPEN governance risk**.
 
-```text
-Use responsive metrics, visual screenshot sizes, and actual device checks later.
-Avoid transform scale for whole app.
-```
+The current solo workflow permits small direct commits, but a long chain
+of code + docs commits increases partial-state and rollback complexity.
 
-Gate:
+Mitigation for future deep batches:
 
 ```text
-Screenshot review sizes before UI is called polished.
+use one dedicated branch
+one commit per coherent purpose
+run verification before merge
+open a draft PR for consolidated review where connector/tooling allows
+avoid interleaving unrelated product and documentation changes
 ```
 
-## R21: Accessibility Is Bolted On Too Late
+Do not rewrite current history merely to make it prettier; verify and
+record the exact final SHA instead.
 
-Risk:
+## R18 — Migration / Backward Compatibility Drift
 
-```text
-Touch/focus/keyboard/labels become expensive to retrofit.
-```
+Status: **MITIGATED; current rerun OPEN**.
 
-Mitigation:
+Controls:
 
 ```text
-Primitives must include focus-visible, disabled, selected, aria labels where needed, and 44px touch targets.
+shared deck current strict parse
+known v0 -> v1 deterministic migration
+missing/newer/ambiguous version reject
+localStorage v1 payload schemas
+skin contract and versioned assets
+rollback compatibility rehearsal exists historically
 ```
 
-Gate:
+Reopen on any write-format change. New builds must read old data, and a
+rollback target must be tested against data written by the newer build.
 
-```text
-Component Gallery shows keyboard/focus states.
-```
+## R19 — Backup Exists but Restore Does Not
 
-## R22: Internationalization Hardcoded Too Early
+Status: **OPEN product limitation**.
 
-Risk:
+Current `*.corrupt-backup` keys preserve raw forensic payload only when
+storage permits. There is no in-app restore, merge, cloud backup, or
+cross-device recovery.
 
-```text
-Japanese strings get embedded everywhere, making future localization hard.
-```
+This is acceptable for current scope only if copy and release docs remain
+truthful. A restore UI must strict-parse/migrate and never blindly replace
+active storage.
 
-Mitigation:
+## R20 — Real Deployment / Artifact Rollback Is Undefined in Practice
 
-```text
-MVP may use Japanese copy, but validation issue codes and engine output should be language-neutral.
-UI copy maps codes to messages later.
-```
+Status: **BLOCKED_EVIDENCE**.
 
-Gate:
+The repository has no selected hosting provider, deployment target,
+deploy job, immutable artifact retention contract, or production URL.
+Local `vite preview` is not deployment, and git checkout is not artifact
+rollback.
 
-```text
-Engine returns codes/reasons, not only Japanese sentences.
-```
+Closure requires owner-selected infrastructure and execution of
+`docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md` on staging and production.
 
-## R23: Undo / Replay Is Impossible Later
+## R21 — Remote Observability Could Violate Local-First Scope
 
-Risk:
+Status: **NOT_APPLICABLE_CURRENT_ARCHITECTURE / design guard**.
 
-```text
-Actions mutate state without event/action log, making bugs hard to reproduce.
-```
+No backend, accounts, or production telemetry pipeline exists. Do not add
+remote user tracking merely to satisfy an “observability” checklist.
+Current evidence uses local harness logs, error/page/rejection capture,
+and manually committed redacted summaries.
 
-Mitigation:
+If remote telemetry is introduced, require:
 
 ```text
-Reducer accepts MatchAction and emits MatchEvent.
-Store optional action log in dev/replay mode.
+explicit product decision and privacy review
+minimal event schema
+no deck content or personal data
+consent/retention/deletion rules
+sampling and failure behavior
+security and cost limits
 ```
-
-Gate:
 
-```text
-Test: action sequence replay reaches same state with same seed.
-```
+## R22 — Server Rate Limit / Distributed Trace / Concurrent Load
 
-## R24: Extended Mode Accidentally Half-works
+Status: **NOT_APPLICABLE_CURRENT_ARCHITECTURE**.
 
-Risk:
+There is no server/API. Current analogues are local resource guardrails:
+import byte/depth limits, engine branch caps, skin byte/dimension budgets,
+and soak testing.
 
-```text
-extendedRoleSpan parses and UI lets users play it, but engine is pending.
-```
+Reopen immediately if accounts, sync, multiplayer, uploads, telemetry, or
+any network API is added. Then define authentication, authorization,
+rate-limit keys, abuse controls, distributed tracing, capacity/load tests,
+and incident response before release.
 
-Mitigation:
+## R23 — Chaos / Fault Injection Coverage Is Too Narrow
 
-```text
-engineStatus: pending blocks match start for extended variant until engine is implemented.
-```
+Status: **MITIGATED locally; OPEN for future architecture**.
 
-Gate:
+Current fault injection covers storage quota/read/remove failures, corrupt
+payloads, migration cases, and skin load/preload failure. This is
+appropriate for a local frontend.
 
-```text
-Test: extended animal starter variant parses but cannot start match while pending.
-```
+Future network/backend features require separate timeout, retry,
+partial-response, offline, stale-cache, dependency outage, and restore
+tests. Do not run uncontrolled chaos against production.
 
-## R25: Dependency Creep
+## R24 — Documentation Becomes a Second, Contradictory Product
 
-Risk:
+Status: **MITIGATED; continuously open**.
 
-```text
-New libraries are added to solve small problems and increase complexity.
-```
+The review found stale entry docs that still instructed agents to start
+H1 or asset Batch 5. Entry docs were rewritten around canonical roles.
 
-Mitigation:
+Controls:
 
 ```text
-MVP stack fixed. New state/network/UI libraries require ADR.
+MASTER-SPEC = product/rule truth
+RELEASE-DEMO-GATES = readiness truth
+latest Batch matrix/report = exact evidence scope
+IMPLEMENTATION-WORKFLOW = next executable sequence
+historical docs cannot override current truth
 ```
 
-Gate:
-
-```text
-PR report lists added dependencies. No Tailwind/Redux/Zustand/TanStack Query in MVP initial implementation.
-```
+Every release batch includes a contradiction search and updates all entry
+documents only after evidence exists.
 
 ## Final Priority
 
-Before UI:
+Current order:
 
 ```text
-R1 RNG/seed
-R3/R4 import strictness
-R5 schema-domain drift
-R6 performance caps
-R8 wait context
-R9 result reconstructability
-R10 localStorage recovery
-R13 UI rule leakage
-R19 CI gate
+1. exact-current-SHA typecheck/test/skin validation/build
+2. resolve any product or harness failure
+3. Batch 11 production Firefox/WebKit execution
+4. evidence/report and documentation synchronization
+5. owner decision on hosting before deploy/rollback work
+6. physical-device and real-AT evidence when environments are available
 ```
 
-## Final Decision
-
-The next implementation phase should treat this file as the technical risk checklist.
+Do not start new features or asset generation to avoid these closure tasks.
