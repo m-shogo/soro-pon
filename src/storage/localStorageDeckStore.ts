@@ -1,6 +1,7 @@
 import type { DeckProject, DeckSource } from '../domain/deck';
 import type { ValidationIssue } from '../domain/validation';
 import { migrateLegacyDeck } from '../engine/import/migrateLegacyDeck';
+import { validateDeckEntityIds } from '../engine/validation/validateDeckEntityIds';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
 import {
   MAX_STORED_DECKS,
@@ -308,6 +309,15 @@ export function createLocalStorageDeckStore(
     },
 
     saveDeck(deck: DeckProject, source: DeckSource): void {
+      const entityIdIssues = validateDeckEntityIds(deck);
+      if (entityIdIssues.length > 0) {
+        throw new StorageWriteError(
+          entityIdIssues[0]?.message ??
+            'デッキ内のIDが重複しているため、既存データを保護して保存を中止しました。',
+          entityIdIssues,
+        );
+      }
+
       const payload = requireReadablePayload();
       const existing = payload.decks.some((stored) => stored.deck.id === deck.id);
       if (!existing && payload.decks.length >= MAX_STORED_DECKS) {
