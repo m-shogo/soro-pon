@@ -6,7 +6,7 @@ import {
   type MatchRecord,
   type RecordsPayload,
 } from '../schemas/storageSchema';
-import { safeWrite, type KeyValueStorage } from './keyValueStorage';
+import { safeWrite, StorageWriteError, type KeyValueStorage } from './keyValueStorage';
 
 export const RECORDS_STORAGE_KEY = 'soro-pon.records.v1';
 export const RECORDS_BACKUP_KEY = 'soro-pon.records.v1.corrupt-backup';
@@ -15,12 +15,17 @@ export const RECORDS_BACKUP_KEY = 'soro-pon.records.v1.corrupt-backup';
 export const COIN_CAP_PER_MATCH = 500;
 export const COIN_PARTICIPATION = 10;
 
+type ReadRecordsResult = {
+  records: RecordsPayload;
+  issues: ValidationIssue[];
+  readFailureCause?: unknown;
+};
+
 export type RecordsStore = {
   load(): { records: RecordsPayload; issues: ValidationIssue[] };
   /**
    * matchKeyは1つの対局結果を一意に指す識別子(結果確定イベント単位)。
-   * 直前に記録したmatchKeyと同じ場合はno-op(コイン/records/totalMatchesを増やさない)。
-   * これにより、呼び出し側が同じ結果を誤って2回記録してもstorageは二重加算しない。
+   * 処理済みmatchKeyならno-op(コイン/records/totalMatchesを増やさない)。
    */
   addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload;
   /** 実績を解放して保存する。既知のIDは重複しない。 */
@@ -28,13 +33,14 @@ export type RecordsStore = {
 };
 
 export function createLocalStorageRecordsStore(storage: KeyValueStorage): RecordsStore {
-  const read = (): { records: RecordsPayload; issues: ValidationIssue[] } => {
+  const read = (): ReadRecordsResult => {
     let raw: string | null;
     try {
       raw = storage.getItem(RECORDS_STORAGE_KEY);
-    } catch {
+    } catch (cause) {
       return {
         records: EMPTY_RECORDS,
+        readFailureCause: cause,
         issues: [
           {
             code: 'L9005',
@@ -90,18 +96,30 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
     };
   };
 
-  const write = (next: RecordsPayload): RecordsPayload => {
-    safeWrite(
-      () => storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(next)),
-      '対局記録の保存に失敗しました(空き容量が不足している可能性があります)。今回のコイン・実績は保存されていません。',
-    );
+  const requireReadableRecords = (): RecordsPayload => {
+    const result = read();
+    if (result.readFailureCause !== undefined) {
+      throw new StorageWriteError(
+        '保存済みの対局記録を読み込めないため、既存データを保護する目的で記録・コイン・実績を更新しませんでした。ブラウザの保存領域設定を確認してください。',
+        result.readFailureCause,
+      );
+    }
+    return result.records;
+  };
+
+  const write = (next: RecordsPayload, failureMessage: string): RecordsPayload => {
+    safeWrite(() => storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(next)), failureMessage);
     return next;
   };
 
   return {
-    load: read,
+    load() {
+      const { records, issues } = read();
+      return { records, issues };
+    },
+
     addRecord(record: MatchRecord, matchKey: string, wonRoleKey?: string): RecordsPayload {
-      const { records: current } = read();
+      const current = requireReadableRecords();
       // 同じ結果確定イベントを二重記録しない(冪等)。
       // P2-4: 直近1件だけでなく処理済みキー一覧(最大20件)と照合する。
       const recentKeys = current.recentMatchKeys ?? [];
@@ -112,19 +130,23 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
         wonRoleKey !== undefined && !current.roleCollection.includes(wonRoleKey)
           ? [...current.roleCollection, wonRoleKey]
           : current.roleCollection;
-      return write({
-        version: 1,
-        coins: current.coins + record.coinsEarned,
-        records: [record, ...current.records].slice(0, 100),
-        roleCollection,
-        achievements: current.achievements ?? [],
-        totalMatches: (current.totalMatches ?? 0) + 1,
-        lastMatchKey: matchKey,
-        recentMatchKeys: [matchKey, ...recentKeys].slice(0, 20),
-      });
+      return write(
+        {
+          version: 1,
+          coins: current.coins + record.coinsEarned,
+          records: [record, ...current.records].slice(0, 100),
+          roleCollection,
+          achievements: current.achievements ?? [],
+          totalMatches: (current.totalMatches ?? 0) + 1,
+          lastMatchKey: matchKey,
+          recentMatchKeys: [matchKey, ...recentKeys].slice(0, 20),
+        },
+        '対局結果の保存に失敗しました(空き容量が不足している可能性があります)。今回の記録・コイン・役コレクションは保存されていません。',
+      );
     },
+
     unlockAchievements(ids: string[]): RecordsPayload {
-      const { records: current } = read();
+      const current = requireReadableRecords();
       const known = new Set(current.achievements ?? []);
       const merged = [...(current.achievements ?? [])];
       for (const id of ids) {
@@ -133,7 +155,10 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
           merged.push(id);
         }
       }
-      return write({ ...current, achievements: merged });
+      return write(
+        { ...current, achievements: merged },
+        '実績の保存に失敗しました(空き容量が不足している可能性があります)。操作自体や、すでに保存済みの対局記録・コインは失われていません。',
+      );
     },
   };
 }
