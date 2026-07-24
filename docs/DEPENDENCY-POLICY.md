@@ -2,120 +2,188 @@
 
 ## Purpose
 
-Soro-pon MVP should stay small and predictable.
+Keep the browser runtime, test toolchain, asset factory, and CI supply chain
+small, reviewable, reproducible, and free of accidental network behavior.
 
-Dependencies must be added deliberately, not because they are convenient for one file.
-
-## Fixed MVP Stack
-
-Allowed initial stack:
+## Current Runtime Stack
 
 ```text
 TypeScript
-React
+React / react-dom
 Vite
 Zod
+CSS
+localStorage
+```
+
+Test/build tooling:
+
+```text
 Vitest
-CSS / CSS Modules
-localStorage first
+Testing Library
+jsdom
+Playwright
+TypeScript
 ```
 
-## Not Allowed In MVP Initial Implementation
+Asset-factory tooling:
 
 ```text
-Next.js
-Supabase
-Firebase
-Unity
-Godot
-Phaser
-Redux
-Zustand
-TanStack Query
-Tailwind
-large animation frameworks
-remote image/CDN SDKs
-runtime plugin systems
+Python 3.13 in CI
+Pillow
+NumPy
+pytest
 ```
 
-## Allowed Without ADR
-
-Small dev dependencies may be added without ADR if they are standard for the stack and used immediately:
+## Not Allowed Without Explicit Product / ADR Work
 
 ```text
-@vitejs/plugin-react
-jsdom or happy-dom for tests if needed
-eslint/prettier tooling if chosen
-TypeScript type packages
+Next.js or another server framework
+Supabase / Firebase / hosted backend SDK
+Redux / Zustand / TanStack Query
+Tailwind or another CSS framework
+large animation/game framework
+remote image/CDN runtime SDK
+runtime plugin execution
+analytics/tracking SDK
+crypto/signature package without the external-skin installer design
 ```
-
-Must still be reported in commit summary.
 
 ## ADR Required
 
-ADR required before adding:
+ADR is required before adding or replacing:
 
 ```text
-state management library
+state management
 router
-network/data fetching library
+network/data-fetching client
 CSS framework
-animation library
-drag-and-drop framework
+animation/drag-drop framework
 IndexedDB wrapper
-image processing library
+browser/runtime image-processing package
 crypto/signature library
-schema alternative
-runtime validation alternative
+schema/runtime-validation system
+backend/cloud SDK
+telemetry/analytics
 ```
 
-ADR must answer:
+ADR answers:
 
 ```text
-why built-in/simple implementation is insufficient
-bundle/runtime impact
-security impact
-how it affects tests
-how it affects mobile performance
-exit strategy if removed later
+why local/platform code is insufficient
+runtime and bundle cost
+security/privacy/network behavior
+persistence/migration impact
+test and CI impact
+mobile performance
+failure and rollback behavior
+exit strategy
+```
+
+## Lock / Pin Rules
+
+### Node
+
+```text
+commit pnpm-lock.yaml
+CI uses pnpm install --frozen-lockfile
+review every lockfile-only diff
+packageManager and Node policy stay declared
+```
+
+The pnpm lock contains resolved versions and integrity metadata. Direct
+`package.json` ranges remain compatible ranges, while the lockfile defines
+the verified repository installation.
+
+### Python Asset Factory
+
+```text
+top-level packages are exact-pinned in requirements.txt
+CI creates an isolated Python 3.13 venv
+CI runs the complete Python fixture suite
+pin change requires intentional review + fixture evidence
+```
+
+Current top-level pins:
+
+```text
+Pillow 12.3.0
+NumPy 2.5.1
+pytest 9.1.1
+```
+
+This is not yet a hash-locked Python environment. Transitive packages and
+platform wheels are still resolved by pip. A future active asset-production
+phase may add generated hash constraints/lock tooling through ADR.
+
+### GitHub Actions
+
+Current workflows use read-only repository permission and official action
+major tags. Dependabot monitors action updates. Before external-contributor or
+organization-wide operation, evaluate immutable commit-SHA pinning through ADR;
+do not copy unverified SHAs from examples.
+
+## Automated Update Monitoring
+
+`.github/dependabot.yml` monitors weekly:
+
+```text
+npm/pnpm dependencies at repository root
+pip dependencies in the asset factory
+GitHub Actions
+```
+
+Dependabot PRs are proposals, not automatic approval. Every update runs full
+CI/Integrity Contracts, and asset dependency updates must pass the Python job.
+
+## Security Review
+
+Before accepting a dependency/update:
+
+```text
+review official advisory/source information
+confirm whether the vulnerable feature is actually installed/reachable
+inspect lockfile resolution, not only package.json ranges
+check browser/runtime network behavior
+check postinstall/build scripts and native binaries
+check user-data/import/image handling
+check maintenance/release status and license
+record skipped/inapplicable advisories precisely
+```
+
+Do not claim “no vulnerability” only because an advisory affects an adjacent
+package. For example, a React Server Components advisory is not directly
+reachable when no `react-server-dom-*` package or RSC framework is installed,
+but the lockfile must still be checked rather than assuming from the React
+version alone.
+
+## Current Review Notes — 2026-07-25
+
+```text
+Node install is frozen by pnpm-lock.yaml.
+Current Vite/Vitest resolutions are on patched versions for the advisories
+reviewed during the deep integrity pass.
+No react-server-dom package is present in the inspected root lock importer.
+Python dependencies were previously open-ended and are now exact-pinned.
+Python fixture execution is now a CI job but has not yet been observed on the
+final exact SHA.
 ```
 
 ## Dependency Review Checklist
 
-Before adding dependency:
-
 ```text
-Is it needed for MVP?
-Can this be done with 30 lines of simple local code?
-Does it run in browser safely?
-Does it touch user data/import/image files?
-Does it increase bundle size significantly?
-Does it make tests harder?
-Does it create hidden network behavior?
-```
-
-## Security Rule
-
-Dependencies must not introduce:
-
-```text
-remote code execution
-plugin loading from user decks
-automatic remote image fetching
-analytics/tracking
-unexpected network calls
-```
-
-## Lockfile Rule
-
-Once package setup exists:
-
-```text
-commit lockfile
-CI uses lockfile install
-unexpected lockfile-only changes require review
+Is it needed for current scope?
+Can the platform/local code do it simply?
+Does it run in production or dev/test only?
+Does it touch user data, imports, storage, images, or credentials?
+Does it create hidden network calls or remote code loading?
+Does it materially increase bundle/native footprint?
+Can it be removed later?
+Are exact-SHA tests and rollback consequences documented?
 ```
 
 ## Final Decision
 
-The default answer to new dependencies is no until the need is proven.
+The default answer to a new dependency is no until its need and failure
+boundary are proven. A version bump is complete only when its resolved artifact,
+CI result, compatibility, and security scope are recorded.
