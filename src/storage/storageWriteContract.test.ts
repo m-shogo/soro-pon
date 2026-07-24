@@ -28,6 +28,19 @@ describe('storage write boundary schema enforcement', () => {
     expect(storage.getItem(DECKS_STORAGE_KEY)).toBe(original);
   });
 
+  it('nested role IDが重複するdeckをStore直呼びでも保存しない', () => {
+    const storage = createMemoryStorage();
+    const store = createLocalStorageDeckStore(storage, () => 1);
+    const originalDeck = starterDeck();
+    store.saveDeck(originalDeck, 'official');
+    const original = storage.getItem(DECKS_STORAGE_KEY);
+    const invalid = structuredClone(originalDeck);
+    invalid.variants[0]!.winRoles[1]!.id = invalid.variants[0]!.winRoles[0]!.id;
+
+    expect(() => store.saveDeck(invalid, 'created')).toThrow(StorageWriteError);
+    expect(storage.getItem(DECKS_STORAGE_KEY)).toBe(original);
+  });
+
   it('schema外match recordを保存せず、既存recordsを保持する', () => {
     const storage = createMemoryStorage();
     const original = JSON.stringify({
