@@ -27,4 +27,35 @@ describe('Dialog accessibility relationship', () => {
       'この操作は取り消せません。',
     );
   });
+
+  it('danger dialogは確認ではなくキャンセルへ初期フォーカスする', () => {
+    render(
+      <Dialog
+        open
+        danger
+        title="デッキを削除"
+        message="この操作は取り消せません。"
+        confirmLabel="削除する"
+        cancelLabel="やめる"
+        onConfirm={() => {}}
+        onCancel={() => {}}
+      />,
+    );
+
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'やめる' }));
+  });
+
+  it('通常dialogは従来どおり確認操作へ初期フォーカスする', () => {
+    render(
+      <Dialog
+        open
+        title="設定を適用"
+        confirmLabel="適用する"
+        onConfirm={() => {}}
+        onCancel={() => {}}
+      />,
+    );
+
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: '適用する' }));
+  });
 });
