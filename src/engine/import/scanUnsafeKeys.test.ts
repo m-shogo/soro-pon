@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scanUnsafeKeys } from './scanUnsafeKeys';
+import { MAX_IMPORT_SCAN_ISSUES, scanUnsafeKeys } from './scanUnsafeKeys';
 
 describe('scanUnsafeKeys', () => {
   it('安全なオブジェクトは空配列を返す', () => {
@@ -46,5 +46,17 @@ describe('scanUnsafeKeys', () => {
     }
     const issues = scanUnsafeKeys(value);
     expect(issues.map((i) => i.code)).toContain('I2010');
+  });
+
+  it('大量unsafe keyは診断を上限化しI2011で省略を明示する', () => {
+    const value = Object.fromEntries(
+      Array.from({ length: 200 }, (_, index) => [`unsafe-${index}`, { imageUrl: 'x' }]),
+    );
+
+    const issues = scanUnsafeKeys(value);
+
+    expect(issues).toHaveLength(MAX_IMPORT_SCAN_ISSUES);
+    expect(issues.at(-1)?.code).toBe('I2011');
+    expect(issues.at(-1)?.message).toContain('最初の49件のみ');
   });
 });
