@@ -85,4 +85,23 @@ describe('tile membership integrity', () => {
       expect(result.issues.some((issue) => issue.code === 'R4011')).toBe(true);
     }
   });
+
+  it('maxPointsが1回分のpoints未満のScoreBonusをB6010で拒否する', () => {
+    const deck = minimalDeck();
+    deck.variants[0]!.scoreBonuses.push({
+      id: 'contradictory-cap',
+      name: '矛盾cap',
+      type: 'duplicate_tile',
+      minCount: 3,
+      points: 20,
+      maxPoints: 10,
+      allowWildcard: false,
+      description: '1回分より低い上限を持つ不正な例。',
+    });
+
+    const result = validateDeckForUse(deck);
+
+    expect(result.status).toBe('draft');
+    expect(result.issues.some((issue) => issue.code === 'B6010')).toBe(true);
+  });
 });
