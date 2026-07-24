@@ -562,6 +562,7 @@ export function AppRoot() {
                   'このデッキは別タブまたは別画面で変更・削除されたため、古い編集内容では上書きしませんでした。デッキ一覧へ戻って最新状態を開き直してください。',
                 );
                 refreshDecks();
+                setScreen({ kind: 'deckList' });
                 return;
               }
               const entityIdIssues = validateDeckEntityIds(updated);
