@@ -1,393 +1,148 @@
 # soro-pon
 
-`soro-pon` は、プレイヤーがデッキ・牌・役・得点を自由に作れる、3〜4人用のローカルファーストなカスタム牌ゲームです。
+`soro-pon` は、プレイヤーがデッキ・牌・役・得点を自由に作れる、3〜4人用の
+ローカルファーストなカスタム牌ゲームです。Vamp-pon世界の中で遊ばれている
+「記憶札遊び」として扱います。
 
-Vamp-pon世界の中で遊ばれている「記憶札遊び」として扱います。
-
-## Current Status
+## Current Status — 2026-07-24
 
 ```text
 Gameplay MVP phases 1-14: complete
 Multi-skin runtime baseline: complete
 Skin foundation hardening H1-H11: complete
-Official skins: yorunoshirube (9 finals, v4) / cute-pop (9 finals, v5)
-Image production pipeline: ready and proven (Codex CLI起点、request 007 closed)
-Batch 5 (full-screen integration / automated QA / public demo gate review): complete
-  Gate 4 (User Test Ready): PASS
-  Gate 5 (Public Demo Ready): PASS, strictly within the validated
-    Chromium (Desktop Chrome) browser scope — Safari/Firefox/WebKit/
-    real mobile devices are NOT TESTED and NOT claimed supported.
-  All Batch 5 QA (including gameplay) was performed by Chromium browser
-    automation (Playwright), not by human manual testing or on a real
-    device.
-  See docs/qa/BATCH-5-MANUAL-QA-REPORT.md for full evidence and decision record.
-Batch 6 (Gate 6: Release Candidate hardening): complete
-  Gate 6: PASS, within the validated Chromium browser scope.
-  RC readiness: LIMITED READY (open items: real screen-reader pass,
-    non-Chromium browser verification, longer memory soak test, real
-    deploy target — none are Gate 6 blockers, all explicitly tracked).
-    ※これはBatch 6時点の記録。この後、非Chromium browserはBatch 7、
-    実screen readerはBatch 8(VoiceOver+Chrome、CONDITIONAL)、memory soakは
-    Batch 9、production build検証はBatch 10でそれぞれ進展/CLOSEDしている。
-    現在地は本ブロック末尾の「RC readiness」を参照。
-  Fixed 2 real P1 storage-layer defects found this batch: a single
-    corrupted/legacy deck entry could previously wipe a user's entire
-    deck list (now salvaged per-deck), and a quota-exceeded save
-    previously failed silently with no user feedback (now shown via
-    Toast, draft preserved).
-  See docs/qa/BATCH-6-GATE-6-REPORT.md for full evidence and decision record.
-Batch 7 (Cross-Browser & Screen Reader Acceptance): complete
-  Not a new Gate — Gate 6 remains PASS, unchanged. Extends RC readiness's
-    verified browser scope from Chromium-only to Chromium + Firefox +
-    Playwright WebKit (all three: 0 P0/P1/P2, full functional/visual/
-    accessibility parity). "Playwright WebKit" is Playwright's own
-    WebKit build, NOT real Safari — real Safari, iOS Safari, and Android
-    physical devices remain untested and unclaimed.
-  Real macOS VoiceOver acceptance was attempted and BLOCKED (the user
-    denied the computer-use browser-access grant needed to drive Safari
-    under VoiceOver) — recorded honestly, not claimed as passed. NVDA/
-    JAWS were not used (no Windows environment available).
-  RC readiness: still LIMITED READY (upgraded in browser-engine scope,
-    but real-device and real-screen-reader verification remain open).
-  See docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md for full evidence and
-    decision record.
-Batch 8 (macOS VoiceOver Acceptance): CONDITIONAL (attempt 6)
-    — was BLOCKED across attempts 1-3, then CONDITIONAL on attempts 4-6
-    after the user granted macOS TCC Accessibility + Automation
-    permissions. Targeted the specific Batch 7 open item of real
-    screen-reader acceptance. Real Safari is only viewable (not drivable)
-    via the available automation tooling, so this used VoiceOver + Chrome
-    (a real pairing — VoiceOver does support Chrome; NOT VoiceOver +
-    Safari).
-  Attempts 1-3 (2026-07-21, BLOCKED): the VoiceOver quickstart dialog,
-    then VoiceOver-as-frontmost blocking computer-use, then missing
-    macOS Accessibility/Automation trust — none of the 20 flows reached.
-  Attempt 4 (2026-07-23, CONDITIONAL): with TCC permissions granted,
-    real VoiceOver was driven via osascript System Events (VO+arrow,
-    VO+Space, Tab/Escape) and observed via AXFocusedUIElement reads.
-    The 20 flows were audit-reclassified as VOICEOVER_PASS 9,
-    SUPPLEMENTAL_ONLY 5, BLOCKED 6, NOT_APPLICABLE 0. Real-VoiceOver
-    passes covered observed portions of the core screens — TOP (all 5
-    main buttons as named AXButtons), JSON import (textarea label
-    "デッキJSON" + invalid-input action), Deck Editor (tabs as an
-    AXRadioButton group with counts,
-    form fields with correct labels/values), and the unsaved-changes
-    dialog (opens with focus on a named button). In that traversed scope,
-    zero product defects were observed. Validation-error recognition,
-    successful-import observation, Escape cancellation, and dialog
-    focus return are supplemental only. Match Setup was reached but not
-    cleanly traversed; Match and Result were not reached under a clean
-    VoiceOver cursor due to a CDP-vs-VoiceOver focus-sync tooling
-    limitation (not a product defect). VoiceOver was turned off at
-    session end.
-  Attempt 5 (2026-07-23, CONDITIONAL): real VoiceOver navigated
-    TOP → Match Setup → Match, activated 対局開始, exposed the current
-    turn/remaining tiles/player information/named hand tiles, changed a
-    tile's selected AX value 0→1, and executed one discard. Match Setup
-    player-count buttons did not announce the selected value; this P2
-    was fixed with `aria-pressed` and a component regression test
-    (P2 found/fixed/open: 1/1/0). Result was populated through the
-    existing QA route while VoiceOver was off, but focus synchronization
-    unexpectedly activated replay, so Result comprehension is not a
-    VoiceOver PASS. `cute-pop` has automated parity only.
-  Attempt 6 (2026-07-23, CONDITIONAL): scope-limited to the 3 remaining
-    items. (1) Re-verified the Match Setup aria-pressed fix under real
-    VoiceOver — 人数 buttons are AXCheckBox with value reflecting
-    selection (3人戦=1/4人戦=0), and VO+Space flips the roving selection
-    live — promoting it from SUPPLEMENTAL_ONLY to VOICEOVER_PASS.
-    (2) Reached Result by auto-playing the match via CDP WHILE VoiceOver
-    was OFF, then turned VoiceOver ON for read-only traversal (no button
-    activation — the Attempt-5 accidental replay did not recur): the
-    result AXHeading 対戦結果 and all 3 action buttons
-    (もう一局/記憶帳を見る/TOPへ) confirmed via AXFocusedUIElement; the
-    win/rank/score static text stays SUPPLEMENTAL_ONLY (structure
-    verified via AX-tree read — h2 win method, semantic ranking list
-    with a text ★ winner marker, score text — but VoiceOver's spoken
-    output of that non-focusable text is not mechanically capturable in
-    this environment: no AX-queryable caption panel = tooling
-    limitation, not a product defect). (3) Cute Pop parity confirmed
-    under real VoiceOver — Match Setup 人数 AXCheckBox values and a Match
-    hand tile (AXCheckBox, description "ワシ", selected value 0→1) are
-    identical to yorunoshirube.
-  Cumulative Batch 8 final flow classification: VOICEOVER_PASS 13,
-    SUPPLEMENTAL_ONLY 6, BLOCKED 0, NOT_APPLICABLE 1 (all 3 prior BLOCKED
-    items cleared; flow 20 Result win/rank/score moved BLOCKED →
-    SUPPLEMENTAL_ONLY). P0/P1/P2 open 0. In the range actually traversed
-    under real VoiceOver, plus the range supplementally confirmed via
-    semantic structure and existing automated tests, open product
-    defects are 0; 1 tooling limitation (Result static-text caption
-    capture). Attempt 6 changed no product/test code, so the full
-    711-case suite was not re-run; unit tests (331) remain green.
-  Scope of real-VoiceOver validation (precise):
-    - Yorunoshirube: TOP, JSON Import, Deck Editor, Match Setup, Match,
-      and the Result heading + action controls were traversed under real
-      VoiceOver. The Result win/rank/score STATIC TEXT is supplemental
-      only (semantic structure confirmed; VoiceOver caption/speech not
-      mechanically captured).
-    - Cute Pop: only the Match Setup and Match key controls (人数
-      buttons, hand tile) were confirmed for real-VoiceOver parity.
-      Cute Pop's Result was NOT traversed under real VoiceOver.
-    - Not claimed: "both skins' Result validated", "all game screens
-      fully traversed", or any general "no VoiceOver issues" statement.
-  RC readiness: unchanged, still LIMITED READY. Capturing VoiceOver's
-    spoken Result static-text output, Cute Pop Result real-VoiceOver
-    traversal, Safari+VoiceOver, NVDA/JAWS, and physical devices remain
-    untested.
-  See docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md for the full
-    attempt log (including Attempts 4-6) and decision record.
-Batch 9 (Extended Memory & Runtime Stability Soak) is COMPLETE
-  (2026-07-23). Design fixed before running
-  (docs/qa/BATCH-9-EXTENDED-SOAK-MATRIX.md), then executed with
-  scripts/qa/run-batch9-soak.mjs:
-  - Chromium primary (memory-authoritative: CDP post-GC JSHeapUsedSize +
-    DOM/listener counters + timer shim): 62.3 min continuous, 74 cycles,
-    both skins x 3p/4p, 28/29 matches to Result, 0 page/console errors.
-    All matrix thresholds PASS — heap oscillates 5.8-8.1MB with no
-    monotonic climb, DOM/listener/timer flat or bounded, localStorage
-    growth is the by-design capped match-record store, and the
-    deterministic scenarios show zero runtime slowdown over the hour
-    (match-duration p95 movement is game-length variance).
-  - Firefox 20/20 and WebKit 20/20 auxiliary cycles: stability-only
-    (no memory claim), 0 errors, benign navigation-abort fetches only.
-  - Product defects: 0 (P0-P3 all zero; no product code changed in
-    Batch 9). 2 harness defects were found in the pre-run smoke and
-    fixed harness-side; 2 of 37 match attempts hit the harness's own
-    4-min autoplay cap (harness limitation, not product).
-  - Extended soak is NOT added to CI (manual pre-release gate; see
-    docs/release/SOAK-RUNBOOK.md). Report:
-    docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md. Evidence:
-    docs/qa/evidence/batch-9/ (14 PNG + 8 JSON/JSONL = 22 files).
-  Scope: the memory claim covers Chromium on the dev server for this
-    run's duration; Firefox/WebKit are stability-only; real
-    Safari/mobile devices remain untested.
-Batch 10 (Real Device / Production Release Validation) is CONDITIONAL
-  (2026-07-24). Matrix fixed before execution
-  (docs/qa/BATCH-10-REAL-DEVICE-RELEASE-MATRIX.md, 17 test IDs).
-  Result: PASS 3 / BLOCKED_ENVIRONMENT 14 / FAIL 0 / NOT_RUN 0.
-  - EXECUTED (all passed): production build (typecheck + unit 331 + skin
-    18 + build clean, artifacts hashed); 14/14 core flows on a LOCAL
-    PRODUCTION PREVIEW in Chromium (both skins, 3p and 4p matches to
-    Result, reload state restore, 0 page/console/rejection errors, 0
-    non-benign failed requests); and a 35 min / 47 cycle production
-    soak (17/18 matches to Result, heap −4.2%, DOM −1%, listeners 0%,
-    live timers 0, 0 errors). Production carries ZERO outstanding JS
-    timers — the 1 interval seen in Batch 9's dev run is Vite's HMR
-    ping, proven by source and bundle inspection, not product code.
-  - BLOCKED_ENVIRONMENT (0 flows executed, each with a tested unblock
-    path): real iPhone Safari (an iPhone IS connected, but devicectl
-    offers no screenshot/URL-open/input injection and browsers are
-    read-tier here), real iPad and real Android (no hardware, no adb),
-    deploy and deployed-artifact rollback (the repo has NO hosting
-    config, deploy script, service worker, base path, or CI deploy job
-    — and none was created), Safari + VoiceOver (a real WebDriver
-    session was attempted and refused: "Allow Remote Automation"
-    disabled), NVDA and JAWS (no Windows machine or VM).
-  - Product defects: 0 (no product code changed). 2 harness defects and
-    1 stale-docs defect were found and fixed.
-  - Report: docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md.
-    Deploy runbook: docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md.
-    Evidence: docs/qa/evidence/batch-10/ (13 PNG + 4 JSON/JSONL +
-    2 logs = 19 files).
-RC readiness: LIMITED READY (unchanged as a status). CLOSED open items:
-  extended memory soak (Batch 9) and production-build validation on
-  Chromium (Batch 10). Still open: physical iPhone/iPad/Android,
-  real deploy + deployed-artifact rollback, Safari+VoiceOver, NVDA/JAWS,
-  Batch 8's tooling-limited Result static-text speech capture, and
-  production-build behavior in Firefox/WebKit.
-  A local production preview is NOT a deploy; Playwright WebKit is NOT
-  Safari; simulators and device emulation are NOT real devices.
-Current phase: further RC hardening. Batch 8 remains CONDITIONAL
-  (tooling limitation, not a product defect). No fixed next batch is
-  scheduled; the remaining RC open items above start only on explicit
-  instruction. Unblock steps for every blocked item are recorded in the
-  Batch 10 report §12.
+Official skins:
+  yorunoshirube: 9 finals, v4
+  cute-pop: 9 finals, v5
+Gate 4: PASS
+Gate 5: PASS within its recorded demo/browser scope
+Historical Gate 6: PASS
+RC status: LIMITED READY
+Batch 7: COMPLETE
+Batch 8 real VoiceOver + Chrome: CONDITIONAL
+Batch 9 extended soak: COMPLETE
+Batch 10 production-preview / real-device validation: CONDITIONAL
+Batch 11 production Firefox/WebKit:
+  contract defined, NOT yet executed
 ```
 
-正確な現在地と実装順:
+The current product HEAD includes post-Batch-10 storage-recovery fixes.
+Historical test and production-preview results do **not** validate that
+newer SHA automatically. Fresh typecheck/tests/skin validation/build and
+Batch 11 evidence must be produced from one exact current commit.
+
+Canonical status:
 
 ```text
 docs/IMPLEMENTATION-WORKFLOW.md
-docs/SKIN-FOUNDATION-HARDENING.md
-docs/ASSET-PRODUCTION-ROADMAP.md  (slot classification / batches / next task)
+docs/RELEASE-DEMO-GATES.md
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
+
+## Current Integrity Review
+
+A deep review found that ordinary localStorage writes were protected, but
+corruption recovery still called raw `getItem()`, `setItem()`, and
+`removeItem()`. A compound condition such as corrupted data plus quota or
+browser storage denial could make the recovery path itself throw.
+
+Current `main` now includes:
+
+```text
+deck/records/settings read denial -> L9004 + safe in-memory fallback
+backup creation and active-key removal guarded independently
+raw corrupt records/settings backup keys when storage permits
+best-effort recovery warnings that name failed cleanup operations
+six regression tests for recovery-operation failures
+updated storage/release/agent documentation
+```
+
+See `docs/release/STORAGE-RECOVERY-POLICY.md`.
 
 ## Product Core
 
-このアプリは麻雀そのものではありません。ルールはドンジャラ構造です。
+This is a Donjara-style game, not Mahjong rules.
 
 ```text
-3〜4人用
-2人戦なし
-ポン/チー/カンなし
-通常手牌8枚
-自分の番で1枚引いて9枚
-あがり形は3枚グループ×3組
-ロン = 8枚手牌 + 捨て牌 = 9枚
-ツモ = 引いた後の9枚
+3 or 4 players
+no 2-player mode
+no pon / chi / kan
+normal hand: 8 tiles
+on turn: draw to 9, then discard
+win shape: three groups of three
+ron: 8-tile hand + discarded tile
+self-draw: 9 tiles after draw
 ```
 
-UIの卓上感や操作の気持ちよさは麻雀を参考にしますが、ルールは麻雀化しません。
+The table feel and interaction quality may reference Mahjong, but the rule
+engine must not drift into Mahjong rules.
 
 ## Official Skins
 
 ```text
 yorunoshirube
-- 夜の机 / 紙 / 黒インク / ランタン光 / 記憶帳
+  night desk / paper / black ink / lantern light / memory notebook
 
 cute-pop
-- 一般向け / 明るい / 可愛い / 親しみやすい / ポップ
+  bright / cute / approachable / pop
 ```
 
-将来の季節・販売スキンも、同じscreen/component/layout実装を使います。
+Both skins share one screen, component, layout, focus, hit-area, and game
+state implementation. Skin-specific screen copies are forbidden.
 
-## First Read for AI Agents
+## Public Demo / RC Scope
+
+Established evidence:
 
 ```text
-README.md
-AGENTS.md
-CODEX.md or CLAUDE.md
-docs/README.md
-docs/MASTER-SPEC.md
-docs/IMPLEMENTATION.md
-docs/IMPLEMENTATION-WORKFLOW.md
-docs/SKIN-FOUNDATION-HARDENING.md
-docs/GLOSSARY.md
+Batch 7:
+  Chromium, Firefox, and Playwright WebKit in the recorded automated scope.
+  Playwright WebKit is not Safari.
+
+Batch 8:
+  real VoiceOver + Chrome with precise traversed/supplemental boundaries.
+  This is not Safari + VoiceOver.
+
+Batch 9:
+  Chromium memory-authoritative dev-server soak; Firefox/WebKit stability only.
+
+Batch 10:
+  production build and local production preview in Chromium.
+  A local preview is not a deploy.
 ```
 
-仕様の正本:
+Still open and unclaimed:
 
 ```text
-docs/MASTER-SPEC.md
+physical iPhone Safari
+physical iPad
+physical Android
+real hosting deployment
+rollback of an actually deployed immutable artifact
+Safari + VoiceOver
+NVDA / JAWS
+Batch 8 Result static-text spoken-output capture
+Cute Pop Result under real VoiceOver
+Batch 11 production Firefox/WebKit execution
 ```
 
-番号付きdocsが衝突する場合は、非番号の現行契約docsを優先します。
+RC remains **LIMITED READY**. Do not promote it using simulator,
+emulation, AX-tree inspection, Playwright WebKit, or local-preview evidence
+as substitutes for the open real environments.
 
-## Mandatory UI / Design / Skin Read
-
-画面、コンポーネント、CSS、token、asset、motion、responsive、skin loadingを触る場合は必ず読む。
+## Public Demo Notes
 
 ```text
-docs/DESIGN-SYSTEM.md
-docs/SKIN-SYSTEM.md
-docs/SKIN-FOUNDATION-HARDENING.md
-docs/UI-COMPONENT-CONTRACT.md
-docs/SKIN-AUTHORING-GUIDE.md
-docs/DESIGN-IMPLEMENTATION-POLICY.md
-docs/ASSET-PIPELINE.md
-docs/48-responsive-crisp-ui-system.md
-docs/49-ui-quality-gate-and-codex-design-rules.md
-docs/50-pro-ui-production-quality-checklist.md
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
+local-first: decks and progress are stored in this browser's localStorage
+imports are validated before play
+shared deck JSON excludes local/private images and unsafe display fields
+no online multiplayer, accounts, billing, or cloud sync
+supported official skins: yorunoshirube and cute-pop
+reset path is visible from TOP and is irreversible after confirmation
 ```
 
-## Current Design Contract
-
-```text
-one MatchScreen / one Button / one TileCard implementation
-skin-specific screen copies are forbidden
-layout, hit areas, touch size, z-index, responsive behavior, and semantic states are skin-invariant
-skins change only explicit typed allowlisted presentation values
-both official skins work without final images
-screen-local generic buttons/panels/dialogs/forms are forbidden
-new reusable UI goes through shared components, Gallery, tests, and both skins
-```
-
-## Hardening Order (H1-H11: complete)
-
-```text
-H1 typed skin-token allowlist                          complete
-H2 full contract validator and CI                       complete
-H3 semantic contrast and Cute Pop fixes                 complete
-H4 Gallery and user-facing SkinSelector                 complete
-H5 layered SkinSurface and real nine-slice proof         complete
-H6 proven central render modes                          complete (implemented only when proven necessary; no unconditional rollout)
-H7 shared component and CSS responsibility migration     complete
-H8 DOM/accessibility/recovery tests and fixes            complete
-H9 Playwright visual regression and five-size QA         complete (70 cases, 5 sizes, both skins)
-H10 installed/paid skin security and atomic loading      complete (marketplace/payment/entitlement remain future scope)
-H11 persistent match-session idempotency before restore/replay  complete (restore/replay feature itself remains non-MVP)
-```
-
-Details and any documented exceptions: docs/SKIN-FOUNDATION-HARDENING.md.
-
-## Image Generation Status
-
-All P0 gates passed. Image production is active.
-
-```text
-Codex CLI起点で画像を生成する(高彩度単色グリーン背景)
--> Python透過(色距離+2段しきい値+despill)
--> 検査
--> generated/candidates(manifest未登録)
--> Gallery/実画面レビュー
--> 人間の承認
--> generated/final(skin.json経由でのみ参照)
-```
-
-Never generate directly into `final`. First proof-of-concept cycle (request
-007, cute-pop / badge.info.background) is closed. See
-docs/ASSET-PRODUCTION-ROADMAP.md for the full slot classification, batch
-order, and the single next task.
-
-## Existing Skin Baseline
-
-```text
-public/assets/ui/soro-pon/SKIN-MANIFEST.json
-public/assets/ui/soro-pon/SKIN-CONTRACT.json
-public/assets/ui/soro-pon/skins/{base,yorunoshirube,cute-pop}
-src/ui/skins/*
-SkinProvider runtime switching
-basic SkinSurface
-initial shared-component integration
-```
-
-Preserve and harden this implementation. Do not add a second theme system.
-
-## Shared Component Direction
-
-```text
-Button / IconButton
-SkinSurface / SkinBackground / SkinOverlay / SkinIcon
-PaperPanel
-Modal / Dialog
-Tabs / Badge / Toast / Tooltip
-TileCard / TileRow
-RoleCard / ScoreBreakdown
-SectionHeader
-ValidationIssueList
-FormField / TextField / NumberField / SelectField / Toggle
-EmptyState / ErrorState
-SkinSelector / SkinPreviewCard
-```
-
-A feature is incomplete when it works in only one skin.
-
-## Design Targets
-
-Yorunoshirube reference:
-
-```text
-docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
-```
-
-Local path:
-
-```text
-/Users/m-shogo/Developer/personal/soro-pon/docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1
-```
-
-These are references for composition, spacing, hierarchy, and mood—not automatic runtime assets.
-
-## Layout Policy
-
-```text
-844x390 reference
-phone landscape = 100svw x 100svh
-PC = centered game table + outer support
-portrait = rotate prompt or limited utility
-```
-
-844x390 is not a fixed canvas. Do not scale the whole screen with `transform: scale()`.
+The exact supported browser/device promise must match the artifact being
+published and its evidence. Do not copy historical wording into a new
+deployment without revalidation.
 
 ## Stack
 
@@ -397,87 +152,149 @@ React
 Vite
 Zod
 Vitest
-CSS / CSS Modules
-localStorage first
+Playwright
+CSS
+localStorage-first persistence
 ```
 
-Do not add major dependencies without reviewing:
+Major dependency additions require review of `docs/DEPENDENCY-POLICY.md`
+and an ADR where applicable.
 
-```text
-docs/DEPENDENCY-POLICY.md
-docs/ADR.md
+## Setup
+
+```bash
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-Normal UI remains HTML/CSS. Three.js is optional only for isolated future effects with fallback and ADR approval.
+Node and package-manager requirements are defined in `package.json`.
 
 ## Verification
 
-Current:
+CI-equivalent core checks:
 
 ```bash
 pnpm typecheck
 pnpm test
+pnpm skin:validate
 pnpm build
 ```
 
-Required after H2:
+Browser suites:
 
 ```bash
-pnpm skin:validate
+pnpm test:visual
+pnpm test:visual:crossbrowser
 ```
 
-Component/DOM and Playwright commands are added only after the dependency/ADR decision.
+Extended soak is manual and follows `docs/release/SOAK-RUNBOOK.md`.
 
-## Coding Boundaries
+Never report these as passing unless they were executed against the exact
+reported SHA. A successful push is not CI success.
+
+## Current Next Work
+
+```text
+1. Freeze clean HEAD == origin/main and record exact SHA/tool versions.
+2. Run install/typecheck/test/skin:validate/build on that SHA.
+3. Confirm storageRecoveryFailurePaths.test.ts is collected and passes.
+4. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
+5. If product code changes, discard/relabel partial evidence and restart.
+6. Commit report/evidence and synchronize all entry documents.
+```
+
+Batch 11 cannot by itself promote RC to READY because real-device,
+real-Safari, real-AT, and real-deploy evidence remains open.
+
+## Design / UI Contract
+
+```text
+one shared layout/component system
+no skin-specific screens
+shared generic controls only
+layout/hit areas/touch/focus/z-index/state meaning are skin-invariant
+skin changes typed allowlisted presentation values only
+asset URLs and rendering modes are centralized
+both official skins retain fallback behavior
+```
+
+For UI work, read the mandatory list in `AGENTS.md` before editing.
+
+Layout policy:
+
+```text
+844x390 reference
+phone landscape: 100svw x 100svh
+PC: centered table + outer support
+portrait: rotate prompt or limited utility
+```
+
+844x390 is not a fixed canvas. Whole-screen `transform: scale()` is
+forbidden.
+
+## Asset Production
+
+The production pipeline is proven and asset Batches 1-4 are closed.
+Do not restart generation based only on an old roadmap checkpoint.
+
+```text
+generate -> generated/candidates -> inspect -> human approval
+-> generated/final -> skin.json version bump -> verification
+```
+
+Direct generation into `generated/final` is forbidden. Historical slot
+classification and approval records live in
+`docs/ASSET-PRODUCTION-ROADMAP.md` and `docs/asset-requests/`.
+
+## Architecture Boundaries
 
 ```text
 UI does not judge roles, calculate score, or assign wildcards
 engine does not import React/DOM/localStorage/CSS
-import uses strict allowlist
+skin does not access engine/schema/storage/records/network
+import is a strict allowlist
 shared deck JSON contains no image/URL/base64/path/html/script/style fields
-localStorage is schema-parsed before use
-skin never accesses engine/game records/network/code execution
+persisted values are schema-parsed before use
+recovery code must not throw while trying to recover
 ```
 
-## IP / Asset Safety
+## Documentation
 
-Official assets and screenshots must not contain:
+Start here:
 
 ```text
-existing IP art
-unlicensed downloads
-personal photos
-remote hotlinked assets
-user-deck images promoted into official UI
-text baked into runtime UI images
+AGENTS.md
+CODEX.md or CLAUDE.md
+docs/README.md
+docs/MASTER-SPEC.md
+docs/IMPLEMENTATION-WORKFLOW.md
+docs/RELEASE-DEMO-GATES.md
 ```
 
-## Commit / Report Policy
+Priority when documents disagree:
 
 ```text
-one commit per purpose
+1. MASTER-SPEC for product/rule truth
+2. RELEASE-DEMO-GATES for readiness claims
+3. latest evidence-backed Batch matrix/report for its exact scope
+4. current non-numbered subsystem contracts
+5. IMPLEMENTATION-WORKFLOW for next execution
+6. historical/numbered documents
+```
+
+Choose the evidence-backed, narrower claim—not the more optimistic one.
+
+## Work / Report Policy
+
+```text
 small testable changes
-push after commit
-docs and implementation updated together
-one hardening item completed before the next
+one purpose per commit where tooling permits
+implementation and contract docs updated together
+never weaken historical evidence scope
+report local results separately from CI
 ```
 
-Report changed files, commit SHA, commands/local results, CI status or unavailable, affected skins/screens, visual proof, remaining risk, and next hardening item.
-
-## Public Demo Notes
-
-```text
-local-first demo: decks and progress are stored only in this browser's localStorage
-imports are validated (schema + unsafe-key rejection) before a deck can be played
-locally imported or private images are never included in shared deck JSON
-no online multiplayer, no accounts, no billing, no cloud sync
-supported skins: yorunoshirube, cute-pop (both official, both complete)
-verified browser scope for this demo: Chromium (Desktop Chrome), Firefox, and Playwright WebKit (desktop, engine-level) — real Safari, iOS Safari, and Android physical devices are not tested and not claimed supported
-reset path: TOP screen -> "ローカルデータを初期化…" (irreversible, explained in the confirmation dialog)
-```
-
-See docs/qa/BATCH-5-MANUAL-QA-REPORT.md for the full QA evidence behind this notice.
-
-## Final Decision
-
-Continue the existing multi-skin foundation from H1. The goal is a reusable game UI that can switch between Yorunoshirube, Cute Pop, and future skins without changing game logic, state, layout, hit areas, or accessibility behavior.
+Every completion report includes exact SHA(s), changed files, commands
+actually run, CI status or unavailable, browser/device/version scope,
+affected skins/screens/storage keys, evidence, remaining risks, and the
+next executable step.
