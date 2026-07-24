@@ -20,58 +20,79 @@ Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, NOT executed
-Post-Batch-10 integrity review:
+Post-Batch-10 integrity reviews:
   product/test/CI/doc fixes committed
   exact-current-SHA verification pending
 ```
 
-Deep review report:
-`docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md`.
-
-Historical Batch 10 results do not validate the newer product HEAD.
-Fresh verification and Batch 11 evidence must use one frozen exact commit.
-
-## Integrity Review Result
-
-Real defects found and fixed:
+Review records:
 
 ```text
-corruption recovery could throw while backing up/removing broken data
-records/settings corrupt payloads were not preserved
-records/settings recovery warnings were discarded by AppRoot
-failed achievement persistence could appear as newly unlocked
-missing current deck/active variant could leave a blank route
-legacy version 0 import migration happened without visible review
-export Blob URL lifecycle was browser-fragile
-storage error-code collision risk
-“All local data” reset omitted records/settings corrupt backups
-partial reset failure was swallowed and presented as success
-Batch 11 baseline and entry docs were stale
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 ```
 
-Current behavior:
+Historical Batch 10 evidence does not validate the newer product HEAD.
+Fresh verification and Batch 11 must use one frozen exact commit and one
+production artifact.
+
+## Integrity Hardening Result
+
+The reviews found and fixed real defects in:
 
 ```text
-storage read denial -> L9005 + safe empty/default in-memory fallback
-bootstrap starter write failure -> L9006
-backup creation and active-key cleanup independently best-effort
-all store recovery issues appear in boot Toast
-unpersisted rewards/achievements are not shown as saved
-missing deck/variant returns to a safe screen with warning
-legacy migration requires visible review and an unchanged second action
-export attaches a temporary anchor and defers Blob URL revocation
-reset covers active values, all corrupt backups, and skin selection
-partial reset failure stops reload and shows an error
+corruption recovery and forensic backup
+storage read-denial fail-closed behavior
+write-boundary schema enforcement
+atomic match record/coin/achievement persistence
+legacy migration review
+same-ID import overwrite confirmation
+cross-tab stale import/editor conflict rejection
+collision-resistant new deck IDs
+variant/role/bonus ID uniqueness
+persisted collection bounds and legacy over-limit salvage
+missing-entity route recovery
+Blob URL/export lifecycle
+full local reset completeness and partial-failure truthfulness
+error-code ownership, CI visibility, and current-state docs
 ```
 
-New regression tests committed in this review: **12 cases**.
+Current persistence guarantees:
 
 ```text
-6 storage recovery operation-failure cases
-3 AppRoot persistence/migration cases
-3 local reset completeness/result cases
+read denial:
+  L9005 session fallback for display
+  mutation/export fails closed; unknown existing bytes are not overwritten
+
+normal write:
+  strict schema parse immediately before setItem
+  StorageWriteError on contract or browser write failure
+
+match result:
+  record + coins + role collection + match-derived achievements
+  committed in one validated write
+
+stored limits:
+  decks 200
+  records 100
+  role collection 500
+  achievements 100
+  recent match keys 20
+
+old over-limit payload:
+  raw backup when possible
+  deterministic bounded salvage
+  L9007 warning
+
+same-ID import:
+  unchanged-input confirmation
+  unchanged existing-entry fingerprint confirmation
+
+Editor conflict:
+  stale draft is rejected and unmounted
 ```
 
+Targeted integrity tests added across the two reviews: **38 cases**.
 They are committed but not yet authoritatively executed against the final
 review SHA. No new PASS claim is made.
 
@@ -140,6 +161,7 @@ Safari + VoiceOver
 NVDA / JAWS
 remaining Batch 8 Result/Cute Pop real-VoiceOver evidence
 user-facing backup restore
+true transactional multi-tab compare-and-swap
 ```
 
 RC remains **LIMITED READY**.
@@ -150,6 +172,7 @@ RC remains **LIMITED READY**.
 local-first: decks and progress are stored in browser localStorage
 imports are strict-validated before play
 legacy migration shows changes before persistence
+same-ID import requires irreversible-overwrite confirmation
 shared deck JSON excludes local/private images and unsafe display fields
 no online multiplayer, accounts, billing, or cloud sync
 supported official skins: yorunoshirube and cute-pop
@@ -179,7 +202,15 @@ pnpm dev
 Exact-current-SHA release verification:
 
 ```bash
-pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+pnpm exec vitest run \
+  src/storage/storageRecoveryFailurePaths.test.ts \
+  src/storage/localStorageRecordsAtomicity.test.ts \
+  src/storage/localStorageCapacity.test.ts \
+  src/storage/storageWriteContract.test.ts \
+  src/storage/resetLocalData.test.ts \
+  src/app/runtimeIds.test.ts \
+  src/app/AppRoot.persistence.test.tsx \
+  src/engine/validation/validateDeckEntityIds.test.ts
 pnpm typecheck
 pnpm test
 pnpm skin:validate
@@ -200,11 +231,12 @@ SHA. A successful push is not CI success.
 
 ```text
 1. Freeze clean HEAD == origin/main and record exact SHA/tool versions.
-2. Run frozen install and all verification commands.
-3. Confirm all 12 new cases are collected and passing.
-4. Fix any failure; code changes restart exact-SHA verification.
-5. Execute the complete Batch 11 matrix on the same artifact.
-6. Commit evidence/report and only then mark Batch 11 complete.
+2. Run frozen install and the named Critical integrity contracts suite.
+3. Run typecheck, all unit tests, skin validation, and production build.
+4. Confirm all 38 review-added cases are collected and passing.
+5. Fix any failure; every code/test change restarts exact-SHA verification.
+6. Execute the complete Batch 11 matrix on the same artifact.
+7. Commit evidence/report and only then mark Batch 11 complete.
 ```
 
 New features or asset generation must not bypass this closure work.
@@ -251,39 +283,23 @@ UI does not implement role/scoring/wildcard rules
 engine does not import React/DOM/localStorage/CSS
 skin does not access engine/schema/storage/records/network
 shared deck JSON contains no image/URL/base64/path/html/script/style fields
-persisted values are schema-parsed before use
+persisted values are schema-parsed before use and before write
 recovery does not crash merely because cleanup failed
 ```
 
 There is no backend/API. Server rate limiting, distributed tracing, and
 server RPS/load are currently not applicable; they become mandatory if
 login, sync, multiplayer, uploads, telemetry, marketplace, or an API is
-introduced. See `docs/OPERATIONS-READINESS.md`.
+introduced.
 
-## Documentation
-
-Start here:
+## Canonical Documents
 
 ```text
-AGENTS.md
-CODEX.md or CLAUDE.md
-docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
-docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/release/STORAGE-RECOVERY-POLICY.md
+docs/OPERATIONS-READINESS.md
+docs/TECHNICAL-RISK-REGISTER.md
 ```
-
-Priority when documents disagree:
-
-```text
-1. MASTER-SPEC for product/rule truth
-2. RELEASE-DEMO-GATES for readiness
-3. latest evidence-backed Batch report/matrix for exact scope
-4. current non-numbered subsystem contracts
-5. IMPLEMENTATION-WORKFLOW for next execution
-6. historical/numbered documents
-```
-
-Choose the evidence-backed narrower claim, not the more optimistic one.
