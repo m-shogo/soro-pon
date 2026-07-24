@@ -14,15 +14,13 @@ Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
-Current work: post-Batch-10 integrity changes require fresh exact-SHA verification
+Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
 ```
 
-Do not treat old asset-production checkpoints, numbered documents, or a
-historical green command as current release evidence.
+Do not treat historical green commands, old asset checkpoints, or numbered
+documents as current release evidence.
 
 ## Start Here
-
-Every agent reads:
 
 ```text
 README.md
@@ -31,62 +29,72 @@ CODEX.md or CLAUDE.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
-Canonical roles:
+## Canonical Roles
 
 ```text
 docs/MASTER-SPEC.md
   Product and rule truth.
 
-docs/IMPLEMENTATION-WORKFLOW.md
-  Compact current implementation state and next executable sequence.
-
 docs/RELEASE-DEMO-GATES.md
   Demo/release readiness and exact open evidence.
+
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+  Findings, fixes, new tests, unverified scope, and closure sequence.
 
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
   Current unexecuted production Firefox/WebKit QA contract.
 
+docs/IMPLEMENTATION-WORKFLOW.md
+  Compact current implementation state and next executable sequence.
+
 docs/release/STORAGE-RECOVERY-POLICY.md
-  Storage corruption, backup, recovery, and failure semantics.
+  Corruption, backup, recovery, reset, and failure semantics.
 
 docs/MIGRATIONS.md
   Version compatibility and visible legacy-import confirmation.
 
 docs/ERROR-CODES.md
-  Stable issue-code ownership; codes must not be reused semantically.
+  Stable issue-code ownership.
 
 docs/OPERATIONS-READINESS.md
-  Applicability/status of migration rollback, restore, observability,
-  metrics, trace, rate limiting, load, chaos, deployment, and compatibility.
+  Applicability/status of rollback, restore, observability, metrics,
+  trace, rate limiting, load, chaos, deployment, and compatibility.
 
 docs/TECHNICAL-RISK-REGISTER.md
   Current CLOSED / MITIGATED / OPEN / BLOCKED_EVIDENCE risks.
 ```
 
-## Current Integrity Review Scope
+## Integrity Review Summary
 
-The post-Batch-10 review changed code, tests, CI, and documentation.
-Representative findings:
+Representative defects fixed:
 
 ```text
-storage recovery could throw during recovery cleanup
+storage recovery could throw during cleanup
 records/settings recovery notices were discarded
-unpersisted achievements could be displayed as unlocked
+unpersisted achievements could appear unlocked
 missing deck/variant could leave a blank route
+legacy migration notice was ignored
 export Blob URL lifecycle was browser-fragile
 storage error-code collision risk
-legacy import migration notice was silently ignored
+reset omitted corrupt-backup keys
+partial reset failure was presented as success
+entry/risk/performance/operations docs were stale or ambiguous
 ```
 
-Current fixes include safe storage fallbacks, truthful persistence UI,
-legacy migration review-before-save, nine new regression tests (six
-storage fault paths and three AppRoot persistence/migration cases), and a
-separate CI-visible storage regression command. These tests are committed
-but must still be executed against the exact current SHA before any new
-PASS claim.
+New regression tests committed: **12 cases**.
+
+```text
+6 storage operation-failure cases
+3 AppRoot persistence/migration cases
+3 reset completeness/result cases
+```
+
+They remain unverified against the final exact SHA until the prescribed
+commands and Batch 11 are executed.
 
 ## UI / Design / Skin — Mandatory for UI Work
 
@@ -106,32 +114,33 @@ docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
-Current invariant:
+Invariant:
 
 ```text
-one layout/component system
+one shared layout/component system
 no skin-specific screens
 shared Button/Panel/Dialog/Form/Tile components
 slice/repeat/mask only through shared renderers
 skin cannot control layout, hit areas, focus, z-index, or game state
 external skins use typed allowlisted tokens and registered assets only
-both official skins retain CSS/SVG fallback behavior
+both official skins retain fallback behavior
 ```
 
 ## Release / Operations
 
 ```text
 docs/RELEASE-DEMO-GATES.md
-docs/OPERATIONS-READINESS.md
-docs/TECHNICAL-RISK-REGISTER.md
-docs/CI-GATES.md
-docs/MIGRATIONS.md
-docs/ERROR-CODES.md
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md
 docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md
 docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md
 docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/OPERATIONS-READINESS.md
+docs/TECHNICAL-RISK-REGISTER.md
+docs/CI-GATES.md
+docs/MIGRATIONS.md
+docs/ERROR-CODES.md
 docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
 docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
 docs/release/SOAK-RUNBOOK.md
@@ -148,10 +157,10 @@ AX-tree automation != real screen reader
 historical artifact PASS != current HEAD verification
 best-effort corrupt backup != user-facing restore
 local test observability != production telemetry
-not applicable backend control != silently complete control
+not-applicable backend control != completed backend control
 ```
 
-## Architecture / API / Rule Contracts
+## Architecture / Rule Contracts
 
 ```text
 docs/ARCHITECTURE-BOUNDARIES.md
@@ -190,17 +199,16 @@ docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md
 docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
 ```
 
-The roadmap is useful for history and future explicit asset work. It
-cannot override release-current state or silently restart a closed batch.
+Asset history cannot override release-current state or silently restart a
+closed batch.
 
-## Current Rule / Engine Detail
+## Numbered Detail Documents
 
-Use numbered documents only when the relevant subsystem requires them.
-Compatibility pointers such as
-`docs/67-current-implementation-source-of-truth.md` and
+Use numbered docs only for subsystem detail. Compatibility pointers such
+as `docs/67-current-implementation-source-of-truth.md` and
 `docs/75-current-mvp-master-spec.md` are not primary truth.
 
-Representative detail docs:
+Representative detail:
 
 ```text
 docs/62-mahjong-structure-scoring-core.md
@@ -219,9 +227,6 @@ docs/74-strict-import-contract-and-edit-boundary.md
 
 ## Vamp-pon Reference Gates
 
-When using world, character, enemy, stage, weapon, item, or visual-lore
-material:
-
 ```text
 docs/42-shared-vampon-source-policy.md
 docs/44-vampon-character-generation-gate.md
@@ -234,15 +239,14 @@ The `vamp-pon` repository is read-only from this project.
 ## Conflict Resolution
 
 ```text
-1. docs/MASTER-SPEC.md for product/rule truth
-2. docs/RELEASE-DEMO-GATES.md for readiness claims
-3. latest evidence-backed Batch matrix/report for exact scope
+1. MASTER-SPEC for product/rule truth
+2. RELEASE-DEMO-GATES for readiness claims
+3. latest evidence-backed Batch/review report for exact scope
 4. current non-numbered subsystem contracts
-5. docs/IMPLEMENTATION-WORKFLOW.md for operational sequence
+5. IMPLEMENTATION-WORKFLOW for next execution
 6. numbered detail docs
 7. historical/compatibility docs
 ```
 
-When current documents disagree, do not choose the more optimistic claim.
-Verify implementation/evidence, correct every affected entry document,
-and record the exact scope.
+When documents disagree, choose the evidence-backed narrower claim and
+repair every affected entry document.
