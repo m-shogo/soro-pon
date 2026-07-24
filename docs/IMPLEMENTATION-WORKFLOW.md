@@ -11,14 +11,16 @@ Product/rule truth:          docs/MASTER-SPEC.md
 Release/readiness truth:     docs/RELEASE-DEMO-GATES.md
 Initial integrity review:    docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 Continuation review:         docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
+Deep-dive review:            docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 Current executable QA:       docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 Storage contract:            docs/release/STORAGE-RECOVERY-POLICY.md
 Migration contract:          docs/MIGRATIONS.md
+Skin distribution boundary:  docs/SKIN-DISTRIBUTION.md
 Operations applicability:    docs/OPERATIONS-READINESS.md
 Risk status:                 docs/TECHNICAL-RISK-REGISTER.md
 ```
 
-## Current Status — 2026-07-24
+## Current Status — 2026-07-25
 
 ```text
 Gameplay MVP phases 1-14: complete
@@ -36,7 +38,7 @@ Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
 Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
-Review-added integrity tests: 38 committed, unexecuted
+Review-added integrity tests: 79 committed definitions, unexecuted
 ```
 
 Current phase: **RC integrity/evidence closure**. Do not restart MVP,
@@ -67,18 +69,32 @@ read denial could be misused as an empty Store for mutation
 records/settings corrupt raw backup or warning gaps
 record/coin and match-achievement persistence was not atomic
 app could write collections larger than its own read schema
-old over-limit payloads lacked bounded upgrade recovery
+old/partial payloads lacked bounded salvage
 same-ID import silently overwrote an existing deck
-stale import/editor state could overwrite another tab's deck
+stale import/editor/detail state could overwrite or delete newer data
 new deck IDs could collide
 variant/role/bonus duplicate-ID contract was incomplete
+tile membership duplicates could inflate feasibility counts
+group fields ignored by the engine could survive persistence
+ScoreBonus cap could contradict one award
+valid deck body could be lost because wrapper metadata was damaged
+one malformed match row could wipe all progress
+persisted duplicate deck IDs were ambiguous
 write paths lacked final runtime schema validation
 unpersisted achievement could be shown as unlocked
 missing deck/variant could leave a blank route
 silent legacy v0 migration persistence
 browser-fragile export Blob URL lifecycle
 reset omitted backup keys or hid partial failure
-stale Batch 11 baseline and entry/risk/performance docs
+ErrorBoundary emergency reset retained false-success behavior
+deck deletion lacked confirmation/restore guidance
+danger dialog focused destructive confirmation
+dialog message lacked aria-describedby association
+skin preload rejection/unmount races could leave stale/loading state
+skin inheritance exact-limit check was off by one
+runtime external-SVG/registry trust checks were incomplete
+unsafe import diagnostics were unbounded
+stale Batch 11 baseline and entry/risk/performance/distribution docs
 ```
 
 Current integrity behavior:
@@ -90,80 +106,81 @@ read denial:
 
 write boundary:
   strict payload parse immediately before setItem
-  nested deck IDs checked before final persistence
+  nested deck identity/membership/scoring contracts checked
+  stale observed deck mutation rejected
 
 match result:
   record + coins + role collection + match achievements in one write
 
 limits:
   decks 200 / records 100 / roles 500 / achievements 100 / recent keys 20
-  legacy over-limit payload -> backup + bounded L9007 normalization
+  old/partial payload -> backup + bounded salvage where safe
 
 import:
   visible legacy migration review
   explicit same-ID overwrite review
-  input and existing-entry fingerprint must remain unchanged
+  bounded unsafe-field diagnostics
 
-Editor:
-  stale external update/delete rejects save and unmounts old draft
-
-reset:
+reset/destructive UI:
   active + forensic + skin keys covered
   partial failure stops reload and is shown
+  danger dialogs focus cancellation first
+
+skin runtime:
+  failed preload returns to ready with previous/fallback skin
+  unmount invalidates in-flight requests
+  duplicate/future registry rejected
+  external SVG rejected at runtime validation
 ```
 
-Targeted tests committed across both reviews: **38**. They are not
-release evidence until executed on the exact final SHA.
+Targeted test definitions committed across three reviews: **79**. They are
+not release evidence until executed on the exact final SHA.
 
 ## Next Executable Work
 
 ```text
-1. Confirm clean worktree and HEAD == origin/main.
-2. Record exact SHA and Node/pnpm/Playwright/browser versions.
-3. pnpm install --frozen-lockfile
-4. Run the named Critical integrity contracts suite.
-5. pnpm typecheck
-6. pnpm test
-7. Confirm all 38 review-added tests are collected and pass.
-8. pnpm skin:validate
-9. pnpm build and record artifact inventory/hash.
-10. Fix any failure; if code changes, restart from step 1.
-11. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
-12. Commit evidence/report and only then update Batch 11 status.
+1. Stop every concurrent writer.
+2. Confirm clean worktree and HEAD == origin/main.
+3. Record exact SHA and Node/pnpm/Playwright/browser versions.
+4. pnpm install --frozen-lockfile
+5. Run .github/workflows/integrity.yml equivalent locally.
+6. Confirm all 79 review-added tests are collected and pass.
+7. pnpm typecheck
+8. pnpm test
+9. pnpm skin:validate
+10. pnpm build and record artifact inventory/hash.
+11. Fix any failure; if code/test changes, restart from step 1.
+12. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
+13. Commit evidence/report and only then update Batch 11 status.
 ```
 
-Exact integrity command:
-
-```bash
-pnpm exec vitest run \
-  src/storage/storageRecoveryFailurePaths.test.ts \
-  src/storage/localStorageRecordsAtomicity.test.ts \
-  src/storage/localStorageCapacity.test.ts \
-  src/storage/storageWriteContract.test.ts \
-  src/storage/resetLocalData.test.ts \
-  src/app/runtimeIds.test.ts \
-  src/app/AppRoot.persistence.test.tsx \
-  src/engine/validation/validateDeckEntityIds.test.ts
-```
+The exact targeted file list is maintained in
+`.github/workflows/integrity.yml`; do not maintain a second command list here.
 
 Batch 11 cannot itself promote RC to READY. Real devices, real Safari,
-remaining real AT, and real deploy/rollback remain separate evidence.
+remaining real AT, installer-owned external-skin trust, and real
+deploy/rollback remain separate evidence.
 
 ## CI / Browser Boundaries
 
-Default GitHub CI runs:
+GitHub workflows now define:
 
 ```text
-frozen install
-named Critical integrity contracts suite
-strict typecheck
-full unit suite
-skin validation
-production build
+CI:
+  frozen install
+  recovery-focused named step
+  strict typecheck
+  full unit suite
+  skin validation
+  production build
+
+Integrity Contracts:
+  23 targeted integrity files
+  strict typecheck
 ```
 
-Visual, cross-browser, soak, physical-device, real-AT, and deploy checks
-are separate release gates. A successful push is not a CI PASS.
+A workflow definition is not a PASS result. Visual, cross-browser, soak,
+physical-device, real-AT, and deploy checks remain separate release gates.
 
 ## UI / Skin Rules
 
@@ -174,73 +191,7 @@ layout/hit areas/focus/z-index/game meaning are skin-invariant
 skins change typed allowlisted presentation values only
 generic controls and render/slice behavior stay centralized
 both official skins and fallback remain usable
+external package official trust cannot come from manifest self-declaration
 ```
 
 Read the mandatory UI documents in `AGENTS.md` before UI work.
-
-## Asset Rule
-
-Batches 1-4 are closed. Start another asset batch only from an explicit
-current task.
-
-```text
-generate -> generated/candidates -> review -> human approval
--> generated/final -> skin version bump -> verification
-```
-
-Never write generated output directly to final.
-
-## Architecture / Operations Boundaries
-
-```text
-UI does not implement role/scoring/wildcard rules
-engine does not import React/DOM/localStorage/CSS
-skin does not access engine/schema/storage/records/network
-shared deck JSON contains no executable/image/URL injection fields
-persisted values are parsed before use and immediately before write
-recovery does not fail merely because cleanup failed
-```
-
-No backend/API exists. HTTP rate limiting, distributed tracing, and server
-load tests are not applicable until login, sync, multiplayer, uploads,
-telemetry, marketplace, or another network API is introduced.
-
-## Release Claim Boundaries
-
-```text
-local production preview != deploy
-Playwright WebKit != Safari
-emulation/simulator != physical device
-AX-tree automation != real screen reader
-unavailable metric = null/not_available, never 0
-old artifact PASS != current HEAD verification
-best-effort corrupt backup != user-facing restore
-optimistic StoredDeck fingerprint != transactional multi-tab CAS
-```
-
-## Known Open Scope
-
-```text
-exact-current-SHA verification
-Batch 11 production Firefox/WebKit execution
-physical iPhone Safari / iPad / Android
-real hosting target and deployed-artifact rollback
-Safari + VoiceOver
-NVDA / JAWS
-remaining Batch 8 Result/Cute Pop real-VoiceOver evidence
-user-facing backup restore
-true transaction/version model for advertised concurrent multi-tab editing
-Editor live validation-panel integration for cross-variant ID errors
-match restore/replay/resend (non-MVP)
-marketplace/payment/entitlement product (future)
-```
-
-## Work Rule
-
-```text
-small testable changes
-one purpose per commit where tooling permits
-implementation and contract docs together
-never broaden historical evidence
-report local verification separately from GitHub Actions
-```
