@@ -14,7 +14,7 @@ Official skins:
   yorunoshirube: 9 finals, v4
   cute-pop: 9 finals, v5
 Gate 4: PASS
-Gate 5: PASS within its recorded demo/browser scope
+Gate 5: PASS within recorded demo/browser scope
 Historical Gate 6: PASS
 RC status: LIMITED READY
 Batch 7: COMPLETE
@@ -25,10 +25,9 @@ Batch 11 production Firefox/WebKit:
   contract defined, NOT yet executed
 ```
 
-The current product HEAD includes post-Batch-10 storage-recovery fixes.
-Historical test and production-preview results do **not** validate that
-newer SHA automatically. Fresh typecheck/tests/skin validation/build and
-Batch 11 evidence must be produced from one exact current commit.
+Current `main` contains storage/AppRoot integrity fixes newer than Batch 10.
+Historical results do not automatically validate that newer SHA. Fresh
+verification and Batch 11 evidence must use one exact current commit.
 
 Canonical status:
 
@@ -38,25 +37,42 @@ docs/RELEASE-DEMO-GATES.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
-## Current Integrity Review
+## Integrity Review
 
-A deep review found that ordinary localStorage writes were protected, but
-corruption recovery still called raw `getItem()`, `setItem()`, and
-`removeItem()`. A compound condition such as corrupted data plus quota or
-browser storage denial could make the recovery path itself throw.
-
-Current `main` now includes:
+A deep review found and fixed these real defects:
 
 ```text
-deck/records/settings read denial -> L9004 + safe in-memory fallback
-backup creation and active-key removal guarded independently
-raw corrupt records/settings backup keys when storage permits
-best-effort recovery warnings that name failed cleanup operations
-six regression tests for recovery-operation failures
-updated storage/release/agent documentation
+corruption recovery could throw while backing up/removing broken data
+records/settings corrupt payloads were not preserved
+records/settings recovery warnings were discarded by AppRoot
+failed achievement persistence could still appear as newly unlocked
+missing current deck/active variant could leave a permanent blank route
+export Blob URL lifecycle was fragile across browsers
+L9004 almost collided with a new storage meaning despite already meaning
+  local-image fallback
 ```
 
-See `docs/release/STORAGE-RECOVERY-POLICY.md`.
+Current behavior:
+
+```text
+storage read denial -> L9005 + safe empty/default in-memory fallback
+bootstrap starter write failure -> L9006
+backup and cleanup are independently best-effort
+records/settings raw corrupt backup keys are attempted
+all three store recovery issues appear in boot Toast
+unpersisted achievements/rewards are not shown as saved
+missing deck/variant returns to a safe screen with warning
+export attaches a temporary anchor and defers Blob URL revocation
+six storage-operation failure-path tests added
+```
+
+See:
+
+```text
+docs/release/STORAGE-RECOVERY-POLICY.md
+docs/ERROR-CODES.md
+docs/RELEASE-DEMO-GATES.md
+```
 
 ## Product Core
 
@@ -73,8 +89,8 @@ ron: 8-tile hand + discarded tile
 self-draw: 9 tiles after draw
 ```
 
-The table feel and interaction quality may reference Mahjong, but the rule
-engine must not drift into Mahjong rules.
+The interaction may reference Mahjong table feel, but the rule engine must
+not drift into Mahjong rules.
 
 ## Official Skins
 
@@ -86,7 +102,7 @@ cute-pop
   bright / cute / approachable / pop
 ```
 
-Both skins share one screen, component, layout, focus, hit-area, and game
+Both skins use one screen, component, layout, focus, hit-area, and game
 state implementation. Skin-specific screen copies are forbidden.
 
 ## Public Demo / RC Scope
@@ -95,15 +111,16 @@ Established evidence:
 
 ```text
 Batch 7:
-  Chromium, Firefox, and Playwright WebKit in the recorded automated scope.
+  Chromium, Firefox, and Playwright WebKit in recorded automated scope.
   Playwright WebKit is not Safari.
 
 Batch 8:
-  real VoiceOver + Chrome with precise traversed/supplemental boundaries.
+  real VoiceOver + Chrome with recorded traversed/supplemental boundaries.
   This is not Safari + VoiceOver.
 
 Batch 9:
-  Chromium memory-authoritative dev-server soak; Firefox/WebKit stability only.
+  Chromium memory-authoritative dev-server soak;
+  Firefox/WebKit stability only.
 
 Batch 10:
   production build and local production preview in Chromium.
@@ -125,9 +142,9 @@ Cute Pop Result under real VoiceOver
 Batch 11 production Firefox/WebKit execution
 ```
 
-RC remains **LIMITED READY**. Do not promote it using simulator,
-emulation, AX-tree inspection, Playwright WebKit, or local-preview evidence
-as substitutes for the open real environments.
+RC remains **LIMITED READY**. Simulator, emulation, AX-tree inspection,
+Playwright WebKit, and local preview cannot substitute for the open real
+environments.
 
 ## Public Demo Notes
 
@@ -137,12 +154,11 @@ imports are validated before play
 shared deck JSON excludes local/private images and unsafe display fields
 no online multiplayer, accounts, billing, or cloud sync
 supported official skins: yorunoshirube and cute-pop
-reset path is visible from TOP and is irreversible after confirmation
+reset path is visible from TOP and irreversible after confirmation
 ```
 
-The exact supported browser/device promise must match the artifact being
-published and its evidence. Do not copy historical wording into a new
-deployment without revalidation.
+The exact browser/device promise must match the published artifact and its
+evidence.
 
 ## Stack
 
@@ -157,8 +173,8 @@ CSS
 localStorage-first persistence
 ```
 
-Major dependency additions require review of `docs/DEPENDENCY-POLICY.md`
-and an ADR where applicable.
+Major dependency additions require `docs/DEPENDENCY-POLICY.md` review and
+an ADR where applicable.
 
 ## Setup
 
@@ -167,7 +183,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Node and package-manager requirements are defined in `package.json`.
+Node and package-manager requirements are in `package.json`.
 
 ## Verification
 
@@ -187,23 +203,23 @@ pnpm test:visual
 pnpm test:visual:crossbrowser
 ```
 
-Extended soak is manual and follows `docs/release/SOAK-RUNBOOK.md`.
+Extended soak follows `docs/release/SOAK-RUNBOOK.md`.
 
-Never report these as passing unless they were executed against the exact
-reported SHA. A successful push is not CI success.
+Never report a command as passing unless it ran against the exact reported
+SHA. A successful push is not CI success.
 
 ## Current Next Work
 
 ```text
-1. Freeze clean HEAD == origin/main and record exact SHA/tool versions.
+1. Freeze clean HEAD == origin/main and record SHA/tool versions.
 2. Run install/typecheck/test/skin:validate/build on that SHA.
 3. Confirm storageRecoveryFailurePaths.test.ts is collected and passes.
 4. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
-5. If product code changes, discard/relabel partial evidence and restart.
-6. Commit report/evidence and synchronize all entry documents.
+5. If product code changes, invalidate partial evidence and restart.
+6. Commit report/evidence and synchronize entry documents.
 ```
 
-Batch 11 cannot by itself promote RC to READY because real-device,
+Batch 11 cannot itself promote RC to READY because real-device,
 real-Safari, real-AT, and real-deploy evidence remains open.
 
 ## Design / UI Contract
@@ -218,7 +234,7 @@ asset URLs and rendering modes are centralized
 both official skins retain fallback behavior
 ```
 
-For UI work, read the mandatory list in `AGENTS.md` before editing.
+For UI work, read the mandatory list in `AGENTS.md`.
 
 Layout policy:
 
@@ -234,17 +250,17 @@ forbidden.
 
 ## Asset Production
 
-The production pipeline is proven and asset Batches 1-4 are closed.
-Do not restart generation based only on an old roadmap checkpoint.
+The pipeline is proven and asset Batches 1-4 are closed. Do not restart
+generation from an old roadmap checkpoint.
 
 ```text
 generate -> generated/candidates -> inspect -> human approval
 -> generated/final -> skin.json version bump -> verification
 ```
 
-Direct generation into `generated/final` is forbidden. Historical slot
-classification and approval records live in
-`docs/ASSET-PRODUCTION-ROADMAP.md` and `docs/asset-requests/`.
+Direct generation into final is forbidden. Historical slot/approval
+records live in `docs/ASSET-PRODUCTION-ROADMAP.md` and
+`docs/asset-requests/`.
 
 ## Architecture Boundaries
 
@@ -276,13 +292,13 @@ Priority when documents disagree:
 ```text
 1. MASTER-SPEC for product/rule truth
 2. RELEASE-DEMO-GATES for readiness claims
-3. latest evidence-backed Batch matrix/report for its exact scope
+3. latest evidence-backed Batch matrix/report for exact scope
 4. current non-numbered subsystem contracts
 5. IMPLEMENTATION-WORKFLOW for next execution
 6. historical/numbered documents
 ```
 
-Choose the evidence-backed, narrower claim—not the more optimistic one.
+Choose the evidence-backed narrower claim, not the more optimistic one.
 
 ## Work / Report Policy
 
@@ -290,7 +306,7 @@ Choose the evidence-backed, narrower claim—not the more optimistic one.
 small testable changes
 one purpose per commit where tooling permits
 implementation and contract docs updated together
-never weaken historical evidence scope
+never broaden historical evidence silently
 report local results separately from CI
 ```
 
