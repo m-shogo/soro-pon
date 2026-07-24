@@ -10,11 +10,13 @@ export const MAX_ROLE_COLLECTION_ENTRIES = 500;
 export const MAX_STORED_ACHIEVEMENTS = 100;
 export const MAX_RECENT_MATCH_KEYS = 20;
 
+const safeNonnegativeInteger = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+
 export const storedDeckSchema = z
   .object({
     deck: deckProjectSchema,
     source: z.enum(['official', 'created', 'imported']),
-    updatedAtMs: z.number().int().nonnegative(),
+    updatedAtMs: safeNonnegativeInteger,
   })
   .strict();
 
@@ -70,7 +72,7 @@ export const DEFAULT_SETTINGS: SettingsPayload = {
 // 対局記録(docs/29の最小構成)。コインは強さに影響しない。
 export const matchRecordSchema = z
   .object({
-    dateMs: z.number().int().nonnegative(),
+    dateMs: safeNonnegativeInteger,
     deckId: z.string().min(1).max(64),
     deckName: z.string().min(1).max(80),
     reason: z.enum(['tsumo', 'ron', 'draw']),
@@ -78,15 +80,15 @@ export const matchRecordSchema = z
     humanWon: z.boolean(),
     selectedWinRoleId: z.string().max(64).optional(),
     selectedWinRoleName: z.string().max(80).optional(),
-    totalPoints: z.number().int().nonnegative().optional(),
-    coinsEarned: z.number().int().nonnegative(),
+    totalPoints: safeNonnegativeInteger.optional(),
+    coinsEarned: safeNonnegativeInteger,
   })
   .strict();
 
 export const recordsPayloadSchema = z
   .object({
     version: z.literal(1),
-    coins: z.number().int().nonnegative(),
+    coins: safeNonnegativeInteger,
     records: z.array(matchRecordSchema).max(MAX_STORED_MATCH_RECORDS),
     /** 一度でもあがったwin_roleのID(deckId:roleId) */
     roleCollection: z
@@ -99,7 +101,7 @@ export const recordsPayloadSchema = z
       .max(MAX_STORED_ACHIEVEMENTS)
       .optional(),
     /** 通算対局数(recordsは100件でtruncateされるため別に数える) */
-    totalMatches: z.number().int().nonnegative().optional(),
+    totalMatches: safeNonnegativeInteger.optional(),
     /**
      * 直前に記録したmatchの一意キー(deckId:variantId:seed:reason:winner)。
      * 同じキーでのaddRecord呼び出しはno-opにする(結果確定イベント単位の冪等性)。
