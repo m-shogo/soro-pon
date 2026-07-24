@@ -15,6 +15,7 @@ Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
 Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
+Integrity tests added across both reviews: 38 committed, unexecuted
 ```
 
 Do not treat historical green commands, old asset checkpoints, or numbered
@@ -30,6 +31,7 @@ docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
@@ -43,7 +45,10 @@ docs/RELEASE-DEMO-GATES.md
   Demo/release readiness and exact open evidence.
 
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
-  Findings, fixes, new tests, unverified scope, and closure sequence.
+  Initial recovery/reset/migration integrity findings.
+
+docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
+  Read-modify-write, atomicity, limits, IDs, overwrite, and concurrency findings.
 
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
   Current unexecuted production Firefox/WebKit QA contract.
@@ -52,13 +57,14 @@ docs/IMPLEMENTATION-WORKFLOW.md
   Compact current implementation state and next executable sequence.
 
 docs/release/STORAGE-RECOVERY-POLICY.md
-  Corruption, backup, recovery, reset, and failure semantics.
+  Corruption, read-denial, write validation, atomicity, limits, conflict,
+  backup, reset, and restore semantics.
 
 docs/MIGRATIONS.md
   Version compatibility and visible legacy-import confirmation.
 
 docs/ERROR-CODES.md
-  Stable issue-code ownership.
+  Stable issue-code ownership, including L9007 bounded salvage.
 
 docs/OPERATIONS-READINESS.md
   Applicability/status of rollback, restore, observability, metrics,
@@ -70,31 +76,57 @@ docs/TECHNICAL-RISK-REGISTER.md
 
 ## Integrity Review Summary
 
-Representative defects fixed:
+Representative fixed defects:
 
 ```text
 storage recovery could throw during cleanup
+read denial could be mistaken for an empty Store during mutation
+record/coin and achievement persistence was not atomic
+app could write more data than its own storage schema accepted
+old over-limit payloads could be reset instead of partially salvaged
+same-ID import silently overwrote an existing deck
+stale import/editor state could overwrite another tab's newer deck
+new deck IDs could collide under same-ms/multi-tab creation
+variant/role/bonus duplicate-ID contract was incomplete
+write paths trusted TypeScript values without final runtime validation
 records/settings recovery notices were discarded
 unpersisted achievements could appear unlocked
 missing deck/variant could leave a blank route
 legacy migration notice was ignored
 export Blob URL lifecycle was browser-fragile
-storage error-code collision risk
-reset omitted corrupt-backup keys
-partial reset failure was presented as success
+reset omitted corrupt-backup keys or hid partial failure
 entry/risk/performance/operations docs were stale or ambiguous
 ```
 
-New regression tests committed: **12 cases**.
-
-```text
-6 storage operation-failure cases
-3 AppRoot persistence/migration cases
-3 reset completeness/result cases
-```
-
+Targeted integrity tests committed: **38 cases**.
 They remain unverified against the final exact SHA until the prescribed
 commands and Batch 11 are executed.
+
+## Release / Operations
+
+```text
+docs/RELEASE-DEMO-GATES.md
+docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md
+docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md
+docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md
+docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
+docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
+docs/release/SOAK-RUNBOOK.md
+docs/release/STORAGE-RECOVERY-POLICY.md
+```
+
+Never collapse these distinctions:
+
+```text
+local preview != deploy
+Playwright WebKit != Safari
+simulator/emulation != physical device
+AX-tree automation != real screen reader
+historical artifact PASS != current HEAD verification
+optimistic localStorage fingerprint != transactional multi-tab CAS
+```
 
 ## UI / Design / Skin — Mandatory for UI Work
 
@@ -117,50 +149,16 @@ docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 Invariant:
 
 ```text
-one shared layout/component system
+one layout/component system
 no skin-specific screens
 shared Button/Panel/Dialog/Form/Tile components
 slice/repeat/mask only through shared renderers
 skin cannot control layout, hit areas, focus, z-index, or game state
 external skins use typed allowlisted tokens and registered assets only
-both official skins retain fallback behavior
+both official skins retain CSS/SVG fallback behavior
 ```
 
-## Release / Operations
-
-```text
-docs/RELEASE-DEMO-GATES.md
-docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
-docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md
-docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md
-docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md
-docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md
-docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
-docs/OPERATIONS-READINESS.md
-docs/TECHNICAL-RISK-REGISTER.md
-docs/CI-GATES.md
-docs/MIGRATIONS.md
-docs/ERROR-CODES.md
-docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
-docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
-docs/release/SOAK-RUNBOOK.md
-docs/release/STORAGE-RECOVERY-POLICY.md
-```
-
-Never collapse these distinctions:
-
-```text
-local preview != deploy
-Playwright WebKit != Safari
-simulator/emulation != physical device
-AX-tree automation != real screen reader
-historical artifact PASS != current HEAD verification
-best-effort corrupt backup != user-facing restore
-local test observability != production telemetry
-not-applicable backend control != completed backend control
-```
-
-## Architecture / Rule Contracts
+## Architecture / API / Rule Contracts
 
 ```text
 docs/ARCHITECTURE-BOUNDARIES.md
@@ -199,54 +197,21 @@ docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md
 docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
 ```
 
-Asset history cannot override release-current state or silently restart a
-closed batch.
-
-## Numbered Detail Documents
-
-Use numbered docs only for subsystem detail. Compatibility pointers such
-as `docs/67-current-implementation-source-of-truth.md` and
-`docs/75-current-mvp-master-spec.md` are not primary truth.
-
-Representative detail:
-
-```text
-docs/62-mahjong-structure-scoring-core.md
-docs/63-typescript-engine-implementation-blueprint.md
-docs/64-breaking-risk-review-and-fixes.md
-docs/65-group-backed-schema-override.md
-docs/66-group-backed-mvp-test-override.md
-docs/68-custom-deck-robustness-guardrails.md
-docs/69-adversarial-custom-deck-patterns.md
-docs/70-deck-rules-and-scoring-law.md
-docs/71-scoring-budget-and-image-security.md
-docs/72-score-budget-schema-and-defaults.md
-docs/73-safe-deck-creator-rules-and-tips.md
-docs/74-strict-import-contract-and-edit-boundary.md
-```
-
-## Vamp-pon Reference Gates
-
-```text
-docs/42-shared-vampon-source-policy.md
-docs/44-vampon-character-generation-gate.md
-docs/45-vampon-reference-gate.md
-/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
-```
-
-The `vamp-pon` repository is read-only from this project.
+The roadmap is useful for slot history and future explicit asset work. It
+cannot override release-current state or silently restart a closed batch.
 
 ## Conflict Resolution
 
 ```text
-1. MASTER-SPEC for product/rule truth
-2. RELEASE-DEMO-GATES for readiness claims
-3. latest evidence-backed Batch/review report for exact scope
+1. docs/MASTER-SPEC.md for product/rule truth
+2. docs/RELEASE-DEMO-GATES.md for readiness claims
+3. latest evidence-backed Batch/review report for its exact scope
 4. current non-numbered subsystem contracts
-5. IMPLEMENTATION-WORKFLOW for next execution
+5. docs/IMPLEMENTATION-WORKFLOW.md for operational sequence
 6. numbered detail docs
 7. historical/compatibility docs
 ```
 
-When documents disagree, choose the evidence-backed narrower claim and
-repair every affected entry document.
+When current documents disagree, do not choose the more optimistic claim.
+Verify implementation/evidence, correct every affected entry document, and
+record the exact scope.
