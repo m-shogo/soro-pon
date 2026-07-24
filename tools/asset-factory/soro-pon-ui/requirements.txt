@@ -1,3 +1,5 @@
-Pillow>=10.0
-numpy>=1.26
-pytest>=8.0
+# Asset Factory top-level toolchain pins.
+# Update intentionally after running the Python fixture suite on the target Python version.
+Pillow==12.3.0
+numpy==2.5.1
+pytest==9.1.1
