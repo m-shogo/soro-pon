@@ -14,11 +14,13 @@ const FOCUSABLE_SELECTOR =
 export function Modal({
   open,
   title,
+  ariaDescribedBy,
   onClose,
   children,
 }: {
   open: boolean;
   title?: ReactNode;
+  ariaDescribedBy?: string;
   onClose: () => void;
   children: ReactNode;
 }) {
@@ -88,6 +90,7 @@ export function Modal({
         aria-modal="true"
         tabIndex={-1}
         {...(title !== undefined ? { 'aria-labelledby': titleId } : {})}
+        {...(ariaDescribedBy !== undefined ? { 'aria-describedby': ariaDescribedBy } : {})}
       >
         <PaperPanel
           assetSlot="panel.modal.background"
