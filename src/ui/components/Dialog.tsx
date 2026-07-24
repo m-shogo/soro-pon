@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { ReactNode } from 'react';
 import { Button } from './Button';
 import { Modal } from './Modal';
@@ -26,10 +27,19 @@ export function Dialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const descriptionId = useId();
+
   return (
-    <Modal open={open} title={title} onClose={onCancel}>
+    <Modal
+      open={open}
+      title={title}
+      {...(message !== undefined ? { ariaDescribedBy: descriptionId } : {})}
+      onClose={onCancel}
+    >
       {message !== undefined && (
-        <p style={{ marginTop: 0, fontSize: 'var(--sp-font-sm)' }}>{message}</p>
+        <p id={descriptionId} style={{ marginTop: 0, fontSize: 'var(--sp-font-sm)' }}>
+          {message}
+        </p>
       )}
       {children}
       <div className="sp-dialog__actions">
