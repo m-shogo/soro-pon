@@ -8,10 +8,15 @@ import {
   storedDecksPayloadSchema,
 } from '../schemas/storageSchema';
 import { StorageWriteError, createMemoryStorage } from './keyValueStorage';
-import { createLocalStorageDeckStore, DECKS_STORAGE_KEY } from './localStorageDeckStore';
+import {
+  createLocalStorageDeckStore,
+  DECKS_BACKUP_KEY,
+  DECKS_STORAGE_KEY,
+} from './localStorageDeckStore';
 import {
   buildMatchRecord,
   createLocalStorageRecordsStore,
+  RECORDS_BACKUP_KEY,
   RECORDS_STORAGE_KEY,
 } from './localStorageRecordsStore';
 
@@ -61,6 +66,32 @@ describe('localStorage persisted collection boundaries', () => {
     expect(loaded.find((entry) => entry.deck.id === 'stored-0')?.updatedAtMs).toBe(9999);
   });
 
+  it('旧実装が作った201件payloadを全初期化せず200件へ部分救済する', () => {
+    const storage = createMemoryStorage();
+    const payload = {
+      version: 1 as const,
+      decks: Array.from({ length: MAX_STORED_DECKS + 1 }, (_, index) => ({
+        deck: starterDeck(`legacy-${index}`),
+        source: index === 0 ? ('official' as const) : ('created' as const),
+        updatedAtMs: index,
+      })),
+    };
+    const raw = JSON.stringify(payload);
+    expect(storedDecksPayloadSchema.safeParse(payload).success).toBe(false);
+    storage.setItem(DECKS_STORAGE_KEY, raw);
+
+    const result = createLocalStorageDeckStore(storage).loadAll();
+
+    expect(result.decks).toHaveLength(MAX_STORED_DECKS);
+    expect(result.decks.some((entry) => entry.deck.id === 'legacy-0')).toBe(true);
+    expect(result.decks.some((entry) => entry.deck.id === 'legacy-1')).toBe(false);
+    expect(result.decks.some((entry) => entry.deck.id === `legacy-${MAX_STORED_DECKS}`)).toBe(true);
+    expect(result.issues[0]?.code).toBe('L9007');
+    expect(storage.getItem(DECKS_BACKUP_KEY)).toBe(raw);
+    const rewritten = JSON.parse(storage.getItem(DECKS_STORAGE_KEY) ?? 'null') as unknown;
+    expect(storedDecksPayloadSchema.safeParse(rewritten).success).toBe(true);
+  });
+
   it('役コレクション上限後も対局とコインは保存し、新しい役キーだけ追加しない', () => {
     const storage = createMemoryStorage();
     const initial = {
@@ -104,5 +135,44 @@ describe('localStorage persisted collection boundaries', () => {
     expect(committed.records.coins).toBe(80);
     expect(committed.records.achievements).toContain('first-win');
     expect(recordsPayloadSchema.safeParse(committed.records).success).toBe(true);
+  });
+
+  it('旧実装が作った501件roleCollectionを他の記録を失わず正規化する', () => {
+    const storage = createMemoryStorage();
+    const legacy = {
+      version: 1 as const,
+      coins: 321,
+      records: [
+        buildMatchRecord({
+          dateMs: 1,
+          deckId: 'deck',
+          deckName: 'Deck',
+          reason: 'draw',
+          winnerName: '',
+          humanWon: false,
+        }),
+      ],
+      roleCollection: Array.from(
+        { length: MAX_ROLE_COLLECTION_ENTRIES + 1 },
+        (_, index) => `deck:legacy-role-${index}`,
+      ),
+      achievements: ['draw-round'],
+      totalMatches: 7,
+      recentMatchKeys: ['old-session'],
+    };
+    const raw = JSON.stringify(legacy);
+    expect(recordsPayloadSchema.safeParse(legacy).success).toBe(false);
+    storage.setItem(RECORDS_STORAGE_KEY, raw);
+
+    const result = createLocalStorageRecordsStore(storage).load();
+
+    expect(result.issues[0]?.code).toBe('L9007');
+    expect(result.records.roleCollection).toHaveLength(MAX_ROLE_COLLECTION_ENTRIES);
+    expect(result.records.coins).toBe(321);
+    expect(result.records.records).toHaveLength(1);
+    expect(result.records.achievements).toEqual(['draw-round']);
+    expect(result.records.totalMatches).toBe(7);
+    expect(storage.getItem(RECORDS_BACKUP_KEY)).toBe(raw);
+    expect(recordsPayloadSchema.safeParse(result.records).success).toBe(true);
   });
 });
