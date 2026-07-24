@@ -16,15 +16,28 @@ export const ALL_LOCAL_DATA_KEYS = [
   SKIN_SELECTION_KEY,
 ] as const;
 
+export type ResetLocalDataResult = {
+  removedKeys: string[];
+  failedKeys: string[];
+};
+
 // ローカルデータの初期化(P1-4 recovery)。
 // 削除は既知キーのみ(localStorage.clear()で他アプリのデータを消さない)。
-// 1件の削除失敗で後続キーを残さないよう、各キーを独立してbest-effort削除する。
-export function resetAllLocalData(storage: Pick<Storage, 'removeItem'>): void {
+// 各キーを独立して試し、UIが「全削除成功」を誤表示しないよう結果を返す。
+export function resetAllLocalData(
+  storage: Pick<Storage, 'removeItem'>,
+): ResetLocalDataResult {
+  const removedKeys: string[] = [];
+  const failedKeys: string[] = [];
+
   for (const key of ALL_LOCAL_DATA_KEYS) {
     try {
       storage.removeItem(key);
+      removedKeys.push(key);
     } catch {
-      // 1件消せなくても残りの既知キーを続けて削除する。
+      failedKeys.push(key);
     }
   }
+
+  return { removedKeys, failedKeys };
 }
