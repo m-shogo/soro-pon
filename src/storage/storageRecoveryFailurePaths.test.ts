@@ -84,12 +84,13 @@ describe('storage recovery operation failures', () => {
     expect(result.issues[0]?.message).toContain('保存領域を読み込めない');
   });
 
-  it('deck storageを読めない時はsave/removeを空payload基準で実行せず既存rawを保護する', () => {
+  it('deck storageを読めない時はsave/remove/exportを空payload基準で実行しない', () => {
     const original = '{"unknown":"existing data"}';
     const storage = createFaultingStorage({ [DECKS_STORAGE_KEY]: original }, { get: true });
     const store = createLocalStorageDeckStore(storage);
     expect(() => store.saveDeck(starterDeck(), 'created')).toThrow(StorageWriteError);
     expect(() => store.removeDeck('official-animal-starter')).toThrow(StorageWriteError);
+    expect(() => store.exportDeck('official-animal-starter')).toThrow(StorageWriteError);
     expect(storage.peek(DECKS_STORAGE_KEY)).toBe(original);
   });
 
