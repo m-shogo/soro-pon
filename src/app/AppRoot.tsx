@@ -16,6 +16,7 @@ import { parseDeckImport } from '../engine/import/parseDeckImport';
 import { validateDeckEntityIds } from '../engine/validation/validateDeckEntityIds';
 import { validateDeckForUse } from '../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../schemas/deckProjectSchema';
+import { MAX_ROLE_COLLECTION_ENTRIES } from '../schemas/storageSchema';
 import { StorageWriteError } from '../storage/keyValueStorage';
 import { createLocalStorageDeckStore } from '../storage/localStorageDeckStore';
 import {
@@ -23,7 +24,6 @@ import {
   type MatchCommitResult,
 } from '../storage/localStorageRecordsStore';
 import { createLocalStorageSettingsStore } from '../storage/localStorageSettingsStore';
-import { MAX_ROLE_COLLECTION_ENTRIES } from '../schemas/storageSchema';
 import { Badge } from '../ui/components/Badge';
 import { Button } from '../ui/components/Button';
 import { TextField } from '../ui/components/FormField';
@@ -51,7 +51,6 @@ type Screen =
       deckId: string;
       playerCount: 3 | 4;
       seed: number;
-      /** 対局開始時に発行するセッションID。記録の冪等キーに使う(P2-4) */
       matchSessionId: string;
     };
 
@@ -203,10 +202,12 @@ export function AppRoot() {
   const [importText, setImportText] = useState('');
   const [importIssues, setImportIssues] = useState<string[]>([]);
   const [migrationReviewText, setMigrationReviewText] = useState<string | null>(null);
+  const [overwriteReviewText, setOverwriteReviewText] = useState<string | null>(null);
 
   const resetImportReview = useCallback(() => {
     setImportIssues([]);
     setMigrationReviewText(null);
+    setOverwriteReviewText(null);
   }, []);
 
   const closeImport = useCallback(() => {
@@ -250,12 +251,12 @@ export function AppRoot() {
       return;
     }
 
-    if (
-      (screen.kind === 'matchSetup' || screen.kind === 'match') &&
-      (validateDeckForUse(deck).status === 'draft' || validateDeckForUse(deck).status === 'blocked')
-    ) {
-      appendSaveNotice('デッキの整合性に問題があるため、対局を中止してTOPへ戻りました。');
-      setScreen({ kind: 'top' });
+    if (screen.kind === 'matchSetup' || screen.kind === 'match') {
+      const validation = validateDeckForUse(deck);
+      if (validation.status === 'draft' || validation.status === 'blocked') {
+        appendSaveNotice('デッキの整合性に問題があるため、対局を中止してTOPへ戻りました。');
+        setScreen({ kind: 'top' });
+      }
     }
   }, [appendSaveNotice, decks, screen]);
 
@@ -269,6 +270,7 @@ export function AppRoot() {
     const result = parseDeckImport({ rawText: importText });
     if (!result.ok) {
       setMigrationReviewText(null);
+      setOverwriteReviewText(null);
       setImportIssues(result.issues.map((issue) => `${issue.code}: ${issue.message}`));
       return;
     }
@@ -276,10 +278,22 @@ export function AppRoot() {
     if (result.migrationNotice && migrationReviewText !== importText) {
       const notice = result.migrationNotice;
       setMigrationReviewText(importText);
+      setOverwriteReviewText(null);
       setImportIssues([
         `I2008: 旧形式 version ${notice.fromVersion} を version ${notice.toVersion} へ変換します。内容を確認し、もう一度ボタンを押してください。`,
         ...notice.changed.map((change) => `変更: ${change}`),
         ...notice.warnings.map((issue) => `${issue.code}: ${issue.message}`),
+      ]);
+      return;
+    }
+
+    const latestDecks = deckStore.loadAll().decks;
+    const existing = latestDecks.find((entry) => entry.deck.id === result.deck.id);
+    if (existing !== undefined && overwriteReviewText !== importText) {
+      setOverwriteReviewText(importText);
+      setImportIssues([
+        `同じID "${result.deck.id}" のデッキ「${existing.deck.name}」が保存されています。`,
+        'もう一度「上書きして読み込む」を押すと、既存デッキの内容はこのJSONで置き換わります。この操作は元に戻せません。',
       ]);
       return;
     }
@@ -290,6 +304,9 @@ export function AppRoot() {
 
     refreshDecks();
     processAchievements({ type: 'deckImported' });
+    if (existing !== undefined) {
+      appendSaveNotice(`同じIDのデッキ「${existing.deck.name}」を、読み込んだJSONで上書きしました。`);
+    }
     if (result.migrationNotice) {
       appendSaveNotice(
         `旧形式 version ${result.migrationNotice.fromVersion} を version ${result.migrationNotice.toVersion} へ変換して保存しました。`,
@@ -379,6 +396,13 @@ export function AppRoot() {
     [appendSaveNotice, decks, recordsStore, tryWrite],
   );
 
+  const importReviewKind =
+    overwriteReviewText === importText
+      ? 'overwrite'
+      : migrationReviewText === importText
+        ? 'migration'
+        : null;
+
   const importModal = (
     <Modal open={importOpen} title="デッキJSONを読み込む" onClose={closeImport}>
       <p style={{ marginTop: 0, fontSize: 'var(--sp-font-xs)' }}>
@@ -407,7 +431,11 @@ export function AppRoot() {
           {importIssues.slice(0, 12).map((message, i) => (
             <li key={i}>
               <Badge variant="warning">
-                {migrationReviewText === importText ? '変換確認' : '拒否'}
+                {importReviewKind === 'overwrite'
+                  ? '上書き確認'
+                  : importReviewKind === 'migration'
+                    ? '変換確認'
+                    : '拒否'}
               </Badge>{' '}
               {message}
             </li>
@@ -416,7 +444,11 @@ export function AppRoot() {
       )}
       <div className="sp-dialog__actions">
         <Button variant="primary" onClick={handleImport} disabled={importText.trim() === ''}>
-          {migrationReviewText === importText ? '変換して読み込む' : '読み込む'}
+          {importReviewKind === 'overwrite'
+            ? '上書きして読み込む'
+            : importReviewKind === 'migration'
+              ? '変換して読み込む'
+              : '読み込む'}
         </Button>
         <Button variant="ghost" onClick={closeImport}>
           やめる
