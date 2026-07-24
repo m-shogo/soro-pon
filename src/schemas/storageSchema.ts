@@ -128,16 +128,27 @@ export const EMPTY_RECORDS: RecordsPayload = {
   totalMatches: 0,
 };
 
+function uniqueInOrder(values: readonly string[]): string[] {
+  return [...new Set(values)];
+}
+
 // 読み込んだRecordsPayloadを常に具体値へ正規化する(旧データのoptional欠落を吸収)。
-// 呼び出し側が `?? []` / `?? 0` を散らさなくてよいようにする。
+// achievements/roleCollection/recentMatchKeysは意味上Setなので、順序を保って重複を除く。
 export function normalizeRecordsPayload(payload: RecordsPayload): RecordsPayload {
+  const sourceRecentKeys =
+    payload.recentMatchKeys ??
+    (payload.lastMatchKey !== undefined ? [payload.lastMatchKey] : []);
+  const recentMatchKeys = uniqueInOrder(
+    payload.lastMatchKey !== undefined
+      ? [payload.lastMatchKey, ...sourceRecentKeys]
+      : sourceRecentKeys,
+  ).slice(0, MAX_RECENT_MATCH_KEYS);
+
   return {
     ...payload,
-    achievements: payload.achievements ?? [],
+    roleCollection: uniqueInOrder(payload.roleCollection),
+    achievements: uniqueInOrder(payload.achievements ?? []),
     totalMatches: payload.totalMatches ?? payload.records.length,
-    // 旧データ(lastMatchKeyのみ)からの移行: recentMatchKeysへ引き継ぐ
-    recentMatchKeys:
-      payload.recentMatchKeys ??
-      (payload.lastMatchKey !== undefined ? [payload.lastMatchKey] : []),
+    recentMatchKeys,
   };
 }
