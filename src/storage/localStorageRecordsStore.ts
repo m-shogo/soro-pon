@@ -189,8 +189,18 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
   };
 
   const write = (next: RecordsPayload, failureMessage: string): RecordsPayload => {
-    safeWrite(() => storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(next)), failureMessage);
-    return next;
+    const parsed = recordsPayloadSchema.safeParse(next);
+    if (!parsed.success) {
+      throw new StorageWriteError(
+        '対局記録の保存内容が内部契約を満たさないため、既存データを保護して保存を中止しました。',
+        parsed.error,
+      );
+    }
+    safeWrite(
+      () => storage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(parsed.data)),
+      failureMessage,
+    );
+    return normalizeRecordsPayload(parsed.data);
   };
 
   const buildNextMatchRecords = (
