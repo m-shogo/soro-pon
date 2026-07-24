@@ -43,6 +43,24 @@ type SalvageCandidate = {
   originalIndex: number;
 };
 
+function preferredDuplicateCandidate(
+  current: SalvageCandidate,
+  candidate: SalvageCandidate,
+): SalvageCandidate {
+  if (candidate.deck.updatedAtMs !== current.deck.updatedAtMs) {
+    return candidate.deck.updatedAtMs > current.deck.updatedAtMs ? candidate : current;
+  }
+  if (candidate.deck.source !== current.deck.source) {
+    if (candidate.deck.source === 'official') {
+      return candidate;
+    }
+    if (current.deck.source === 'official') {
+      return current;
+    }
+  }
+  return candidate.originalIndex < current.originalIndex ? candidate : current;
+}
+
 function salvageDecks(
   rawDecks: unknown[],
   now: () => number,
@@ -51,6 +69,7 @@ function salvageDecks(
   recoveredCount: number;
   droppedCount: number;
   overflowCount: number;
+  duplicateCount: number;
 } {
   const candidates: SalvageCandidate[] = [];
   let droppedCount = 0;
@@ -90,11 +109,27 @@ function salvageDecks(
     }
   });
 
-  const overflowCount = Math.max(0, candidates.length - MAX_STORED_DECKS);
+  const candidateByDeckId = new Map<string, SalvageCandidate>();
+  let duplicateCount = 0;
+  for (const candidate of candidates) {
+    const deckId = candidate.deck.deck.id;
+    const current = candidateByDeckId.get(deckId);
+    if (current === undefined) {
+      candidateByDeckId.set(deckId, candidate);
+      continue;
+    }
+    duplicateCount += 1;
+    candidateByDeckId.set(deckId, preferredDuplicateCandidate(current, candidate));
+  }
+  const uniqueCandidates = [...candidateByDeckId.values()].sort(
+    (a, b) => a.originalIndex - b.originalIndex,
+  );
+
+  const overflowCount = Math.max(0, uniqueCandidates.length - MAX_STORED_DECKS);
   const selected =
     overflowCount === 0
-      ? candidates
-      : [...candidates]
+      ? uniqueCandidates
+      : [...uniqueCandidates]
           .sort((a, b) => {
             const officialPriority =
               Number(b.deck.source === 'official') - Number(a.deck.source === 'official');
@@ -112,6 +147,7 @@ function salvageDecks(
     recoveredCount: selected.filter((candidate) => candidate.recovered).length,
     droppedCount,
     overflowCount,
+    duplicateCount,
   };
 }
 
@@ -211,7 +247,8 @@ export function createLocalStorageDeckStore(
       );
     }
 
-    const { decks, recoveredCount, droppedCount, overflowCount } = salvageDecks(maybeDecks, now);
+    const { decks, recoveredCount, droppedCount, overflowCount, duplicateCount } =
+      salvageDecks(maybeDecks, now);
     if (decks.length === 0 && maybeDecks.length > 0) {
       return quarantineAndReset(
         raw,
@@ -225,6 +262,10 @@ export function createLocalStorageDeckStore(
       : ' ただし、元データのバックアップは保存できませんでした。';
     const recoveredSuffix =
       recoveredCount > 0 ? ` うち${recoveredCount}件は旧形式から自動変換しました。` : '';
+    const duplicateSuffix =
+      duplicateCount > 0
+        ? ` 同じデッキIDの重複${duplicateCount}件は、更新日時の新しい内容を優先して1件へ統合しました。`
+        : '';
     const issues: ValidationIssue[] =
       droppedCount > 0
         ? [
@@ -237,6 +278,7 @@ export function createLocalStorageDeckStore(
                 (overflowCount > 0
                   ? `さらに保存上限を超えた${overflowCount}件はactive一覧から除外しました。`
                   : '') +
+                duplicateSuffix +
                 recoveredSuffix +
                 `元データは可能な限りバックアップに退避しています。${backupSuffix}`,
             },
@@ -248,26 +290,36 @@ export function createLocalStorageDeckStore(
                 severity: 'warning',
                 message:
                   `デッキ保存数が上限${MAX_STORED_DECKS}件を超えていたため、公式デッキと更新日時の新しいデッキを優先して${decks.length}件へ正規化しました。` +
-                  `${overflowCount}件はactive一覧から除外しました。${recoveredSuffix}` +
+                  `${overflowCount}件はactive一覧から除外しました。${duplicateSuffix}${recoveredSuffix}` +
                   `元データは可能な限りバックアップに退避しています。${backupSuffix}`,
               },
             ]
-          : recoveredCount > 0
+          : duplicateCount > 0
             ? [
                 {
-                  code: 'L9002',
-                  severity: 'warning',
-                  message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。${backupSuffix}`,
-                },
-              ]
-            : [
-                {
-                  code: 'L9001',
+                  code: 'L9008',
                   severity: 'warning',
                   message:
-                    `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
+                    `保存データに同じデッキIDが複数あったため、${duplicateCount}件の重複を更新日時の新しい内容へ統合しました。` +
+                    `${recoveredSuffix}元データは可能な限りバックアップに退避しています。${backupSuffix}`,
                 },
-              ];
+              ]
+            : recoveredCount > 0
+              ? [
+                  {
+                    code: 'L9002',
+                    severity: 'warning',
+                    message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。${backupSuffix}`,
+                  },
+                ]
+              : [
+                  {
+                    code: 'L9001',
+                    severity: 'warning',
+                    message:
+                      `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
+                  },
+                ];
 
     try {
       storage.setItem(DECKS_STORAGE_KEY, JSON.stringify({ version: 1, decks }));
@@ -313,7 +365,7 @@ export function createLocalStorageDeckStore(
       if (entityIdIssues.length > 0) {
         throw new StorageWriteError(
           entityIdIssues[0]?.message ??
-            'デッキ内のIDが重複しているため、既存データを保護して保存を中止しました。',
+            'デッキ内のIDまたはmembershipが重複しているため、既存データを保護して保存を中止しました。',
           entityIdIssues,
         );
       }
