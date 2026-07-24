@@ -1,7 +1,7 @@
 # CODEX.md
 
-Codex向けの作業指示。共通ルールは `AGENTS.md` が正本で、このファイルは
-Codex作業時の短い実行順を補足する。
+Codex向け作業指示。共通ルールは `AGENTS.md` が正本。このファイルは
+現在地・実行順・破綻しやすい境界だけを補足する。
 
 ## Current Status — 2026-07-24
 
@@ -16,12 +16,23 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit: contract defined, not executed
-Current work: storage/recovery integrity changes need exact-current-SHA verification
+Batch 11 production Firefox/WebKit: contract defined, NOT executed
+Post-Batch-10 integrity reviews:
+  product/test/CI/doc fixes committed
+  38 targeted cases committed
+  exact-current-SHA verification pending
 ```
 
-「H1から実装」「画像生成前」「次はasset Batch 5」は古い状態。基盤を再実装せず、
-`docs/IMPLEMENTATION-WORKFLOW.md` の次の実行順に従う。
+古い指示:
+
+```text
+H1から実装
+画像生成前のfoundation phase
+次はasset Batch 5
+historical Batch 10 buildを現行HEADの証跡として使う
+```
+
+これらは実行しない。
 
 ## Read First
 
@@ -32,35 +43,94 @@ docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
-storage/migration/recoveryを触る場合:
+Storage/recovery:
 
 ```text
 docs/release/STORAGE-RECOVERY-POLICY.md
-docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
-docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
+docs/ERROR-CODES.md
+docs/MIGRATIONS.md
+docs/OPERATIONS-READINESS.md
 ```
 
-UI/skin/assetを触る場合は `AGENTS.md` のMandatory UI listをすべて読む。
+UI/skin/assetは `AGENTS.md` のMandatory UI listをすべて読む。
 
 ## Immediate Execution Order
 
 ```text
-1. HEAD == origin/main、clean、exact SHAを記録
-2. pnpm install --frozen-lockfile
-3. pnpm typecheck
-4. pnpm test
-5. pnpm skin:validate
-6. pnpm build
-7. storageRecoveryFailurePaths.test.tsが実行されたことを確認
-8. 同じSHAでBatch 11 matrixを全実行
-9. product codeを直したら古いBatch 11証跡を破棄し1から再実行
-10. report/evidence後にentry docsを同期
+1. git status --short
+2. git rev-parse HEAD
+3. git rev-parse origin/main
+4. cleanかつHEAD == origin/main、exact SHAを記録
+5. Node/pnpm/Playwright/browser versionsを記録
+6. pnpm install --frozen-lockfile
+7. CIと同じ Critical integrity contracts 8ファイルを実行
+8. pnpm typecheck
+9. pnpm test
+10. review追加38ケースが収集/PASSしたことを確認
+11. pnpm skin:validate
+12. pnpm build + artifact inventory/hash
+13. 同じSHA/artifactでBatch 11 matrixを全実行
+14. report/evidence作成
+15. entry docsを証跡に合わせて同期
 ```
 
-実行していないcommandや、別SHAの結果をgreenとして報告しない。
+Critical integrity contracts:
+
+```bash
+pnpm exec vitest run \
+  src/storage/storageRecoveryFailurePaths.test.ts \
+  src/storage/localStorageRecordsAtomicity.test.ts \
+  src/storage/localStorageCapacity.test.ts \
+  src/storage/storageWriteContract.test.ts \
+  src/storage/resetLocalData.test.ts \
+  src/app/runtimeIds.test.ts \
+  src/app/AppRoot.persistence.test.tsx \
+  src/engine/validation/validateDeckEntityIds.test.ts
+```
+
+product/test codeを直したら、その前のcurrent-SHA/Batch 11証跡を混ぜず、
+新SHAで1から再実行する。未実行commandや別SHAの結果をgreenと報告しない。
+
+## Current Integrity Contract
+
+```text
+storage read denial:
+  displayはL9005のsession fallback
+  mutation/exportはfail closed
+
+persistence:
+  setItem直前にstrict schema parse
+  match record/coins/roles/achievementsは1 atomic write
+
+limits:
+  decks 200
+  records 100
+  roles 500
+  achievements 100
+  recent match keys 20
+  old overflowはraw backup + L9007 bounded salvage
+
+IDs:
+  new deckはUUID-based + existing collision check
+  variant/role/bonus IDsはdeck全体で一意
+
+import/editor:
+  legacy migrationはvisible confirmation
+  same-ID overwriteはinput + StoredDeck fingerprint confirmation
+  stale Editor draftは保存せずunmount
+
+reset:
+  active + corrupt backup + skin keys
+  partial failureはreloadせず明示
+```
+
+`localStorage`にはsynchronous CASがない。現在のfingerprint checkを
+transactional multi-tab editingと表現しない。
 
 ## Current UI / Skin Contract
 
@@ -74,13 +144,12 @@ external skins use typed allowlisted presentation values only
 both official skins preserve fallback behavior
 ```
 
-Do not implement render behavior independently inside screens.
+Do not implement generic render behavior independently inside screens.
 
 ## Asset Boundary
 
-Asset pipeline is proven and current official finals are complete for the
-closed Batches 1-4. Do not start generation merely because an old roadmap
-says “next”. Start only from an explicit asset task.
+Batches 1-4 are closed。古いroadmapの“next”だけを理由に画像生成しない。
+明示的な現行asset taskがある場合のみ:
 
 ```text
 generate -> generated/candidates -> review -> human approval
@@ -88,20 +157,6 @@ generate -> generated/candidates -> review -> human approval
 ```
 
 Direct output to `generated/final` is forbidden.
-
-## Shared Component Rule
-
-```text
-reuse existing shared component
--> add central reusable variant/component if necessary
--> add semantic token/slot only for a real responsibility
--> add Gallery coverage
--> add tests
--> verify yorunoshirube + cute-pop + fallback
--> integrate into screen
-```
-
-Screen-local generic Button/Panel/Dialog/Form implementations are forbidden.
 
 ## Release Claim Boundaries
 
@@ -112,10 +167,9 @@ simulator/emulation != real device
 AX-tree automation != real screen reader
 not measured = null/not_available, never 0
 old artifact PASS != current HEAD verification
+best-effort backup != restore feature
+optimistic fingerprint != transactional CAS
 ```
-
-RC cannot be promoted from LIMITED READY without explicit evidence for
-the remaining real-device, real-Safari, real-AT, and real-deploy scope.
 
 ## Architecture Boundary
 
@@ -124,30 +178,9 @@ UI does not implement role/scoring/wildcard logic
 engine does not import React/DOM/localStorage/CSS
 skin does not access engine/schema/storage/records/network
 shared deck JSON contains no image/URL/base64/path/html/script/style fields
-read paths schema-parse persisted state before use
-recovery code must not throw while trying to recover
+persisted state is parsed before use and immediately before write
+recovery code must not crash because cleanup/backup failed
 ```
-
-## Orientation
-
-```text
-844x390 reference
-phone landscape: 100svw x 100svh
-PC: centered table + outer support
-portrait: rotate prompt or limited utility
-```
-
-Do not scale the full screen as a fixed canvas.
-
-## Vamp-pon Reference
-
-```text
-/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
-docs/42-shared-vampon-source-policy.md
-docs/45-vampon-reference-gate.md
-```
-
-The `vamp-pon` repository is read-only.
 
 ## Work and Report
 
