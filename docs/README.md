@@ -1,6 +1,6 @@
 # Soro-pon Documentation Index
 
-## Current Status — 2026-07-24
+## Current Status — 2026-07-25
 
 ```text
 Gameplay MVP phases 1-14: complete
@@ -15,7 +15,7 @@ Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
 Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
-Integrity tests added across both reviews: 38 committed, unexecuted
+Integrity tests added across three reviews: 79 committed, unexecuted
 ```
 
 Do not treat historical green commands, old asset checkpoints, or numbered
@@ -32,6 +32,7 @@ docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
+docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
@@ -50,6 +51,10 @@ docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
   Read-modify-write, atomicity, limits, IDs, overwrite, and concurrency findings.
 
+docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
+  Metadata/partial salvage, stale destructive operations, set semantics,
+  destructive-dialog accessibility, skin runtime trust/races, and CI findings.
+
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
   Current unexecuted production Firefox/WebKit QA contract.
 
@@ -64,7 +69,7 @@ docs/MIGRATIONS.md
   Version compatibility and visible legacy-import confirmation.
 
 docs/ERROR-CODES.md
-  Stable issue-code ownership, including L9007 bounded salvage.
+  Stable issue-code ownership, including I2011/V3013/R4011/B6010/L9008.
 
 docs/OPERATIONS-READINESS.md
   Applicability/status of rollback, restore, observability, metrics,
@@ -85,9 +90,15 @@ record/coin and achievement persistence was not atomic
 app could write more data than its own storage schema accepted
 old over-limit payloads could be reset instead of partially salvaged
 same-ID import silently overwrote an existing deck
-stale import/editor state could overwrite another tab's newer deck
+stale import/editor/detail state could overwrite or delete newer data
 new deck IDs could collide under same-ms/multi-tab creation
 variant/role/bonus duplicate-ID contract was incomplete
+tile membership duplicates could inflate feasibility counts
+group fields ignored by the engine could survive import/save
+ScoreBonus cap could contradict one award
+valid decks could be lost because only wrapper metadata was damaged
+one malformed match history could wipe other progress
+persisted duplicate deck IDs were ambiguous
 write paths trusted TypeScript values without final runtime validation
 records/settings recovery notices were discarded
 unpersisted achievements could appear unlocked
@@ -95,10 +106,18 @@ missing deck/variant could leave a blank route
 legacy migration notice was ignored
 export Blob URL lifecycle was browser-fragile
 reset omitted corrupt-backup keys or hid partial failure
+ErrorBoundary emergency reset retained the old false-success behavior
+deck deletion lacked confirmation or restore guidance
+danger Dialog initial focus favored the destructive action
+important Dialog copy lacked aria-describedby association
+skin preload rejection/unmount races could leave stale/loading state
+skin inheritance depth had an off-by-one error
+runtime external SVG and registry integrity checks were incomplete
+unsafe import diagnostics were unbounded
 entry/risk/performance/operations docs were stale or ambiguous
 ```
 
-Targeted integrity tests committed: **38 cases**.
+Targeted integrity definitions committed: **79 cases** across the three reviews.
 They remain unverified against the final exact SHA until the prescribed
 commands and Batch 11 are executed.
 
@@ -126,6 +145,7 @@ simulator/emulation != physical device
 AX-tree automation != real screen reader
 historical artifact PASS != current HEAD verification
 optimistic localStorage fingerprint != transactional multi-tab CAS
+manifest origin self-declaration != installer-owned official trust
 ```
 
 ## UI / Design / Skin — Mandatory for UI Work
