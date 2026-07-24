@@ -2,28 +2,17 @@
 
 ## Purpose
 
-This document answers a common release-review question: which production
-operations controls apply to the current local-first frontend, which are
-implemented, which remain unverified, and which are not applicable until
-the architecture changes.
-
-It prevents two opposite failures:
-
-```text
-overclaiming enterprise/backend readiness for systems that do not exist
-adding invasive infrastructure or telemetry merely to satisfy a checklist
-```
+State which operational controls apply to the current local-first static
+frontend, which are implemented, which remain evidence-open, and which do not
+apply until the architecture changes.
 
 Current architecture:
 
 ```text
 static React/Vite frontend
 localStorage persistence
-no backend/API
-auth/accounts absent
-online multiplayer absent
-cloud sync absent
-remote telemetry absent
+no backend/API/auth/accounts/cloud sync/online multiplayer
+no remote telemetry
 hosting provider not selected
 ```
 
@@ -37,325 +26,231 @@ NOT_APPLICABLE_CURRENT_ARCHITECTURE
 FUTURE_TRIGGER
 ```
 
-## Summary Matrix — 2026-07-24
+## Summary — 2026-07-25
 
-| Area | Current status | Current control | Release implication |
+| Area | Status | Current control | Open evidence / limitation |
 |---|---|---|---|
-| Schema migration | IMPLEMENTED / rerun open | strict versions, deterministic v0→v1, newer reject | verify on exact current SHA |
-| Migration rollback | PARTIAL | old/new local-data compatibility rehearsal; no generic down migration | test against real release artifacts when format changes |
-| Corruption recovery | IMPLEMENTED / rerun open | salvage, backup attempt, safe fallback, translated issues | fresh tests required |
-| Backup | PARTIAL | best-effort local forensic backup keys | not cross-device or guaranteed |
-| Restore | OPEN LIMITATION | manual developer inspection only | no user-facing restore claim |
-| Deploy | BLOCKED_ENVIRONMENT | runbook only | local preview is not deploy |
-| Artifact rollback | BLOCKED_ENVIRONMENT | runbook + historical local compatibility rehearsal | cannot claim production rollback |
-| Observability | PARTIAL / local only | harness logs, page/console/rejection capture, redacted evidence | no remote production telemetry claim |
-| Metrics | PARTIAL | test/build/error/cycle/memory metrics where authoritative | unavailable values remain null |
-| Distributed trace | NOT_APPLICABLE_CURRENT_ARCHITECTURE | no service graph | reopen with backend/API |
-| Rate limiting | NOT_APPLICABLE_CURRENT_ARCHITECTURE | local byte/depth/branch/package caps instead | reopen with any network endpoint |
-| Server load test | NOT_APPLICABLE_CURRENT_ARCHITECTURE | no server/concurrency target | reopen with backend/API |
-| Client stress/soak | IMPLEMENTED for recorded scopes | adversarial fixtures, Batch 9/10 soak | current SHA rerun where code changed |
-| Chaos testing | PARTIAL / local faults | corrupt storage, quota/read/remove faults, skin failure | expand with network architecture |
-| Incident response | PARTIAL | rollback/storage/soak runbooks | production ownership/escalation absent until deploy exists |
-| Version compatibility | IMPLEMENTED / rerun open | deck/storage/skin version contracts | exact artifact matrix required |
-| Secrets management | NOT_APPLICABLE now | no deploy/API secrets in repo | provider secret store required before deploy |
-| Privacy/telemetry | DESIGN GUARD | local-first; no remote collection | review before adding telemetry |
+| Schema migration | IMPLEMENTED / rerun open | strict versions, visible deterministic v0→v1, newer reject | exact-final-SHA rerun |
+| Corruption recovery | IMPLEMENTED / rerun open | deck metadata/body salvage, partial records salvage, raw backup attempt | final-SHA execution |
+| Mutation conflict | PARTIAL | stale observed deck save/delete rejection | no true atomic CAS |
+| Backup | PARTIAL | local forensic `*.corrupt-backup` | not guaranteed/user-facing/cross-device |
+| Restore | OPEN | developer inspection only | no restore UI/merge |
+| Deploy | BLOCKED_ENVIRONMENT | runbook only | no provider/URL/secrets/job |
+| Artifact rollback | BLOCKED_ENVIRONMENT | historical local compatibility rehearsal + runbook | no deployed immutable artifact |
+| Observability | PARTIAL / local | command logs, browser errors, flow/soak evidence | no remote production telemetry |
+| Metrics | PARTIAL | test/build/flow/soak/authoritative Chromium memory | missing values remain null |
+| Distributed trace | NOT APPLICABLE | no service graph | reopen with API/backend |
+| Rate limiting | NOT APPLICABLE | local byte/depth/branch/package/storage caps | reopen with network endpoint |
+| Server load | NOT APPLICABLE | no server target | reopen with API/backend |
+| Client stress/soak | IMPLEMENTED for recorded historical scopes | adversarial fixtures + Batch 9/10 | current artifact rerun/Batch 11 |
+| Chaos/fault injection | PARTIAL | storage, schema, cleanup, skin, stale-state failures | network chaos awaits network architecture |
+| Dependency reproducibility | PARTIAL | pnpm lock; exact top-level Python pins | Python transitive hash lock open |
+| Dependency monitoring | IMPLEMENTED | Dependabot npm/pip/Actions | proposed updates still need review |
+| Workflow supply chain | PARTIAL | read-only permissions/timeouts/concurrency | immutable action SHA pinning open |
+| Version compatibility | IMPLEMENTED / rerun open | deck/storage/skin contracts | exact artifact matrix |
+| Secrets | NOT APPLICABLE NOW | none required in repo | provider secret store before deploy |
+| Privacy/telemetry | DESIGN GUARD | no remote collection | consent/retention review before telemetry |
 
-## Migration
+## Persistence / Recovery
 
-### Shared deck JSON
-
-```text
-current version: strict parse and validation
-known old version: deterministic migration with notice
-missing/invalid/newer version: reject
-unsafe or ambiguous fields: do not preserve silently
-```
-
-Canonical policy: `docs/MIGRATIONS.md`.
-
-### Local storage
-
-```text
-soro-pon.decks.v1
-soro-pon.records.v1
-soro-pon.settings.v1
-soro-pon.skin.v1
-```
-
-Current migration is intentionally narrow. Do not add a generic runner
-until another real version exists.
-
-### Rollback compatibility
-
-A down-migration framework is not currently justified. Instead, before a
-release that changes persisted output:
-
-```text
-1. build old release artifact
-2. seed old-format data
-3. open with new artifact and perform representative writes
-4. open the resulting storage with the intended rollback artifact
-5. verify readable behavior or explicitly block rollback
-6. record fixture/hash/artifact SHA
-```
-
-A source-code checkout is not a deployed-artifact rollback.
-
-## Corruption Recovery / Backup / Restore
-
-Current recovery is documented in
-`docs/release/STORAGE-RECOVERY-POLICY.md`.
+Canonical policy: `docs/release/STORAGE-RECOVERY-POLICY.md`.
 
 Implemented:
 
 ```text
-strict parsing before use
+strict final read/write schemas
+read-denial display fallback with fail-closed mutation/export
 per-deck salvage
-best-effort raw corrupt backup
-best-effort active-key cleanup
-safe empty/default state if read access is denied
-user-visible boot/write warnings
-no false saved-achievement claim
+valid deck-body preservation when wrapper metadata is damaged
+deterministic duplicate deck-ID consolidation
+current-version partial records salvage
+ordered-set normalization and totalMatches lower bound
+raw backup and active cleanup attempted independently
+atomic match record/coins/roles/achievements write
+stale observed update/delete rejection
+truthful full-reset result in TOP and ErrorBoundary
 ```
 
 Not implemented:
 
 ```text
-in-app backup browser
-restore button
-backup merge
-cloud backup
-cross-device restore
-guaranteed backup creation under quota/policy denial
+transactional multi-tab compare-and-swap
+in-app backup browser/restore/merge
+cloud or cross-device backup
+guaranteed backup under quota/policy denial
 ```
 
-The word “backup” must be qualified as best-effort local forensic
-preservation. It is not a user backup product.
+## Migration / Version Compatibility
+
+```text
+current shared deck: strict parse + integrity validation
+known v0 deck: visible deterministic migration review
+missing/invalid/newer deck version: reject
+current local records with partial damage: safe field/row salvage
+unknown local records version: backup/reset, no guessing
+skin registry/package newer contract: reject
+```
+
+Before a persisted-format release:
+
+```text
+build exact old/new artifacts
+seed representative old data
+perform new writes
+open with intended rollback artifact
+record compatibility or explicitly block rollback
+record SHA and artifact hashes
+```
+
+A source checkout is not deployed-artifact rollback.
 
 ## Deploy / Rollback
 
-Current status: **BLOCKED_ENVIRONMENT**.
+Status: **BLOCKED_ENVIRONMENT**.
 
 Missing:
 
 ```text
-hosting provider
-target URL
+hosting provider and target URL
 staging/production separation
-deploy job/script
-provider credentials/secret store
+deploy job/script and provider credentials
 immutable artifact retention
-health endpoint/contract
-actual rollback target
-incident owner/on-call expectation
+health contract
+actual rollback target and decision owner
+incident communication/on-call model
 ```
 
-Canonical procedure:
-`docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md`.
-
-Until executed:
+Canonical runbook: `docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md`.
 
 ```text
 vite preview != deploy
-git checkout != artifact rollback
-git revert != immediate production rollback
+git checkout/revert != immediate artifact rollback
 local cache rehearsal != CDN/browser cache proof
 ```
 
-## Observability
+## Observability / Metrics
 
-### Current local evidence
+Current test evidence:
 
 ```text
-build/typecheck/test command logs
+install/typecheck/test/build logs
+Integrity Contracts results
+Python asset fixture result
 Playwright step/result JSON
-pageerror capture
-console error capture
-unhandled rejection capture
-failed request/asset checks
+pageerror / console / rejection / failed request capture
 cycle/dead-end/corruption counters
 Chromium memory/timer/listener/DOM metrics where authoritative
 screenshots and redacted summaries
 ```
 
-This is test observability, not always-on production telemetry.
+This is test observability, not production telemetry.
 
-### Current production telemetry
+Current remote telemetry:
 
 ```text
-remote error collection: none
-remote analytics: none
+error collection: none
+analytics: none
 session replay: none
-distributed tracing: none
-central log service: none
-```
-
-This is consistent with current local-first/no-account scope. Do not add
-remote collection without product and privacy decisions.
-
-### Telemetry future trigger
-
-Any remote telemetry proposal requires:
-
-```text
-explicit purpose and owner
-minimal event schema
-no deck JSON/content or personal data
-consent and disclosure
-retention/deletion policy
-sampling and cost caps
-offline/failure behavior
-security review
-```
-
-## Metrics Authority
-
-Every metric records its authority and scope.
-
-Allowed examples:
-
-```text
-unit test count and result
-build exit/artifact hash
-flow completion count
-page/console/rejection error count
-soak cycles and duration
-Chromium CDP memory metrics
+distributed trace: none
+central logs: none
 ```
 
 Rules:
 
 ```text
-not measured = null/not_available
-never convert missing values to 0
-never rank browsers using incomparable metrics
+not measured = null/not_available, never 0
 state dev server vs production preview vs deployed artifact
-state commit SHA and browser/device version
+state exact SHA/browser/device/tool version
+never compare non-equivalent memory authorities
 ```
 
-## Tracing
+Any future telemetry requires purpose/owner, minimal privacy-safe schema,
+consent/disclosure, retention/deletion, sampling/cost, offline behavior, and
+security review. Deck JSON/content must not be collected.
 
-Distributed tracing is not applicable because there is no service graph.
-Current equivalent for debugging is deterministic action/state evidence:
+## Resource / Abuse Controls
+
+No HTTP rate limit applies because no endpoint exists.
+
+Current local controls:
 
 ```text
-seed
-matchSessionId
-flow step sequence
-browser/version/SHA
-error sample and timestamp
-artifact/evidence hash where relevant
+import byte and JSON-depth limits
+bounded unsafe diagnostic generation
+strict unsafe/unknown-field rejection
+candidate/partition/wildcard caps
+persisted collection limits
+skin file/type/byte/dimension/geometry limits
+request-sequence cancellation for skin transitions
 ```
 
-If backend/API features appear, introduce trace IDs across client and
-service boundaries before production release, with privacy-safe fields.
+Future trigger: upload, sync, multiplayer, login, telemetry, marketplace, or
+any API. Then add identity/IP/device keys, burst/sustained limits, cost weights,
+Retry-After, enumeration controls, storage/bandwidth quota, and alert thresholds.
 
-## Rate Limits / Abuse Controls
+## Load / Stress / Fault Injection
 
-No server endpoint exists, so HTTP/user/account rate limiting is not
-applicable.
-
-Current local resource controls:
+Applicable current evidence:
 
 ```text
-import byte limit
-JSON depth limit
-strict unsafe-key scan
-candidate/partition/wildcard branch caps
-skin byte/dimension/file-type limits
-record history caps
-recent match key cap
+adversarial custom-deck/import fixtures
+candidate explosion and diagnostic caps
+five-size visual matrix
+Batch 9 Chromium dev-server soak
+Batch 10 Chromium production-preview soak
+Batch 11 planned Firefox/WebKit production rotation
 ```
 
-Future trigger: uploads, sync, multiplayer, login, telemetry, marketplace,
-or any API. Then define:
+Current deterministic faults:
 
 ```text
-rate-limit identity/IP/device key
-burst and sustained limits
-per-operation cost weights
-retry-after behavior
-abuse and enumeration controls
-storage/bandwidth quotas
-alert thresholds
-```
-
-## Load / Stress / Soak
-
-### Current applicable tests
-
-```text
-adversarial custom deck fixtures
-candidate explosion caps
-large unsafe import rejection before deep analysis
-visual matrix across five sizes
-Batch 9 long Chromium dev-server soak
-Batch 10 production-preview Chromium soak
-Batch 11 planned production Firefox/WebKit stability rotation
-```
-
-### Not applicable yet
-
-```text
-requests per second
-concurrent users
-DB connection pools
-queue depth
-API latency percentiles
-server autoscaling
-```
-
-Physical-device performance remains open evidence.
-
-## Chaos / Fault Injection
-
-Current deterministic fault injection:
-
-```text
-corrupt JSON
-invalid outer/inner storage shape
+corrupt JSON and invalid outer/inner shapes
 unknown/newer schema
-quota/write failure
-storage read denial
-backup write failure
-active-key removal failure
-skin manifest/token/asset load failure
-stale skin request race
+storage read/write/quota/backup/remove failure
+metadata-only deck damage
+isolated malformed match rows
+duplicate persisted IDs and stale observed mutation
+skin manifest/token/asset/preload failure
+skin race/unmount/inheritance/registry/trust failures
+partial reset failure
 ```
 
-Do not label these as full production chaos engineering. Future
-network/backend architecture must add controlled tests for timeout,
-partial response, offline, retry storm, stale cache, dependency outage,
-restore failure, and degraded mode.
+Do not call this full production chaos engineering. Network timeout, retry
+storm, dependency outage, stale CDN/cache, and restore failure become applicable
+only when those systems exist.
 
-## Version Compatibility
+## Dependency / Workflow Supply Chain
 
-Current compatibility dimensions:
+Canonical documents:
 
 ```text
-shared deck schema version
-localStorage payload version
-skin contract version
-skin package version
-content/versioned asset URL
-application commit/artifact SHA
+docs/DEPENDENCY-POLICY.md
+docs/CI-GATES.md
+docs/qa/POST-BATCH-10-SUPPLY-CHAIN-REVIEW.md
 ```
 
-Before any version change:
+Current controls:
 
 ```text
-update schema and migration docs
-add old/new/newer fixtures
-verify forward read/migration
-verify intended rollback artifact against newly written data
-verify export/import round trip
-verify both official skins and fallback
-record exact SHA and artifact hashes
+pnpm lockfile + frozen install + integrity metadata
+Python 3.13 CI with exact Pillow/NumPy/pytest top-level pins
+Python asset fixture job
+weekly Dependabot for npm, pip, and Actions
+read-only workflow permissions, timeouts, concurrency cancellation
 ```
 
-Unknown newer versions fail closed; do not “best effort” parse them.
+Open limits:
 
-## Incident Response
+```text
+Python transitive packages/wheels not hash-locked
+GitHub Actions use major tags rather than verified immutable commit SHAs
+final-SHA Node/Python workflow results not observed
+```
+
+Dependency monitoring is not automatic approval and does not prove an update is
+compatible or safe.
+
+## Incident / Ownership
 
 Current runbooks:
 
@@ -366,29 +261,31 @@ docs/release/SOAK-RUNBOOK.md
 docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
 ```
 
-Before real deploy, add environment-specific ownership:
+Before real deploy define:
 
 ```text
-release operator
-rollback decision owner
+release operator and rollback owner
 credential owner
-incident severity definitions
+severity/abort criteria
 communication channel
 artifact retention duration
-post-incident evidence and review
+post-incident evidence/review
 ```
 
-## Current Closure Order
+## Closure Order
 
 ```text
-1. exact-current-SHA install/typecheck/test/skin validation/build
-2. resolve any code/test/harness failures
-3. Batch 11 production Firefox/WebKit execution
-4. evidence/report/document synchronization
-5. owner selects hosting/provider and staging/production model
-6. staging deploy + rollback rehearsal
-7. production deploy + rollback verification
-8. physical-device and real-AT evidence when environments exist
+1. Stop concurrent writers and freeze clean HEAD == origin/main.
+2. Frozen Node install and pinned Python install.
+3. Observe Integrity Contracts and Python asset fixture jobs.
+4. pnpm typecheck / test / skin:validate / build.
+5. Resolve any failure; restart exact-SHA evidence after every change.
+6. Execute Batch 11 on the same production artifact.
+7. Synchronize evidence/report/readiness.
+8. Select hosting and staging/production model.
+9. Staging deploy + immutable rollback rehearsal.
+10. Production deploy/rollback verification.
+11. Physical-device and real-AT evidence when environments exist.
 ```
 
 Do not add backend-grade systems before their trigger, and do not claim
