@@ -1,16 +1,24 @@
 # Soro-pon Documentation Index
 
-## Current Status
+## Current Status — 2026-07-24
 
 ```text
 Gameplay MVP phases 1-14: complete
 Multi-skin runtime baseline: complete
-Skin foundation hardening H1-H11 (P0/P1/P2): complete
-Image production: active — see docs/ASSET-PRODUCTION-ROADMAP.md
-Official skins: yorunoshirube / cute-pop
+Skin hardening H1-H11: complete
+Official skins: yorunoshirube (9 finals, v4) / cute-pop (9 finals, v5)
+Gate 4 / Gate 5 / historical Gate 6: PASS within recorded scopes
+RC status: LIMITED READY
+Batch 7: COMPLETE
+Batch 8 real VoiceOver + Chrome: CONDITIONAL
+Batch 9 extended soak: COMPLETE
+Batch 10 production-preview / real-device validation: CONDITIONAL
+Batch 11 production Firefox/WebKit: contract defined, not executed
+Current work: storage/recovery integrity fixes require fresh exact-SHA verification
 ```
 
-Do not use numbered documents as the primary entry point.
+Do not treat old asset-production checkpoints, numbered documents, or a
+historical green command as the current release state.
 
 ## Start Here
 
@@ -21,28 +29,31 @@ README.md
 AGENTS.md
 CODEX.md or CLAUDE.md
 docs/MASTER-SPEC.md
-docs/IMPLEMENTATION.md
 docs/IMPLEMENTATION-WORKFLOW.md
-docs/SKIN-FOUNDATION-HARDENING.md
-docs/GLOSSARY.md
+docs/RELEASE-DEMO-GATES.md
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
-Current product/spec truth:
+Canonical roles:
 
 ```text
 docs/MASTER-SPEC.md
-```
+  Product and rule truth.
 
-Current implementation state and next phase:
-
-```text
 docs/IMPLEMENTATION-WORKFLOW.md
-docs/SKIN-FOUNDATION-HARDENING.md
+  Compact current implementation state and next executable sequence.
+
+docs/RELEASE-DEMO-GATES.md
+  Demo/release readiness and exact open evidence.
+
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+  Current unexecuted QA contract.
+
+docs/release/STORAGE-RECOVERY-POLICY.md
+  Storage corruption, backup, migration, and failure semantics.
 ```
 
-## UI / Design / Skin — Mandatory for Any UI Work
-
-Read all of these before changing screens, components, styles, tokens, assets, motion, responsive behavior, or skin loading:
+## UI / Design / Skin — Mandatory for UI Work
 
 ```text
 docs/DESIGN-SYSTEM.md
@@ -60,46 +71,42 @@ docs/50-pro-ui-production-quality-checklist.md
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/README.md
 ```
 
-Key current rules:
+Current invariant:
 
 ```text
-one layout and component system
-multiple validated skins
+one layout/component system
 no skin-specific screens
 shared Button/Panel/Dialog/Form/Tile components
-Unity/Godot-style slice rendering only through shared Skin renderers
-layout/hit areas/game state never controlled by skin
-external skins use an explicit typed token allowlist
-both official skins must work without final PNGs (still true — most slots remain fallback)
-image generation is active; candidates go through human review before final
+slice/repeat/mask only through shared renderers
+skin cannot control layout, hit areas, focus, z-index, or game state
+external skins use typed allowlisted tokens and registered assets only
+both official skins retain CSS/SVG fallback behavior
 ```
 
-## Hardening Priority (P0/P1/P2: complete)
+## Release / Operations
 
 ```text
-P0 (required before image production) — complete:
-- explicit skin-token allowlist and range validation
-- full skin contract / filesystem validator
-- semantic contrast and Cute Pop correction
-- Gallery and user-facing SkinSelector
-- layered SkinSurface and real nine-slice proof
-
-P1 (required before public demo) — complete:
-- DOM/component and visual regression tests (32 Playwright cases, 5 sizes, both skins)
-- accessibility completion
-- ErrorBoundary/ErrorState/data reset
-- dynamic light/dark browser color scheme
-- common-component/CSS responsibility completion
-
-P2 (required before installed/paid skins) — complete for current scope:
-- external file trust policy
-- versioned/preloaded/atomic skin switching
-- package integrity/entitlement boundary (marketplace/payment/entitlement commerce itself is future scope)
-- complete match-record idempotency (restore/replay feature itself remains non-MVP)
+docs/RELEASE-DEMO-GATES.md
+docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md
+docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md
+docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md
+docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
+docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
+docs/release/SOAK-RUNBOOK.md
+docs/release/STORAGE-RECOVERY-POLICY.md
 ```
 
-Full status/exception detail: docs/SKIN-FOUNDATION-HARDENING.md.
-Asset production status/plan: docs/ASSET-PRODUCTION-ROADMAP.md.
+Never collapse these distinctions:
+
+```text
+local preview != deploy
+Playwright WebKit != Safari
+simulator/emulation != physical device
+AX-tree automation != real screen reader
+historical artifact PASS != current HEAD verification
+```
 
 ## Architecture / API / Rule Contracts
 
@@ -118,6 +125,7 @@ docs/ADR.md
 ## Implementation Governance
 
 ```text
+docs/IMPLEMENTATION.md
 docs/IMPLEMENTATION-GOVERNANCE.md
 docs/IMPLEMENTATION-STRUCTURE.md
 docs/FIXTURE-STRATEGY.md
@@ -127,12 +135,30 @@ docs/CI-GATES.md
 docs/ACCEPTANCE-CRITERIA.md
 docs/THREAT-MODEL.md
 docs/MANUAL-QA.md
-docs/RELEASE-DEMO-GATES.md
 ```
+
+## Asset History
+
+```text
+docs/ASSET-PRODUCTION-ROADMAP.md
+docs/asset-requests/R1-APPROVAL-PACK.md
+docs/asset-requests/BATCH-2-APPROVAL-PACK.md
+docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md
+docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
+```
+
+The roadmap is useful for slot history and future explicit asset work. It
+is not allowed to override the release-current state or silently restart
+a closed batch.
 
 ## Current Rule / Engine Detail
 
-Use only when needed:
+Use numbered detail documents only when the relevant subsystem requires
+them. Compatibility pointers such as
+`docs/67-current-implementation-source-of-truth.md` and
+`docs/75-current-mvp-master-spec.md` are not primary truth.
+
+Representative detailed rule docs:
 
 ```text
 docs/62-mahjong-structure-scoring-core.md
@@ -147,14 +173,12 @@ docs/71-scoring-budget-and-image-security.md
 docs/72-score-budget-schema-and-defaults.md
 docs/73-safe-deck-creator-rules-and-tips.md
 docs/74-strict-import-contract-and-edit-boundary.md
-samples/animal-starter.deck.json
 ```
-
-`docs/67-current-implementation-source-of-truth.md` and `docs/75-current-mvp-master-spec.md` are compatibility pointers only. They are not primary truth.
 
 ## Vamp-pon Reference Gates
 
-When using world, character, enemy, stage, weapon, item, or visual-lore material:
+When using world, character, enemy, stage, weapon, item, or visual-lore
+material:
 
 ```text
 docs/42-shared-vampon-source-policy.md
@@ -167,15 +191,16 @@ The `vamp-pon` repository is read-only from this project.
 
 ## Conflict Resolution
 
-Priority:
-
 ```text
-1. docs/MASTER-SPEC.md
-2. current non-numbered contract docs
-3. docs/SKIN-FOUNDATION-HARDENING.md for the current UI hardening order
-4. docs/IMPLEMENTATION-WORKFLOW.md for status
-5. current numbered detail docs
-6. historical/compatibility docs
+1. docs/MASTER-SPEC.md for product/rule truth
+2. docs/RELEASE-DEMO-GATES.md for readiness claims
+3. latest evidence-backed Batch matrix/report for its exact scope
+4. current non-numbered subsystem contracts
+5. docs/IMPLEMENTATION-WORKFLOW.md for operational sequence
+6. numbered detail docs
+7. historical/compatibility docs
 ```
 
-For UI conflicts, `DESIGN-SYSTEM.md`, `SKIN-SYSTEM.md`, and `SKIN-FOUNDATION-HARDENING.md` define the current design contract unless MASTER-SPEC is explicitly updated otherwise.
+When two current documents disagree, do not choose the more optimistic
+claim. Verify implementation/evidence, correct every affected entry doc,
+and record the exact scope.
