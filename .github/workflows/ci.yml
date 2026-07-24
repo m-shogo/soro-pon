@@ -39,3 +39,21 @@ jobs:
       - run: pnpm test
       - run: pnpm skin:validate
       - run: pnpm build
+
+  asset-python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: tools/asset-factory/soro-pon-ui/requirements.txt
+      - name: Create pinned asset-tool venv
+        run: |
+          python -m venv tools/asset-factory/soro-pon-ui/.venv
+          tools/asset-factory/soro-pon-ui/.venv/bin/python -m pip install --disable-pip-version-check \
+            -r tools/asset-factory/soro-pon-ui/requirements.txt
+      - name: Run asset pipeline fixtures
+        run: tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh
