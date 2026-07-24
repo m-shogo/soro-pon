@@ -2,22 +2,47 @@
 
 ## Purpose
 
-Soro-pon must remain responsive with custom decks, mobile landscape UI, and future image-based skins.
+Soro-pon must remain responsive under custom-deck complexity, mobile
+landscape layout, image-based official skins, and long local sessions.
+This document separates enforceable structural limits from measurements
+that require a named browser/device/artifact.
 
-## Engine Targets
-
-Development targets:
+## Claim Levels
 
 ```text
-single hand analyze: <= 50ms typical
-single discard preview: <= 80ms typical
-normal import validation: <= 300ms typical
-match UI: 60fps where possible
+STRUCTURAL
+  deterministic cap, size limit, bounded collection, or cleanup rule
+
+AUTOMATED_HOST_MEASURED
+  measured in a named CI/development/browser environment
+
+PHYSICAL_DEVICE_MEASURED
+  measured on a named real device/browser/build
+
+UNVERIFIED_TARGET
+  desired behavior only; not a support claim
 ```
 
-These are development targets, not guaranteed production benchmarks.
+Never convert a development target into a public device guarantee.
 
-## Engine Limits
+## Current Targets
+
+Development guidance:
+
+```text
+single hand analysis: <= 50ms typical on development host
+single discard preview: <= 80ms typical on development host
+normal import validation: <= 300ms typical on development host
+match UI: smooth interaction; 60fps is a goal, not a current device guarantee
+```
+
+Physical low-end/common-phone proof remains open. RC stays LIMITED READY
+until the intended real-device matrix is measured.
+
+## Engine / Import Structural Limits
+
+The implementation contract is the source of exact values. Expected
+limits include:
 
 ```ts
 export const ENGINE_LIMITS = {
@@ -36,169 +61,167 @@ export const ENGINE_LIMITS = {
 } as const;
 ```
 
-If analysis is capped, return an explicit warning. Never silently pretend no candidates exist.
+Before expensive analysis:
 
-## Analysis Controls
+```text
+byte limit
+JSON parse
+recursive unsafe-key/depth scan
+strict schema parse
+then feasibility/analysis
+```
+
+If analysis is capped, return a stable warning. Never pretend a capped
+search found no candidate.
+
+## Analysis Rules
 
 ```text
 natural groups before wildcard-heavy groups
 candidate/wildcard/partition caps
-primaryCandidates and hiddenCandidateCount separated
-normal UI output remains small
-advanced/debug output may show cap metrics
+primaryCandidates separated from hiddenCandidateCount
+deterministic ranking/tie-breaks
+normal UI output remains bounded
+advanced/debug output may expose cap metrics
 ```
 
-## Import Performance
+Avoid strict wall-clock CI assertions unless the host is controlled.
+Structural cap tests are authoritative across ordinary CI variance.
 
-Before expensive feasibility analysis:
+## UI Rendering Rules
 
 ```text
-byte check
-JSON parse
-unsafe-key/depth scan
-strict schema parse
+no whole-app transform scaling
+no expensive filter/blur on every tile
+no permanent glow on all controls
+no large SVG filters across many nodes
+no continuous analysis on pointer movement without throttle/debounce
+no unbounded lists of records, notices, or result elements
+reduced-motion disables nonessential animation
+long-lived effects/listeners/timers require cleanup
 ```
 
-Do not deeply validate huge unsafe input.
-
-## UI Performance
-
-```text
-no heavy blur on every tile
-no constant glow on all controls
-no large SVG filters across many items
-no uncompressed huge background images
-no analysis on continuous pointer movement without throttle
-no whole-app transform scale
-```
+The 844x390 reference is a layout target, not a fixed raster canvas.
 
 ## Skin Package Budgets
 
-The contract/validator is the final source for exact values. Initial limits include:
+`pnpm skin:validate` is authoritative for exact package limits and checks
+actual files, not declarations alone:
 
 ```text
-manifest and token byte limits
-per-asset byte limit
-whole-skin byte limit
-maximum intrinsic image dimensions
-maximum slice values
+manifest/token byte limits
+per-asset and whole-skin byte limits
+allowed file types
+actual intrinsic image dimensions
+intrinsicSize consistency
+slice/safe-area/minimum-render geometry
+candidate/final path rules
 ```
 
-`pnpm skin:validate` must use actual filesystem bytes and actual image dimensions, not manifest declarations alone.
-
-## Skin Rendering Performance
-
-Required:
+Rendering requirements:
 
 ```text
-skin decoration uses pointer-events:none layers
-state/content/focus remain ordinary HTML/CSS
-nine-slice renderer is centralized
-avoid duplicate decoded versions of the same asset
-avoid large transparent padding
-avoid animating background-size/filter on many tiles
-reduced-motion disables nonessential animation
+decoration layers use pointer-events:none
+content/state/focus remain normal HTML/CSS
+slice/repeat/mask renderers are centralized
+avoid duplicate decoded copies of identical assets
+crop unused transparent padding
+avoid animating filter/background-size on many nodes
 ```
 
-Use PNG for small crisp transparent assets and WebP where it materially reduces larger atmosphere assets without harming required quality.
-
-## Skin Switching Performance
-
-Before installed/paid skin distribution:
+## Skin Switching
 
 ```text
-versioned or content-hashed asset URLs
+versioned/content-hashed asset URLs
 preload only required visible assets
-avoid downloading every future effect at startup
-apply tokens/assets atomically
-keep previous skin if required preload fails
-prevent stale request from replacing newer selection
-avoid repeated uncontrolled fetch loops
+atomic apply after required preload
+keep previous/fallback skin on failure
+stale request cannot replace newer selection
+no uncontrolled retry/fetch loop
+no screen/editor/match state reset
 ```
 
-Target behavior:
+Target behavior is no blank screen, mixed-skin flash, or large layout
+shift. Automated coverage proves the recorded environment only.
+
+## Storage / Persistence Performance
+
+Current localStorage payloads are small structured data, not image blobs.
 
 ```text
-no blank screen
-no mixed-skin flash
-no large layout shift
-no gameplay/editor state reset
+records history is capped
+recent idempotency keys are capped
+notices are bounded in AppRoot
+images remain outside shared JSON
+future image blobs must use a reviewed IndexedDB design, not localStorage
 ```
 
-## Image Production Performance Rules
+Recovery operations are best-effort and bounded by the finite known-key
+list. Reset includes active values, forensic backup values, and skin
+selection; one failed removal does not stop attempts for later keys.
 
-Before final approval:
+## Export / Object URL Lifecycle
 
 ```text
-crop unused transparent area
-respect slot intrinsic size
-avoid assets larger than contract requires
-verify both standard and high-density proof where needed
-measure total package budget
-review low-end/common phone behavior
+Blob URL is temporary
+anchor is attached before click
+anchor is removed after click
+URL revocation is deferred until after click dispatch
+Blob URL is never persisted
 ```
 
-Do not create 1x/2x variants for every image without measured need.
+Batch 11 must verify actual production Firefox/WebKit export behavior.
 
-## Visual Regression Stability
+## Soak / Leak Authority
 
-For screenshot tests:
+Historical evidence:
 
 ```text
-fix deterministic data and viewport
-reduce/disable motion
-stabilize fonts
-delay until required skin assets load
-mask timestamps and other dynamic content
+Batch 9: Chromium memory-authoritative dev-server soak
+Batch 10: Chromium production-preview soak
+Firefox/WebKit: stability only where CDP-equivalent memory authority is absent
 ```
 
-## Dev Instrumentation
-
-Engine may expose:
-
-```ts
-type AnalyzerMetrics = {
-  roleCount: number;
-  groupCount: number;
-  partitionCount: number;
-  wildcardBranchCount: number;
-  candidateCount: number;
-  durationMs?: number;
-  capped: boolean;
-};
-```
-
-Skin loader may expose development-only metrics:
+Rules:
 
 ```text
-manifest/token load duration
-required asset preload duration
-asset count and bytes
-fallback count
-failed asset count
-stale request cancellation
+not measured = null/not_available, never 0
+state dev server vs production preview vs deployed artifact
+state browser/version/commit SHA
+never rank browsers using incomparable memory metrics
+new code after a soak invalidates current-HEAD leak proof
 ```
 
-Do not show noisy metrics in normal player UI.
+Current storage/AppRoot/import/reset changes require fresh functional
+verification. They do not automatically require another hour-long soak
+unless verification finds lifecycle changes or release policy requires it.
 
-## Tests
+## Observability / Load Applicability
 
-Required structural tests:
+There is no backend/API. Server RPS, DB pools, distributed tracing, and
+HTTP rate limiting are not current performance metrics. Current applicable
+controls are client resource caps, deterministic fault tests, browser
+flow monitoring, and soak evidence.
+
+See `docs/OPERATIONS-READINESS.md` for future architecture triggers.
+
+## Required Tests
 
 ```text
-candidate output cap warning
-wildcard branch cap warning
-too many roles warning
-large unsafe import rejects before deep validation
-primaryCandidates maximum
-skin file/total byte budgets
-skin dimension limits
-stale skin load cannot overwrite newer selection
-failed required asset keeps previous/fallback skin
+candidate output/partition/wildcard cap warnings
+large unsafe import rejection before deep validation
+primary candidate maximum
+skin byte/dimension/geometry limits
+stale skin request protection
+failed required preload keeps previous/fallback skin
+storage read/write/backup/remove fault handling
+local reset attempts every active/backup key and reports partial failure
+legacy migration review does not save on first action
+production Firefox/WebKit core flow and rotation (Batch 11)
 ```
-
-Avoid flaky strict wall-clock CI assertions unless the environment is controlled.
 
 ## Final Decision
 
-Fast and honest beats exhaustive but frozen. For skins, visually rich must not mean heavy, flashing, state-resetting, or unrecoverable.
+Fast and honest beats exhaustive but frozen. A release claim must identify
+whether it is structural, host-measured, or physical-device-measured and
+must point to the exact artifact SHA used for the measurement.
