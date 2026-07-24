@@ -14,11 +14,11 @@ Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
-Current work: storage/recovery integrity fixes require fresh exact-SHA verification
+Current work: post-Batch-10 integrity changes require fresh exact-SHA verification
 ```
 
 Do not treat old asset-production checkpoints, numbered documents, or a
-historical green command as the current release state.
+historical green command as current release evidence.
 
 ## Start Here
 
@@ -47,11 +47,46 @@ docs/RELEASE-DEMO-GATES.md
   Demo/release readiness and exact open evidence.
 
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
-  Current unexecuted QA contract.
+  Current unexecuted production Firefox/WebKit QA contract.
 
 docs/release/STORAGE-RECOVERY-POLICY.md
-  Storage corruption, backup, migration, and failure semantics.
+  Storage corruption, backup, recovery, and failure semantics.
+
+docs/MIGRATIONS.md
+  Version compatibility and visible legacy-import confirmation.
+
+docs/ERROR-CODES.md
+  Stable issue-code ownership; codes must not be reused semantically.
+
+docs/OPERATIONS-READINESS.md
+  Applicability/status of migration rollback, restore, observability,
+  metrics, trace, rate limiting, load, chaos, deployment, and compatibility.
+
+docs/TECHNICAL-RISK-REGISTER.md
+  Current CLOSED / MITIGATED / OPEN / BLOCKED_EVIDENCE risks.
 ```
+
+## Current Integrity Review Scope
+
+The post-Batch-10 review changed code, tests, CI, and documentation.
+Representative findings:
+
+```text
+storage recovery could throw during recovery cleanup
+records/settings recovery notices were discarded
+unpersisted achievements could be displayed as unlocked
+missing deck/variant could leave a blank route
+export Blob URL lifecycle was browser-fragile
+storage error-code collision risk
+legacy import migration notice was silently ignored
+```
+
+Current fixes include safe storage fallbacks, truthful persistence UI,
+legacy migration review-before-save, nine new regression tests (six
+storage fault paths and three AppRoot persistence/migration cases), and a
+separate CI-visible storage regression command. These tests are committed
+but must still be executed against the exact current SHA before any new
+PASS claim.
 
 ## UI / Design / Skin — Mandatory for UI Work
 
@@ -87,6 +122,11 @@ both official skins retain CSS/SVG fallback behavior
 
 ```text
 docs/RELEASE-DEMO-GATES.md
+docs/OPERATIONS-READINESS.md
+docs/TECHNICAL-RISK-REGISTER.md
+docs/CI-GATES.md
+docs/MIGRATIONS.md
+docs/ERROR-CODES.md
 docs/qa/BATCH-7-CROSS-BROWSER-A11Y-REPORT.md
 docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md
 docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md
@@ -106,6 +146,9 @@ Playwright WebKit != Safari
 simulator/emulation != physical device
 AX-tree automation != real screen reader
 historical artifact PASS != current HEAD verification
+best-effort corrupt backup != user-facing restore
+local test observability != production telemetry
+not applicable backend control != silently complete control
 ```
 
 ## Architecture / API / Rule Contracts
@@ -147,18 +190,17 @@ docs/asset-requests/BATCH-3-YORUNOSHIRUBE-APPROVAL-PACK.md
 docs/asset-requests/BATCH-4-YORUNOSHIRUBE-APPROVAL-PACK.md
 ```
 
-The roadmap is useful for slot history and future explicit asset work. It
-is not allowed to override the release-current state or silently restart
-a closed batch.
+The roadmap is useful for history and future explicit asset work. It
+cannot override release-current state or silently restart a closed batch.
 
 ## Current Rule / Engine Detail
 
-Use numbered detail documents only when the relevant subsystem requires
-them. Compatibility pointers such as
+Use numbered documents only when the relevant subsystem requires them.
+Compatibility pointers such as
 `docs/67-current-implementation-source-of-truth.md` and
 `docs/75-current-mvp-master-spec.md` are not primary truth.
 
-Representative detailed rule docs:
+Representative detail docs:
 
 ```text
 docs/62-mahjong-structure-scoring-core.md
@@ -194,13 +236,13 @@ The `vamp-pon` repository is read-only from this project.
 ```text
 1. docs/MASTER-SPEC.md for product/rule truth
 2. docs/RELEASE-DEMO-GATES.md for readiness claims
-3. latest evidence-backed Batch matrix/report for its exact scope
+3. latest evidence-backed Batch matrix/report for exact scope
 4. current non-numbered subsystem contracts
 5. docs/IMPLEMENTATION-WORKFLOW.md for operational sequence
 6. numbered detail docs
 7. historical/compatibility docs
 ```
 
-When two current documents disagree, do not choose the more optimistic
-claim. Verify implementation/evidence, correct every affected entry doc,
+When current documents disagree, do not choose the more optimistic claim.
+Verify implementation/evidence, correct every affected entry document,
 and record the exact scope.
