@@ -59,6 +59,7 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | I2008 | warning | Older schema migrated with notice |
 | I2009 | error | Older schema cannot be safely migrated |
 | I2010 | error | JSON structure too deep |
+| I2011 | error | Unsafe/deep import diagnostics were capped after 49 concrete issues; import remains rejected |
 
 ## Deck Validation Errors
 
@@ -76,6 +77,7 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | V3010 | error | Duplicate id (category/tile/variant/role/bonus) |
 | V3011 | warning | Duplicate tile display name |
 | V3012 | error | Tile references unknown or inconsistent category |
+| V3013 | error | A set-like deck field contains duplicate values (tile category/tag or supported player count) |
 
 ## Role / Group Errors
 
@@ -91,6 +93,7 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | R4008 | warning | Same role pattern with different score |
 | R4009 | warning | Role explanation missing or too vague |
 | R4010 | error | requiredGroups do not fill groupCount (normal win needs exactly 3 groups) |
+| R4011 | error | Group requirement includes fields that its groupType does not use and the engine would silently ignore |
 
 ## Wildcard Issues
 
@@ -116,6 +119,7 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | B6007 | warning | ScoreBonus total exceeds budget |
 | B6008 | warning | Repeatable ScoreBonus has no maxPoints |
 | B6009 | warning | Too many bonuses may make result noisy |
+| B6010 | error | ScoreBonus maxPoints is lower than one application of points, causing an immediate contradictory cap |
 
 ## Engine Errors
 
@@ -143,13 +147,14 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 
 | Code | Severity | Meaning |
 |---|---|---|
-| L9001 | warning | Corrupt/invalid localStorage payload was reset or normalized; active state recovered |
+| L9001 | warning | Corrupt/invalid localStorage payload was reset or normalized; may include metadata-only deck repair or partial records salvage |
 | L9002 | warning | Older local deck data was migrated without dropping an entry |
 | L9003 | warning | One or more unrecoverable deck entries were dropped while healthy entries were retained |
 | L9004 | info | Local image is missing and a visual fallback is used |
 | L9005 | warning | Browser storage read access is unavailable; empty/default in-memory state is used for the session |
 | L9006 | warning | Required bootstrap/default data could not be persisted; app continues without claiming it was saved |
 | L9007 | warning | A legacy payload exceeded a persisted collection limit and was backed up, reduced to the current safe bound, and rewritten when possible |
+| L9008 | warning | Duplicate persisted deck IDs were backed up and deterministically consolidated |
 
 `StorageWriteError` is the typed exception for ordinary user-triggered
 storage-operation failures and write-boundary contract violations. It is
