@@ -2,6 +2,7 @@ import { CURRENT_DECK_SCHEMA_VERSION, type DeckProject } from '../../domain/deck
 import type { ValidationIssue } from '../../domain/validation';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { ENGINE_LIMITS } from '../engineLimits';
+import { validateDeckEntityIds } from '../validation/validateDeckEntityIds';
 import { mapSchemaError } from './mapSchemaIssues';
 import { migrateLegacyDeck, type MigrationNotice } from './migrateLegacyDeck';
 import { scanUnsafeKeys } from './scanUnsafeKeys';
@@ -140,6 +141,11 @@ export function parseDeckImport(input: ParseDeckImportInput): ParseDeckImportRes
       };
     }
     return { ok: false, issues: [...issues, ...schemaIssues] };
+  }
+
+  const entityIdIssues = validateDeckEntityIds(parsed.data);
+  if (entityIdIssues.length > 0) {
+    return { ok: false, issues: [...issues, ...entityIdIssues] };
   }
 
   if (migrationNotice) {
