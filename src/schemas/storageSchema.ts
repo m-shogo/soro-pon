@@ -4,6 +4,11 @@ import { deckProjectSchema } from './deckProjectSchema';
 
 // localStorageに保存するペイロードのstrictスキーマ。
 // 読み込みは必ずここを通す。未知フィールドは破損として扱う。
+export const MAX_STORED_DECKS = 200;
+export const MAX_STORED_MATCH_RECORDS = 100;
+export const MAX_ROLE_COLLECTION_ENTRIES = 500;
+export const MAX_STORED_ACHIEVEMENTS = 100;
+export const MAX_RECENT_MATCH_KEYS = 20;
 
 export const storedDeckSchema = z
   .object({
@@ -16,7 +21,7 @@ export const storedDeckSchema = z
 export const storedDecksPayloadSchema = z
   .object({
     version: z.literal(1),
-    decks: z.array(storedDeckSchema).max(200),
+    decks: z.array(storedDeckSchema).max(MAX_STORED_DECKS),
   })
   .strict();
 
@@ -67,12 +72,17 @@ export const recordsPayloadSchema = z
   .object({
     version: z.literal(1),
     coins: z.number().int().nonnegative(),
-    records: z.array(matchRecordSchema).max(100),
+    records: z.array(matchRecordSchema).max(MAX_STORED_MATCH_RECORDS),
     /** 一度でもあがったwin_roleのID(deckId:roleId) */
-    roleCollection: z.array(z.string().min(1).max(160)).max(500),
+    roleCollection: z
+      .array(z.string().min(1).max(160))
+      .max(MAX_ROLE_COLLECTION_ENTRIES),
     // 後方互換のためoptional(既存保存データを破損扱いにしない)
     /** 解放済み実績ID(クリアボード) */
-    achievements: z.array(z.string().min(1).max(64)).max(100).optional(),
+    achievements: z
+      .array(z.string().min(1).max(64))
+      .max(MAX_STORED_ACHIEVEMENTS)
+      .optional(),
     /** 通算対局数(recordsは100件でtruncateされるため別に数える) */
     totalMatches: z.number().int().nonnegative().optional(),
     /**
@@ -84,7 +94,10 @@ export const recordsPayloadSchema = z
      * 直近に処理済みのmatchKey一覧(新しい順・最大20件)。
      * 将来の対局復元/リプレイで「最後の1件」以外との重複記録も防ぐ(P2-4)。
      */
-    recentMatchKeys: z.array(z.string().min(1).max(160)).max(20).optional(),
+    recentMatchKeys: z
+      .array(z.string().min(1).max(160))
+      .max(MAX_RECENT_MATCH_KEYS)
+      .optional(),
   })
   .strict();
 
