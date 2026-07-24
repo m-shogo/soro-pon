@@ -37,7 +37,7 @@ export function createLocalStorageRecordsStore(storage: KeyValueStorage): Record
         records: EMPTY_RECORDS,
         issues: [
           {
-            code: 'L9004',
+            code: 'L9005',
             severity: 'warning',
             message:
               'ブラウザの保存領域から対局記録を読み込めないため、このセッションでは空の記録として扱います。保存領域の設定を確認してください。',
