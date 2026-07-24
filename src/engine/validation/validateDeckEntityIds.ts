@@ -27,18 +27,58 @@ function recordUniqueId(
   seen.set(id, current);
 }
 
+function duplicateValues(values: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value);
+    } else {
+      seen.add(value);
+    }
+  }
+  return [...duplicates];
+}
+
 /**
- * variant / win role / bonus のIDをdeck全体で一意に保つ。
+ * 永続化・import・対局開始の前に必要なdeck全体のidentity整合性を検証する。
  *
  * roleCollectionやResult記録はdeckId:roleIdを使い、役family探索もroleIdで行うため、
  * role IDはvariantごとではなくdeck全体で一意でなければならない。
  * special bonusとscore bonusも同じbonus ID namespaceとして扱う。
+ *
+ * tileのcategory/tag membershipは集合として評価される。配列内重複を許すと、
+ * 一部の検証処理だけが同じ牌を複数枚分として数えるため明示的に拒否する。
  */
 export function validateDeckEntityIds(deck: DeckProject): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const variants = new Map<string, SeenEntity>();
   const roles = new Map<string, SeenEntity>();
   const bonuses = new Map<string, SeenEntity>();
+
+  deck.tiles.forEach((tile, tileIndex) => {
+    const duplicateCategories = duplicateValues(tile.categories);
+    if (duplicateCategories.length > 0) {
+      issues.push({
+        code: 'V3013',
+        severity: 'error',
+        path: `$.tiles[${tileIndex}].categories`,
+        message: `牌「${tile.name}」のカテゴリ指定が重複しています: ${duplicateCategories.join(', ')}。同じカテゴリは1回だけ指定してください。`,
+        fixHint: '重複したカテゴリIDを削除してください。重複しても牌の所属数は増えません。',
+      });
+    }
+
+    const duplicateTags = duplicateValues(tile.tags ?? []);
+    if (duplicateTags.length > 0) {
+      issues.push({
+        code: 'V3013',
+        severity: 'error',
+        path: `$.tiles[${tileIndex}].tags`,
+        message: `牌「${tile.name}」のタグ指定が重複しています: ${duplicateTags.join(', ')}。同じタグは1回だけ指定してください。`,
+        fixHint: '重複したタグを削除してください。重複しても牌の所属数は増えません。',
+      });
+    }
+  });
 
   deck.variants.forEach((variant, variantIndex) => {
     recordUniqueId(
