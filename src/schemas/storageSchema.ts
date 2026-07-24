@@ -2,8 +2,6 @@ import { z } from 'zod';
 import type { DeckProject, DeckSource } from '../domain/deck';
 import { deckProjectSchema } from './deckProjectSchema';
 
-// localStorageに保存するペイロードのstrictスキーマ。
-// 読み込みは必ずここを通す。未知フィールドは破損として扱う。
 export const MAX_STORED_DECKS = 200;
 export const MAX_STORED_MATCH_RECORDS = 100;
 export const MAX_ROLE_COLLECTION_ENTRIES = 500;
@@ -50,8 +48,6 @@ export const settingsPayloadSchema = z
   })
   .strict();
 
-// schema出力(version: literal 1)はdomain型(version: number)へ代入可能。
-// storage層のAPIはdomain型で扱う。
 export type StoredDeck = {
   deck: DeckProject;
   source: DeckSource;
@@ -69,7 +65,6 @@ export const DEFAULT_SETTINGS: SettingsPayload = {
   preferredPlayerCount: 3,
 };
 
-// 対局記録(docs/29の最小構成)。コインは強さに影響しない。
 export const matchRecordSchema = z
   .object({
     dateMs: safeNonnegativeInteger,
@@ -90,27 +85,15 @@ export const recordsPayloadSchema = z
     version: z.literal(1),
     coins: safeNonnegativeInteger,
     records: z.array(matchRecordSchema).max(MAX_STORED_MATCH_RECORDS),
-    /** 一度でもあがったwin_roleのID(deckId:roleId) */
     roleCollection: z
       .array(z.string().min(1).max(160))
       .max(MAX_ROLE_COLLECTION_ENTRIES),
-    // 後方互換のためoptional(既存保存データを破損扱いにしない)
-    /** 解放済み実績ID(クリアボード) */
     achievements: z
       .array(z.string().min(1).max(64))
       .max(MAX_STORED_ACHIEVEMENTS)
       .optional(),
-    /** 通算対局数(recordsは100件でtruncateされるため別に数える) */
     totalMatches: safeNonnegativeInteger.optional(),
-    /**
-     * 直前に記録したmatchの一意キー(deckId:variantId:seed:reason:winner)。
-     * 同じキーでのaddRecord呼び出しはno-opにする(結果確定イベント単位の冪等性)。
-     */
     lastMatchKey: z.string().min(1).max(160).optional(),
-    /**
-     * 直近に処理済みのmatchKey一覧(新しい順・最大20件)。
-     * 将来の対局復元/リプレイで「最後の1件」以外との重複記録も防ぐ(P2-4)。
-     */
     recentMatchKeys: z
       .array(z.string().min(1).max(160))
       .max(MAX_RECENT_MATCH_KEYS)
@@ -134,8 +117,6 @@ function uniqueInOrder(values: readonly string[]): string[] {
   return [...new Set(values)];
 }
 
-// 読み込んだRecordsPayloadを常に具体値へ正規化する(旧データのoptional欠落を吸収)。
-// achievements/roleCollection/recentMatchKeysは意味上Setなので、順序を保って重複を除く。
 export function normalizeRecordsPayload(payload: RecordsPayload): RecordsPayload {
   const sourceRecentKeys =
     payload.recentMatchKeys ??
@@ -150,7 +131,8 @@ export function normalizeRecordsPayload(payload: RecordsPayload): RecordsPayload
     ...payload,
     roleCollection: uniqueInOrder(payload.roleCollection),
     achievements: uniqueInOrder(payload.achievements ?? []),
-    totalMatches: payload.totalMatches ?? payload.records.length,
+    // recordsは最大100件でtruncateされるが、明示値がそれ未満なら矛盾なので下限補正する。
+    totalMatches: Math.max(payload.totalMatches ?? payload.records.length, payload.records.length),
     recentMatchKeys,
   };
 }
