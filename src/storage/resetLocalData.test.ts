@@ -19,11 +19,18 @@ describe('resetAllLocalData', () => {
     );
   });
 
-  it('1件のremove失敗があっても残りの既知キーを削除し続ける', () => {
+  it('全キー削除成功時は全件をremovedとして返す', () => {
+    const result = resetAllLocalData({ removeItem() {} });
+
+    expect(result.failedKeys).toEqual([]);
+    expect(result.removedKeys).toEqual([...ALL_LOCAL_DATA_KEYS]);
+  });
+
+  it('1件のremove失敗があっても残りを続行し、失敗キーを返す', () => {
     const attempted: string[] = [];
     const failedKey = RECORDS_BACKUP_KEY;
 
-    resetAllLocalData({
+    const result = resetAllLocalData({
       removeItem(key: string) {
         attempted.push(key);
         if (key === failedKey) {
@@ -33,6 +40,9 @@ describe('resetAllLocalData', () => {
     });
 
     expect(attempted).toEqual([...ALL_LOCAL_DATA_KEYS]);
+    expect(result.failedKeys).toEqual([failedKey]);
+    expect(result.removedKeys).not.toContain(failedKey);
+    expect(result.removedKeys).toHaveLength(ALL_LOCAL_DATA_KEYS.length - 1);
     expect(attempted.at(-1)).toBe(SKIN_SELECTION_KEY);
   });
 });
