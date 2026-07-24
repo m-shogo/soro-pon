@@ -23,16 +23,68 @@ Execution order:
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+pnpm exec vitest run \
+  src/storage/storageRecoveryFailurePaths.test.ts \
+  src/storage/localStorageRecordsAtomicity.test.ts \
+  src/storage/localStorageCapacity.test.ts \
+  src/storage/storageWriteContract.test.ts \
+  src/storage/resetLocalData.test.ts \
+  src/app/runtimeIds.test.ts \
+  src/app/AppRoot.persistence.test.tsx \
+  src/engine/validation/validateDeckEntityIds.test.ts
 pnpm typecheck
 pnpm test
 pnpm skin:validate
 pnpm build
 ```
 
-The dedicated storage command is intentionally duplicated by the full
-Vitest run. It makes the newly added compound recovery regression visible
-as its own gate while the full suite still proves no broader regression.
+The named `Critical integrity contracts` step intentionally overlaps the
+full Vitest run. It isolates release-critical failures before the complete
+suite and must not be removed merely as duplicate execution.
+
+Across the two post-Batch-10 reviews, these files contain 38 added
+integrity cases. This is a committed test-definition count, not a passing
+result until CI or local verification executes the exact current SHA.
+
+## Critical Integrity Coverage
+
+```text
+storageRecoveryFailurePaths:
+  corrupt backup/cleanup failure
+  read-denied session fallback
+  fail-closed deck/records/settings mutation and export
+
+localStorageRecordsAtomicity:
+  one-write record/reward commit
+  duplicate match no-op
+  failed-write all-or-nothing behavior
+
+localStorageCapacity:
+  exact persisted limits
+  existing update at cap
+  old over-limit bounded salvage and backup
+
+storageWriteContract:
+  final runtime schema validation
+  direct Store nested-ID rejection
+
+resetLocalData:
+  all active/forensic/skin keys
+  truthful partial deletion result
+
+runtimeIds:
+  collision-resistant shared deck ID
+
+AppRoot.persistence:
+  migration review
+  same-ID overwrite review
+  review invalidation
+  cross-tab stale import/editor rejection
+
+validateDeckEntityIds:
+  variant/role/bonus uniqueness
+  import rejection
+```
 
 ## Required Base Evidence
 
@@ -43,33 +95,36 @@ exact commit SHA
 workflow run URL/ID when available
 job conclusion
 Node and pnpm versions
-install/typecheck/test/skin validation/build results
+install/integrity/typecheck/test/skin validation/build results
 cancelled/superseded distinction
 ```
 
 If the connector/API returns no workflow run or status, report CI as
 **unavailable/not observed**, never green.
 
-## Required Test Groups
+## Required Full Test Groups
 
 The full unit suite must include:
 
 ```text
 schema and golden fixture tests
 import security/unsafe-field tests
-deck validation tests
+migration and overwrite confirmation tests
+deck validation and nested-ID integrity tests
 group/wildcard/ron/tsumo/scoring tests
 discard preview purity tests
 match reducer and deterministic CPU tests
-localStorage/migration/recovery tests
-compound storage operation failure tests
-achievement/record idempotency tests
+localStorage migration/recovery/read-denial tests
+write-boundary schema tests
+persisted limit and upgrade-normalization tests
+match record/reward atomicity and idempotency tests
+cross-tab stale-write rejection tests
 component/DOM/accessibility tests
 skin core/package tests
 ```
 
 Pure engine tests remain in Node. DOM behavior uses the configured
-browser-like test environment only where needed.
+browser-like environment only where needed.
 
 ## Skin Validation Gate
 
@@ -94,11 +149,9 @@ all official packages and fallback behavior
 ## Visual / Browser Gates
 
 Playwright visual, cross-browser, soak, real-device, and real-AT suites are
-**pre-release/manual evidence gates**, not currently part of the default
+pre-release/manual evidence gates, not currently part of the default
 GitHub Actions job. Reasons include browser installation cost, screenshot
-baseline review, host-specific automation, and real-device requirements.
-
-Commands where applicable:
+review, host-specific automation, and real-device requirements.
 
 ```bash
 pnpm test:visual
@@ -123,7 +176,7 @@ human review for meaningful screenshot diffs
 no broad automatic baseline acceptance
 ```
 
-## Security Gates
+## Security / Integrity Gates
 
 Deck imports reject:
 
@@ -134,6 +187,17 @@ html / style / script / code / function
 prototype pollution keys
 unknown fields
 oversize/deep payloads before expensive analysis
+duplicate variant/role/bonus IDs
+```
+
+Persistence rejects:
+
+```text
+schema-invalid deck/records/settings payloads
+nested ambiguous deck IDs
+new deck beyond 200 entries
+empty-based mutation after storage read denial
+stale detected import/editor overwrite
 ```
 
 Skin packages reject:
@@ -141,14 +205,14 @@ Skin packages reject:
 ```text
 unknown tokens/slots/render modes
 structural token override
-arbitrary CSS/JS/HTML
+arbitrary executable/display injection
 external URLs/fonts
 path traversal
 unapproved external SVG
 invalid geometry and over-budget files
 ```
 
-## Performance Smoke
+## Performance / Capacity Smoke
 
 Use structural assertions instead of flaky host timings:
 
@@ -156,30 +220,30 @@ Use structural assertions instead of flaky host timings:
 candidate and branch caps emit warnings
 large unsafe import rejects before deep validation
 primary candidate count is capped
+persisted collection limits are enforced
+legacy over-limit payloads are partially salvaged, not wiped
 skin byte/dimension limits are enforced
 stale skin load cannot overwrite newer selection
 failed preload keeps previous/fallback skin
 ```
 
 Long-duration memory/runtime evidence is handled by the soak runbook and
-recorded Batch reports, not the default CI job.
+Batch reports, not the default CI job.
 
 ## Lint / Format
 
 No separate lint/format tool is currently declared. Do not claim one.
 Adoption requires dependency-policy/ADR review and a committed CI command.
-TypeScript strictness and tests are not a substitute for an undocumented
-formatter, and an absent formatter is not automatically a release blocker.
 
 ## Workflow Security / Maintenance
 
 Current workflow uses read-only repository permission and standard major
 action versions. Before organization-wide or external-contributor use,
-consider an explicit action-SHA pinning policy and Dependabot/Renovate
-policy through ADR; do not invent unverified commit SHAs.
+consider action pinning and dependency-update policy through ADR; do not
+invent unverified commit SHAs.
 
 ## Final Decision
 
-CI proves only the commands actually present in `.github/workflows/ci.yml`
-on the exact reported SHA. Browser/device/AT/deploy claims require their
-own evidence, and missing workflow visibility must remain explicit.
+CI proves only the commands present in `.github/workflows/ci.yml` on the
+exact reported SHA. Browser/device/AT/deploy claims require separate
+evidence, and missing workflow visibility must remain explicit.
