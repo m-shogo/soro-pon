@@ -18,24 +18,41 @@ export function collectSkinAssetUrls(skin: ResolvedSkin): string[] {
 }
 
 // 全URLをpreloadする。1枚でも失敗/タイムアウトしたらfalse。
-// 呼び出し側は失敗時に「前のスキンを維持」する(混在フラッシュ防止)。
+// Image生成・src代入が同期例外を投げる環境でもPromiseをrejectさせず、
+// 呼び出し側が前のスキン/fallbackを維持できる結果へ落とす。
 export function preloadImages(urls: string[], timeoutMs = 8000): Promise<boolean> {
   if (urls.length === 0 || typeof Image === 'undefined') {
     return Promise.resolve(true);
   }
   const loadOne = (url: string) =>
     new Promise<boolean>((resolve) => {
-      const image = new Image();
-      const timer = setTimeout(() => resolve(false), timeoutMs);
-      image.onload = () => {
-        clearTimeout(timer);
-        resolve(true);
-      };
-      image.onerror = () => {
-        clearTimeout(timer);
+      let image: HTMLImageElement;
+      try {
+        image = new Image();
+      } catch {
         resolve(false);
+        return;
+      }
+
+      let settled = false;
+      const finish = (result: boolean) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        image.onload = null;
+        image.onerror = null;
+        resolve(result);
       };
-      image.src = url;
+      const timer = setTimeout(() => finish(false), timeoutMs);
+      image.onload = () => finish(true);
+      image.onerror = () => finish(false);
+      try {
+        image.src = url;
+      } catch {
+        finish(false);
+      }
     });
   return Promise.all(urls.map(loadOne)).then((results) => results.every(Boolean));
 }
