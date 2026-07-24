@@ -38,12 +38,17 @@ jobs:
             src/engine/validation/validateDeckEntityIds.test.ts \
             src/ui/components/AppErrorBoundary.test.tsx \
             src/engine/validation/validateDeckMembershipIntegrity.test.ts \
+            src/engine/import/scanUnsafeKeys.test.ts \
             src/ui/skins/skinPreload.failure.test.ts \
+            src/ui/skins/skinInheritanceDepth.test.ts \
+            src/ui/skins/validateSkinManifestTrust.test.ts \
+            src/ui/skins/skinRegistryIntegrity.test.ts \
             src/ui/screens/DeckDetailScreen.test.tsx \
             src/storage/localStorageDuplicateDeckIds.test.ts \
-            src/storage/localStorageRecordsSetNormalization.test.ts \
-            src/ui/components/Dialog.accessibility.test.tsx \
             src/storage/localStorageDeckMetadataSalvage.test.ts \
-            src/storage/localStorageRecordsPartialSalvage.test.ts
+            src/storage/localStorageDeckStaleMutation.test.ts \
+            src/storage/localStorageRecordsSetNormalization.test.ts \
+            src/storage/localStorageRecordsPartialSalvage.test.ts \
+            src/ui/components/Dialog.accessibility.test.tsx
       - name: Typecheck integrity contracts
         run: pnpm typecheck
