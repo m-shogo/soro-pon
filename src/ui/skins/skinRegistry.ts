@@ -20,7 +20,6 @@ export type SkinRegistry = {
   skins: SkinRegistryEntry[];
 };
 
-// SKIN-MANIFEST.jsonの取得に失敗してもアプリを起動させるための同梱定義。
 export const BUILTIN_SKIN_REGISTRY: SkinRegistry = {
   defaultSkinId: 'yorunoshirube',
   skins: [
@@ -62,8 +61,6 @@ export function parseSkinRegistry(raw: unknown): SkinRegistry | null {
   return { defaultSkinId, skins };
 }
 
-// localStorage等から来たskinIdを安全な既知IDへ正規化する。
-// 未知ID・不正文字列はdefaultへ復旧する。
 export function sanitizeSkinId(raw: string | null | undefined, registry: SkinRegistry): string {
   if (typeof raw !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(raw)) {
     return registry.defaultSkinId;
@@ -71,13 +68,12 @@ export function sanitizeSkinId(raw: string | null | undefined, registry: SkinReg
   return registry.skins.some((s) => s.id === raw) ? raw : registry.defaultSkinId;
 }
 
-// スキンパッケージの読み込みIO。テストではfake実装を注入する。
 export type SkinPackageIo = {
   loadManifest(skinId: string): Promise<unknown | null>;
   loadTokens(skinId: string, tokensFile: string): Promise<string | null>;
 };
 
-// docs/SKIN-SYSTEM.md: maximum inheritance depth: 3
+// baseを除く継承チェーンとして最大3 skinまで許可する。
 const MAX_INHERITANCE_DEPTH = 3;
 
 export type LoadResolvedSkinResult = {
@@ -85,8 +81,6 @@ export type LoadResolvedSkinResult = {
   issues: string[];
 };
 
-// skinIdの継承チェーン(+base)を読み込み、検証してresolveする。
-// どこで失敗してもクラッシュせず、読めた範囲(最低でも空のbase)で返す。
 export function createSkinLoader(io: SkinPackageIo) {
   async function loadOne(
     skinId: string,
@@ -131,7 +125,6 @@ export function createSkinLoader(io: SkinPackageIo) {
     const manifests = new Map<string, SkinManifest>();
     const tokensBySkin = new Map<string, Record<string, string>>();
 
-    // 常にbaseを読み込む(全fallbackの土台)
     const baseLoaded = await loadOne(BASE_SKIN_ID);
     issues.push(...baseLoaded.issues);
     if (baseLoaded.manifest) {
@@ -139,12 +132,11 @@ export function createSkinLoader(io: SkinPackageIo) {
       tokensBySkin.set(BASE_SKIN_ID, baseLoaded.tokens);
     }
 
-    // 対象スキインの継承チェーンを深さ制限つきで読み込む
     let current: string | undefined = skinId;
     let depth = 0;
     while (current !== undefined && current !== BASE_SKIN_ID && depth < MAX_INHERITANCE_DEPTH) {
       if (manifests.has(current)) {
-        break; // 循環はresolveSkin側でも検出される
+        break;
       }
       const loaded = await loadOne(current);
       issues.push(...loaded.issues);
@@ -156,7 +148,13 @@ export function createSkinLoader(io: SkinPackageIo) {
       current = loaded.manifest.inherits ?? BASE_SKIN_ID;
       depth += 1;
     }
-    if (depth >= MAX_INHERITANCE_DEPTH) {
+    // 上限ちょうどでbaseへ到達した正常チェーンは拒否しない。
+    if (
+      depth >= MAX_INHERITANCE_DEPTH &&
+      current !== undefined &&
+      current !== BASE_SKIN_ID &&
+      !manifests.has(current)
+    ) {
       issues.push(`継承が深すぎます(最大${MAX_INHERITANCE_DEPTH})`);
     }
 
@@ -167,7 +165,6 @@ export function createSkinLoader(io: SkinPackageIo) {
   return { loadResolvedSkin };
 }
 
-// fetchベースの標準IO(ブラウザ用)
 export function createFetchSkinIo(): SkinPackageIo {
   return {
     async loadManifest(skinId: string): Promise<unknown | null> {
