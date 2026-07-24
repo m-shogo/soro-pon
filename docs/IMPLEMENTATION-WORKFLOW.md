@@ -9,7 +9,8 @@ Batch/review reports, not duplicated here.
 ```text
 Product/rule truth:          docs/MASTER-SPEC.md
 Release/readiness truth:     docs/RELEASE-DEMO-GATES.md
-Integrity review:            docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+Initial integrity review:    docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+Continuation review:         docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 Current executable QA:       docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 Storage contract:            docs/release/STORAGE-RECOVERY-POLICY.md
 Migration contract:          docs/MIGRATIONS.md
@@ -35,10 +36,11 @@ Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
 Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
+Review-added integrity tests: 38 committed, unexecuted
 ```
 
 Current phase: **RC integrity/evidence closure**. Do not restart MVP,
-H1-H11, or asset Batch 5 from obsolete instructions.
+H1-H11, asset Batch 5, or any obsolete implementation sequence.
 
 ## Completed Foundations
 
@@ -57,46 +59,61 @@ foundation work.
 
 ## Integrity Review Result
 
-Fixed code/contract defects:
+Fixed code/contract defects now include:
 
 ```text
 recovery cleanup could throw after corrupt storage
-records/settings corrupt raw backup absent
-records/settings recovery warnings discarded
-unpersisted achievement shown as unlocked
-missing deck/variant blank route
+read denial could be misused as an empty Store for mutation
+records/settings corrupt raw backup or warning gaps
+record/coin and match-achievement persistence was not atomic
+app could write collections larger than its own read schema
+old over-limit payloads lacked bounded upgrade recovery
+same-ID import silently overwrote an existing deck
+stale import/editor state could overwrite another tab's deck
+new deck IDs could collide
+variant/role/bonus duplicate-ID contract was incomplete
+write paths lacked final runtime schema validation
+unpersisted achievement could be shown as unlocked
+missing deck/variant could leave a blank route
 silent legacy v0 migration persistence
 browser-fragile export Blob URL lifecycle
-storage error-code collision risk
-reset omitted records/settings corrupt backups
-partial reset failure presented as success
+reset omitted backup keys or hid partial failure
 stale Batch 11 baseline and entry/risk/performance docs
 ```
 
-Current behavior:
+Current integrity behavior:
 
 ```text
-read denial -> L9005 + safe session fallback
-starter bootstrap persistence failure -> L9006
-backup/cleanup independently best-effort
-all store boot issues visible
-false saved reward/achievement claims blocked
-missing route entity returns to safe screen
-legacy migration needs visible review + unchanged second action
-export anchor attached; URL revoke deferred
-reset covers active/backup/skin keys and reports partial failure
+read denial:
+  L9005 session fallback for display
+  every mutation/export fails closed
+
+write boundary:
+  strict payload parse immediately before setItem
+  nested deck IDs checked before final persistence
+
+match result:
+  record + coins + role collection + match achievements in one write
+
+limits:
+  decks 200 / records 100 / roles 500 / achievements 100 / recent keys 20
+  legacy over-limit payload -> backup + bounded L9007 normalization
+
+import:
+  visible legacy migration review
+  explicit same-ID overwrite review
+  input and existing-entry fingerprint must remain unchanged
+
+Editor:
+  stale external update/delete rejects save and unmounts old draft
+
+reset:
+  active + forensic + skin keys covered
+  partial failure stops reload and is shown
 ```
 
-New tests committed: **12**.
-
-```text
-6 storage operation-failure tests
-3 AppRoot persistence/migration tests
-3 reset completeness/result tests
-```
-
-They are not yet authoritative evidence until executed on the exact final
-SHA.
+Targeted tests committed across both reviews: **38**. They are not
+release evidence until executed on the exact final SHA.
 
 ## Next Executable Work
 
@@ -104,15 +121,29 @@ SHA.
 1. Confirm clean worktree and HEAD == origin/main.
 2. Record exact SHA and Node/pnpm/Playwright/browser versions.
 3. pnpm install --frozen-lockfile
-4. pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+4. Run the named Critical integrity contracts suite.
 5. pnpm typecheck
 6. pnpm test
-7. Confirm all 12 review-added tests are collected and pass.
+7. Confirm all 38 review-added tests are collected and pass.
 8. pnpm skin:validate
 9. pnpm build and record artifact inventory/hash.
 10. Fix any failure; if code changes, restart from step 1.
 11. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
 12. Commit evidence/report and only then update Batch 11 status.
+```
+
+Exact integrity command:
+
+```bash
+pnpm exec vitest run \
+  src/storage/storageRecoveryFailurePaths.test.ts \
+  src/storage/localStorageRecordsAtomicity.test.ts \
+  src/storage/localStorageCapacity.test.ts \
+  src/storage/storageWriteContract.test.ts \
+  src/storage/resetLocalData.test.ts \
+  src/app/runtimeIds.test.ts \
+  src/app/AppRoot.persistence.test.tsx \
+  src/engine/validation/validateDeckEntityIds.test.ts
 ```
 
 Batch 11 cannot itself promote RC to READY. Real devices, real Safari,
@@ -124,7 +155,7 @@ Default GitHub CI runs:
 
 ```text
 frozen install
-named storage recovery regression
+named Critical integrity contracts suite
 strict typecheck
 full unit suite
 skin validation
@@ -166,7 +197,7 @@ UI does not implement role/scoring/wildcard rules
 engine does not import React/DOM/localStorage/CSS
 skin does not access engine/schema/storage/records/network
 shared deck JSON contains no executable/image/URL injection fields
-persisted values are parsed before use
+persisted values are parsed before use and immediately before write
 recovery does not fail merely because cleanup failed
 ```
 
@@ -184,6 +215,7 @@ AX-tree automation != real screen reader
 unavailable metric = null/not_available, never 0
 old artifact PASS != current HEAD verification
 best-effort corrupt backup != user-facing restore
+optimistic StoredDeck fingerprint != transactional multi-tab CAS
 ```
 
 ## Known Open Scope
@@ -197,6 +229,8 @@ Safari + VoiceOver
 NVDA / JAWS
 remaining Batch 8 Result/Cute Pop real-VoiceOver evidence
 user-facing backup restore
+true transaction/version model for advertised concurrent multi-tab editing
+Editor live validation-panel integration for cross-variant ID errors
 match restore/replay/resend (non-MVP)
 marketplace/payment/entitlement product (future)
 ```
