@@ -24,9 +24,9 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
       - name: Storage recovery regression
         run: pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+      - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm skin:validate
       - run: pnpm build
