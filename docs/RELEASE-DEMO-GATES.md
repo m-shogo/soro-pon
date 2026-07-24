@@ -12,6 +12,7 @@ local production preview != deploy
 Playwright WebKit != Safari
 historical PASS != newer product HEAD verification
 best-effort corrupt backup != user restore
+optimistic localStorage fingerprint != transactional multi-tab CAS
 ```
 
 ## Gate 1 — Internal Build
@@ -53,8 +54,8 @@ Never generate directly into `generated/final`.
 QA passes for the stated scope
 main landscape sizes reviewed
 both official skins usable
-import failure and migration UX understandable
-invalid decks cannot start
+import failure/migration/overwrite UX understandable
+invalid or ambiguous-ID decks cannot start
 recoverable error/reset paths exist
 known issue list is current
 ```
@@ -67,6 +68,7 @@ visual/manual QA passes for stated target scope
 keyboard/focus basics accepted
 supported browser/device/skin set explicit
 unsafe import/image/network fields rejected
+same-ID import never overwrites without explicit current-state confirmation
 no account/payment/cloud promise
 shared export excludes local/private metadata
 reset/recovery path is visible and truthful
@@ -80,6 +82,11 @@ A Gate 5 PASS is qualified by its exact browser/device/artifact scope.
 ```text
 schema migration and visible confirmation tested
 storage read/write/recovery/reset failure paths tested
+match record/reward atomicity tested
+persisted collection limits and old over-limit salvage tested
+write-boundary runtime schemas tested
+nested variant/role/bonus ID integrity tested
+same-ID and stale-editor overwrite conflicts tested
 known severe bugs fixed
 visual/accessibility basics accepted
 performance/resource caps tested
@@ -99,13 +106,17 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
-Post-Batch-10 integrity review: fixes committed; verification pending
+Post-Batch-10 integrity reviews: fixes committed; verification pending
 Batch 11 production Firefox/WebKit: CONTRACT DEFINED / NOT EXECUTED
 RC status: LIMITED READY
 ```
 
-Review report:
-`docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md`.
+Review reports:
+
+```text
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
+```
 
 ### Historical evidence retained
 
@@ -126,41 +137,56 @@ Batch 10:
 
 ```text
 recovery cleanup could throw after corrupt storage
-records/settings corrupt raw backup absent
-records/settings recovery warnings discarded
-failed achievement persistence shown as unlocked
+read denial could be used as an empty Store during mutation
+records/settings raw backup and warning gaps
+record/coin and match-achievement persistence was not atomic
+app could write more entries than its own schema accepted
+old over-limit payloads lacked bounded upgrade recovery
+same-ID import silently overwrote an existing deck
+stale import/editor state could overwrite another tab's deck
+new deck IDs could collide
+variant/role/bonus duplicate-ID validation was incomplete
+write paths lacked final runtime schema validation
+failed achievement persistence could appear unlocked
 missing deck/variant blank route
 silent legacy v0 migration persistence
 browser-fragile export Blob URL lifecycle
 storage error-code collision risk
-reset omitted records/settings corrupt backups
-partial reset failure presented as success
+reset omitted backup keys or presented partial failure as success
 obsolete Batch 11 baseline and stale entry/risk/performance docs
 ```
 
-Current controls:
+### Current controls
 
 ```text
-L9005 storage-read fallback; L9006 bootstrap-write warning
+L9005 storage-read fallback; every mutation/export fails closed
+L9006 bootstrap-write warning
+L9007 old over-limit payload backup and bounded normalization
 independently guarded backup/cleanup
+strict schema parse immediately before each persisted write
+atomic match record/coin/role/achievement commit
+shared collection limits: 200/100/500/100/20
+nested variant/role/bonus ID checks at import/save/start/store boundaries
+same-ID import requires unchanged input + unchanged stored-entry fingerprint
+stale Editor save is rejected and old draft is unmounted
 all store boot issues visible
-false persisted reward/achievement claims blocked
-safe route recovery
+safe missing-entity route recovery
 legacy migration review + unchanged second-action persistence
 attached export anchor + deferred URL revocation
 reset covers active/backup/skin keys and reports partial failure
 ```
 
-New review-added tests: **12 committed cases**, not yet executed on the
-final exact SHA.
+Review-added integrity tests: **38 committed cases**, not yet executed on
+the final exact SHA.
 
 ### Current verification required
 
 ```text
 pnpm install --frozen-lockfile
-pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+run the named Critical integrity contracts suite
 pnpm typecheck
 pnpm test
+confirm all 38 review-added cases are collected and pass
 pnpm skin:validate
 pnpm build
 complete Batch 11 on the same SHA/artifact
@@ -172,6 +198,8 @@ restarts the sequence.
 ### Still open / unclaimed
 
 ```text
+exact-current-SHA verification
+Batch 11 production Firefox/WebKit
 physical iPhone Safari / iPad / Android
 real deploy to selected hosting
 rollback of an actually deployed immutable artifact
@@ -179,6 +207,8 @@ Safari + VoiceOver
 NVDA / JAWS
 remaining Batch 8 Result/Cute Pop VoiceOver evidence
 user-facing backup restore
+true transaction/version model for advertised concurrent multi-tab editing
+Editor live validation-panel integration for cross-variant ID errors
 ```
 
 ## Gate 7 — Installed / Paid Skin Ready
@@ -233,6 +263,7 @@ This is a local-first demo.
 Decks and progress are stored locally in your browser.
 Imported decks are validated before play.
 Known legacy data is reviewed before migration is saved.
+Importing an existing deck ID requires explicit overwrite confirmation.
 Local/private image data is not included in shared JSON.
 Online multiplayer and accounts are not included.
 Only the listed browsers, devices, skins, and features are supported.
@@ -244,6 +275,12 @@ Only the listed browsers, devices, skins, and features are supported.
 current HEAD has no green exact-SHA verification
 unsafe import fields are accepted
 legacy migration changes are silently persisted
+same-ID import can silently replace an existing deck
+storage read denial can lead to an empty-based overwrite
+record and reward persistence can partially commit
+app can write a payload outside its own read schema
+nested entity IDs can remain ambiguous and start a match
+stale editor/import state can overwrite a detected newer entry
 2-player mode appears selectable
 an unfinished variant can start
 score cannot be explained
