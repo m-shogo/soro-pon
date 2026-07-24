@@ -149,11 +149,12 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 | L9004 | info | Local image is missing and a visual fallback is used |
 | L9005 | warning | Browser storage read access is unavailable; empty/default in-memory state is used for the session |
 | L9006 | warning | Required bootstrap/default data could not be persisted; app continues without claiming it was saved |
+| L9007 | warning | A legacy payload exceeded a persisted collection limit and was backed up, reduced to the current safe bound, and rewritten when possible |
 
 `StorageWriteError` is the typed exception for ordinary user-triggered
-write failures. It is not assigned a `ValidationIssue` code unless the
-failure happens during boot and must be surfaced through the boot issue
-channel (`L9006`).
+storage-operation failures and write-boundary contract violations. It is
+not assigned a `ValidationIssue` code unless the failure happens during
+boot or read recovery and must be surfaced through the boot issue channel.
 
 ## UI Guard Issues
 
