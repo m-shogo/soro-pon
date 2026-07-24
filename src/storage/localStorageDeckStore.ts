@@ -36,31 +36,41 @@ type ReadPayloadResult = {
   readFailureCause?: unknown;
 };
 
+type SalvageCandidate = {
+  deck: StoredDeck;
+  recovered: boolean;
+  originalIndex: number;
+};
+
 // outer payloadのstrict parseが1件の壊れた/旧schemaのdeckで失敗しても、
 // 正常なdeckを巻き添えにしない。現行parse -> 既存v0 migration -> dropの順。
 function salvageDecks(
   rawDecks: unknown[],
   now: () => number,
-): { decks: StoredDeck[]; recoveredCount: number; droppedCount: number } {
-  const decks: StoredDeck[] = [];
+): {
+  decks: StoredDeck[];
+  recoveredCount: number;
+  droppedCount: number;
+  overflowCount: number;
+} {
+  const candidates: SalvageCandidate[] = [];
   let droppedCount = 0;
-  let recoveredCount = 0;
 
-  for (const entry of rawDecks) {
+  rawDecks.forEach((entry, originalIndex) => {
     const direct = storedDeckSchema.safeParse(entry);
     if (direct.success) {
-      decks.push(direct.data);
-      continue;
+      candidates.push({ deck: direct.data, recovered: false, originalIndex });
+      return;
     }
     if (entry === null || typeof entry !== 'object') {
       droppedCount += 1;
-      continue;
+      return;
     }
     const record = entry as Record<string, unknown>;
     const migrated = migrateLegacyDeck(record['deck']);
     if (!migrated.ok) {
       droppedCount += 1;
-      continue;
+      return;
     }
     const deckParsed = deckProjectSchema.safeParse(migrated.migrated);
     const source = DECK_SOURCES.includes(record['source'] as DeckSource)
@@ -71,14 +81,39 @@ function salvageDecks(
         ? (record['updatedAtMs'] as number)
         : now();
     if (deckParsed.success) {
-      decks.push({ deck: deckParsed.data, source, updatedAtMs });
-      recoveredCount += 1;
+      candidates.push({
+        deck: { deck: deckParsed.data, source, updatedAtMs },
+        recovered: true,
+        originalIndex,
+      });
     } else {
       droppedCount += 1;
     }
-  }
+  });
 
-  return { decks, recoveredCount, droppedCount };
+  const overflowCount = Math.max(0, candidates.length - MAX_STORED_DECKS);
+  const selected =
+    overflowCount === 0
+      ? candidates
+      : [...candidates]
+          .sort((a, b) => {
+            const officialPriority =
+              Number(b.deck.source === 'official') - Number(a.deck.source === 'official');
+            if (officialPriority !== 0) {
+              return officialPriority;
+            }
+            const updatedPriority = b.deck.updatedAtMs - a.deck.updatedAtMs;
+            return updatedPriority !== 0 ? updatedPriority : a.originalIndex - b.originalIndex;
+          })
+          .slice(0, MAX_STORED_DECKS)
+          .sort((a, b) => a.originalIndex - b.originalIndex);
+
+  return {
+    decks: selected.map((candidate) => candidate.deck),
+    recoveredCount: selected.filter((candidate) => candidate.recovered).length,
+    droppedCount,
+    overflowCount,
+  };
 }
 
 // localStorage自体が読み書きを拒否しても、回復処理を例外停止させない。
@@ -178,7 +213,7 @@ export function createLocalStorageDeckStore(
       );
     }
 
-    const { decks, recoveredCount, droppedCount } = salvageDecks(maybeDecks, now);
+    const { decks, recoveredCount, droppedCount, overflowCount } = salvageDecks(maybeDecks, now);
     if (decks.length === 0 && maybeDecks.length > 0) {
       return quarantineAndReset(
         raw,
@@ -190,6 +225,8 @@ export function createLocalStorageDeckStore(
     const backupSuffix = backupSaved
       ? ''
       : ' ただし、元データのバックアップは保存できませんでした。';
+    const recoveredSuffix =
+      recoveredCount > 0 ? ` うち${recoveredCount}件は旧形式から自動変換しました。` : '';
     const issues: ValidationIssue[] =
       droppedCount > 0
         ? [
@@ -197,29 +234,43 @@ export function createLocalStorageDeckStore(
               code: 'L9003',
               severity: 'warning',
               message:
-                `一部のデッキ保存データが壊れていたため、正常な${decks.length}件のみ復元しました` +
-                (recoveredCount > 0 ? `(うち${recoveredCount}件は旧形式から自動変換)` : '') +
-                `。壊れたデータは可能な限りバックアップに退避しています。${backupSuffix}`,
+                `一部のデッキ保存データが壊れていたため、正常な${decks.length}件のみ復元しました。` +
+                `${droppedCount}件は復旧できませんでした。` +
+                (overflowCount > 0
+                  ? `さらに保存上限を超えた${overflowCount}件はactive一覧から除外しました。`
+                  : '') +
+                recoveredSuffix +
+                `元データは可能な限りバックアップに退避しています。${backupSuffix}`,
             },
           ]
-        : recoveredCount > 0
+        : overflowCount > 0
           ? [
               {
-                code: 'L9002',
-                severity: 'warning',
-                message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。${backupSuffix}`,
-              },
-            ]
-          : [
-              {
-                code: 'L9001',
+                code: 'L9007',
                 severity: 'warning',
                 message:
-                  `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
+                  `デッキ保存数が上限${MAX_STORED_DECKS}件を超えていたため、公式デッキと更新日時の新しいデッキを優先して${decks.length}件へ正規化しました。` +
+                  `${overflowCount}件はactive一覧から除外しました。${recoveredSuffix}` +
+                  `元データは可能な限りバックアップに退避しています。${backupSuffix}`,
               },
-            ];
+            ]
+          : recoveredCount > 0
+            ? [
+                {
+                  code: 'L9002',
+                  severity: 'warning',
+                  message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。${backupSuffix}`,
+                },
+              ]
+            : [
+                {
+                  code: 'L9001',
+                  severity: 'warning',
+                  message:
+                    `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
+                },
+              ];
 
-    // 書き戻しはbest-effort。失敗しても今回のin-memory救済結果を返す。
     try {
       storage.setItem(DECKS_STORAGE_KEY, JSON.stringify({ version: 1, decks }));
     } catch {
