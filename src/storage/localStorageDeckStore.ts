@@ -79,22 +79,73 @@ function salvageDecks(rawDecks: unknown[]): { decks: StoredDeck[]; recoveredCoun
 }
 
 // localStorageのdeck保管庫。読み込みは必ずZod strict parseを通し、
-// 破損データはバックアップへ退避して空の状態から回復する(起動を止めない)。
+// 破損データは可能な限りバックアップへ退避して空の状態から回復する。
+// localStorage自体が読み書きを拒否しても、回復処理を例外停止させない。
 export function createLocalStorageDeckStore(
   storage: KeyValueStorage,
   now: () => number = () => Date.now(),
 ): DeckStore {
+  const tryBackup = (raw: string): boolean => {
+    try {
+      storage.setItem(DECKS_BACKUP_KEY, raw);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const tryRemoveActive = (): boolean => {
+    try {
+      storage.removeItem(DECKS_STORAGE_KEY);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const recoveryFailureSuffix = (backupSaved: boolean, activeRemoved: boolean): string => {
+    const failures: string[] = [];
+    if (!backupSaved) {
+      failures.push('バックアップを保存できませんでした');
+    }
+    if (!activeRemoved) {
+      failures.push('壊れた保存データを削除できませんでした');
+    }
+    return failures.length > 0 ? ` ただし、${failures.join('。')}。` : '';
+  };
+
   const quarantineAndReset = (raw: string, message: string): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
-    storage.setItem(DECKS_BACKUP_KEY, raw);
-    storage.removeItem(DECKS_STORAGE_KEY);
+    const backupSaved = tryBackup(raw);
+    const activeRemoved = tryRemoveActive();
     return {
       payload: EMPTY_PAYLOAD,
-      issues: [{ code: 'L9001', severity: 'warning', message }],
+      issues: [
+        {
+          code: 'L9001',
+          severity: 'warning',
+          message: `${message}${recoveryFailureSuffix(backupSaved, activeRemoved)}`,
+        },
+      ],
     };
   };
 
   const readPayload = (): { payload: StoredDecksPayload; issues: ValidationIssue[] } => {
-    const raw = storage.getItem(DECKS_STORAGE_KEY);
+    let raw: string | null;
+    try {
+      raw = storage.getItem(DECKS_STORAGE_KEY);
+    } catch {
+      return {
+        payload: EMPTY_PAYLOAD,
+        issues: [
+          {
+            code: 'L9004',
+            severity: 'warning',
+            message:
+              'ブラウザの保存領域を読み込めないため、デッキを一時的な空の状態で開きました。再読み込みやブラウザ設定の確認後も続く場合、保存機能は利用できません。',
+          },
+        ],
+      };
+    }
     if (raw === null) {
       return { payload: EMPTY_PAYLOAD, issues: [] };
     }
@@ -104,7 +155,7 @@ export function createLocalStorageDeckStore(
     } catch {
       return quarantineAndReset(
         raw,
-        '保存データが壊れていたため初期化しました。壊れたデータはバックアップに退避しています。',
+        '保存データが壊れていたため初期化しました。壊れたデータは可能な限りバックアップに退避しています。',
       );
     }
     const parsed = storedDecksPayloadSchema.safeParse(json);
@@ -120,18 +171,19 @@ export function createLocalStorageDeckStore(
     if (maybeDecks === null) {
       return quarantineAndReset(
         raw,
-        '保存データが壊れていたため初期化しました。壊れたデータはバックアップに退避しています。',
+        '保存データが壊れていたため初期化しました。壊れたデータは可能な限りバックアップに退避しています。',
       );
     }
     const { decks, recoveredCount, droppedCount } = salvageDecks(maybeDecks);
-    storage.setItem(DECKS_BACKUP_KEY, raw);
     if (decks.length === 0 && maybeDecks.length > 0) {
       // 何も救えなかった場合は従来通りの全消去メッセージにする
       return quarantineAndReset(
         raw,
-        '保存データが壊れていたため初期化しました。壊れたデータはバックアップに退避しています。',
+        '保存データが壊れていたため初期化しました。壊れたデータは可能な限りバックアップに退避しています。',
       );
     }
+
+    const backupSaved = tryBackup(raw);
     // outer payload自体はstrict parseを通らなかった(未知フィールド/不正な
     // versionなど)ため、無警告で黙って正規化はしない — 何が起きたかを常に
     // 可視化する。3パターンに分ける:
@@ -140,6 +192,7 @@ export function createLocalStorageDeckStore(
     //   みで、データは失っていない(L9002)
     // - それ以外: outer shapeのみの問題で、deck自体は無事(L9001、既存の
     //   L9001系呼び出し元/テストとの互換を保つ)
+    const backupSuffix = backupSaved ? '' : ' ただし、元データのバックアップは保存できませんでした。';
     const issues: ValidationIssue[] =
       droppedCount > 0
         ? [
@@ -149,7 +202,7 @@ export function createLocalStorageDeckStore(
               message:
                 `一部のデッキ保存データが壊れていたため、正常な${decks.length}件のみ復元しました` +
                 (recoveredCount > 0 ? `(うち${recoveredCount}件は旧形式から自動変換)` : '') +
-                `。壊れたデータはバックアップに退避しています。`,
+                `。壊れたデータは可能な限りバックアップに退避しています。${backupSuffix}`,
             },
           ]
         : recoveredCount > 0
@@ -157,7 +210,7 @@ export function createLocalStorageDeckStore(
               {
                 code: 'L9002',
                 severity: 'warning',
-                message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。`,
+                message: `${recoveredCount}件のデッキを旧形式から自動変換しました。データは保持されています。${backupSuffix}`,
               },
             ]
           : [
@@ -165,7 +218,7 @@ export function createLocalStorageDeckStore(
                 code: 'L9001',
                 severity: 'warning',
                 message:
-                  '保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。念のため元データはバックアップに退避しています。',
+                  `保存データの形式に問題があったため正規化しました(デッキの内容は保持されています)。元データは可能な限りバックアップに退避しています。${backupSuffix}`,
               },
             ];
     // 救済結果を書き戻す(ベストエフォート)。失敗しても今回の読み込み結果は
