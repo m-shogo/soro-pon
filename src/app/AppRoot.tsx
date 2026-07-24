@@ -131,8 +131,6 @@ export function AppRoot() {
     });
   }, []);
 
-  // 保存系書き込みをquota超過等から安全に包む。
-  // falseなら呼び出し側は保存成功前提の遷移・表示を行わない。
   const tryWrite = useCallback(
     (fn: () => void): boolean => {
       try {
@@ -155,7 +153,6 @@ export function AppRoot() {
     const settingsLoad = settingsStore.load();
     const issues = [...deckLoad.issues, ...recordsLoad.issues, ...settingsLoad.issues];
 
-    // 初回起動: 公式スターターを保存(strict parse経由)。
     if (!deckLoad.decks.some((d) => d.deck.id === OFFICIAL_STARTER_ID)) {
       const parsed = deckProjectSchema.safeParse(starterRaw);
       if (parsed.success) {
@@ -181,7 +178,6 @@ export function AppRoot() {
   const settings = useMemo(() => settingsStore.load().settings, [settingsStore]);
   const refreshDecks = useCallback(() => setDecksVersion((v) => v + 1), []);
 
-  // 実績は永続化に成功した場合だけ「新規解放」としてUIへ返す。
   const processAchievements = useCallback(
     (event: AchievementEvent): AchievementDef[] => {
       const current = recordsStore.load().records;
@@ -210,11 +206,22 @@ export function AppRoot() {
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState('');
   const [importIssues, setImportIssues] = useState<string[]>([]);
+  // 旧形式は1回目の押下で変換内容を表示し、同じ入力の2回目だけ保存する。
+  const [migrationReviewText, setMigrationReviewText] = useState<string | null>(null);
+
+  const resetImportReview = useCallback(() => {
+    setImportIssues([]);
+    setMigrationReviewText(null);
+  }, []);
+
+  const closeImport = useCallback(() => {
+    setImportOpen(false);
+    resetImportReview();
+  }, [resetImportReview]);
 
   const deckOf = (deckId: string): DeckProject | undefined =>
     decks.find((stored) => stored.deck.id === deckId)?.deck;
 
-  // 保存データの回復・削除・別タブ操作で表示中entityが消えてもblank screenにしない。
   useEffect(() => {
     const needsDeck =
       screen.kind === 'deckDetail' ||
@@ -245,7 +252,6 @@ export function AppRoot() {
     }
   }, [appendSaveNotice, decks, screen]);
 
-  // MatchSessionはkey={seed}でremountする。同一msの再戦でも衝突させない。
   const seedCounterRef = useRef(0);
   const newSeed = useCallback(() => {
     seedCounterRef.current += 1;
@@ -255,18 +261,40 @@ export function AppRoot() {
   const handleImport = () => {
     const result = parseDeckImport({ rawText: importText });
     if (!result.ok) {
+      setMigrationReviewText(null);
       setImportIssues(result.issues.map((issue) => `${issue.code}: ${issue.message}`));
       return;
     }
-    if (!tryWrite(() => deckStore.saveDeck(result.deck, 'imported'))) {
-      // modalと入力を保持する。
+
+    if (result.migrationNotice && migrationReviewText !== importText) {
+      const notice = result.migrationNotice;
+      setMigrationReviewText(importText);
+      setImportIssues([
+        `I2008: 旧形式 version ${notice.fromVersion} を version ${notice.toVersion} へ変換します。内容を確認し、もう一度ボタンを押してください。`,
+        ...notice.changed.map((change) => `変更: ${change}`),
+        ...notice.warnings.map((issue) => `${issue.code}: ${issue.message}`),
+      ]);
       return;
     }
+
+    if (!tryWrite(() => deckStore.saveDeck(result.deck, 'imported'))) {
+      return;
+    }
+
     refreshDecks();
     processAchievements({ type: 'deckImported' });
+    if (result.migrationNotice) {
+      appendSaveNotice(
+        `旧形式 version ${result.migrationNotice.fromVersion} を version ${result.migrationNotice.toVersion} へ変換して保存しました。`,
+      );
+    } else {
+      for (const issue of result.issues.filter((item) => item.severity !== 'error')) {
+        appendSaveNotice(issue.message);
+      }
+    }
     setImportOpen(false);
     setImportText('');
-    setImportIssues([]);
+    resetImportReview();
     setScreen({ kind: 'deckDetail', deckId: result.deck.id });
   };
 
@@ -289,7 +317,6 @@ export function AppRoot() {
     processAchievements({ type: 'deckExported' });
   };
 
-  // 対局終了時の記録。storage層のmatchKey冪等性で二重加算を防ぐ。
   const recordMatch = useCallback(
     (
       finalState: MatchState,
@@ -309,7 +336,6 @@ export function AppRoot() {
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
       if (!tryWrite(() => recordsStore.addRecord(built.record, built.matchKey, built.roleKey))) {
-        // Resultはin-memory stateで表示し、未保存報酬は0として明示する。
         return { coinsEarned: 0, newlyUnlocked: [] };
       }
       setRecordsVersion((v) => v + 1);
@@ -320,14 +346,7 @@ export function AppRoot() {
   );
 
   const importModal = (
-    <Modal
-      open={importOpen}
-      title="デッキJSONを読み込む"
-      onClose={() => {
-        setImportOpen(false);
-        setImportIssues([]);
-      }}
-    >
+    <Modal open={importOpen} title="デッキJSONを読み込む" onClose={closeImport}>
       <p style={{ marginTop: 0, fontSize: 'var(--sp-font-xs)' }}>
         共有デッキJSONを貼り付けてください。画像・URL・不明なフィールドを含むJSONは拒否されます。
       </p>
@@ -338,7 +357,10 @@ export function AppRoot() {
         width="100%"
         monospace
         value={importText}
-        onChange={setImportText}
+        onChange={(value) => {
+          setImportText(value);
+          resetImportReview();
+        }}
         placeholder='{"version": 1, "id": "...", ...}'
       />
       {importIssues.length > 0 && (
@@ -348,18 +370,21 @@ export function AppRoot() {
           role="status"
           aria-live="polite"
         >
-          {importIssues.slice(0, 8).map((message, i) => (
+          {importIssues.slice(0, 12).map((message, i) => (
             <li key={i}>
-              <Badge variant="warning">拒否</Badge> {message}
+              <Badge variant="warning">
+                {migrationReviewText === importText ? '変換確認' : '拒否'}
+              </Badge>{' '}
+              {message}
             </li>
           ))}
         </ul>
       )}
       <div className="sp-dialog__actions">
         <Button variant="primary" onClick={handleImport} disabled={importText.trim() === ''}>
-          読み込む
+          {migrationReviewText === importText ? '変換して読み込む' : '読み込む'}
         </Button>
-        <Button variant="ghost" onClick={() => setImportOpen(false)}>
+        <Button variant="ghost" onClick={closeImport}>
           やめる
         </Button>
       </div>
