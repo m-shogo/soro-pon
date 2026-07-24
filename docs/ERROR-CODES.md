@@ -4,7 +4,8 @@
 
 Stable error codes make validation, UI messages, logs, tests, and support easier to align.
 
-Messages may be localized later, but codes should remain stable.
+Messages may be localized later, but codes should remain stable and must
+never be reused for a different subsystem meaning.
 
 ## Code Prefixes
 
@@ -28,8 +29,8 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 ```
 
 - error: blocks import, match start, or action
-- warning: playable but risky
-- info: improvement suggestion
+- warning: recovery happened, data may have been reduced, or user action is needed
+- info: non-blocking fallback or improvement suggestion
 
 ## Schema Errors
 
@@ -142,10 +143,17 @@ type IssueSeverity = 'error' | 'warning' | 'info';
 
 | Code | Severity | Meaning |
 |---|---|---|
-| L9001 | warning | Corrupt localStorage recovered |
-| L9002 | warning | Older local data migrated |
-| L9003 | error | Local data could not be migrated |
-| L9004 | info | Local image missing, fallback used |
+| L9001 | warning | Corrupt/invalid localStorage payload was reset or normalized; active state recovered |
+| L9002 | warning | Older local deck data was migrated without dropping an entry |
+| L9003 | warning | One or more unrecoverable deck entries were dropped while healthy entries were retained |
+| L9004 | info | Local image is missing and a visual fallback is used |
+| L9005 | warning | Browser storage read access is unavailable; empty/default in-memory state is used for the session |
+| L9006 | warning | Required bootstrap/default data could not be persisted; app continues without claiming it was saved |
+
+`StorageWriteError` is the typed exception for ordinary user-triggered
+write failures. It is not assigned a `ValidationIssue` code unless the
+failure happens during boot and must be surfaced through the boot issue
+channel (`L9006`).
 
 ## UI Guard Issues
 
@@ -172,20 +180,6 @@ type Issue = {
 
 ## Copy Rules
 
-Messages should be specific and fixable.
-
-Good:
-
-```text
-This role needs 3 mammal groups, but mammal has only 6 tile instances.
-```
-
-Bad:
-
-```text
-Invalid role.
-```
-
-## Final Decision
-
-Tests should assert codes, not only message text.
+Messages should be specific, truthful about what was and was not
+preserved, and actionable. Tests should assert stable codes and important
+state transitions, not only localized message text.
