@@ -2,111 +2,144 @@
 
 Applies to all localStorage-backed data: `soro-pon.decks.v1`,
 `soro-pon.records.v1`, `soro-pon.settings.v1`, `soro-pon.skin.v1`.
-Established/hardened in Gate 6 (Batch 6); see
-[BATCH-6-GATE-6-QA-MATRIX.md](../qa/BATCH-6-GATE-6-QA-MATRIX.md) for
-evidence.
+Established in Gate 6 (Batch 6) and hardened again during the post-Batch-10
+integrity review. See
+[BATCH-6-GATE-6-QA-MATRIX.md](../qa/BATCH-6-GATE-6-QA-MATRIX.md) for the
+original evidence and `src/storage/storageRecoveryFailurePaths.test.ts`
+for the storage-fault regression cases.
 
 ## Principles
 
-1. **Never destroy *other, unaffected* data the app doesn't have to.** A
+1. **Never destroy other, unaffected data the app does not have to.** A
    single corrupted or legacy-schema deck entry must not take down the
    whole deck list. This does not mean the corrupted entry itself is
-   always recovered — see "Guarantee scope" below.
-2. **Never fail silently.** Every recovery action surfaces a
+   always recoverable.
+2. **Recovery must not become the crash.** Backup creation, active-key
+   removal, payload rewrite, and even `getItem()` may independently fail.
+   Those failures are classified and surfaced; they do not escape as raw
+   storage exceptions from the read path.
+3. **Never fail silently.** Every recovery action surfaces a
    Japanese-language `ValidationIssue` (read path, shown as a `Toast` on
-   boot) or throws a catchable, translated error (write path, shown as a
-   `Toast` at the point of the failed action).
-3. **Never lose an in-progress user edit *while the screen stays
-   open*.** If a save fails (e.g. quota exceeded), the screen that was
-   mid-edit (DeckEditor, the import modal) stays open with the user's
-   input intact — it does not navigate away as if the save had
-   succeeded. This is an in-session guarantee only: it does not cover
-   recovery after a reload or tab close while unsaved — see "Guarantee
-   scope" below.
-4. **Prefer partial recovery to full reset.** When only some data is
+   boot) or throws a catchable, translated `StorageWriteError` (normal
+   write path, shown at the failed action).
+4. **Never lose an in-progress user edit while the screen stays open.**
+   If a normal save fails, DeckEditor and the import modal remain open
+   with the user's input intact. This is an in-session guarantee only.
+5. **Prefer partial recovery to full reset.** When only some data is
    unrecoverable, keep everything else that is recoverable.
-5. **No speculative migration framework.** Reuse the deterministic,
-   already-existing `migrateLegacyDeck()` (deck-schema version 0 → 1).
-   Do not add a generic multi-step migration runner until a second real
-   schema version actually exists.
+6. **No speculative migration framework.** Reuse the deterministic,
+   existing `migrateLegacyDeck()` (deck schema version 0 → 1). Add a
+   generic multi-step runner only after a second real migration exists.
 
-## Guarantee scope (read this before calling anything "lossless")
+## Guarantee scope
 
-Do not describe this policy as making recovery "lossless" without
-qualification — it doesn't, in two specific, bounded ways:
+Do not describe recovery as unconditionally "lossless".
 
-- **Quota-exceeded writes**: the in-session draft stays visible and
-  editable on screen, the user is notified via `Toast`, and
-  already-*persisted* data is never overwritten by the failed write.
-  What is **not** guaranteed: if the user reloads or closes the tab
-  while that unsaved draft exists, the draft itself is gone — same as
-  any ordinary unsaved web-form state. There is no autosave-to-a-
-  separate-key mechanism.
-- **Corrupted/unrecoverable deck entries**: an entry that fails both
-  the current schema and legacy-migration is dropped from the active
-  deck list, not restored. It is preserved only as raw, unparsed JSON
-  inside a `*.corrupt-backup` key — the app does not automatically
-  re-attempt parsing it or offer a restore UI for it. The guarantee is
-  that *other, healthy* entries are no longer taken down with it —
-  not that the corrupted entry itself comes back.
+- **Quota/storage-rejected writes**: the current draft remains visible,
+  the user is notified, and already-persisted data is not overwritten by
+  the failed normal write. Reloading or closing the tab still loses an
+  unsaved in-memory draft; there is no separate draft autosave key.
+- **Corrupted deck entries**: an entry that fails the current schema and
+  legacy migration is removed from the active recovered list. The raw
+  original payload is written to `soro-pon.decks.v1.corrupt-backup` when
+  the browser permits it. Backup persistence is best-effort, not a false
+  guarantee when quota or browser policy rejects storage writes.
+- **Corrupted records/settings**: the app falls back to empty/default
+  state and now also attempts to preserve the raw original values in
+  `soro-pon.records.v1.corrupt-backup` and
+  `soro-pon.settings.v1.corrupt-backup`.
+- **Storage access denied**: if `getItem()` itself throws, the app uses an
+  empty/default in-memory view for that store and emits `L9004`. Normal
+  writes may still fail separately and are reported through
+  `StorageWriteError`.
 
-## Read path (localStorage → app state)
+## Read path
 
-Implemented in `src/storage/localStorageDeckStore.ts`,
-`localStorageSettingsStore.ts`, `localStorageRecordsStore.ts`.
+Implemented in:
+
+```text
+src/storage/localStorageDeckStore.ts
+src/storage/localStorageRecordsStore.ts
+src/storage/localStorageSettingsStore.ts
+```
 
 | Condition | Behavior | Issue code |
 |---|---|---|
 | Key absent | Empty/default payload, no issue | — |
-| JSON.parse throws | Whole key quarantined to a `*.corrupt-backup` key, reset to empty/default | `L9001` |
-| Outer shape invalid, but `decks` array itself parses and every entry is either directly valid or legacy-migratable | Per-deck salvage: keep everything recoverable, reconstruct the payload, write it back | `L9002` (no data lost, only migrated) |
-| Outer shape invalid, `decks` array present, but 1+ entries are unrecoverable | Salvage what's recoverable, drop the rest individually, preserve the original raw payload in the backup key | `L9003` |
-| Outer shape invalid, nothing in `decks` recoverable (or `decks` missing entirely) | Full quarantine + reset (same as the pre-Gate-6 behavior) | `L9001` |
-| Settings/records corrupted (any shape problem) | Reset to defaults/empty (no salvage — these are low-value, re-derivable data; deck store is the one that gets salvage because user-authored decks are irreplaceable) | `L9001` |
+| `getItem()` rejected by browser/storage policy | Empty/default in-memory view; no raw exception escapes | `L9004` |
+| Deck JSON parse failure or unrecoverable outer shape | Best-effort raw backup, best-effort active-key removal, empty payload | `L9001` |
+| Deck outer shape invalid, all entries directly valid or legacy-migratable | Per-deck salvage and best-effort normalized writeback | `L9002` when migration occurred; otherwise `L9001` |
+| Deck outer shape invalid with 1+ unrecoverable entries | Keep recoverable entries, drop only bad entries, best-effort raw backup/writeback | `L9003` |
+| No deck entry recoverable | Best-effort quarantine and empty payload | `L9001` |
+| Records/settings corrupted | Best-effort raw backup and active-key removal, then empty/default state | `L9001` |
+| Backup or active-key cleanup fails during recovery | Continue with recovered in-memory state and append the exact failed recovery operation to the warning | original recovery code |
 
-Salvage results are **written back** on the next successful write
-opportunity, making recovery idempotent: a second `loadAll()` call
-returns the same result without re-emitting the warning (see
-`src/storage/gate6StorageRecovery.test.ts`, "救済結果は...冪等性").
+A successful salvage is written back immediately on a best-effort basis.
+If writeback is rejected, the current call still returns the recovered
+in-memory payload and the next load may repeat the recovery warning.
 
-## Write path (app state → localStorage)
+## Normal write path
 
-All three stores wrap `storage.setItem` in `safeWrite()`
-(`src/storage/keyValueStorage.ts`). On failure (quota exceeded or any
-other `setItem`/`removeItem` exception), the raw error is converted to
-a `StorageWriteError` with a pre-written Japanese message — the raw
-`DOMException`/`QuotaExceededError` never reaches the UI or the
-console as an unhandled rejection.
+Normal mutations (`saveDeck`, `removeDeck`, settings save, match-record
+save, achievement save) use `safeWrite()` from
+`src/storage/keyValueStorage.ts`. Any `setItem()` failure is converted to
+`StorageWriteError` with a prewritten Japanese message. Raw
+`DOMException` and `QuotaExceededError` are not deliberately exposed to
+the UI.
 
-`src/app/AppRoot.tsx`'s `tryWrite()` helper wraps every write call site
-(deck save/create/delete/import, records add/achievements, first-boot
-official-starter save). On failure it appends the message to a `Toast`
-and returns `false`, and the caller skips any "assume success"
-follow-up (navigation, marking a draft clean, incrementing a version
-counter that would trigger a re-render showing stale-but-believed-saved
-state).
+`src/app/AppRoot.tsx` wraps user-triggered write call sites with
+`tryWrite()`. On failure it appends the message to a warning `Toast` and
+skips success-only follow-up such as navigation, draft-clean state, or a
+version-counter refresh.
 
-## What is intentionally NOT covered
+Recovery cleanup is deliberately different from a normal mutation:
+backup and removal are **best-effort and independently guarded** because
+throwing from a corruption-recovery path would prevent the app from
+reaching a usable state.
 
-- `soro-pon.skin.v1` (a single string ID) has no dedicated recovery
-  path beyond `sanitizeSkinId()` in `src/ui/skins/skinRegistry.ts`,
-  which falls back to a built-in skin for any unrecognized ID. This is
-  sufficient — there is no structured payload to salvage.
-- Settings (`insightMode`, `preferredPlayerCount`) reset to defaults on
-  any corruption rather than being salvaged — low value, and as of
-  Gate 6 no UI path even calls `settingsStore.save()` yet (pre-existing;
-  not a Gate 6 regression, not fixed here — adding settings UI would be
-  a new feature, out of scope).
-- No IndexedDB is used anywhere in this project; all persistence is
-  localStorage.
+## Backup and restore reality
 
-## Testing this policy
+The `*.corrupt-backup` keys are forensic preservation, not an automatic
+restore product feature.
 
-- Unit: `src/storage/gate6StorageRecovery.test.ts` (16 cases — partial
-  salvage, legacy migration, missing version, unknown newer version,
-  idempotency, full-corruption fallback, quota-exceeded on all three
-  stores, null/empty/oversized payloads).
-- Browser (Chromium automation, not simulated): `scripts/gate6-qa-01-migration-storage-recovery.mjs`.
-- Visual regression: `tests/visual/gate6-recovery-states.spec.ts`
-  (reset confirmation, quota-exceeded toast, partial-salvage toast,
-  invalid-skin fallback — both skins, phone + desktop viewports).
+```text
+Supported now:
+- raw original payload retained when storage permits
+- healthy deck entries salvaged automatically
+- deterministic v0 -> v1 deck migration
+- manual inspection/export through browser developer tools
+
+Not supported now:
+- restore button in the application
+- merging arbitrary backup JSON into active state
+- guaranteed backup creation when the storage system itself rejects writes
+- cross-device/cloud backup
+```
+
+A future restore UI must parse the backup through the same strict import
+and migration contracts. It must never copy a backup value directly over
+the active key.
+
+## Skin storage
+
+`soro-pon.skin.v1` is a single skin ID. `SkinProvider` guards both
+`getItem()` and `setItem()` and `sanitizeSkinId()` falls back to a built-in
+known skin. There is no structured skin payload to salvage.
+
+## Tests
+
+- Existing Gate 6 suite:
+  `src/storage/gate6StorageRecovery.test.ts` (partial salvage, migration,
+  idempotency, corruption, and normal-write quota failures).
+- Storage-operation fault suite:
+  `src/storage/storageRecoveryFailurePaths.test.ts` (6 cases covering
+  backup failure, active-key removal failure, read denial, and raw
+  records backup).
+- Browser automation:
+  `scripts/gate6-qa-01-migration-storage-recovery.mjs`.
+- Visual regression:
+  `tests/visual/gate6-recovery-states.spec.ts`.
+
+The new storage-operation fault tests are unit-level proof. A real browser
+run with storage access disabled remains environment-specific and should
+be repeated when the target deployment/browser matrix is known.
