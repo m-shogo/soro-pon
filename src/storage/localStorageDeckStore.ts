@@ -47,9 +47,6 @@ function preferredDuplicateCandidate(
   current: SalvageCandidate,
   candidate: SalvageCandidate,
 ): SalvageCandidate {
-  if (candidate.deck.updatedAtMs !== current.deck.updatedAtMs) {
-    return candidate.deck.updatedAtMs > current.deck.updatedAtMs ? candidate : current;
-  }
   if (candidate.deck.source !== current.deck.source) {
     if (candidate.deck.source === 'official') {
       return candidate;
@@ -57,6 +54,9 @@ function preferredDuplicateCandidate(
     if (current.deck.source === 'official') {
       return current;
     }
+  }
+  if (candidate.deck.updatedAtMs !== current.deck.updatedAtMs) {
+    return candidate.deck.updatedAtMs > current.deck.updatedAtMs ? candidate : current;
   }
   return candidate.originalIndex < current.originalIndex ? candidate : current;
 }
@@ -264,7 +264,7 @@ export function createLocalStorageDeckStore(
       recoveredCount > 0 ? ` うち${recoveredCount}件は旧形式から自動変換しました。` : '';
     const duplicateSuffix =
       duplicateCount > 0
-        ? ` 同じデッキIDの重複${duplicateCount}件は、更新日時の新しい内容を優先して1件へ統合しました。`
+        ? ` 同じデッキIDの重複${duplicateCount}件は、公式デッキを優先し、同じsource内では更新日時の新しい内容を優先して1件へ統合しました。`
         : '';
     const issues: ValidationIssue[] =
       droppedCount > 0
@@ -300,7 +300,7 @@ export function createLocalStorageDeckStore(
                   code: 'L9008',
                   severity: 'warning',
                   message:
-                    `保存データに同じデッキIDが複数あったため、${duplicateCount}件の重複を更新日時の新しい内容へ統合しました。` +
+                    `保存データに同じデッキIDが複数あったため、${duplicateCount}件の重複を公式デッキ優先・同じsource内では更新日時優先で統合しました。` +
                     `${recoveredSuffix}元データは可能な限りバックアップに退避しています。${backupSuffix}`,
                 },
               ]
