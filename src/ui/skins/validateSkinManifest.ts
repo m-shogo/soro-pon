@@ -8,8 +8,6 @@ import {
   type SkinManifest,
 } from './skinTypes';
 
-// パッケージ内ファイル名のみ許可。パス区切り・親参照・URLスキームは拒否する。
-// (スキンから外部URL・任意パスを読み込ませないための防衛線)
 export function isSafeSkinFileName(file: string): boolean {
   if (file.length === 0 || file.length > 120) {
     return false;
@@ -82,8 +80,8 @@ const skinManifestSchema = z
   .object({
     id: skinIdSchema,
     label: z.string().min(1).max(60),
-    version: z.number().int().min(1),
-    skinContractVersion: z.number().int().min(1),
+    version: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
+    skinContractVersion: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
     origin: z.enum(['official', 'external']),
     author: z.string().max(80).optional(),
     inherits: skinIdSchema.optional(),
@@ -101,8 +99,6 @@ export type ValidateSkinManifestResult =
   | { ok: true; manifest: SkinManifest }
   | { ok: false; issues: string[] };
 
-// 未知データからSkinManifestを厳格に検証する。
-// 不正なmanifestは受理せずissuesを返す(呼び出し側がbase/defaultへfallbackする)。
 export function validateSkinManifest(raw: unknown): ValidateSkinManifestResult {
   const parsed = skinManifestSchema.safeParse(raw);
   if (!parsed.success) {
@@ -141,6 +137,10 @@ export function validateSkinManifest(raw: unknown): ValidateSkinManifestResult {
     }
     if (def.file !== null && def.file.endsWith('.css')) {
       issues.push(`slot ${slotName} に画像以外のファイルは指定できません: ${def.file}`);
+      continue;
+    }
+    if (data.origin === 'external' && def.file !== null && def.file.endsWith('.svg')) {
+      issues.push(`external skinのslot ${slotName} にSVGは指定できません: ${def.file}`);
       continue;
     }
     if (def.renderMode === 'nine-slice' && !def.nineSlice) {
