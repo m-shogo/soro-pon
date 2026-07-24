@@ -26,6 +26,10 @@ Batch 6 (Gate 6: Release Candidate hardening): complete
   RC readiness: LIMITED READY (open items: real screen-reader pass,
     non-Chromium browser verification, longer memory soak test, real
     deploy target — none are Gate 6 blockers, all explicitly tracked).
+    ※これはBatch 6時点の記録。この後、非Chromium browserはBatch 7、
+    実screen readerはBatch 8(VoiceOver+Chrome、CONDITIONAL)、memory soakは
+    Batch 9、production build検証はBatch 10でそれぞれ進展/CLOSEDしている。
+    現在地は本ブロック末尾の「RC readiness」を参照。
   Fixed 2 real P1 storage-layer defects found this batch: a single
     corrupted/legacy deck entry could previously wipe a user's entire
     deck list (now salvaged per-deck), and a quota-exceeded save
@@ -156,15 +160,47 @@ Batch 9 (Extended Memory & Runtime Stability Soak) is COMPLETE
   Scope: the memory claim covers Chromium on the dev server for this
     run's duration; Firefox/WebKit are stability-only; real
     Safari/mobile devices remain untested.
-RC readiness: LIMITED READY (unchanged as a status) — the extended
-  memory-soak open item tracked since Batch 6 is now CLOSED. Remaining
-  open: real iPhone/iPad Safari / Android devices, real deploy-target
-  rollback, Safari+VoiceOver, NVDA/JAWS, Batch 8's tooling-limited
-  Result static-text speech capture.
+Batch 10 (Real Device / Production Release Validation) is CONDITIONAL
+  (2026-07-24). Matrix fixed before execution
+  (docs/qa/BATCH-10-REAL-DEVICE-RELEASE-MATRIX.md, 17 test IDs).
+  Result: PASS 3 / BLOCKED_ENVIRONMENT 14 / FAIL 0 / NOT_RUN 0.
+  - EXECUTED (all passed): production build (typecheck + unit 331 + skin
+    18 + build clean, artifacts hashed); 14/14 core flows on a LOCAL
+    PRODUCTION PREVIEW in Chromium (both skins, 3p and 4p matches to
+    Result, reload state restore, 0 page/console/rejection errors, 0
+    non-benign failed requests); and a 35 min / 47 cycle production
+    soak (17/18 matches to Result, heap −4.2%, DOM −1%, listeners 0%,
+    live timers 0, 0 errors). Production carries ZERO outstanding JS
+    timers — the 1 interval seen in Batch 9's dev run is Vite's HMR
+    ping, proven by source and bundle inspection, not product code.
+  - BLOCKED_ENVIRONMENT (0 flows executed, each with a tested unblock
+    path): real iPhone Safari (an iPhone IS connected, but devicectl
+    offers no screenshot/URL-open/input injection and browsers are
+    read-tier here), real iPad and real Android (no hardware, no adb),
+    deploy and deployed-artifact rollback (the repo has NO hosting
+    config, deploy script, service worker, base path, or CI deploy job
+    — and none was created), Safari + VoiceOver (a real WebDriver
+    session was attempted and refused: "Allow Remote Automation"
+    disabled), NVDA and JAWS (no Windows machine or VM).
+  - Product defects: 0 (no product code changed). 2 harness defects and
+    1 stale-docs defect were found and fixed.
+  - Report: docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md.
+    Deploy runbook: docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md.
+    Evidence: docs/qa/evidence/batch-10/ (13 PNG + 4 JSON/JSONL +
+    2 logs = 19 files).
+RC readiness: LIMITED READY (unchanged as a status). CLOSED open items:
+  extended memory soak (Batch 9) and production-build validation on
+  Chromium (Batch 10). Still open: physical iPhone/iPad/Android,
+  real deploy + deployed-artifact rollback, Safari+VoiceOver, NVDA/JAWS,
+  Batch 8's tooling-limited Result static-text speech capture, and
+  production-build behavior in Firefox/WebKit.
+  A local production preview is NOT a deploy; Playwright WebKit is NOT
+  Safari; simulators and device emulation are NOT real devices.
 Current phase: further RC hardening. Batch 8 remains CONDITIONAL
   (tooling limitation, not a product defect). No fixed next batch is
   scheduled; the remaining RC open items above start only on explicit
-  instruction.
+  instruction. Unblock steps for every blocked item are recorded in the
+  Batch 10 report §12.
 ```
 
 正確な現在地と実装順:

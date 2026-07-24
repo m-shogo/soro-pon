@@ -160,24 +160,48 @@ asset caching/version behavior accepted
 skin package failure/rollback behavior accepted
 ```
 
-## Current RC Readiness (2026-07-23)
+## Current RC Readiness (2026-07-24)
 
 ```text
 Gate 6: PASS
 Batch 7: COMPLETE
-Batch 8 Attempt 5: CONDITIONAL
+Batch 8 (VoiceOver acceptance, attempts 1-6): CONDITIONAL
+Batch 9 (extended memory/runtime soak): COMPLETE
+Batch 10 (real device / production release validation): CONDITIONAL
 RC status: LIMITED READY
-Chrome + VoiceOver validated: TOP/import/editor and Match Setup/Match
-Real-VoiceOver gaps: Result comprehension and cute-pop gameplay parity
-Other untested scope: Safari + VoiceOver, NVDA, JAWS, physical iOS/
-  iPadOS Safari, physical Android, extended memory soak, real
-  deploy-target rollback
-Next fixed task: unresolved gameplay VoiceOver remediation
+
+Validated with real VoiceOver + CHROME (not Safari), Batch 8:
+  yorunoshirube TOP/JSON import/Deck Editor/Match Setup/Match and the
+  Result heading + action controls; cute-pop only the Match Setup and
+  Match key controls. Result win/rank/score static text is supplemental
+  only (caption capture is a tooling limitation, not a product defect).
+Validated on the DEV SERVER in Chromium, Batch 9: 62.3 min / 74 cycle
+  soak, no heap/DOM/listener/timer growth. Firefox and WebKit are
+  stability-only there; no memory claim for them.
+Validated on a LOCAL PRODUCTION PREVIEW in Chromium, Batch 10: clean
+  build, 14/14 core flows, and a 35 min / 47 cycle soak with 0 errors.
+  This is a local preview of the production artifact — NOT a deploy.
+
+CLOSED open items: extended memory soak (Batch 9); production-build
+  validation on Chromium (Batch 10).
+Still untested scope: physical iPhone Safari (device present but not
+  drivable/observable in the automation environment), physical iPad,
+  physical Android, real deploy to a hosting target, deployed-artifact
+  rollback, Safari + VoiceOver, NVDA, JAWS, and production-build
+  behavior in Firefox/WebKit.
+Next fixed task: none scheduled. The items above start on explicit
+  instruction; unblock paths are recorded in
+  docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md §12 and
+  docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md.
 ```
 
-Attempt 5 found one P2 selected-state defect in Match Setup and fixed it
-with `aria-pressed`; no P0/P1 remains open. Automated browser parity
-does not substitute for the remaining real-VoiceOver checks.
+Batch 8 Attempt 5 found one P2 selected-state defect in Match Setup and
+fixed it with `aria-pressed`; Attempt 6 re-confirmed the fix under real
+VoiceOver. No P0/P1/P2 remains open, and Batches 9 and 10 each found 0
+product defects and changed no product code. Automated browser parity,
+AX-tree inspection, simulators, and device emulation do **not**
+substitute for the remaining real-device and real-screen-reader checks,
+and a local preview does not substitute for a deploy.
 
 ## Gate 7: Installed / Paid Skin Ready
 

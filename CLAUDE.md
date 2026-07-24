@@ -317,10 +317,41 @@ Batch 9(Extended Memory & Runtime Stability Soak)は完了(2026-07-23、
   memory主張のscopeはdev server上のChromium・本走の時間範囲のみ。
   RC readiness: LIMITED READY継続 — ただしBatch 6以来trackedだった
   「長時間memory soak」open itemはCLOSED。
-  残る未検証項目(実iPhone/iPad Safari・実Android・実deploy rollback・
-  Safari+VoiceOver・NVDA/JAWS・Batch 8のResult静的テキスト音声捕捉=
-  tooling limitation)は明示指示があった時点で着手する。次の固定タスクは
-  未設定。
+  残る未検証項目は下記Batch 10を参照。
+Batch 10(Real Device / Production Release Validation)は完了
+  (2026-07-24、CONDITIONAL)。matrixを実行前に固定
+  (docs/qa/BATCH-10-REAL-DEVICE-RELEASE-MATRIX.md、17 test ID)。
+  結果: PASS 3 / BLOCKED_ENVIRONMENT 14 / FAIL 0 / NOT_RUN 0。
+  **実行できた範囲(全てPASS)**: production build(typecheck+unit 331+
+  skin 18+build成功、artifact hash記録)/ local production preview上の
+  core flow 14/14(両skin・3p/4p対局Result完走・reload状態復元・
+  page error 0・console error 0・unhandled rejection 0・非良性request
+  failure 0)/ production soak 35.0分・47 cycle(match 17/18完走、
+  heap -4.2%、DOM -1%、listener 0%、live timer 0、error 0)。
+  production側のoutstanding JS timerは**0**であり、Batch 9のdev走で
+  常駐していた1件はViteのHMR ping(client.mjs:472)である事をsrc/と
+  production bundleのsetInterval出現数0で実証(製品コード由来ではない)。
+  **BLOCKED_ENVIRONMENT(いずれも0フロー実施、解除手順を報告書§12に記録)**:
+  実iPhone Safari(iPhoneは接続済みだがdevicectlにscreenshot/URL投入/
+  入力注入が無く、browserはread tierのため観測経路なし)、実iPad・
+  実Android(機材なし、adb未導入)、deploy/rollback(**repoにhosting
+  config・deploy script・service worker・base path・CI deploy jobが
+  一切存在しない**。新規契約はscope外のため作成していない)、
+  Safari+VoiceOver(実WebDriverセッションを試行し
+  "Allow Remote Automation"未有効で拒否されることを実測)、NVDA/JAWS
+  (Windows実機・VMなし)。
+  製品欠陥0件(製品コード変更なし)。harness欠陥2件+docs古さ1件を発見・修正。
+  レポート: docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md。
+  deploy runbook: docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md。
+  証跡: docs/qa/evidence/batch-10/(PNG 13+JSON/JSONL 4+log 2=19件)。
+  **重要な区別**: local production previewはdeployではない/
+  Playwright WebKitはSafariではない/SimulatorとemulationはNot実端末。
+RC readiness: LIMITED READY継続。CLOSED: 長時間memory soak(Batch 9)、
+  production build検証(Batch 10、Chromium範囲)。残open: 実iPhone/iPad/
+  Android、実deploy+配信artifact rollback、Safari+VoiceOver、NVDA/JAWS、
+  Batch 8のResult静的テキスト音声捕捉(tooling limitation)、
+  production buildのFirefox/WebKit挙動。いずれも明示指示があった時点で
+  着手する。次の固定タスクは未設定。
 ```
 
 過去の「Phase 1開始」「まずengineから」「H1から順に」は現在地ではありません。既存機能を壊さず、`docs/IMPLEMENTATION-WORKFLOW.md` と `docs/SKIN-FOUNDATION-HARDENING.md` の残項目・ゲートを確認して進めてください。
