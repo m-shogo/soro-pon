@@ -1,126 +1,192 @@
 # Batch 11 — Production Cross-Browser Auxiliary Validation Matrix
 
-Date: 2026-07-24. Status: **CONTRACT DEFINED / NOT YET EXECUTED**.
-Not a new feature Gate. Gate 6 remains PASS. Batch 8 (CONDITIONAL),
-Batch 9 (COMPLETE), and Batch 10 (CONDITIONAL) results, scopes, and
-evidence are not revisited or weakened by this batch.
+Date: 2026-07-24. Not a new feature Gate. Historical Gate 6 remains PASS
+within its recorded scope. Batch 8 (CONDITIONAL), Batch 9 (COMPLETE), and
+Batch 10 (CONDITIONAL) evidence is historical and is neither erased nor
+silently generalized to the newer post-review product SHA.
 
-Purpose: run the **production build** (not the dev server) through its
-core flows and a short stability rotation in **Firefox** and
-**Playwright WebKit**, closing the one gap Batch 10 named as executable
-without new hardware — production-build behavior in non-Chromium
-engines. This is an auxiliary stability pass, not a memory pass and not
-a real-device/real-Safari/real-AT pass.
+Purpose: validate the **current production build** through core flows and a
+short stability rotation in **Firefox** and **Playwright WebKit**, closing
+the one Batch 10 gap executable without new hardware: non-Chromium behavior
+of the production artifact.
 
-> The contract was originally created at commit `c9b18b6` from the
-> Batch-10 end state. Product and documentation changes were committed
-> afterward during the integrity review. Therefore **`6a844dd` is not an
-> executable baseline anymore**. Preflight must freeze and record the
-> exact current `HEAD == origin/main`; all Batch 11 build/flow/rotation
-> evidence must come from that same SHA. Never combine an old artifact
-> result with a newer documentation or product HEAD.
+This is auxiliary functional/stability validation, not a memory pass, real-
+device pass, real-Safari pass, real-AT pass, deploy pass, or rollback pass.
 
-`Actual result` / `Classification` are filled only by the report after
-execution.
+> Matrix fixed before execution. `Actual` and `Class` are filled only by the
+> result report. The execution baseline is not the Batch 10 SHA; it is the
+> exact clean `main` SHA frozen after both integrity reviews and after every
+> product/test correction has stopped.
 
-## Non-negotiable scoping rules
+## Mandatory Precondition — Integrity Review Closure
+
+Batch 11 must not start until the exact candidate SHA passes:
+
+```text
+pnpm install --frozen-lockfile
+Critical integrity contracts 8-file suite
+pnpm typecheck
+pnpm test
+all 38 review-added integrity cases collected and passing
+pnpm skin:validate
+pnpm build
+artifact inventory/hash recorded
+```
+
+Review records:
+
+```text
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
+```
+
+If any product/test file changes after precondition execution, discard the
+partial Batch 11 evidence and restart at integrity preflight on the new SHA.
+
+## Non-negotiable Scope Rules
 
 ```text
 Playwright WebKit is NOT real Safari, iOS Safari, or macOS Safari.
-  It shares the WebKit engine but not Safari's UI, integrations, real
-  device viewport, Web Inspector, or VoiceOver bridge.
-A WebKit PASS is NOT a Safari+VoiceOver PASS and NOT an iOS Safari PASS.
-Firefox and WebKit results do NOT generalize to any real device.
-No memory-leak claim is made for Firefox or WebKit. Their CDP memory
-  domain is unavailable; memory fields are recorded as not_available
-  with a reason, never as 0.
-Chromium-only CDP memory numbers are NOT placed in a cross-browser
-  ranking. Cross-browser comparison is functional/stability only.
+A WebKit PASS is NOT Safari+VoiceOver and NOT iOS Safari PASS.
+Firefox/WebKit results do NOT generalize to physical devices.
+No memory-leak claim is made for Firefox or WebKit.
+  CDP memory fields are unavailable and must be null/not_available, never 0.
+Chromium-only memory numbers are not used for cross-browser ranking.
 A local production preview is NOT a deploy.
-This batch does not promote RC to READY; real-device, real-Safari,
-  real-AT, and real-deploy gates remain open, so RC stays LIMITED READY.
-Every result file, screenshot index, build inventory, and report records
-  the same execution commit SHA.
-If HEAD changes after any execution item starts, discard/relabel that
-  partial run and restart the matrix from preflight on the new HEAD.
+Optimistic localStorage conflict checks are NOT transactional multi-tab CAS.
+This batch cannot promote RC to READY while real-device, real-Safari,
+  real-AT, and real-deploy evidence remains open.
 ```
 
-## Environment inventory
+## Execution-time Environment Inventory
 
-The following was probed on 2026-07-24 when the contract was written and
-must be re-probed at execution. It is historical planning input, not an
-execution result.
+Fill immediately before execution:
 
 ```text
-Host OS observed:   macOS 26.4.1 (25E253)
-Node/pnpm observed: v24.15.0 / 11.1.2
-Playwright observed: 1.61.1
-Chromium reference:  149.0.7827.55 (Batch 10 only; not a Batch 11 rerun)
-Firefox observed:    151.0 (Playwright-bundled)
-WebKit observed:     26.5 (Playwright-bundled — NOT Safari)
-Planned server:      production (vite build → vite preview), port 4199
-Execution baseline:  TO BE RECORDED by B11-PREFLIGHT-01
+Host OS:            *(report)*
+Node/pnpm:          *(report)*
+Playwright:         *(report)*
+Firefox:            *(report, Playwright-bundled)*
+WebKit:             *(report, Playwright-bundled — NOT Safari)*
+Build command:      pnpm build
+Preview command:    production artifact via vite preview
+Preview port:       4199 unless unavailable and recorded
+Frozen HEAD:        *(report; must equal origin/main)*
+Worktree:           clean
+Integrity suite:    PASS on Frozen HEAD
+Full unit count:    *(report)*
+Review-added cases: 38 collected / 38 PASS
+Artifact hashes:    *(report)*
+GitHub CI:          PASS or explicitly unavailable; never inferred from push
 ```
 
-## Test matrix
+The old `6a844dd` Batch 10 artifact is historical comparison context only.
+It is not the Batch 11 execution target.
 
-| Test ID | Engine | Build | Scenario | Measurement | Evidence | PASS | FAIL/BLOCK | Actual | Class | Claim scope |
-|---|---|---|---|---|---|---|---|---|---|---|
-| B11-PREFLIGHT-01 | n/a | — | freeze git/toolchain/CI baseline | exact HEAD, origin/main, clean tree, versions, CI | preflight log | HEAD==origin/main; clean; prior CI green; versions re-probed | dirty/behind/unknown SHA or required tool unavailable | *(report)* | — | this repo/host only |
-| B11-BUILD-01 | n/a | production | typecheck + all unit tests including storage failure-path tests + skin validation + build | command exits, artifact hashes, module count | build log + inventory | all commands exit 0; artifacts present; every file names execution SHA | any command/build fails | *(report)* | — | exact execution SHA artifact |
-| B11-FF-01 | Firefox | production preview | both skins, 3p+4p core flow walkthrough | functional result; memory not_available | flow JSON + PNG | all flow steps pass; 0 non-benign errors | any step/error failure; preview unavailable = BLOCK | *(report)* | *(report)* | Firefox on local production preview only |
-| B11-FF-02 | Firefox | production preview | ≥20 cycles OR ≥15 min rotation | cycle/Result/error counters; memory not_available | JSONL + summary | 0 errors/dead-end/corruption | product error/dead-end; unstable preview = BLOCK | *(report)* | *(report)* | Firefox stability only |
-| B11-FF-03 | Firefox | production preview | page/console/rejection/request monitoring | error counts and samples | summary | 0 non-benign errors | non-benign error | *(report)* | *(report)* | Firefox only |
-| B11-WK-01 | Playwright WebKit | production preview | both skins, 3p+4p core flow walkthrough | functional result; memory not_available | flow JSON + PNG | all flow steps pass; 0 non-benign errors | any step/error failure; preview unavailable = BLOCK | *(report)* | *(report)* | Playwright WebKit only; NOT Safari |
-| B11-WK-02 | Playwright WebKit | production preview | ≥20 cycles OR ≥15 min rotation | cycle/Result/error counters; memory not_available | JSONL + summary | 0 errors/dead-end/corruption | product error/dead-end; unstable preview = BLOCK | *(report)* | *(report)* | WebKit stability only; NOT Safari |
-| B11-WK-03 | Playwright WebKit | production preview | page/console/rejection/request monitoring | error counts and samples | summary | 0 non-benign errors | non-benign error | *(report)* | *(report)* | WebKit only; NOT Safari |
-| B11-COMPARE-01 | all recorded engines | mixed historical/current | scope-safe comparison | functional/stability only | comparison table | memory excluded from ranking; source batch/SHA explicit | cross-SHA result blended or memory ranked cross-browser | *(report)* | — | comparison only |
-| B11-DOCS-01 | n/a | — | claim/readiness/current-status sync | README, AGENTS, CLAUDE, release gates, matrix/report | contradiction search + diff | docs say Batch 11 COMPLETE only after evidence; RC remains LIMITED READY | stale baseline, overclaim, or unsupported PASS | *(report)* | — | documentation only |
+## Test Matrix
 
-## Reused harness rules
+| Test ID | Engine | Build | Skin | Players | Scenario | Measurement | Evidence | PASS | FAIL | BLOCK | Actual | Class | Claim scope |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| B11-PREFLIGHT-01 | n/a | — | — | — | clean exact baseline | HEAD/origin/worktree/tool versions | preflight log | clean HEAD==origin/main; versions recorded | dirty/behind/unknown | — | *(report)* | — | this repo/host only |
+| B11-INTEGRITY-01 | n/a | source | both | — | review integrity closure | 8-file suite + all 38 added cases | command log | all PASS on frozen SHA | any failure/missing case | install/environment unavailable | *(report)* | *(report)* | candidate SHA only |
+| B11-BUILD-01 | n/a | production | both | — | reproduce build at frozen HEAD | typecheck/unit/skin/build + hashes | build log + inventory | all exit 0; artifacts present | any failure | environment unavailable | *(report)* | *(report)* | exact artifact hash |
+| B11-FF-01 | Firefox | production | both | 3p+4p | core flow walkthrough | functional pass/fail; memory not_available | flow JSON + PNG | all steps pass; 0 product errors | any step/product error | preview/browser unavailable | *(report)* | *(report)* | Firefox local production preview only |
+| B11-FF-02 | Firefox | production | both | 3p+4p | ≥20 cycles OR ≥15 min rotation | cycles, Result completion, errors; memory not_available | JSONL + summary | 0 product errors/dead-end/corruption | product error/dead-end | preview unstable/unavailable | *(report)* | *(report)* | Firefox stability only |
+| B11-FF-03 | Firefox | production | both | 3p+4p | console/page/rejection monitoring | classified samples/counts | summary | 0 non-benign product errors | non-benign product error | — | *(report)* | *(report)* | Firefox only |
+| B11-WK-01 | WebKit | production | both | 3p+4p | core flow walkthrough | functional pass/fail; memory not_available | flow JSON + PNG | all steps pass; 0 product errors | any step/product error | preview/browser unavailable | *(report)* | *(report)* | Playwright WebKit, NOT Safari |
+| B11-WK-02 | WebKit | production | both | 3p+4p | ≥20 cycles OR ≥15 min rotation | cycles, Result completion, errors; memory not_available | JSONL + summary | 0 product errors/dead-end/corruption | product error/dead-end | preview unstable/unavailable | *(report)* | *(report)* | WebKit stability only, no memory claim |
+| B11-WK-03 | WebKit | production | both | 3p+4p | console/page/rejection monitoring | classified samples/counts | summary | 0 non-benign product errors | non-benign product error | — | *(report)* | *(report)* | WebKit only, NOT Safari |
+| B11-INTEGRITY-UI-01 | Firefox+WebKit | production | both | — | migration/overwrite/error recovery smoke | modal state, warnings, no silent overwrite | JSON + PNG | review/error states reachable and truthful | silent replacement/raw exception | browser limitation | *(report)* | *(report)* | tested engines only |
+| B11-COMPARE-01 | all recorded engines | mixed historical/current | both | 3p+4p | comparison | functional/stability only | comparison table | memory kept Chromium-only; scope labeled | false cross-browser memory/Safari claim | — | *(report)* | — | comparison only |
+| B11-DOCS-01 | n/a | — | — | — | readiness/doc sync | contradiction scan | README/agents/gates/reports | docs match evidence; RC LIMITED READY | overclaim/stale fixed task | — | *(report)* | — | — |
+
+## Core Flow Minimum
+
+For Firefox and WebKit, each skin and player-count path must cover at least:
 
 ```text
-Rotation (B11-FF-02 / WK-02): reuse scripts/qa/run-batch9-soak.mjs only
-  after verifying its browser guard and output schema at execution HEAD.
-  Use --base=http://localhost:4199, a batch-11 output root, and unique
-  per-browser labels. Firefox/WebKit memory remains not_available/null.
-Core flow (B11-FF-01 / WK-01): the browser-parameterized harness records
-  engine, engine version, execution SHA, base URL, build mode, and result
-  in every evidence file. It never writes 0 for an unmeasured metric.
-Evidence directories from an abandoned/older-SHA attempt must not be
-  silently reused. Move them to a clearly named superseded directory or
-  delete them before the final evidence commit.
+TOP boot
+Deck List / Deck Detail reachability
+JSON import modal valid + invalid rejection
+same-ID overwrite first action does not write
+Match Setup
+one complete 3p and 4p match to Result across the matrix
+Result action controls
+skin switch where safe
+reload/localStorage state read
+0 blank screen
+0 asset 404
+0 unhandled page/console/rejection errors
 ```
 
-## Finding classification
+Legacy migration and cross-tab races may use deterministic harness setup;
+the report must distinguish browser automation from a true second human tab.
+
+## Reused Harness Rules
 
 ```text
-PRODUCT_DEFECT / HARNESS_DEFECT / TEST_DATA_DEFECT /
-ENVIRONMENT_BLOCKER / BENIGN_BROWSER_BEHAVIOR / EXPECTED_BY_DESIGN /
+Rotation may reuse scripts/qa/run-batch9-soak.mjs.
+Use --base=http://localhost:4199 and a Batch-11-specific output root/label.
+Firefox/WebKit memory values remain null with a reason.
+Do not change Chromium behavior merely to simplify comparison.
+Evidence files record engine, exact version, SHA, artifact hash, and skin.
+No evidence path may overwrite historical Batch 5-10 evidence.
+```
+
+## Finding Classification
+
+```text
+PRODUCT_DEFECT
+HARNESS_DEFECT
+TEST_DATA_DEFECT
+ENVIRONMENT_BLOCKER
+BENIGN_BROWSER_BEHAVIOR
+EXPECTED_BY_DESIGN
 DOCUMENTATION_DEFECT
 ```
 
-Severity: P0 data loss / severe security / main path fully broken; P1
-release-blocking, a normal user cannot finish a main flow; P2 significant
-with a workaround; P3 minor. Product code changes only on a reproducible
-product defect. Any product-code fix invalidates prior Batch 11 execution
-artifacts and requires preflight/build/core-flow/rotation rerun from the
-new HEAD.
+Severity:
 
-## Decision criteria
+```text
+P0: data loss, severe security, or core app unusable
+P1: release-blocking normal main flow
+P2: significant with workaround
+P3: minor/localized
+```
 
-**COMPLETE**: the production build reproduces at one recorded SHA, both
-engines pass core flow and rotation with zero open product defects, the
-comparison is scope-safe, and documentation is synchronized.
+Product code changes only for reproducible `PRODUCT_DEFECT`. Any code/test
+change invalidates the frozen baseline and requires complete preflight
+rerun.
 
-**CONDITIONAL**: executable items pass but an item remains unresolved or
-a non-P0/P1 limitation prevents full closure.
+## Decision Criteria
 
-**BLOCKED**: the production build cannot be reproduced, the preview
-cannot serve an engine, the execution SHA is ambiguous/mixed, or a P0/P1
-is open.
+**COMPLETE**
 
-RC readiness terms are the existing ones only (`READY` /
-`LIMITED READY` / `NOT READY`). This batch does not promote RC: while
-real-device, real-Safari, real-AT, and real-deploy gates remain open, RC
-stays **LIMITED READY** regardless of Firefox/WebKit results.
+```text
+integrity precondition PASS on frozen SHA
+production artifact reproduced and hashed
+Firefox core + rotation PASS
+WebKit core + rotation PASS
+0 open P0/P1/P2 product defects from this batch
+comparison and docs sync complete
+```
+
+**CONDITIONAL**
+
+```text
+executable items pass but a P2 remains open
+or one required item is unresolved with bounded evidence
+```
+
+**BLOCKED**
+
+```text
+integrity precondition cannot pass
+production build cannot reproduce
+preview/browser cannot execute either engine
+or an open P0/P1 exists
+```
+
+RC vocabulary remains `READY` / `LIMITED READY` / `NOT READY`. Batch 11
+leaves RC **LIMITED READY** by rule while real-device, real-Safari,
+real-AT, and real-deploy gaps remain.
