@@ -7,6 +7,7 @@ import {
 import { safeWrite, type KeyValueStorage } from './keyValueStorage';
 
 export const SETTINGS_STORAGE_KEY = 'soro-pon.settings.v1';
+export const SETTINGS_BACKUP_KEY = 'soro-pon.settings.v1.corrupt-backup';
 
 export type SettingsStore = {
   load(): { settings: SettingsPayload; issues: ValidationIssue[] };
@@ -14,10 +15,26 @@ export type SettingsStore = {
 };
 
 // 設定の読み込みもschema経由。壊れていたらdefaultへ回復する。
+// 保存領域そのものが読み書きを拒否しても、起動処理は例外停止させない。
 export function createLocalStorageSettingsStore(storage: KeyValueStorage): SettingsStore {
   return {
     load() {
-      const raw = storage.getItem(SETTINGS_STORAGE_KEY);
+      let raw: string | null;
+      try {
+        raw = storage.getItem(SETTINGS_STORAGE_KEY);
+      } catch {
+        return {
+          settings: DEFAULT_SETTINGS,
+          issues: [
+            {
+              code: 'L9004',
+              severity: 'warning',
+              message:
+                'ブラウザの保存領域から設定を読み込めないため、このセッションでは初期設定を使用します。保存領域の設定を確認してください。',
+            },
+          ],
+        };
+      }
       if (raw === null) {
         return { settings: DEFAULT_SETTINGS, issues: [] };
       }
@@ -29,14 +46,34 @@ export function createLocalStorageSettingsStore(storage: KeyValueStorage): Setti
       } catch {
         // 回復処理へ
       }
-      storage.removeItem(SETTINGS_STORAGE_KEY);
+
+      let backupSaved = true;
+      let activeRemoved = true;
+      try {
+        storage.setItem(SETTINGS_BACKUP_KEY, raw);
+      } catch {
+        backupSaved = false;
+      }
+      try {
+        storage.removeItem(SETTINGS_STORAGE_KEY);
+      } catch {
+        activeRemoved = false;
+      }
+      const failures: string[] = [];
+      if (!backupSaved) {
+        failures.push('バックアップを保存できませんでした');
+      }
+      if (!activeRemoved) {
+        failures.push('壊れた設定を削除できませんでした');
+      }
+      const suffix = failures.length > 0 ? ` ただし、${failures.join('。')}。` : '';
       return {
         settings: DEFAULT_SETTINGS,
         issues: [
           {
             code: 'L9001',
             severity: 'warning',
-            message: '設定データが壊れていたため初期設定に戻しました。',
+            message: `設定データが壊れていたため初期設定に戻しました。元データは可能な限りバックアップに退避しています。${suffix}`,
           },
         ],
       };
