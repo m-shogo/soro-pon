@@ -23,7 +23,22 @@ export const storedDecksPayloadSchema = z
     version: z.literal(1),
     decks: z.array(storedDeckSchema).max(MAX_STORED_DECKS),
   })
-  .strict();
+  .strict()
+  .superRefine((payload, ctx) => {
+    const firstIndexById = new Map<string, number>();
+    payload.decks.forEach((stored, index) => {
+      const previousIndex = firstIndexById.get(stored.deck.id);
+      if (previousIndex !== undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['decks', index, 'deck', 'id'],
+          message: `保存デッキID "${stored.deck.id}" がdecks[${previousIndex}]と重複しています`,
+        });
+      } else {
+        firstIndexById.set(stored.deck.id, index);
+      }
+    });
+  });
 
 export const settingsPayloadSchema = z
   .object({
