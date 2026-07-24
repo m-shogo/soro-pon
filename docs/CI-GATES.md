@@ -2,76 +2,89 @@
 
 ## Purpose
 
-CI prevents schema, engine, import, persistence, UI-contract, and skin
-package drift. Local command success and GitHub Actions success are
-separate facts. A successful push or a committed workflow file is not a
-CI PASS.
+CI prevents schema, engine, import, persistence, UI-contract, skin-package,
+and asset-pipeline drift. Local success, a committed workflow, a successful
+push, and GitHub Actions success are separate facts.
 
 ## Current Workflows
 
-### Main CI
-
-Canonical file: `.github/workflows/ci.yml`.
+### Main CI — `.github/workflows/ci.yml`
 
 ```text
-trigger: push to main + pull_request
+trigger: push main + pull_request
 permissions: contents read only
-concurrency: newer run cancels obsolete run for the same ref
-job timeout: 20 minutes
-Node: 24
-package manager: packageManager field / pnpm lockfile
+concurrency: cancel obsolete run for same ref
+Node job timeout: 20 minutes
+Python asset job timeout: 15 minutes
 ```
 
-Execution:
+Node job:
 
 ```text
+Node 24 / pnpm lockfile
 pnpm install --frozen-lockfile
-named recovery-focused integrity step
+named critical-integrity step
 pnpm typecheck
 pnpm test
 pnpm skin:validate
 pnpm build
 ```
 
-### Integrity Contracts
-
-Canonical file: `.github/workflows/integrity.yml`.
+Python asset job:
 
 ```text
-trigger: push to main + pull_request
+Python 3.13
+exact top-level pins from tools/asset-factory/soro-pon-ui/requirements.txt
+isolated venv
+pnpm asset:image:test equivalent via run-python-tests.sh
+```
+
+The Python top-level packages are pinned to:
+
+```text
+Pillow 12.3.0
+NumPy 2.5.1
+pytest 9.1.1
+```
+
+These pins improve repeatability, but pip transitive dependencies and wheels
+are not yet hash-locked. Do not describe this as a fully immutable Python
+supply chain.
+
+### Integrity Contracts — `.github/workflows/integrity.yml`
+
+```text
+trigger: push main + pull_request
 permissions: contents read only
-concurrency and 20-minute timeout
+concurrency + 20-minute timeout
 frozen pnpm install
 23 targeted integrity test files
 pnpm typecheck
 ```
 
-The dedicated workflow covers all three post-Batch-10 review layers. The
-79-case number is a committed test-definition count, not a passing result
-until the exact current SHA is observed executing it.
+The three post-Batch-10 reviews added **79 targeted test definitions**. That
+is a committed definition count, not an observed PASS result.
 
 ## Integrity Coverage
 
-The workflow includes:
-
 ```text
-storage recovery cleanup/read-denial failures
-match result/reward atomicity
-persisted collection limits and legacy over-limit salvage
-final write-boundary schemas
-reset completeness and truthful partial failure
+storage cleanup/read denial/fail-closed mutation
+match record/reward atomicity
+persisted collection limits and old/partial salvage
+runtime write-boundary schemas
+reset completeness and truthful failure
 runtime/deck ID collision resistance
-legacy migration and same-ID overwrite review
-cross-tab stale import/editor/update/delete rejection
-variant/role/bonus identity integrity
-tile membership set semantics
+migration and same-ID overwrite review
+stale import/editor/update/delete rejection
+nested variant/role/bonus identity
+membership set semantics
 ignored group fields and contradictory score caps
-unsafe-import diagnostic cap
+bounded unsafe-import diagnostics
 ErrorBoundary emergency reset
-irreversible deck deletion confirmation
+deck deletion confirmation
 Dialog description and danger-focus safety
-skin preload exceptions and unmount races
-skin inheritance boundary
+skin preload exceptions/unmount race
+skin inheritance exact boundary
 runtime external-SVG policy
 registry duplicate/future-version rejection
 duplicate persisted deck-ID consolidation
@@ -80,9 +93,7 @@ partial records salvage
 records set normalization and totalMatches lower bound
 ```
 
-The targeted file list is maintained only in
-`.github/workflows/integrity.yml`. Do not copy an obsolete command list into
-other operating documents.
+The executable file list lives only in `.github/workflows/integrity.yml`.
 
 ## Required Evidence
 
@@ -90,68 +101,80 @@ Every CI report records:
 
 ```text
 exact commit SHA
-workflow name and run URL/ID when available
+workflow and job name
+run URL/ID where visible
 job conclusion
-Node and pnpm versions
-install/integrity/typecheck/test/skin validation/build results
+Node/pnpm/Python versions
+resolved top-level Python package versions
+install/integrity/typecheck/test/skin/build/asset-fixture results
 cancelled/superseded distinction
 ```
 
-If the connector/API returns no workflow run or status, report CI as
-**unavailable/not observed**, never green.
+If no run/status is visible, report **unavailable/not observed**, never green.
 
-## Required Full Test Groups
+## Full Test Expectations
 
-The full unit suite must include:
+The full suite covers:
 
 ```text
-schema and golden fixture tests
-import security/unsafe-field/depth/diagnostic-cap tests
-migration and overwrite confirmation tests
-deck identity/membership/group/scoring validation tests
-group/wildcard/ron/tsumo/scoring tests
-discard preview purity tests
-match reducer and deterministic CPU tests
-localStorage migration/recovery/read-denial/partial-salvage tests
-write-boundary schema tests
-persisted limit, dedupe, and upgrade-normalization tests
-match record/reward atomicity and idempotency tests
-cross-tab stale-write/delete rejection tests
-component/DOM/accessibility/destructive-action tests
-skin registry/manifest/runtime/package tests
+schema/golden fixtures
+import security, depth, size, and diagnostic caps
+migration and overwrite confirmation
+deck identity/membership/group/scoring validation
+group/wildcard/ron/tsumo/scoring
+discard preview purity
+seeded reducer/CPU determinism
+storage migration/recovery/read denial/partial salvage
+write-boundary schemas and capacity
+match reward atomicity/idempotency
+stale multi-tab mutation rejection
+component/DOM/a11y/destructive safety
+skin registry/manifest/runtime/package contracts
+Python chroma-key/validation/audit fixtures
 ```
-
-Pure engine tests remain in Node. DOM behavior uses the configured
-browser-like environment only where needed.
 
 ## Skin Validation Gate
 
-`pnpm skin:validate` is an explicit release gate even where its test file
-is also collected by `pnpm test`.
-
-It verifies:
+`pnpm skin:validate` remains an explicit gate even when its test is also
+collected by the full unit suite.
 
 ```text
-registry/manifest/contract schemas and versions
-known skin/token/slot IDs
-typed token allowlist and value ranges
+registry/manifest/contract schema/version
+known token/slot IDs and typed ranges
 inheritance cycle/depth
-package-local safe paths and trust-level file types
+safe paths and trust-level file policy
 actual file existence/bytes/dimensions
-intrinsicSize, slice, safe-area, minimum render geometry
-render-mode permission
-status/file/candidate/final path consistency
-all official packages and fallback behavior
+intrinsicSize/slice/safe-area/minimum render geometry
+render-mode and status/path consistency
+official packages and fallback behavior
 ```
 
-Runtime tests separately verify duplicate/future registry rejection,
-external-evaluated SVG rejection, preload exceptions, and request races.
+Runtime tests separately cover duplicate/future registry rejection,
+external-evaluated SVG rejection, preload failure, and request races.
 
-## Visual / Browser Gates
+## Asset Pipeline Gate
+
+The Python fixture suite must pass whenever the asset-factory scripts or
+requirements change.
+
+```text
+requirements change:
+  intentional version review
+  CI fixture run
+  no broad >= dependency drift
+
+script change:
+  deterministic fixture comparison
+  audit/occupancy/alpha/fringe behavior
+```
+
+The old binary chroma-key implementation is not current; the compatibility
+wrapper delegates to `chroma_key.py`.
+
+## Browser / Visual Gates
 
 Playwright visual, cross-browser, soak, real-device, and real-AT suites are
-pre-release/manual evidence gates, not currently part of the default
-GitHub Actions jobs.
+separate release gates, not default CI coverage.
 
 ```bash
 pnpm test:visual
@@ -161,8 +184,6 @@ pnpm test:visual:crossbrowser
 Current executable contract:
 `docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md`.
 
-Do not say “CI covers browsers” merely because browser tests exist.
-
 ## Security / Integrity Gates
 
 Deck imports reject:
@@ -170,77 +191,69 @@ Deck imports reject:
 ```text
 image/url/path/blob fields
 html/style/script/code/function fields
-prototype pollution keys
+prototype-pollution keys
 unknown fields
 oversize/deep payloads before expensive analysis
-large unsafe diagnostics after bounded evidence collection
-ambiguous nested IDs
-membership duplicates
-engine-ignored group fields
-contradictory score caps
+large unsafe diagnostics after bounded evidence
+ambiguous IDs/memberships/group fields/score caps
 ```
 
 Persistence rejects or safely recovers:
 
 ```text
-schema-invalid deck/records/settings payloads
-new deck beyond 200 entries
-empty-based mutation after storage read denial
+invalid deck/records/settings payloads
+new deck beyond 200
+mutation after storage read denial
 stale observed update/delete
-ambiguous persisted duplicate deck IDs
-metadata-only deck wrapper corruption
-isolated malformed match records
+persisted duplicate deck IDs
+metadata-only deck-wrapper corruption
+isolated malformed match rows
 unsafe numeric values
 ```
 
-Skin runtime/package checks reject:
+Skin checks reject:
 
 ```text
 unknown tokens/slots/render modes
-structural token override
+structural override
 arbitrary executable/display injection
 external URLs/fonts
 path traversal
 external-evaluated SVG
-invalid geometry and over-budget files
-duplicate/future registry contracts
+invalid geometry/size budget
+duplicate/future registry contract
 ```
 
-External package official trust still requires a future installer-owned
-trust/signature boundary; runtime manifest self-declaration is not enough.
+Future external package official trust still requires installer-owned
+identity/signature binding; manifest self-declaration is insufficient.
 
-## Performance / Capacity Smoke
+## Capacity / Performance Smoke
 
-Use structural assertions instead of flaky host timings:
+Prefer structural assertions over flaky host timing:
 
 ```text
-candidate and branch caps emit warnings
-large unsafe import rejects before deep validation
-diagnostic generation is bounded
-persisted collection limits are enforced
-old/partial payloads preserve valid data where safe
-skin byte/dimension limits are enforced
-stale/unmounted skin load cannot overwrite current selection
+candidate/branch caps warn
+diagnostic generation bounded
+persisted limits enforced
+old/partial data preserves safe values
+skin byte/dimension limits enforced
+stale/unmounted skin load cannot replace current selection
 failed preload keeps previous/fallback skin
 ```
 
-Long-duration memory/runtime evidence is handled by the soak runbook and
-Batch reports, not the default CI jobs.
+Long-duration memory/runtime claims remain in soak/Batch evidence.
 
-## Lint / Format
+## Workflow Supply-chain Notes
 
-No separate lint/format tool is currently declared. Do not claim one.
-Adoption requires dependency-policy/ADR review and a committed CI command.
+Current workflows use read-only repository permission and major-version action
+tags. Before external-contributor or organization-wide use, evaluate immutable
+action commit pinning through ADR. Do not invent or copy unverified action SHAs.
 
-## Workflow Security / Maintenance
-
-Current workflows use read-only repository permission and standard major
-action versions. Before organization-wide or external-contributor use,
-consider immutable action pinning and dependency-update policy through ADR;
-do not invent unverified commit SHAs.
+Python packages are exact top-level pins but not hash-locked. Node packages are
+resolved by the committed pnpm lockfile with integrity metadata.
 
 ## Final Decision
 
-CI proves only commands actually executed on the exact reported SHA.
-Browser/device/AT/deploy claims require separate evidence, and missing
-workflow visibility must remain explicit.
+CI proves only commands actually executed on the exact SHA. Browser/device/AT/
+deploy claims require separate evidence, and missing workflow visibility stays
+explicit.
