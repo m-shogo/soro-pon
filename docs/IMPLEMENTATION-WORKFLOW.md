@@ -4,16 +4,17 @@
 
 Compact operational view of completed foundations, current release state,
 and the next executable work. Detailed history lives in evidence-backed
-Batch reports and asset approval packs, not duplicated here.
+Batch/review reports, not duplicated here.
 
 ```text
-Product/spec truth:          docs/MASTER-SPEC.md
+Product/rule truth:          docs/MASTER-SPEC.md
 Release/readiness truth:     docs/RELEASE-DEMO-GATES.md
+Integrity review:            docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 Current executable QA:       docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
-Storage recovery contract:   docs/release/STORAGE-RECOVERY-POLICY.md
-Error-code registry:         docs/ERROR-CODES.md
-UI/skin foundation detail:   docs/SKIN-FOUNDATION-HARDENING.md
-Asset history:               docs/ASSET-PRODUCTION-ROADMAP.md
+Storage contract:            docs/release/STORAGE-RECOVERY-POLICY.md
+Migration contract:          docs/MIGRATIONS.md
+Operations applicability:    docs/OPERATIONS-READINESS.md
+Risk status:                 docs/TECHNICAL-RISK-REGISTER.md
 ```
 
 ## Current Status — 2026-07-24
@@ -25,149 +26,153 @@ Skin hardening H1-H11: complete
 Official finals: 18 total
   yorunoshirube: 9 finals, v4
   cute-pop: 9 finals, v5
-Asset requests/batches through Batch 4: closed
-Gate 4: PASS
-Gate 5: PASS within recorded scope
-Historical Gate 6: PASS
+Asset Batches 1-4: closed
+Gate 4 / Gate 5 / historical Gate 6: PASS within recorded scopes
 RC status: LIMITED READY
 Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
+Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
 ```
 
-Current phase: **RC integrity and evidence closure**. Do not restart MVP,
+Current phase: **RC integrity/evidence closure**. Do not restart MVP,
 H1-H11, or asset Batch 5 from obsolete instructions.
 
 ## Completed Foundations
 
 ```text
-Gameplay phases 1-14                               complete
-Typed schemas/import/validation                    complete
-Role/wait/scoring/wildcard engine                  complete
-Seeded reducer/CPU/playable flow                   complete
-Deck editor/collection/achievements/records        complete
-Multi-skin shared UI                               complete
-H1-H11 skin/security/idempotency hardening         complete
-Candidate -> review -> final asset pipeline         complete
-Official asset finals                              18 total
+strict deck schemas/import/validation
+role/wait/scoring/wildcard engine
+seeded reducer/CPU/playable 3p+4p flow
+Deck Editor / Collection / achievements / records
+multi-skin shared UI and H1-H11 hardening
+candidate -> review -> final asset pipeline
+18 official final assets
 ```
 
-Restore/replay and marketplace/payment are future products. H10/H11 are
-safe foundations, not claims that those features exist.
+Restore/replay and marketplace/payment are future products, not implied by
+foundation work.
 
-## Post-Batch-10 Integrity Review
+## Integrity Review Result
 
-Found and fixed:
+Fixed code/contract defects:
 
 ```text
-storage corruption recovery could throw while trying to back up/remove
-records/settings corrupt raw payloads had no backup keys
-records/settings recovery issues were discarded by AppRoot
-unpersisted achievements could be displayed as newly unlocked
-missing current deck/active variant could leave a permanent blank route
-export Blob URL lifecycle was fragile across browsers
-L9004 code collision risk with the existing local-image fallback meaning
+recovery cleanup could throw after corrupt storage
+records/settings corrupt raw backup absent
+records/settings recovery warnings discarded
+unpersisted achievement shown as unlocked
+missing deck/variant blank route
+silent legacy v0 migration persistence
+browser-fragile export Blob URL lifecycle
+storage error-code collision risk
+reset omitted records/settings corrupt backups
+partial reset failure presented as success
+stale Batch 11 baseline and entry/risk/performance docs
 ```
 
 Current behavior:
 
 ```text
-storage read denial -> L9005 + empty/default in-memory fallback
-bootstrap starter persistence failure -> L9006
-backup and active-key cleanup independently best-effort
-all three store issues included in boot Toast
-unpersisted rewards/achievements are not shown as saved
-missing deck/variant returns to a safe screen with warning
-export anchor is attached temporarily; Blob URL revocation is deferred
-six storage-operation failure-path unit tests added
+read denial -> L9005 + safe session fallback
+starter bootstrap persistence failure -> L9006
+backup/cleanup independently best-effort
+all store boot issues visible
+false saved reward/achievement claims blocked
+missing route entity returns to safe screen
+legacy migration needs visible review + unchanged second action
+export anchor attached; URL revoke deferred
+reset covers active/backup/skin keys and reports partial failure
 ```
 
-These changes are newer than Batch 10 evidence. Historical green results
-do not validate current HEAD.
+New tests committed: **12**.
+
+```text
+6 storage operation-failure tests
+3 AppRoot persistence/migration tests
+3 reset completeness/result tests
+```
+
+They are not yet authoritative evidence until executed on the exact final
+SHA.
 
 ## Next Executable Work
 
 ```text
 1. Confirm clean worktree and HEAD == origin/main.
-2. Record exact SHA and tool versions.
-3. Run:
-   pnpm install --frozen-lockfile
-   pnpm typecheck
-   pnpm test
-   pnpm skin:validate
-   pnpm build
-4. Confirm storageRecoveryFailurePaths.test.ts is collected and passes.
-5. Execute all Batch 11 production Firefox/WebKit items from the same SHA.
-6. Classify findings before changing product code.
-7. If product/test code changes, invalidate partial Batch 11 evidence and
-   restart from step 1.
-8. Commit report/evidence, then synchronize all entry documents.
+2. Record exact SHA and Node/pnpm/Playwright/browser versions.
+3. pnpm install --frozen-lockfile
+4. pnpm exec vitest run src/storage/storageRecoveryFailurePaths.test.ts
+5. pnpm typecheck
+6. pnpm test
+7. Confirm all 12 review-added tests are collected and pass.
+8. pnpm skin:validate
+9. pnpm build and record artifact inventory/hash.
+10. Fix any failure; if code changes, restart from step 1.
+11. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
+12. Commit evidence/report and only then update Batch 11 status.
 ```
 
-Batch 11 cannot promote RC to READY. Real devices, real Safari,
-Safari+VoiceOver, Windows screen readers, and real deploy/rollback remain
-separate evidence.
+Batch 11 cannot itself promote RC to READY. Real devices, real Safari,
+remaining real AT, and real deploy/rollback remain separate evidence.
 
-## Verification Commands
+## CI / Browser Boundaries
 
-```bash
-pnpm typecheck
-pnpm test
-pnpm skin:validate
-pnpm build
+Default GitHub CI runs:
+
+```text
+frozen install
+named storage recovery regression
+strict typecheck
+full unit suite
+skin validation
+production build
 ```
 
-Browser suites where relevant:
-
-```bash
-pnpm test:visual
-pnpm test:visual:crossbrowser
-```
-
-Extended soak follows `docs/release/SOAK-RUNBOOK.md` and is not a default
-CI command.
-
-Never report a command as green unless it was executed against the exact
-reported SHA. A push is not CI success.
+Visual, cross-browser, soak, physical-device, real-AT, and deploy checks
+are separate release gates. A successful push is not a CI PASS.
 
 ## UI / Skin Rules
 
 ```text
 one shared screen/component/layout system
 no skin-specific screen copies
-layout, hit areas, focus, z-index, and game meaning are skin-invariant
+layout/hit areas/focus/z-index/game meaning are skin-invariant
 skins change typed allowlisted presentation values only
 generic controls and render/slice behavior stay centralized
-both official skins and fallback behavior remain usable
+both official skins and fallback remain usable
 ```
 
-For UI changes, read the mandatory documents in `AGENTS.md`, add Gallery
-and test coverage, and verify both skins.
+Read the mandatory UI documents in `AGENTS.md` before UI work.
 
 ## Asset Rule
 
-Batches 1-4 are closed. Start a new asset batch only from an explicit
+Batches 1-4 are closed. Start another asset batch only from an explicit
 current task.
 
 ```text
 generate -> generated/candidates -> review -> human approval
--> generated/final -> skin.json version bump -> verification
+-> generated/final -> skin version bump -> verification
 ```
 
-Never write directly to final.
+Never write generated output directly to final.
 
-## Architecture Boundaries
+## Architecture / Operations Boundaries
 
 ```text
-UI does not judge roles, score, or wildcard assignment
+UI does not implement role/scoring/wildcard rules
 engine does not import React/DOM/localStorage/CSS
 skin does not access engine/schema/storage/records/network
 shared deck JSON contains no executable/image/URL injection fields
 persisted values are parsed before use
-recovery code never throws merely because recovery cleanup failed
+recovery does not fail merely because cleanup failed
 ```
+
+No backend/API exists. HTTP rate limiting, distributed tracing, and server
+load tests are not applicable until login, sync, multiplayer, uploads,
+telemetry, marketplace, or another network API is introduced.
 
 ## Release Claim Boundaries
 
@@ -178,30 +183,30 @@ emulation/simulator != physical device
 AX-tree automation != real screen reader
 unavailable metric = null/not_available, never 0
 old artifact PASS != current HEAD verification
+best-effort corrupt backup != user-facing restore
 ```
 
 ## Known Open Scope
 
 ```text
-physical iPhone Safari, iPad, Android
-real hosting target and immutable artifact deployment
-rollback of an actually deployed artifact
+exact-current-SHA verification
+Batch 11 production Firefox/WebKit execution
+physical iPhone Safari / iPad / Android
+real hosting target and deployed-artifact rollback
 Safari + VoiceOver
 NVDA / JAWS
-Batch 8 Result static-text spoken-output capture
-Cute Pop Result under real VoiceOver
-Batch 11 production Firefox/WebKit execution
+remaining Batch 8 Result/Cute Pop real-VoiceOver evidence
+user-facing backup restore
 match restore/replay/resend (non-MVP)
 marketplace/payment/entitlement product (future)
-extendedRoleSpan variant (non-MVP)
 ```
 
 ## Work Rule
 
 ```text
-one purpose per commit where tooling permits
 small testable changes
+one purpose per commit where tooling permits
 implementation and contract docs together
-never silently broaden historical evidence
+never broaden historical evidence
 report local verification separately from GitHub Actions
 ```
