@@ -1,0 +1,49 @@
+name: Integrity Contracts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integrity-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Run integrity contracts
+        run: |
+          pnpm exec vitest run \
+            src/storage/storageRecoveryFailurePaths.test.ts \
+            src/storage/localStorageRecordsAtomicity.test.ts \
+            src/storage/localStorageCapacity.test.ts \
+            src/storage/localStorageDuplicateDeckRecovery.test.ts \
+            src/storage/storageWriteContract.test.ts \
+            src/storage/resetLocalData.test.ts \
+            src/app/runtimeIds.test.ts \
+            src/app/AppRoot.persistence.test.tsx \
+            src/engine/validation/validateDeckEntityIds.test.ts \
+            src/ui/components/AppErrorBoundary.test.tsx \
+            src/engine/validation/validateDeckMembershipIntegrity.test.ts \
+            src/ui/skins/skinPreload.failure.test.ts \
+            src/ui/screens/DeckDetailScreen.test.tsx \
+            src/storage/localStorageDuplicateDeckIds.test.ts \
+            src/storage/localStorageRecordsSetNormalization.test.ts \
+            src/ui/components/Dialog.accessibility.test.tsx \
+            src/storage/localStorageDeckMetadataSalvage.test.ts \
+            src/storage/localStorageRecordsPartialSalvage.test.ts
+      - name: Typecheck integrity contracts
+        run: pnpm typecheck
