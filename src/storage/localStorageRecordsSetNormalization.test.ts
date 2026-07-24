@@ -5,6 +5,16 @@ import {
   RECORDS_STORAGE_KEY,
 } from './localStorageRecordsStore';
 
+const record = {
+  dateMs: 1,
+  deckId: 'deck',
+  deckName: 'Deck',
+  reason: 'draw' as const,
+  winnerName: '',
+  humanWon: false,
+  coinsEarned: 10,
+};
+
 function storedPayload() {
   return {
     version: 1 as const,
@@ -38,5 +48,21 @@ describe('set-like records collections', () => {
     const next = store.unlockAchievements(['a3']);
 
     expect(next.achievements).toEqual(['a1', 'a2', 'a3']);
+  });
+
+  it('totalMatchesが保存済み履歴件数より小さい場合は履歴件数まで下限補正する', () => {
+    const storage = createMemoryStorage();
+    storage.setItem(
+      RECORDS_STORAGE_KEY,
+      JSON.stringify({
+        ...storedPayload(),
+        records: [record, { ...record, dateMs: 2 }],
+        totalMatches: 0,
+      }),
+    );
+
+    const loaded = createLocalStorageRecordsStore(storage).load().records;
+
+    expect(loaded.totalMatches).toBe(2);
   });
 });
