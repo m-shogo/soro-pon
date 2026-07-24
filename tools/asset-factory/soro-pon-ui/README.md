@@ -3,117 +3,130 @@
 ## Purpose
 
 `soro-pon` のUIパーツを、Codex / 画像生成AI / Python処理で作るための作業場。
+ここは生成・透過・検査の工房であり、runtimeが直接読む場所ではありません。
 
-ここは **生成・透過・確認のための工房** であり、runtimeが直接読む場所ではない。
-手順の正本は `docs/IMAGE-ASSET-WORKFLOW.md`(8工程)。
+Canonical workflow: `docs/IMAGE-ASSET-WORKFLOW.md`.
+
+## Python Environment
+
+Top-level dependencies are exactly pinned in `requirements.txt`.
+
+```bash
+python3 -m venv tools/asset-factory/soro-pon-ui/.venv
+tools/asset-factory/soro-pon-ui/.venv/bin/python -m pip install --upgrade pip
+tools/asset-factory/soro-pon-ui/.venv/bin/python -m pip install \
+  -r tools/asset-factory/soro-pon-ui/requirements.txt
+pnpm asset:image:test
+```
+
+Do not change a pin without running the complete Python fixture suite on the
+intended Python version and recording that result. Exact top-level pins improve
+repeatability but are not a hash-locked supply-chain guarantee; immutable
+artifact/hash locking can be added when the asset pipeline becomes active again.
 
 ## Canonical Design Reference
-
-デザインを作る前に必ず見る。
 
 ```text
 docs/design-targets/generated/soro-pon-landscape-vampon-ui-v1/
 ```
 
-このディレクトリの画像品質を基準にする。
+This reference governs composition, hierarchy, spacing, material, and mood.
+It is not automatically a production asset.
 
 ## Core Workflow
 
-Codexや画像生成AIでUIパーツを作る時は、背景透過を直接期待しない。
+```text
+1. Read design reference and slot-specific asset request.
+2. Generate raw subject on a high-saturation solid background.
+3. Save source under raw-green/ (local-only).
+4. Run deterministic chroma-key processing.
+5. Validate dimensions, alpha, occupancy, fringe, edges, and slot rules.
+6. Place only validated candidates in generated/candidates.
+7. Review in Gallery and real consumers.
+8. Human approval only -> generated/final + manifest version bump.
+9. Persist reproducible generation/audit metadata in records/.
+```
 
-固定フロー(詳細はdocs/IMAGE-ASSET-WORKFLOW.md):
+`pnpm asset:image:prepare` is the normal candidate preparation entry point.
+Never write generated output directly into `generated/final`.
+
+## Chroma-key Implementation
+
+The old binary green-channel threshold implementation is gone.
 
 ```text
-1. 参考デザインとasset request(slot契約)を見る
-2. 必要パーツを分解する
-3. 緑背景でパーツを生成する(raw-green/へ保存)
-4. Pythonで緑背景を透過する(processed/へ出力)
-5. 透過PNGを検査する(寸法/余白/透明境界/フリンジ)
-6. 検査済み候補だけ public/assets/ui/soro-pon/skins/<skin>/generated/candidates/ へ移す
-7. Gallery/実画面レビュー -> 人間の承認後のみ generated/final/ へ
-8. 生成記録を records/ に残す
+scripts/chroma-key-green-to-alpha.py
+  compatibility wrapper only
+
+scripts/chroma_key.py
+  actual deterministic implementation
+  color-distance processing
+  hard + soft thresholds
+  alpha interpolation
+  despill
 ```
+
+The wrapper remains so historical commands do not break. It delegates to the
+current implementation and does not contain the obsolete binary algorithm.
 
 ## Directory Roles
 
 ```text
 tools/asset-factory/soro-pon-ui/
 ├─ README.md
-├─ prompts/     生成指示テンプレート(prompt-template.md)。git管理
-├─ scripts/     透過処理等(chroma-key-green-to-alpha.py)。git管理
-├─ records/     候補ごとの生成記録metadata JSON。git管理
-├─ raw-green/   グリーン背景の元画像。local only(gitignore済み)
-└─ processed/   透過処理の中間出力。local only(gitignore済み)
+├─ requirements.txt   exact top-level Python pins
+├─ prompts/           generation instructions
+├─ scripts/           processing, validation, and fixture tests
+├─ records/           committed candidate audit metadata
+├─ raw-green/         local-only generated sources
+└─ processed/         local-only intermediate output
 ```
 
-## Asset Output Destination
-
-検査済み候補と承認済みfinalはskin packageへ置く(旧 `v1/` 直下配置は廃止)。
+Production candidates/finals:
 
 ```text
 public/assets/ui/soro-pon/skins/<skin-id>/generated/candidates/
-public/assets/ui/soro-pon/skins/<skin-id>/generated/final/   (人間承認後のみ)
+public/assets/ui/soro-pon/skins/<skin-id>/generated/final/
 ```
 
-## Chroma Key Rule
+## Background / Chroma Rules
 
-生成時の背景色は、できるだけ単色の明るい緑にする。
-
-推奨:
+Preferred default background:
 
 ```text
 #00ff00
 ```
 
-避ける:
+Use another recorded chroma background when the subject itself needs green.
+Avoid gradients, paper texture, shadow-heavy backgrounds, strong green spill,
+and subject contact with the image edge.
+
+## Visual Rules
 
 ```text
-被写体に緑を使う(必要ならマゼンタ/ブルー背景へ切り替え、recordsに記録)
-背景に影やグラデーションを入れる
-背景に紙テクスチャを入れる
-緑の反射光を被写体に強く入れる
-被写体を画像端に接触させる
+landscape UI
+paper and ink material
+lantern/night-desk atmosphere for Yorunoshirube
+bright tactile candy/craft material for Cute Pop
+readability before decoration
+quiet normal state; stronger emphasis only for meaningful moments
 ```
 
-## Vamp-pon / soro-pon Visual Rule
+Slot-specific art direction in `docs/asset-requests/` overrides generic mood
+language where the two conflict.
 
-パーツ生成時も、以下を崩さない。
+## Do Not Commit
 
 ```text
-横画面固定UI
-紙UI
-黒インク
-ランタン光
-夜の机
-記憶札
-静かな通常画面
-見せ場だけ少し派手
-文字可読性優先
+bulk failed generations
+unlicensed/existing-IP images
+personal photos
+local-only raw/intermediate output
+credentials or provider response payloads
 ```
 
-Cute Popパーツは docs/asset-requests/ の該当requestのVisual Directionに従う。
+## Current Status
 
-## Do Not Commit Here
-
-以下は原則コミットしない。
-
-```text
-大量の生成途中画像
-既存IP入り検証画像
-失敗生成
-ローカル検証専用素材
-```
-
-必要なら `.local-design/` か、このディレクトリ配下の local-only ignored folder に置く。
-
-## Known Gap
-
-`scripts/chroma-key-green-to-alpha.py` は現状チャンネル条件の2値判定のみで、
-docs/IMAGE-ASSET-WORKFLOW.md の透過契約(色距離・2段しきい値・アルファ補間・
-despill)を満たしていない。画像生成系アセットの実生産開始前に改修すること。
-
-## Final Decision
-
-- このディレクトリはUIパーツ生成工房
-- 完成した素材は skin package の candidates -> (承認) -> final へ置く
-- 手順・契約の正本は docs/IMAGE-ASSET-WORKFLOW.md
+Asset Batches 1-4 are closed and both official skins have nine finals.
+The pipeline is implemented and proven, but new asset production is not the
+current task. RC integrity/evidence closure and Batch 11 come first.
