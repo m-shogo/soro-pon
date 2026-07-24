@@ -31,14 +31,36 @@ function currentDeck(id: string, name: string): Record<string, unknown> {
   return deck;
 }
 
-function seedStoredDeck(deck: Record<string, unknown>): void {
+function seedStoredDeck(deck: Record<string, unknown>, updatedAtMs = 1): void {
   window.localStorage.setItem(
     DECKS_STORAGE_KEY,
     JSON.stringify({
       version: 1,
-      decks: [{ deck, source: 'created', updatedAtMs: 1 }],
+      decks: [{ deck, source: 'created', updatedAtMs }],
     }),
   );
+}
+
+function replaceStoredDeck(id: string, name: string, updatedAtMs = 2): void {
+  const raw = window.localStorage.getItem(DECKS_STORAGE_KEY);
+  if (raw === null) {
+    throw new Error('deck payload missing');
+  }
+  const payload = JSON.parse(raw) as {
+    version: 1;
+    decks: Array<{
+      deck: Record<string, unknown>;
+      source: 'official' | 'created' | 'imported';
+      updatedAtMs: number;
+    }>;
+  };
+  const entry = payload.decks.find((stored) => stored.deck['id'] === id);
+  if (entry === undefined) {
+    throw new Error(`deck missing: ${id}`);
+  }
+  entry.deck = { ...entry.deck, name };
+  entry.updatedAtMs = updatedAtMs;
+  window.localStorage.setItem(DECKS_STORAGE_KEY, JSON.stringify(payload));
 }
 
 function storedDeckById(id: string): Record<string, unknown> | undefined {
@@ -126,6 +148,46 @@ describe('AppRoot persistence integrity', () => {
     fireEvent.change(textarea, { target: { value: `${incoming}\n` } });
     expect(screen.getByRole('button', { name: '読み込む' })).toBeTruthy();
     expect(storedDeckById(id)?.['name']).toBe('保存済みデッキ');
+  });
+
+  it('上書き確認後に別タブが同じdeckを変更したら確認を無効化し、最新版を保護する', () => {
+    const id = 'overwrite-cross-tab-test';
+    seedStoredDeck(currentDeck(id, '確認時の保存デッキ'));
+    render(<AppRoot />);
+
+    const incoming = JSON.stringify(currentDeck(id, '読み込み予定版'));
+    fireEvent.click(screen.getByRole('button', { name: 'JSONを読み込む' }));
+    fireEvent.change(screen.getByLabelText('デッキJSON'), { target: { value: incoming } });
+    fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
+    expect(screen.getByRole('button', { name: '上書きして読み込む' })).toBeTruthy();
+
+    replaceStoredDeck(id, '別タブ最新版', 2);
+    fireEvent.click(screen.getByRole('button', { name: '上書きして読み込む' }));
+
+    expect(storedDeckById(id)?.['name']).toBe('別タブ最新版');
+    expect(screen.getByText(/デッキ「別タブ最新版」が保存されています/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: '上書きして読み込む' })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: '上書きして読み込む' }));
+    expect(storedDeckById(id)?.['name']).toBe('読み込み予定版');
+  });
+
+  it('Editor表示後に別タブが更新したら古いdraftを保存せず一覧へ戻す', () => {
+    const id = 'editor-cross-tab-test';
+    seedStoredDeck(currentDeck(id, '編集対象デッキ'));
+    render(<AppRoot />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'デッキ一覧' }));
+    fireEvent.click(screen.getByRole('button', { name: /編集対象デッキ/ }));
+    fireEvent.click(screen.getByRole('button', { name: '編集' }));
+    fireEvent.change(screen.getByLabelText('デッキ名'), { target: { value: '古いdraft' } });
+
+    replaceStoredDeck(id, '別タブ更新版', 2);
+    fireEvent.click(screen.getByRole('button', { name: '保存する' }));
+
+    expect(screen.getByText(/別タブまたは別画面で変更・削除されたため/)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '記憶札デッキリスト' })).toBeTruthy();
+    expect(storedDeckById(id)?.['name']).toBe('別タブ更新版');
   });
 
   it('recordsとsettingsの破損回復noticeを起動時に捨てず表示する', () => {
