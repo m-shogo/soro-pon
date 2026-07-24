@@ -1,8 +1,6 @@
 # CLAUDE.md
 
-Claude Code向け作業指示。共通の必須ルールは `AGENTS.md` が正本。
-このファイルは現在地・実行順・破綻しやすい境界だけを固定する。
-Batch履歴の詳細は各matrix/reportへ置き、ここへ複製しない。
+Claude Code向け作業指示。共通ルールは `AGENTS.md` が正本。
 
 ## Current Status — 2026-07-24
 
@@ -10,32 +8,20 @@ Batch履歴の詳細は各matrix/reportへ置き、ここへ複製しない。
 Gameplay MVP phases 1-14: complete
 Multi-skin runtime baseline: complete
 Skin hardening H1-H11: complete
-Official skins:
-  yorunoshirube: 9 finals, v4
-  cute-pop: 9 finals, v5
-Gate 4 / Gate 5 / historical Gate 6: PASS within recorded scopes
+Official skins: yorunoshirube (9 finals, v4) / cute-pop (9 finals, v5)
 RC status: LIMITED READY
 Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
-Batch 10 production-preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit: contract defined, NOT executed
-Current work:
-  post-Batch-10 storage/AppRoot integrity changes require fresh
-  verification against one exact current SHA
+Batch 10 production preview / real-device validation: CONDITIONAL
+Batch 11 production Firefox/WebKit: contract only, NOT executed
+Post-Batch-10 integrity reviews:
+  fixes committed
+  38 targeted cases committed
+  exact-current-SHA verification pending
 ```
 
-古い指示:
-
-```text
-MVP Phase 1から開始
-engineを作り直す
-H1から実装
-画像生成前のfoundation phase
-次はasset Batch 5
-```
-
-これらは実行しない。
+「MVP/H1開始」「画像生成前」「次はasset Batch 5」は古い指示。
 
 ## Read First
 
@@ -46,200 +32,97 @@ docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
+docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
+docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
-```
-
-Storage/recovery:
-
-```text
 docs/release/STORAGE-RECOVERY-POLICY.md
-docs/ERROR-CODES.md
-docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
-docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
 ```
-
-UI/skin/assetは `AGENTS.md` のmandatory listをすべて読む。
 
 ## Immediate Execution Order
 
 ```text
-1. git status --short
-2. git rev-parse HEAD
-3. git rev-parse origin/main
-4. cleanかつHEAD == origin/mainを確認
-5. Node/pnpm/Playwright/browser versionsを記録
-6. pnpm install --frozen-lockfile
-7. pnpm typecheck
-8. pnpm test
-9. pnpm skin:validate
-10. pnpm build
-11. storageRecoveryFailurePaths.test.tsの収集/PASSを確認
-12. 同じSHAでBatch 11を全実行
-13. report/evidence作成
-14. entry docsを証跡に合わせて同期
+1. clean、HEAD == origin/main、exact SHAを記録
+2. toolchain/browser versionsを記録
+3. pnpm install --frozen-lockfile
+4. Critical integrity contracts 8ファイルを実行
+5. pnpm typecheck
+6. pnpm test
+7. review追加38ケースの収集/PASSを確認
+8. pnpm skin:validate
+9. pnpm build + artifact hash
+10. 同じSHA/artifactでBatch 11を全実行
+11. report/evidence後にentry docs同期
 ```
 
-途中でproduct/test codeを変えたら、その前のBatch 11証跡を現行結果に混ぜない。
-新SHAでpreflightから再実行する。
+Critical integrity contracts:
 
-## Current Integrity Fixes
+```bash
+pnpm exec vitest run \
+  src/storage/storageRecoveryFailurePaths.test.ts \
+  src/storage/localStorageRecordsAtomicity.test.ts \
+  src/storage/localStorageCapacity.test.ts \
+  src/storage/storageWriteContract.test.ts \
+  src/storage/resetLocalData.test.ts \
+  src/app/runtimeIds.test.ts \
+  src/app/AppRoot.persistence.test.tsx \
+  src/engine/validation/validateDeckEntityIds.test.ts
+```
 
-Post-Batch-10 reviewで修正済み:
+product/test codeを変えたら新SHAで最初から再実行する。未実行commandや別SHAの結果をgreenと報告しない。
+
+## Integrity Contract
 
 ```text
-corruption recovery内のraw storage例外
-records/settings corrupt raw backup欠落
-records/settings recovery issueのUI未通知
-実績保存失敗後のfalse unlock表示
-missing deck/active variantの永久blank route
-cross-browser export Blob URL lifecycle
-L9004 error-code collision risk
+storage read denial:
+  L9005 session fallback
+  mutation/exportはfail closed
+
+write boundary:
+  persisted payloadをsetItem直前にstrict parse
+  nested variant/role/bonus IDも最終保存前に検査
+
+match result:
+  record/coins/role collection/match achievementsを1回で保存
+
+limits:
+  decks 200 / records 100 / roles 500 / achievements 100 / recent keys 20
+  old overflowはraw backup + L9007 bounded salvage
+
+import/editor:
+  visible migration review
+  same-ID overwriteはinput + stored-entry fingerprint確認
+  stale Editor saveは拒否してdraftをunmount
+
+reset:
+  active + corrupt backup + skin keys
+  partial failureはreloadせず表示
 ```
 
-Current behavior:
-
-```text
-storage read denial -> L9005 + safe empty/default fallback
-bootstrap starter write failure -> L9006
-backup creation and active-key cleanup independently guarded
-records/settings raw corrupt backup keys
-all store issues included in boot Toast
-unpersisted achievement/reward is not shown as saved
-missing deck/variant returns to safe screen with warning
-export anchor attached temporarily; URL revoke deferred
-```
-
-Recovery処理中の失敗が回復処理自体の例外停止になってはならない。
-`L9004` は既存のlocal-image fallback専用であり、storage accessへ再利用しない。
+現在のfingerprint checkはtransactional multi-tab lockではない。
 
 ## UI / Skin Contract
 
 ```text
-one layout and component system
-multiple validated skins
-no skin-specific screen copies
-shared components before screen-local markup
-Design Tokens before raw visual values
-asset slots before hardcoded image paths
-Component Gallery before broad rollout
-layout/hit areas/touch/focus/z-index/state meaning are skin-invariant
-skin changes typed allowlisted presentation values only
-slice/repeat/mask logic remains in shared renderers
+one shared layout/component system
+no skin-specific screens
+layout/hit areas/focus/z-index/game meaning are skin-invariant
+skins change typed allowlisted presentation values only
+shared renderers and components before screen-local implementations
 ```
 
-Claude Codeは画面ごとにgeneric componentやデザイン規則を発明しない。
+Asset Batches 1-4はclosed。明示的な現行taskなしに画像生成を再開しない。
 
-## Asset Boundary
-
-Asset pipeline is proven; Batches 1-4 are closed. 古いroadmapのnextだけで生成を
-再開しない。明示的task時のみ:
+## Release Boundaries
 
 ```text
-controlled generation
--> deterministic transparency/despill
--> validation
--> generated/candidates
--> real-screen review
--> human approval
--> generated/final
--> skin version bump
--> validation/visual verification
-```
-
-Direct final outputは禁止。
-
-## Shared Component Rule
-
-```text
-reuse shared component
--> central reusable variant/component
--> semantic token/slot only for a real responsibility
--> Gallery coverage
--> component/visual tests
--> both official skins + fallback verification
--> screen integration
-```
-
-Screen-local generic Button/Panel/Dialog/Formは禁止。
-
-## Architecture Boundary
-
-```text
-UI does not implement role/scoring/wildcard logic
-engine does not import React/DOM/localStorage/CSS
-skin does not access engine/schema/storage/records/network
-shared deck JSON has no image/URL/base64/path/html/script/style fields
-persisted values are parsed before use
-normal write failures are translated and visible
-recovery cleanup failures are non-throwing and visible
-```
-
-## Release Claim Boundary
-
-```text
-local production preview != deploy
+local preview != deploy
 Playwright WebKit != Safari
-simulator/emulation != physical device
-AX-tree/DOM inspection != real screen reader
-VoiceOver + Chrome != VoiceOver + Safari
-not measured = null/not_available, never 0
+emulation != physical device
+automated accessibility tree != real screen reader
 old SHA PASS != current SHA verification
 successful push != CI success
+best-effort backup != restore feature
 ```
 
-RCはreal-device・real-Safari・real-AT・real-deploy/rollbackなしにREADYへ上げない。
-
-## Historical Evidence Scope
-
-```text
-Batch 7:
-  Chromium + Firefox + Playwright WebKit. WebKit is not Safari.
-
-Batch 8:
-  real VoiceOver + Chrome with recorded supplemental boundaries.
-
-Batch 9:
-  Chromium memory-authoritative dev-server soak;
-  Firefox/WebKit stability only.
-
-Batch 10:
-  local production preview in Chromium;
-  real devices/deploy/Safari remained blocked.
-```
-
-Batch 11はまだ契約であり結果ではない。
-
-## Orientation
-
-```text
-844x390 reference
-phone landscape: 100svw x 100svh
-PC: centered table + outer support
-portrait: rotate prompt or limited utility
-```
-
-Whole-screen `transform: scale()`禁止。
-
-## Vamp-pon Reference
-
-```text
-/Users/m-shogo/Developer/personal/vamp-pon/docs/shared-vampon-master-index.md
-docs/42-shared-vampon-source-policy.md
-docs/45-vampon-reference-gate.md
-```
-
-`vamp-pon` repoはread-only。
-
-## Work and Report
-
-```text
-small testable changes
-one purpose per commit where tooling permits
-implementation and contract docs together
-push is not proof of CI
-never hide unavailable evidence
-```
-
-Report exact files/SHA(s), commands actually run, CI status or unavailable,
-browser/device/version/SHA scope, affected skins/screens/storage keys,
-evidence, remaining risks, and next executable step.
+Report exact files/SHA, commands actually run, CI status or unavailable,
+browser/device scope, evidence, remaining risks, and next executable step.
