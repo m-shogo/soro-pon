@@ -94,6 +94,8 @@ export type SkinPackageIo = {
   loadTokens(skinId: string, tokensFile: string): Promise<string | null>;
 };
 
+export type TrustedSkinOriginResolver = (skinId: string) => SkinManifest['origin'];
+
 const MAX_INHERITANCE_DEPTH = 3;
 
 export type LoadResolvedSkinResult = {
@@ -101,7 +103,15 @@ export type LoadResolvedSkinResult = {
   issues: string[];
 };
 
-export function createSkinLoader(io: SkinPackageIo) {
+/**
+ * resolveTrustedOriginはmanifest本文より外側のinstaller/registryが決める。
+ * built-in fetch経路はdefaultで全件officialとして扱い、manifestの自己申告で
+ * external制限を回避できないようにする。
+ */
+export function createSkinLoader(
+  io: SkinPackageIo,
+  resolveTrustedOrigin: TrustedSkinOriginResolver = () => 'official',
+) {
   async function loadOne(
     skinId: string,
   ): Promise<{ manifest: SkinManifest | null; tokens: Record<string, string>; issues: string[] }> {
@@ -110,7 +120,7 @@ export function createSkinLoader(io: SkinPackageIo) {
     if (rawManifest === null) {
       return { manifest: null, tokens: {}, issues: [`スキン ${skinId} のmanifestを読み込めません`] };
     }
-    const validated = validateSkinManifest(rawManifest);
+    const validated = validateSkinManifest(rawManifest, resolveTrustedOrigin(skinId));
     if (!validated.ok) {
       return {
         manifest: null,
