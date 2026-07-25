@@ -11,9 +11,9 @@ local build != public demo
 local production preview != deploy
 Playwright WebKit != Safari
 historical PASS != newer product HEAD verification
-best-effort corrupt backup != user restore
+raw forensic backup export != validated restore
 optimistic localStorage fingerprint != transactional multi-tab CAS
-manifest origin string != installer-owned trust
+loader-owned origin classification != cryptographic package identity
 ```
 
 ## Gate 1 — Internal Build
@@ -96,9 +96,9 @@ asset caching/version/fallback accepted
 release claim matches exact artifact SHA
 ```
 
-Gate 6 was historically passed in Batch 6. Later findings do not erase
-that historical decision, but newer code must be reverified before it is
-presented as the current RC artifact.
+Gate 6 was historically passed in Batch 6. Later findings do not erase that
+historical decision, but newer code must be reverified before it is presented
+as the current RC artifact.
 
 ## Current RC Readiness — 2026-07-25
 
@@ -108,7 +108,7 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
-Post-Batch-10 integrity reviews: fixes committed; verification pending
+Post-Batch-10 integrity/residual fixes: committed; verification pending
 Batch 11 production Firefox/WebKit: CONTRACT DEFINED / NOT EXECUTED
 RC status: LIMITED READY
 ```
@@ -119,6 +119,7 @@ Review reports:
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
+docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 ```
 
 ### Historical evidence retained
@@ -155,6 +156,7 @@ ScoreBonus cap could contradict one award
 valid deck body could be lost because wrapper metadata was damaged
 one malformed match row could wipe all progress
 persisted duplicate deck IDs were ambiguous
+set-like arrays could cap before dedupe and lose later unique values
 write paths lacked final runtime schema validation
 failed achievement persistence could appear unlocked
 missing deck/variant blank route
@@ -162,14 +164,20 @@ silent legacy v0 migration persistence
 browser-fragile export Blob URL lifecycle
 storage error-code collision risk
 reset omitted backup keys or presented partial failure as success
+forensic backup had no user-accessible raw export path
 ErrorBoundary emergency reset retained false-success behavior
 deck deletion lacked confirmation and restore guidance
 danger Dialog initially focused the destructive action
 important Dialog copy lacked aria-describedby association
+MatchSession React identity used a bounded gameplay seed
+Editor live diagnostics differed from production boundaries
 skin preload/unmount race failures could leave stale/loading state
 skin inheritance exact-limit check was off by one
 runtime external-SVG and registry integrity checks were incomplete
+manifest origin could self-promote without loader-owned classification
 unsafe import diagnostics were unbounded
+CI actions used mutable major tags
+Python dependency consistency was not checked after install
 obsolete Batch 11 baseline and stale entry/risk/performance/distribution docs
 ```
 
@@ -184,6 +192,7 @@ independently guarded backup/cleanup
 strict schema parse immediately before each persisted write
 atomic match record/coin/role/achievement commit
 shared collection limits: 200/100/500/100/20
+set-like legacy arrays dedupe before retention caps
 nested ID + membership + ignored-field + score-cap validation
 same-ID import requires unchanged input + unchanged stored-entry fingerprint
 stale Editor/detail update/delete is rejected
@@ -193,16 +202,22 @@ all store boot issues visible
 safe missing-entity route recovery
 legacy migration review + unchanged second-action persistence
 attached export anchor + deferred URL revocation
+raw corrupt-backup bundle export with truthful file-failure handling
 reset covers active/backup/skin keys and reports partial failure
 danger Dialog starts on cancellation and describes irreversible copy
+MatchSession React key uses matchSessionId
+Editor live panel uses validateDeckForUse
 skin preload failures retain previous/fallback state
 skin registry rejects duplicate/future contract entries
+loader-owned origin classification rejects manifest trust mismatch
 external-evaluated SVG rejected at runtime validation
 unsafe import diagnostics capped with I2011 while import remains rejected
+Main CI/Integrity actions pinned to immutable commit SHAs
+Python asset job runs exact top-level pins + pip check + fixtures
 ```
 
-Review-added integrity test definitions: **79 committed cases**, not yet
-executed on the final exact SHA.
+Integrity definitions: **92 committed cases across 28 files**, not yet executed
+on the final exact SHA.
 
 ### Current verification required
 
@@ -211,16 +226,17 @@ stop concurrent writers
 freeze clean HEAD == origin/main
 pnpm install --frozen-lockfile
 run Integrity Contracts workflow equivalent
-confirm all 79 review-added cases are collected and pass
+confirm all 92 targeted cases are collected and pass
 pnpm typecheck
 pnpm test
 pnpm skin:validate
 pnpm build
+run Python 3.13 install + pip check + asset fixtures
 complete Batch 11 on the same SHA/artifact
 ```
 
-Any product/test change invalidates partial current-SHA evidence and
-restarts the sequence.
+Any product/test/dependency/workflow change invalidates partial current-SHA
+evidence and restarts the sequence.
 
 ### Still open / unclaimed
 
@@ -233,10 +249,11 @@ rollback of an actually deployed immutable artifact
 Safari + VoiceOver
 NVDA / JAWS
 remaining Batch 8 Result/Cute Pop VoiceOver evidence
-user-facing backup restore
+validated backup restore/merge UI
 true transaction/version model for advertised concurrent multi-tab editing
-installer-owned external skin trust/signature/entitlement
-MatchSession remount key migration from bounded seed to matchSessionId
+cryptographic external skin signature/entitlement/installer authority
+Python transitive dependency hash lock
+provider-specific CSP/security headers
 ```
 
 ## Gate 7 — Installed / Paid Skin Ready
@@ -254,9 +271,11 @@ signature/hash/identity/upgrade/rollback/uninstall implemented
 marketplace/payment reviewed separately
 ```
 
-Current official bundled-skin loading does not satisfy Gate 7. The external
-installer, trusted-origin binding, signature verification, entitlement, and
-lifecycle UI are not built. Do not advertise paid-skin distribution.
+Current runtime loading now binds manifest validation to a loader-owned origin
+classification, so manifest text alone cannot elevate trust. Gate 7 is still not
+satisfied: the external installer, package-source authority, signature
+verification, entitlement, revocation, upgrade/rollback, and lifecycle UI are
+not built. Do not advertise paid-skin distribution.
 
 ## Gate 8 — Match Restore / Replay Ready
 
@@ -268,7 +287,7 @@ backward-compatible persisted state
 A -> B -> duplicate A proof
 ```
 
-The current idempotency baseline does not mean restore/replay exists.
+The current session-ID/idempotency baseline does not mean restore/replay exists.
 
 ## Future Network Gate
 
@@ -295,6 +314,7 @@ Decks and progress are stored locally in your browser.
 Imported decks are validated before play.
 Known legacy data is reviewed before migration is saved.
 Importing an existing deck ID requires explicit overwrite confirmation.
+Corrupt-backup copies can be exported before destructive reset.
 Local/private image data is not included in shared JSON.
 Online multiplayer and accounts are not included.
 Only the listed browsers, devices, skins, and features are supported.
@@ -342,5 +362,5 @@ PASS / CONDITIONAL / BLOCKED
 ## Final Decision
 
 A release is a promise. Expose only behavior whose rules, recovery,
-compatibility, accessibility, performance authority, and deployment scope
-are verified on the exact artifact being presented.
+compatibility, accessibility, performance authority, and deployment scope are
+verified on the exact artifact being presented.
