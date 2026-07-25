@@ -634,7 +634,7 @@ export function AppRoot() {
         }
         return (
           <MatchSession
-            key={screen.seed}
+            key={screen.matchSessionId}
             deck={deck}
             playerCount={screen.playerCount}
             seed={screen.seed}
