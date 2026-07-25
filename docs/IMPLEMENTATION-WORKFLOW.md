@@ -12,6 +12,7 @@ Release/readiness truth:     docs/RELEASE-DEMO-GATES.md
 Initial integrity review:    docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 Continuation review:         docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 Deep-dive review:            docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
+Residual closure:            docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 Current executable QA:       docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 Storage contract:            docs/release/STORAGE-RECOVERY-POLICY.md
 Migration contract:          docs/MIGRATIONS.md
@@ -37,12 +38,12 @@ Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
-Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
-Review-added integrity tests: 79 committed definitions, unexecuted
+Post-Batch-10 code-side residual closure: committed
+Integrity scope: 92 definitions across 28 files, unexecuted on final SHA
 ```
 
-Current phase: **RC integrity/evidence closure**. Do not restart MVP,
-H1-H11, asset Batch 5, or any obsolete implementation sequence.
+Current phase: **RC exact-SHA evidence closure**. Do not restart MVP, H1-H11,
+asset Batch 5, or any obsolete implementation sequence.
 
 ## Completed Foundations
 
@@ -59,7 +60,7 @@ candidate -> review -> final asset pipeline
 Restore/replay and marketplace/payment are future products, not implied by
 foundation work.
 
-## Integrity Review Result
+## Integrity / Residual Closure Result
 
 Fixed code/contract defects now include:
 
@@ -80,20 +81,27 @@ ScoreBonus cap could contradict one award
 valid deck body could be lost because wrapper metadata was damaged
 one malformed match row could wipe all progress
 persisted duplicate deck IDs were ambiguous
+set-like arrays could cap before dedupe and lose later unique values
 write paths lacked final runtime schema validation
 unpersisted achievement could be shown as unlocked
 missing deck/variant could leave a blank route
 silent legacy v0 migration persistence
 browser-fragile export Blob URL lifecycle
 reset omitted backup keys or hid partial failure
+forensic backup had no in-app raw export path
 ErrorBoundary emergency reset retained false-success behavior
 deck deletion lacked confirmation/restore guidance
 danger dialog focused destructive confirmation
 dialog message lacked aria-describedby association
+MatchSession React identity used a bounded gameplay seed
+Editor live diagnostics differed from production boundaries
 skin preload rejection/unmount races could leave stale/loading state
 skin inheritance exact-limit check was off by one
 runtime external-SVG/registry trust checks were incomplete
+manifest origin could self-elevate without loader-owned classification
 unsafe import diagnostics were unbounded
+GitHub Actions used mutable major tags
+Python dependency consistency was not checked after install
 stale Batch 11 baseline and entry/risk/performance/distribution docs
 ```
 
@@ -111,54 +119,64 @@ write boundary:
 
 match result:
   record + coins + role collection + match achievements in one write
+  MatchSession component identity uses matchSessionId
 
 limits:
   decks 200 / records 100 / roles 500 / achievements 100 / recent keys 20
+  set-like values dedupe before retention caps
   old/partial payload -> backup + bounded salvage where safe
 
-import:
+import/editor:
   visible legacy migration review
   explicit same-ID overwrite review
   bounded unsafe-field diagnostics
+  live Editor uses the production integrated validator
 
-reset/destructive UI:
+reset/recovery/destructive UI:
   active + forensic + skin keys covered
-  partial failure stops reload and is shown
+  raw forensic backups export as a versioned bundle
+  failed file creation is not reported as success
+  partial reset failure stops reload and is shown
   danger dialogs focus cancellation first
 
 skin runtime:
   failed preload returns to ready with previous/fallback skin
   unmount invalidates in-flight requests
   duplicate/future registry rejected
-  external SVG rejected at runtime validation
+  external SVG rejected under loader-owned origin classification
+
+supply chain:
+  Main CI / Integrity actions use immutable commit SHAs
+  Python asset CI installs exact top-level pins and runs pip check
 ```
 
-Targeted test definitions committed across three reviews: **79**. They are
-not release evidence until executed on the exact final SHA.
+Targeted integrity definitions committed: **92 across 28 files**. They are not
+release evidence until executed on the exact final SHA.
 
 ## Next Executable Work
 
 ```text
 1. Stop every concurrent writer.
 2. Confirm clean worktree and HEAD == origin/main.
-3. Record exact SHA and Node/pnpm/Playwright/browser versions.
+3. Record exact SHA and Node/pnpm/Playwright/browser/Python versions.
 4. pnpm install --frozen-lockfile
 5. Run .github/workflows/integrity.yml equivalent locally.
-6. Confirm all 79 review-added tests are collected and pass.
+6. Confirm all 92 targeted tests are collected and pass.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
 10. pnpm build and record artifact inventory/hash.
-11. Fix any failure; if code/test changes, restart from step 1.
-12. Execute all Batch 11 production Firefox/WebKit items on the same SHA.
-13. Commit evidence/report and only then update Batch 11 status.
+11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
+12. Fix any failure; if code/test/workflow changes, restart from step 1.
+13. Execute all Batch 11 production Firefox/WebKit items on the same SHA/artifact.
+14. Commit evidence/report and only then update Batch 11 status.
 ```
 
 The exact targeted file list is maintained in
 `.github/workflows/integrity.yml`; do not maintain a second command list here.
 
 Batch 11 cannot itself promote RC to READY. Real devices, real Safari,
-remaining real AT, installer-owned external-skin trust, and real
+remaining real AT, cryptographic external-skin installer identity, and real
 deploy/rollback remain separate evidence.
 
 ## CI / Browser Boundaries
@@ -167,15 +185,18 @@ GitHub workflows now define:
 
 ```text
 CI:
+  immutable action commit SHAs
   frozen install
   recovery-focused named step
   strict typecheck
   full unit suite
   skin validation
   production build
+  Python 3.13 exact top-level pins + pip check + asset fixtures
 
 Integrity Contracts:
-  23 targeted integrity files
+  immutable action commit SHAs
+  28 targeted integrity files
   strict typecheck
 ```
 
@@ -191,7 +212,8 @@ layout/hit areas/focus/z-index/game meaning are skin-invariant
 skins change typed allowlisted presentation values only
 generic controls and render/slice behavior stay centralized
 both official skins and fallback remain usable
-external package official trust cannot come from manifest self-declaration
+manifest self-declaration cannot elevate runtime trust
+loader-owned origin classification is not a cryptographic package signature
 ```
 
 Read the mandatory UI documents in `AGENTS.md` before UI work.
