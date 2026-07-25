@@ -46,7 +46,7 @@ describe('TopScreen recovery export', () => {
   it('退避コピーがない場合はダウンロードせず状態を明示する', () => {
     renderTop();
 
-    fireEvent.click(screen.getByRole('button', { name: '退避データを書き出す' }));
+    fireEvent.click(screen.getByRole('button', { name: /退避データを書き出す/ }));
 
     expect(screen.getByRole('status').textContent).toContain('退避コピーはありません');
   });
@@ -68,7 +68,7 @@ describe('TopScreen recovery export', () => {
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     renderTop();
 
-    fireEvent.click(screen.getByRole('button', { name: '退避データを書き出す' }));
+    fireEvent.click(screen.getByRole('button', { name: /退避データを書き出す/ }));
 
     expect(createObjectURL).toHaveBeenCalledTimes(1);
     expect(click).toHaveBeenCalledTimes(1);
@@ -87,7 +87,7 @@ describe('TopScreen recovery export', () => {
     });
     renderTop();
 
-    fireEvent.click(screen.getByRole('button', { name: '退避データを書き出す' }));
+    fireEvent.click(screen.getByRole('button', { name: /退避データを書き出す/ }));
 
     expect(screen.getByRole('alert').textContent).toContain('ファイルを作成できませんでした');
     expect(screen.queryByText(/書き出しました/)).toBeNull();
