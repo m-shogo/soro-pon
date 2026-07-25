@@ -14,8 +14,8 @@ Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, not executed
-Post-Batch-10 integrity fixes: committed; exact-SHA verification pending
-Integrity tests added across three reviews: 79 committed, unexecuted
+Post-Batch-10 integrity/residual fixes: committed; exact-SHA verification pending
+Integrity definitions: 92 across 28 files, committed and unexecuted
 ```
 
 Do not treat historical green commands, old asset checkpoints, or numbered
@@ -33,6 +33,7 @@ docs/RELEASE-DEMO-GATES.md
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
+docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 ```
 
@@ -55,6 +56,10 @@ docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
   Metadata/partial salvage, stale destructive operations, set semantics,
   destructive-dialog accessibility, skin runtime trust/races, and CI findings.
 
+docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
+  Dedupe-before-cap, session identity, Editor parity, raw recovery export,
+  loader-owned skin trust, immutable Actions, and exact remaining evidence.
+
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
   Current unexecuted production Firefox/WebKit QA contract.
 
@@ -63,7 +68,7 @@ docs/IMPLEMENTATION-WORKFLOW.md
 
 docs/release/STORAGE-RECOVERY-POLICY.md
   Corruption, read-denial, write validation, atomicity, limits, conflict,
-  backup, reset, and restore semantics.
+  forensic export, reset, and restore semantics.
 
 docs/MIGRATIONS.md
   Version compatibility and visible legacy-import confirmation.
@@ -99,6 +104,7 @@ ScoreBonus cap could contradict one award
 valid decks could be lost because only wrapper metadata was damaged
 one malformed match history could wipe other progress
 persisted duplicate deck IDs were ambiguous
+set-like arrays could cap before dedupe and lose later unique values
 write paths trusted TypeScript values without final runtime validation
 records/settings recovery notices were discarded
 unpersisted achievements could appear unlocked
@@ -106,20 +112,26 @@ missing deck/variant could leave a blank route
 legacy migration notice was ignored
 export Blob URL lifecycle was browser-fragile
 reset omitted corrupt-backup keys or hid partial failure
+forensic backups had no user-accessible export path
 ErrorBoundary emergency reset retained the old false-success behavior
 deck deletion lacked confirmation or restore guidance
 danger Dialog initial focus favored the destructive action
 important Dialog copy lacked aria-describedby association
+MatchSession remount identity depended on a bounded gameplay seed
+Editor live diagnostics differed from save/play boundaries
 skin preload rejection/unmount races could leave stale/loading state
 skin inheritance depth had an off-by-one error
 runtime external SVG and registry integrity checks were incomplete
+manifest origin could be self-declared without loader-owned trust binding
 unsafe import diagnostics were unbounded
+CI actions used mutable major tags
+Python dependency consistency was not checked after install
 entry/risk/performance/operations docs were stale or ambiguous
 ```
 
-Targeted integrity definitions committed: **79 cases** across the three reviews.
-They remain unverified against the final exact SHA until the prescribed
-commands and Batch 11 are executed.
+Targeted integrity definitions committed: **92 cases across 28 files**. They
+remain unverified against the final exact SHA until the prescribed commands and
+Batch 11 are executed.
 
 ## Release / Operations
 
@@ -145,7 +157,9 @@ simulator/emulation != physical device
 AX-tree automation != real screen reader
 historical artifact PASS != current HEAD verification
 optimistic localStorage fingerprint != transactional multi-tab CAS
-manifest origin self-declaration != installer-owned official trust
+raw forensic export != validated automatic restore
+loader-owned manifest origin != cryptographic package identity
+exact Python top-level pins + pip check != transitive hash lock
 ```
 
 ## UI / Design / Skin — Mandatory for UI Work
