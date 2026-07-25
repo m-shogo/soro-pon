@@ -180,7 +180,10 @@ describe('skin:validate(異常系)', () => {
       'list:skins/cute-pop/generated/final': ['icon.svg'],
     });
     const report = validateSkinPackages(io);
-    expect(report.issues.some((i) => i.includes('許可されないファイル形式'))).toBe(true);
+    // external originのskinがSVGを参照したら拒否される。manifest段階の検査
+    // (validateSkinManifest)が先にこのslotを落とすため、実際の拒否メッセージは
+    // 「SVGは指定できません」。セキュリティ契約(external SVG禁止)は満たされている。
+    expect(report.issues.some((i) => i.includes('SVGは指定できません'))).toBe(true);
   });
 
   it('nine-slice slotのminRenderSize欠落を検出する(P0-5)', () => {
