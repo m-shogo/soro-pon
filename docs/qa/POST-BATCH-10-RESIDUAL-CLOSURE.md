@@ -3,7 +3,8 @@
 Date: 2026-07-25  
 Repository: `m-shogo/soro-pon`  
 Reviewed start: `35540260ca145fed39b5ff0d3267392ae9b62dcd`  
-Runtime/workflow closure baseline: `76bdffc69b1ac4e578f05af42a1d322b3372ad86`
+Runtime/workflow closure baseline: `0c0d1240dab2a40bc6fdd7191c0588fd1bfd4ff5`  
+Later commits in this pass synchronize documentation only.
 
 ## Verdict
 
