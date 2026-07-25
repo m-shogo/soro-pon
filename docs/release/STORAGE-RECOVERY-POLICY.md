@@ -12,13 +12,14 @@ soro-pon.settings.v1.corrupt-backup
 soro-pon.skin.v1
 ```
 
-Established in Gate 6 and hardened by all three post-Batch-10 integrity
-reviews. Current review index:
+Established in Gate 6 and hardened by the post-Batch-10 integrity and residual
+closure passes. Current review index:
 
 ```text
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
+docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 ```
 
 ## Principles
@@ -27,10 +28,11 @@ docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 do not destroy unaffected recoverable data
 recovery must not become the crash
 read failure must never become an assumed empty persisted store for mutation
-do not claim a write/reset/delete succeeded when it did not
+do not claim a write/reset/delete/export succeeded when it did not
 strict-parse every payload at the final write boundary
 prefer safe partial salvage to full reset
-preserve original raw bytes when storage permits
+preserve original raw strings when storage permits
+allow raw forensic export without reinterpreting corrupt data
 do not guess unknown future versions
 reject stale observed mutations
 ```
@@ -70,8 +72,9 @@ starter bootstrap write failure:
   L9006; app does not claim persistence
 ```
 
-`*.corrupt-backup` is forensic best-effort preservation, not a guaranteed
-user backup or restore feature.
+`*.corrupt-backup` is forensic best-effort preservation. It can be exported as
+a versioned raw bundle, but it is not a guaranteed backup or validated restore
+feature.
 
 ## Persisted Limits
 
@@ -87,7 +90,9 @@ All persisted numeric timestamps/counts/points must be nonnegative safe
 integers (`<= Number.MAX_SAFE_INTEGER`).
 
 New writes never exceed these bounds. Existing over-limit payloads are backed
-up and reduced only where a valid bounded payload can be constructed.
+up and reduced only where a valid bounded payload can be constructed. Set-like
+string arrays remove duplicates before retention caps so a duplicate-heavy
+prefix cannot discard later unique values.
 
 ## Deck Read / Recovery Path
 
@@ -121,7 +126,8 @@ Current-version partial corruption:
 keep valid match rows
 keep safe coins
 keep valid role/achievement/match-key entries
-remove malformed or over-limit entries
+dedupe set-like strings before retention caps
+remove malformed or genuinely over-limit entries
 repair invalid totalMatches to at least retained records.length
 backup raw original
 rewrite strict payload when possible
@@ -162,7 +168,8 @@ ScoreBonus maxPoints below one points award
 ```
 
 Ambiguous older decks remain loadable/exportable for recovery, but are draft
-and cannot be played or saved unchanged.
+and cannot be played or saved unchanged. Deck Editor live diagnostics use the
+same integrated `validateDeckForUse` boundary as save/play decisions.
 
 ## Atomic Match Persistence
 
@@ -180,6 +187,9 @@ match-derived achievements
 Failed write commits none of them. Duplicate match key skips both resolver and
 write. Non-match achievements use their own write because the initiating user
 action has already completed.
+
+`MatchSession` remount identity uses `matchSessionId`; the bounded numeric seed
+is not used as the React component identity.
 
 ## Same-ID Import / Stale Mutation
 
@@ -215,7 +225,7 @@ Deck delete:
 ```text
 requires danger Dialog
 explains irreversibility and absence of restore UI
-suggests export before deletion
+suggests deck export before deletion
 danger Dialog initially focuses cancellation
 message is associated using aria-describedby
 ```
@@ -223,6 +233,8 @@ message is associated using aria-describedby
 Full reset:
 
 ```text
+TOP exposes raw forensic backup export before reset
+reset confirmation points users to export first
 remove only known app-owned active/forensic/skin keys
 attempt every key
 return removedKeys + failedKeys
@@ -231,6 +243,32 @@ show partial failure instead of claiming success
 ```
 
 The same truthful reset result applies on TOP and in `AppErrorBoundary`.
+
+## Raw Forensic Export
+
+The TOP recovery export reads only:
+
+```text
+soro-pon.decks.v1.corrupt-backup
+soro-pon.records.v1.corrupt-backup
+soro-pon.settings.v1.corrupt-backup
+```
+
+Contract:
+
+```text
+bundle format: soro-pon-local-recovery.v1
+raw strings preserved exactly
+no JSON parse/migration/normalization during export
+keys read independently
+one read failure does not suppress other readable keys
+source localStorage values never removed
+browser file-creation failure is reported as failure
+no success message after a failed download setup
+```
+
+This file is for support/manual inspection and future explicit recovery tooling.
+It must never be blindly copied over active storage.
 
 ## Error Code Ownership
 
@@ -253,9 +291,10 @@ Supported:
 
 ```text
 best-effort raw corrupt/over-limit backup
+in-app versioned raw forensic bundle export
 healthy deck and current-version records partial salvage
 deterministic v0 -> v1 deck migration
-manual inspection through browser developer tools
+manual inspection through exported file or browser developer tools
 full local reset includes forensic keys
 ```
 
@@ -267,10 +306,12 @@ backup merge
 cloud/cross-device backup
 guaranteed backup when storage rejects writes
 blind restoration of raw corrupt text
+automatic recovery from the exported forensic bundle
 ```
 
 A future restore UI must strict-parse, migrate, validate all current integrity
-rules, enforce limits, and never copy raw backup text directly over active data.
+rules, enforce limits, surface conflicts, and never copy raw backup text directly
+over active data.
 
 ## Skin Storage
 
@@ -282,8 +323,8 @@ by `docs/SKIN-DISTRIBUTION.md`.
 
 The dedicated list is `.github/workflows/integrity.yml`.
 
-Three reviews added **79 targeted test definitions**. This count is not a PASS
-claim until collected and executed on the exact final SHA.
+Current scope is **92 targeted test definitions across 28 files**. This count is
+not a PASS claim until collected and executed on the exact final SHA.
 
 ## Final Decision
 
@@ -296,10 +337,12 @@ atomic commit
 partial salvage
 metadata normalization
 raw backup
+raw forensic export
 bounded reduction
 conflict rejection
 partial deletion
 full reset
+validated restore (not implemented)
 ```
 
 Collapsing those states into generic success is a release defect.
