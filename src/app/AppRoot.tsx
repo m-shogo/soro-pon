@@ -306,7 +306,10 @@ export function AppRoot() {
       existingFingerprint !== null &&
       overwriteReview?.inputText === importText &&
       overwriteReview.existingFingerprint === existingFingerprint;
-    if (existing !== undefined && !overwriteConfirmed) {
+    // existingFingerprint is null exactly when existing is undefined, so this
+    // extra guard is behavior-preserving and lets TS narrow it to string for
+    // the OverwriteReview (which requires a non-null fingerprint).
+    if (existing !== undefined && existingFingerprint !== null && !overwriteConfirmed) {
       setOverwriteReview({ inputText: importText, existingFingerprint });
       setImportIssues([
         `同じID "${result.deck.id}" のデッキ「${existing.deck.name}」が保存されています。`,
