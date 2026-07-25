@@ -33,6 +33,7 @@ jobs:
             src/storage/localStorageDuplicateDeckRecovery.test.ts \
             src/storage/storageWriteContract.test.ts \
             src/storage/resetLocalData.test.ts \
+            src/storage/localDataRecoveryExport.test.ts \
             src/app/runtimeIds.test.ts \
             src/app/AppRoot.persistence.test.tsx \
             src/app/AppRoot.matchSessionIdentity.test.ts \
@@ -47,6 +48,7 @@ jobs:
             src/ui/skins/skinRegistryIntegrity.test.ts \
             src/ui/screens/DeckDetailScreen.test.tsx \
             src/ui/screens/DeckEditorScreen.validation.test.tsx \
+            src/ui/screens/TopScreen.recovery.test.tsx \
             src/storage/localStorageDuplicateDeckIds.test.ts \
             src/storage/localStorageDeckMetadataSalvage.test.ts \
             src/storage/localStorageDeckStaleMutation.test.ts \
