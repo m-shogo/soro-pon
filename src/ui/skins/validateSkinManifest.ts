@@ -99,7 +99,14 @@ export type ValidateSkinManifestResult =
   | { ok: true; manifest: SkinManifest }
   | { ok: false; issues: string[] };
 
-export function validateSkinManifest(raw: unknown): ValidateSkinManifestResult {
+/**
+ * expectedOriginはmanifest自身の自己申告ではなく、installer/registryなど
+ * 信頼境界の外側で決定したoriginを渡す。未指定時は構造単体検証のみ行う。
+ */
+export function validateSkinManifest(
+  raw: unknown,
+  expectedOrigin?: SkinManifest['origin'],
+): ValidateSkinManifestResult {
   const parsed = skinManifestSchema.safeParse(raw);
   if (!parsed.success) {
     return {
@@ -112,6 +119,11 @@ export function validateSkinManifest(raw: unknown): ValidateSkinManifestResult {
   const data = parsed.data;
   const issues: string[] = [];
 
+  if (expectedOrigin !== undefined && data.origin !== expectedOrigin) {
+    issues.push(
+      `manifest origin ${data.origin} は信頼された読み込み元 ${expectedOrigin} と一致しません`,
+    );
+  }
   if (data.skinContractVersion > SKIN_CONTRACT_VERSION) {
     issues.push(
       `skinContractVersion ${data.skinContractVersion} はこのアプリ(${SKIN_CONTRACT_VERSION})より新しいため使用できません`,
@@ -139,7 +151,8 @@ export function validateSkinManifest(raw: unknown): ValidateSkinManifestResult {
       issues.push(`slot ${slotName} に画像以外のファイルは指定できません: ${def.file}`);
       continue;
     }
-    if (data.origin === 'external' && def.file !== null && def.file.endsWith('.svg')) {
+    const effectiveOrigin = expectedOrigin ?? data.origin;
+    if (effectiveOrigin === 'external' && def.file !== null && def.file.endsWith('.svg')) {
       issues.push(`external skinのslot ${slotName} にSVGは指定できません: ${def.file}`);
       continue;
     }
