@@ -11,7 +11,7 @@ historical Gate 4/5/6: PASS within recorded scopes
 RC: LIMITED READY
 Batch 7 COMPLETE / Batch 8 CONDITIONAL / Batch 9 COMPLETE / Batch 10 CONDITIONAL
 Batch 11: contract only, NOT executed
-post-Batch-10 integrity definitions: 79 committed
+post-Batch-10 integrity/residual scope: 92 definitions across 28 files
 exact-current-SHA verification: pending
 ```
 
@@ -29,6 +29,7 @@ docs/RELEASE-DEMO-GATES.md
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
+docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 docs/release/STORAGE-RECOVERY-POLICY.md
 docs/SKIN-DISTRIBUTION.md
@@ -39,17 +40,18 @@ docs/SKIN-DISTRIBUTION.md
 ```text
 1. Stop concurrent writers.
 2. clean worktree; HEAD == origin/main; record exact SHA.
-3. Record toolchain/browser versions.
+3. Record toolchain/browser/Python versions.
 4. pnpm install --frozen-lockfile
-5. Run .github/workflows/integrity.yml equivalent (23 files).
-6. Confirm all 79 review-added definitions are collected/PASS.
+5. Run .github/workflows/integrity.yml equivalent (28 files).
+6. Confirm all 92 targeted definitions are collected/PASS.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
 10. pnpm build + artifact hash/inventory
-11. If product/test changes, discard results and restart from step 1.
-12. Execute Batch 11 on the same SHA/artifact.
-13. Commit report/evidence, then synchronize readiness docs.
+11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
+12. If product/test/workflow changes, discard results and restart from step 1.
+13. Execute Batch 11 on the same SHA/artifact.
+14. Commit report/evidence, then synchronize readiness docs.
 ```
 
 Do not duplicate the targeted file list here; `.github/workflows/integrity.yml`
@@ -69,31 +71,44 @@ write boundary:
 
 match result:
   record/coins/roles/achievements in one write
+  MatchSession React identity uses matchSessionId, not seed
 
 recovery:
   preserve valid deck bodies and valid progress where safely identifiable
+  dedupe set-like legacy values before retention caps
   backup raw payload when possible
+  export forensic raw bundle without reinterpretation
+  failed export never removes source backup or claims success
   unknown versions are not guessed
 
 limits:
   decks 200 / records 100 / roles 500 / achievements 100 / recent keys 20
 
-import:
+import/editor:
   migration and same-ID overwrite need visible unchanged-state review
   unsafe diagnostics are bounded but import remains rejected
+  live Editor uses the production integrated validator
 
 reset/destructive UI:
   full known-key deletion required before reload
+  reset points to forensic export first
   danger Dialog focuses cancel and describes irreversible copy
 
 skin:
   failed/unmounted load cannot replace current UI
   duplicate/future registry rejected
   external-evaluated SVG rejected
-  official trust cannot come from manifest self-declaration
+  manifest text cannot elevate trust above loader-owned origin
+  loader-owned origin is not a cryptographic signature
+
+supply chain:
+  Main CI / Integrity actions use immutable commit SHAs
+  Python asset install runs exact top-level pins + pip check
 ```
 
-Fingerprint guards are not transactional multi-tab CAS.
+Fingerprint guards are not transactional multi-tab CAS. Raw forensic export is
+not a restore feature. Exact Python pins plus `pip check` are not a transitive
+hash lock.
 
 ## UI / Skin Contract
 
@@ -118,7 +133,8 @@ automated accessibility tree != real screen reader
 old SHA PASS != current SHA verification
 successful push != CI success
 workflow definition != workflow PASS
-best-effort backup != restore feature
+raw forensic export != validated restore
+loader-owned origin != cryptographic package identity
 ```
 
 Report exact files/SHA, commands actually run, CI status or unavailable,
