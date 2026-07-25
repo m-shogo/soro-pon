@@ -11,7 +11,7 @@ import {
   buildSpecificSetRoleTemplate,
   buildThreeDifferentCategoriesRoleTemplate,
 } from '../../app/editorTemplates';
-import { validateDeckProject } from '../../engine/validation/validateDeckProject';
+import { validateDeckForUse } from '../../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
@@ -70,7 +70,7 @@ export function DeckEditorScreen({
     setSaveError(null);
     onSave(parsed.data);
   };
-  const validation = useMemo(() => validateDeckProject({ deck: draft }), [draft]);
+  const validation = useMemo(() => validateDeckForUse(draft), [draft]);
   const activeVariant = draft.variants.find((v) => v.id === draft.activeVariantId);
   const isDirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(deck), [draft, deck]);
 
