@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import type { MatchRecord } from '../../schemas/storageSchema';
+import {
+  buildLocalDataRecoveryBundle,
+  serializeLocalDataRecoveryBundle,
+} from '../../storage/localDataRecoveryExport';
 import { resetAllLocalData } from '../../storage/resetLocalData';
 import { Button } from '../components/Button';
 import { Dialog } from '../components/Dialog';
@@ -12,6 +16,27 @@ function formatDate(ms: number): string {
   const d = new Date(ms);
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function recoveryFileName(exportedAtMs: number): string {
+  const timestamp = new Date(exportedAtMs).toISOString().replace(/[:.]/g, '-');
+  return `soro-pon-recovery-${timestamp}.json`;
+}
+
+function downloadRecoveryBundle(text: string, exportedAtMs: number): void {
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  try {
+    anchor.href = url;
+    anchor.download = recoveryFileName(exportedAtMs);
+    anchor.hidden = true;
+    document.body.append(anchor);
+    anchor.click();
+  } finally {
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
 }
 
 export function TopScreen({
@@ -34,6 +59,47 @@ export function TopScreen({
   const [skinModalOpen, setSkinModalOpen] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
+  const [recoveryNotice, setRecoveryNotice] = useState<{
+    tone: 'status' | 'error';
+    message: string;
+  } | null>(null);
+
+  const handleRecoveryExport = () => {
+    setRecoveryNotice(null);
+    const result = buildLocalDataRecoveryBundle(window.localStorage);
+    if (result.recoveredCount === 0) {
+      setRecoveryNotice({
+        tone: result.failedKeys.length > 0 ? 'error' : 'status',
+        message:
+          result.failedKeys.length > 0
+            ? `退避データを読み取れませんでした（${result.failedKeys.length}件）。ブラウザの保存領域設定を確認してください。`
+            : '書き出せる破損データの退避コピーはありません。',
+      });
+      return;
+    }
+
+    try {
+      downloadRecoveryBundle(
+        serializeLocalDataRecoveryBundle(result.bundle),
+        result.bundle.exportedAtMs,
+      );
+    } catch {
+      setRecoveryNotice({
+        tone: 'error',
+        message:
+          '退避データのファイルを作成できませんでした。ブラウザのダウンロード設定を確認してください。データ自体は削除していません。',
+      });
+      return;
+    }
+
+    setRecoveryNotice({
+      tone: result.failedKeys.length > 0 ? 'error' : 'status',
+      message:
+        result.failedKeys.length > 0
+          ? `退避コピー${result.recoveredCount}件を書き出しましたが、${result.failedKeys.length}件は読み取れませんでした。初期化前にファイルを保管してください。`
+          : `破損データの退避コピー${result.recoveredCount}件を書き出しました。初期化前にファイルを保管してください。`,
+    });
+  };
 
   return (
     <div className="sp-screen">
@@ -79,6 +145,22 @@ export function TopScreen({
           </p>
           <Button
             variant="ghost"
+            subLabel="破損時に退避された元データを、解釈せずJSONへ保存します"
+            onClick={handleRecoveryExport}
+          >
+            退避データを書き出す
+          </Button>
+          {recoveryNotice !== null && (
+            <p
+              role={recoveryNotice.tone === 'error' ? 'alert' : 'status'}
+              className={recoveryNotice.tone === 'error' ? 'sp-form-error' : undefined}
+              style={{ marginTop: 'var(--sp-space-8)' }}
+            >
+              {recoveryNotice.message}
+            </p>
+          )}
+          <Button
+            variant="ghost"
             onClick={() => {
               setResetError(null);
               setResetConfirmOpen(true);
@@ -116,7 +198,7 @@ export function TopScreen({
       <Dialog
         open={resetConfirmOpen}
         title="ローカルデータの初期化"
-        message="デッキ・対局記録・実績・設定・スキン選択・破損データの退避コピーを全て削除して最初の状態に戻します。この操作は取り消せません。"
+        message="デッキ・対局記録・実績・設定・スキン選択・破損データの退避コピーを全て削除して最初の状態に戻します。この操作は取り消せません。必要な場合は、先に「退避データを書き出す」で破損時のコピーを保存してください。"
         confirmLabel="全て削除して初期化する"
         cancelLabel="やめる"
         danger
