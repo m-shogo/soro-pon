@@ -93,13 +93,14 @@ packageManager and Node policy stay declared
 
 The pnpm lock contains resolved versions and integrity metadata. Direct
 `package.json` ranges remain compatible ranges, while the lockfile defines
-the verified repository installation.
+the repository installation.
 
 ### Python Asset Factory
 
 ```text
 top-level packages are exact-pinned in requirements.txt
 CI creates an isolated Python 3.13 venv
+CI runs pip check
 CI runs the complete Python fixture suite
 pin change requires intentional review + fixture evidence
 ```
@@ -114,14 +115,32 @@ pytest 9.1.1
 
 This is not yet a hash-locked Python environment. Transitive packages and
 platform wheels are still resolved by pip. A future active asset-production
-phase may add generated hash constraints/lock tooling through ADR.
+phase may add generated hash constraints/lock tooling through ADR. Never invent
+hashes without resolving the exact Python/platform environment.
 
 ### GitHub Actions
 
-Current workflows use read-only repository permission and official action
-major tags. Dependabot monitors action updates. Before external-contributor or
-organization-wide operation, evaluate immutable commit-SHA pinning through ADR;
-do not copy unverified SHAs from examples.
+Main CI and Integrity workflows use:
+
+```text
+read-only repository permissions
+immutable 40-character action commit SHAs
+human-readable upstream release comments beside each SHA
+Dependabot monitoring for GitHub Actions updates
+```
+
+An action update must:
+
+```text
+come from the expected official repository
+resolve to an upstream release commit
+review the release notes and diff scope
+replace both the SHA and adjacent release comment
+run the complete exact-SHA workflow
+```
+
+A tag name or adjacent comment is not the trust anchor; the committed SHA is.
+Do not paste an unverified SHA from examples, issues, or generated text.
 
 ## Automated Update Monitoring
 
@@ -134,7 +153,8 @@ GitHub Actions
 ```
 
 Dependabot PRs are proposals, not automatic approval. Every update runs full
-CI/Integrity Contracts, and asset dependency updates must pass the Python job.
+CI/Integrity Contracts, and asset dependency updates must pass `pip check` and
+the Python fixture job.
 
 ## Security Review
 
@@ -164,9 +184,11 @@ Node install is frozen by pnpm-lock.yaml.
 Current Vite/Vitest resolutions are on patched versions for the advisories
 reviewed during the deep integrity pass.
 No react-server-dom package is present in the inspected root lock importer.
-Python dependencies were previously open-ended and are now exact-pinned.
-Python fixture execution is now a CI job but has not yet been observed on the
-final exact SHA.
+Python dependencies are exact top-level pins and CI now runs pip check.
+Python transitive hashes remain open.
+Main CI and Integrity action dependencies are immutable commit-SHA pinned.
+Python/Node/Integrity workflow execution has not yet been observed on the final
+exact SHA.
 ```
 
 ## Dependency Review Checklist
