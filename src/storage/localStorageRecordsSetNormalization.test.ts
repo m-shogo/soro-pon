@@ -65,4 +65,24 @@ describe('set-like records collections', () => {
 
     expect(loaded.totalMatches).toBe(2);
   });
+
+  it('保存上限より前に重複を除去し、配列後方の一意な値を失わない', () => {
+    const storage = createMemoryStorage();
+    storage.setItem(
+      RECORDS_STORAGE_KEY,
+      JSON.stringify({
+        ...storedPayload(),
+        roleCollection: [...Array.from({ length: 501 }, () => 'deck:duplicate'), 'deck:after-cap'],
+        achievements: [...Array.from({ length: 101 }, () => 'a-duplicate'), 'a-after-cap'],
+        recentMatchKeys: [...Array.from({ length: 21 }, () => 'match-duplicate'), 'match-after-cap'],
+      }),
+    );
+
+    const loaded = createLocalStorageRecordsStore(storage).load();
+
+    expect(loaded.records.roleCollection).toEqual(['deck:duplicate', 'deck:after-cap']);
+    expect(loaded.records.achievements).toEqual(['a-duplicate', 'a-after-cap']);
+    expect(loaded.records.recentMatchKeys).toEqual(['match-duplicate', 'match-after-cap']);
+    expect(loaded.issues.some((issue) => issue.code === 'L9007')).toBe(true);
+  });
 });
