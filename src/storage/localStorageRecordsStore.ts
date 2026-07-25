@@ -55,18 +55,45 @@ function normalizeOverLimitCollections(raw: unknown): {
   const candidate: Record<string, unknown> = { ...source };
   const trimmed: string[] = [];
 
-  const trimArray = (key: string, max: number, label: string): void => {
+  const trimArray = (
+    key: string,
+    max: number,
+    label: string,
+    options: { dedupeStrings?: boolean } = {},
+  ): void => {
     const value = source[key];
-    if (Array.isArray(value) && value.length > max) {
-      candidate[key] = value.slice(0, max);
-      trimmed.push(`${label} ${value.length}件→${max}件`);
+    if (!Array.isArray(value)) {
+      return;
     }
+
+    const normalized =
+      options.dedupeStrings === true && value.every((item) => typeof item === 'string')
+        ? [...new Set(value as string[])]
+        : value;
+    const capped = normalized.slice(0, max);
+    if (capped.length === value.length) {
+      return;
+    }
+
+    candidate[key] = capped;
+    const changes: string[] = [];
+    if (normalized.length < value.length) {
+      changes.push(`重複${value.length - normalized.length}件を除去`);
+    }
+    if (normalized.length > max) {
+      changes.push(`${normalized.length}件→${max}件`);
+    }
+    trimmed.push(`${label} ${changes.join('・')}`);
   };
 
   trimArray('records', MAX_STORED_MATCH_RECORDS, '対局履歴');
-  trimArray('roleCollection', MAX_ROLE_COLLECTION_ENTRIES, '役コレクション');
-  trimArray('achievements', MAX_STORED_ACHIEVEMENTS, '実績');
-  trimArray('recentMatchKeys', MAX_RECENT_MATCH_KEYS, '処理済み対局キー');
+  trimArray('roleCollection', MAX_ROLE_COLLECTION_ENTRIES, '役コレクション', {
+    dedupeStrings: true,
+  });
+  trimArray('achievements', MAX_STORED_ACHIEVEMENTS, '実績', { dedupeStrings: true });
+  trimArray('recentMatchKeys', MAX_RECENT_MATCH_KEYS, '処理済み対局キー', {
+    dedupeStrings: true,
+  });
 
   if (trimmed.length === 0) {
     return null;
@@ -83,12 +110,11 @@ function validStrings(value: unknown, maxLength: number, maxItems: number): stri
   if (!Array.isArray(value)) {
     return [];
   }
-  return value
-    .filter(
-      (item): item is string =>
-        typeof item === 'string' && item.length > 0 && item.length <= maxLength,
-    )
-    .slice(0, maxItems);
+  const valid = value.filter(
+    (item): item is string =>
+      typeof item === 'string' && item.length > 0 && item.length <= maxLength,
+  );
+  return [...new Set(valid)].slice(0, maxItems);
 }
 
 function validOptionalString(value: unknown, maxLength: number): string | undefined {
