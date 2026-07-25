@@ -31,10 +31,10 @@ FUTURE_TRIGGER
 | Area | Status | Current control | Open evidence / limitation |
 |---|---|---|---|
 | Schema migration | IMPLEMENTED / rerun open | strict versions, visible deterministic v0→v1, newer reject | exact-final-SHA rerun |
-| Corruption recovery | IMPLEMENTED / rerun open | deck metadata/body salvage, partial records salvage, raw backup attempt | final-SHA execution |
+| Corruption recovery | IMPLEMENTED / rerun open | deck metadata/body salvage, partial records salvage, raw backup + export | final-SHA execution |
 | Mutation conflict | PARTIAL | stale observed deck save/delete rejection | no true atomic CAS |
-| Backup | PARTIAL | local forensic `*.corrupt-backup` | not guaranteed/user-facing/cross-device |
-| Restore | OPEN | developer inspection only | no restore UI/merge |
+| Backup | PARTIAL | local forensic `*.corrupt-backup` + versioned raw export | not guaranteed/cross-device |
+| Restore | OPEN | support/manual inspection of exported bundle | no validated restore/merge UI |
 | Deploy | BLOCKED_ENVIRONMENT | runbook only | no provider/URL/secrets/job |
 | Artifact rollback | BLOCKED_ENVIRONMENT | historical local compatibility rehearsal + runbook | no deployed immutable artifact |
 | Observability | PARTIAL / local | command logs, browser errors, flow/soak evidence | no remote production telemetry |
@@ -43,10 +43,10 @@ FUTURE_TRIGGER
 | Rate limiting | NOT APPLICABLE | local byte/depth/branch/package/storage caps | reopen with network endpoint |
 | Server load | NOT APPLICABLE | no server target | reopen with API/backend |
 | Client stress/soak | IMPLEMENTED for recorded historical scopes | adversarial fixtures + Batch 9/10 | current artifact rerun/Batch 11 |
-| Chaos/fault injection | PARTIAL | storage, schema, cleanup, skin, stale-state failures | network chaos awaits network architecture |
-| Dependency reproducibility | PARTIAL | pnpm lock; exact top-level Python pins | Python transitive hash lock open |
+| Chaos/fault injection | PARTIAL | storage, recovery export, schema, cleanup, skin, stale-state failures | network chaos awaits network architecture |
+| Dependency reproducibility | PARTIAL | pnpm lock; exact top-level Python pins + pip check | Python transitive hash lock open |
 | Dependency monitoring | IMPLEMENTED | Dependabot npm/pip/Actions | proposed updates still need review |
-| Workflow supply chain | PARTIAL | read-only permissions/timeouts/concurrency | immutable action SHA pinning open |
+| Workflow supply chain | IMPLEMENTED / rerun open | read-only permissions + immutable action commit SHAs | final-SHA workflow result unobserved |
 | Version compatibility | IMPLEMENTED / rerun open | deck/storage/skin contracts | exact artifact matrix |
 | Secrets | NOT APPLICABLE NOW | none required in repo | provider secret store before deploy |
 | Privacy/telemetry | DESIGN GUARD | no remote collection | consent/retention review before telemetry |
@@ -65,7 +65,11 @@ valid deck-body preservation when wrapper metadata is damaged
 deterministic duplicate deck-ID consolidation
 current-version partial records salvage
 ordered-set normalization and totalMatches lower bound
+set-like dedupe before retention caps
 raw backup and active cleanup attempted independently
+versioned in-app raw forensic bundle export
+partial backup-read failures preserve readable entries
+file-creation failure never deletes source backup or claims success
 atomic match record/coins/roles/achievements write
 stale observed update/delete rejection
 truthful full-reset result in TOP and ErrorBoundary
@@ -75,7 +79,7 @@ Not implemented:
 
 ```text
 transactional multi-tab compare-and-swap
-in-app backup browser/restore/merge
+validated in-app restore/merge
 cloud or cross-device backup
 guaranteed backup under quota/policy denial
 ```
@@ -135,7 +139,7 @@ Current test evidence:
 ```text
 install/typecheck/test/build logs
 Integrity Contracts results
-Python asset fixture result
+Python asset fixture and pip-check results
 Playwright step/result JSON
 pageerror / console / rejection / failed request capture
 cycle/dead-end/corruption counters
@@ -210,6 +214,10 @@ storage read/write/quota/backup/remove failure
 metadata-only deck damage
 isolated malformed match rows
 duplicate persisted IDs and stale observed mutation
+duplicate-heavy set retention
+raw recovery partial-read failure
+browser recovery-file creation failure
+metadata-only deck damage
 skin manifest/token/asset/preload failure
 skin race/unmount/inheritance/registry/trust failures
 partial reset failure
@@ -227,6 +235,7 @@ Canonical documents:
 docs/DEPENDENCY-POLICY.md
 docs/CI-GATES.md
 docs/qa/POST-BATCH-10-SUPPLY-CHAIN-REVIEW.md
+docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 ```
 
 Current controls:
@@ -234,17 +243,17 @@ Current controls:
 ```text
 pnpm lockfile + frozen install + integrity metadata
 Python 3.13 CI with exact Pillow/NumPy/pytest top-level pins
-Python asset fixture job
+Python pip check + asset fixture job
 weekly Dependabot for npm, pip, and Actions
 read-only workflow permissions, timeouts, concurrency cancellation
+Main CI / Integrity action dependencies pinned to immutable commit SHAs
 ```
 
 Open limits:
 
 ```text
 Python transitive packages/wheels not hash-locked
-GitHub Actions use major tags rather than verified immutable commit SHAs
-final-SHA Node/Python workflow results not observed
+final-SHA Node/Python/Integrity workflow results not observed
 ```
 
 Dependency monitoring is not automatic approval and does not prove an update is
@@ -276,14 +285,14 @@ post-incident evidence/review
 
 ```text
 1. Stop concurrent writers and freeze clean HEAD == origin/main.
-2. Frozen Node install and pinned Python install.
-3. Observe Integrity Contracts and Python asset fixture jobs.
+2. Frozen Node install and exact Python top-level install.
+3. Observe Integrity Contracts, pip check, and Python asset fixture jobs.
 4. pnpm typecheck / test / skin:validate / build.
 5. Resolve any failure; restart exact-SHA evidence after every change.
 6. Execute Batch 11 on the same production artifact.
 7. Synchronize evidence/report/readiness.
 8. Select hosting and staging/production model.
-9. Staging deploy + immutable rollback rehearsal.
+9. Staging deploy + immutable rollback rehearsal + provider security headers.
 10. Production deploy/rollback verification.
 11. Physical-device and real-AT evidence when environments exist.
 ```
