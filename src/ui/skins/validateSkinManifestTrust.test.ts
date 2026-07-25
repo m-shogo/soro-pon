@@ -42,4 +42,23 @@ describe('runtime skin trust policy', () => {
 
     expect(validateSkinManifest(raw).ok).toBe(false);
   });
+
+  it('external読込元がofficialを自己申告してもSVG制限を回避できない', () => {
+    const result = validateSkinManifest(manifest('official', 'badge.svg'), 'external');
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.issues.some((issue) => issue.includes('一致しません'))).toBe(true);
+      expect(result.issues.some((issue) => issue.includes('SVG'))).toBe(true);
+    }
+  });
+
+  it('official読込元でexternalを自己申告したmanifestも信頼境界不一致として拒否する', () => {
+    const result = validateSkinManifest(manifest('external', 'badge.png'), 'official');
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.issues.some((issue) => issue.includes('一致しません'))).toBe(true);
+    }
+  });
 });
