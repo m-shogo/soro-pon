@@ -1,8 +1,9 @@
 # Skin Distribution Contract (P2-3)
 
 インストール型／販売スキンを導入する前に確定させる契約です。
-現時点では公式同梱スキンの安全な読み込み基盤まで実装済みで、外部packageの
-install・署名・entitlement・trust付与は未実装です。Gate 7は未達です。
+現時点では公式同梱スキンの安全な読み込み基盤と、runtime loaderがmanifest外から
+信頼区分を渡す境界まで実装済みです。外部packageのinstall・署名・entitlement・
+配布元検証は未実装で、Gate 7は未達です。
 
 ## Package Identity
 
@@ -14,13 +15,18 @@ trustedOrigin: official | external
 ```
 
 **重要:** `trustedOrigin` はmanifest自身に決めさせません。
-manifestの `origin` は記述値にすぎず、将来のinstaller／registryが署名・配布元・
-予約済みIDを検証した後に付与する信頼区分を正本とします。外部packageが
+manifestの `origin` は記述値にすぎず、loader／将来のinstaller／registryが署名・
+配布元・予約済みIDを検証した後に付与する信頼区分を正本とします。外部packageが
 `origin: official` と自己申告してもofficial権限へ昇格してはいけません。
 
-現在のruntimeは、manifestが `external` として評価された場合にPNG/WebP以外、
-特にSVGを拒否します。しかし、外部installer自体が未実装のため、manifestの
-自己申告を外部package trustの根拠として使える状態ではありません。
+現在のruntime validatorは、loaderから渡された `expectedOrigin` とmanifestの
+`origin` が不一致ならpackageを拒否します。外部として分類された読み込み元では、
+manifestがofficialを自己申告してもSVG制限を回避できません。公式同梱fetch経路は
+loader側でofficial分類されます。
+
+これは「manifest自己申告を信用しない」ためのruntime境界です。誰をexternal／
+officialとして分類するかを署名・配布元・予約IDから決める外部installer自体は未実装
+であり、cryptographic package identityではありません。
 
 ## Contract Version
 
@@ -50,6 +56,8 @@ installerが展開前に全ファイルhashを検証する
 公式同梱packageのfilesystem validator
 runtime manifest schema validation
 runtime token allowlist
+loader-owned expectedOrigin binding
+manifest originとtrusted source分類の不一致拒否
 external評価時のSVG拒否
 safe filename / path traversal / external URL拒否
 versioned URL / preload / atomic visual application
@@ -59,7 +67,7 @@ versioned URL / preload / atomic visual application
 
 ```text
 外部package installer
-installer-owned trustedOrigin binding
+署名・配布元・予約IDからtrustedOriginを決めるauthority
 署名／公開鍵管理
 content-hash manifestのinstall-time検証
 package保存領域
@@ -91,13 +99,14 @@ skinはengine/game state/records/storage/payment/networkへアクセスできな
 7. uninstall時に選択中ならdefaultへ復旧
 ```
 
-`git checkout`、manifest文字列の変更、またはmanifestの `origin: official` は
-trust付与・package rollback・install成功の証明ではありません。
+`git checkout`、manifest文字列の変更、manifestの `origin: official`、または
+loaderへ未検証の分類を渡すことは、trust付与・package rollback・install成功の
+証明ではありません。
 
 ## Trust-level File Policy
 
 ```text
-official（installer／同梱buildが信頼を付与）:
+official（同梱build／将来のinstaller authorityが信頼を付与）:
   PNG / WebP / review済みSVG
 
 external:
@@ -106,5 +115,6 @@ external:
 ```
 
 runtime validatorとfilesystem validatorの両方でexternal SVGを拒否します。
-ただし「誰がexternal／officialか」を安全に決めるinstaller-owned trust bindingは
-未実装であり、Gate 7 READYを名乗ってはいけません。
+runtimeはloader-owned origin分類にも拘束されます。ただし、その分類を安全に決める
+外部installer authority、署名、配布元検証、entitlementは未実装であり、Gate 7
+READYを名乗ってはいけません。
