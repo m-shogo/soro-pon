@@ -35,7 +35,15 @@ function downloadRecoveryBundle(text: string, exportedAtMs: number): void {
     anchor.click();
   } finally {
     anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    if (typeof URL.revokeObjectURL === 'function') {
+      window.setTimeout(() => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {
+          // ダウンロード後のbest-effort cleanup。UI成功判定を巻き戻さない。
+        }
+      }, 0);
+    }
   }
 }
 
