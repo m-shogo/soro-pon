@@ -20,9 +20,9 @@ Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: contract defined, NOT executed
-Post-Batch-10 integrity reviews:
+Post-Batch-10 integrity + residual closure:
   product/test/CI/doc fixes committed
-  79 targeted test definitions committed
+  92 targeted test definitions across 28 Integrity files committed
   exact-current-SHA verification pending
 ```
 
@@ -32,15 +32,16 @@ Review records:
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
+docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 ```
 
-Historical Batch 10 evidence does not validate the newer product HEAD.
-Fresh verification and Batch 11 must use one frozen exact commit and one
-production artifact.
+Historical Batch 10 evidence does not validate the newer product HEAD. Fresh
+verification and Batch 11 must use one frozen exact commit and one production
+artifact.
 
 ## Integrity Hardening Result
 
-The three reviews found and fixed real defects in:
+The reviews found and fixed real defects in:
 
 ```text
 corruption recovery and forensic backup
@@ -55,18 +56,24 @@ variant/role/bonus ID uniqueness
 tile membership set semantics and ignored group fields
 contradictory ScoreBonus caps
 persisted collection bounds and legacy over-limit salvage
+set-like dedupe before retention caps
 valid deck preservation when wrapper metadata alone is damaged
 partial records salvage without wiping other progress
 duplicate persisted deck-ID consolidation
 missing-entity route recovery
 Blob URL/export lifecycle
+raw corrupt-backup bundle export before reset
 full local reset completeness and partial-failure truthfulness
 emergency ErrorBoundary reset truthfulness
 deck deletion confirmation and safe danger-dialog focus
 dialog description association for assistive technology
+MatchSession remount identity by matchSessionId
+Editor live validation parity with production boundaries
 skin preload rejection/unmount race recovery
 skin inheritance depth, registry, and external SVG runtime validation
+loader-owned skin origin trust classification
 bounded adversarial import diagnostics
+immutable GitHub Action commit pins and Python pip check
 error-code ownership, CI visibility, and current-state docs
 ```
 
@@ -100,11 +107,16 @@ old/partially damaged payload:
 same-ID import:
   unchanged-input confirmation
   unchanged existing-entry fingerprint confirmation
+
+forensic recovery:
+  raw *.corrupt-backup values can be exported as a versioned JSON bundle
+  export failure never deletes the source backup or claims success
+  automatic raw restore remains intentionally unsupported
 ```
 
-Targeted integrity test definitions added across the three reviews: **79**.
-They are committed but not yet authoritatively executed against the final
-review SHA. No new PASS claim is made.
+Targeted integrity test definitions committed: **92** across **28 files**. They
+are not yet authoritatively executed against the final review SHA. No new PASS
+claim is made.
 
 ## Product Core
 
@@ -121,8 +133,8 @@ ron: 8 hand tiles + discarded tile
 self-draw: 9 tiles after draw
 ```
 
-The interaction may reference Mahjong table feel, but the rule engine must
-not drift into Mahjong rules.
+The interaction may reference Mahjong table feel, but the rule engine must not
+drift into Mahjong rules.
 
 ## Official Skins
 
@@ -164,6 +176,7 @@ Still open/unclaimed:
 ```text
 exact-current-SHA install/typecheck/test/skin validation/build
 GitHub Actions result for that exact SHA
+Python 3.13 install + pip check + asset fixtures on that exact SHA
 Batch 11 production Firefox/WebKit execution
 physical iPhone Safari / iPad / Android
 real hosting deployment
@@ -171,10 +184,11 @@ rollback of an actually deployed immutable artifact
 Safari + VoiceOver
 NVDA / JAWS
 remaining Batch 8 Result/Cute Pop real-VoiceOver evidence
-user-facing backup restore
+validated backup restore/merge UI
 true transactional multi-tab compare-and-swap
-installer-owned external-skin trust/signature/entitlement
-MatchSession remount key migration from bounded seed to matchSessionId
+cryptographic external-skin signature/entitlement/installer authority
+Python transitive dependency hash lock
+provider-specific CSP/security headers
 ```
 
 RC remains **LIMITED READY**.
@@ -189,5 +203,6 @@ same-ID import requires irreversible-overwrite confirmation
 shared deck JSON excludes local/private images and unsafe display fields
 no online multiplayer, accounts, billing, or cloud sync
 supported official skins: yorunoshirube and cute-pop
+corrupt-backup copies can be exported before reset
 reset is visible, irreversible, and reports partial deletion failure
 ```
