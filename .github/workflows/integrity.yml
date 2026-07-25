@@ -43,6 +43,7 @@ jobs:
             src/ui/skins/skinPreload.failure.test.ts \
             src/ui/skins/skinInheritanceDepth.test.ts \
             src/ui/skins/validateSkinManifestTrust.test.ts \
+            src/ui/skins/skinLoaderTrustBoundary.test.ts \
             src/ui/skins/skinRegistryIntegrity.test.ts \
             src/ui/screens/DeckDetailScreen.test.tsx \
             src/ui/screens/DeckEditorScreen.validation.test.tsx \
