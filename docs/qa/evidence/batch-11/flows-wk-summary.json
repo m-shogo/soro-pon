@@ -1,0 +1,129 @@
+{
+  "testId": "B11-WK-01",
+  "browser": "webkit",
+  "engineVersion": "26.5",
+  "isRealSafari": false,
+  "note": "Playwright WebKit is NOT Safari/iOS Safari/macOS Safari. No Safari UI, Web Inspector, real device viewport, or VoiceOver bridge is exercised.",
+  "base": "http://localhost:4199",
+  "buildType": "production (vite build → vite preview)",
+  "commit": "7548964df4565be47a2f18972b500ff42f08953d",
+  "ranAt": "2026-07-26T02:01:45.426Z",
+  "memory": {
+    "available": false,
+    "reason": "CDP memory domain not available outside Chromium; not measured (per matrix). No memory-leak claim."
+  },
+  "results": [
+    {
+      "id": "B11-wk.1",
+      "label": "TOP renders on production artifact (skin A)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.2",
+      "label": "skin switch A→B applies",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.3",
+      "label": "reload restores skin B",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.4",
+      "label": "Import rejects invalid JSON with visible reasons",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.5a",
+      "label": "same-ID import first action shows overwrite confirmation (does not silently write)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.5",
+      "label": "Import accepts a valid deck → Deck Detail",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.6",
+      "label": "Deck Editor opens with primary controls",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.7",
+      "label": "3-player match reaches Result (cute-pop)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.8",
+      "label": "Result → TOP navigation",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.9",
+      "label": "4-player match reaches Result (yorunoshirube)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.10",
+      "label": "final reload lands on a recoverable screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-wk.11",
+      "label": "no genuine page errors (WebKit access-control-checks fetch noise classified benign)",
+      "ok": true,
+      "detail": "genuine=0 benignBrowser=2 []"
+    },
+    {
+      "id": "B11-wk.12",
+      "label": "no console errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "id": "B11-wk.13",
+      "label": "no unhandled promise rejections",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "id": "B11-wk.14",
+      "label": "no non-benign failed requests",
+      "ok": true,
+      "detail": "benign=1 nonBenign=0 []"
+    }
+  ],
+  "errorCounts": {
+    "pageErrors": 0,
+    "benignBrowserPageErrors": 2,
+    "consoleErrors": 0,
+    "unhandledRejections": 0,
+    "failedRequestsBenign": 1,
+    "failedRequestsNonBenign": 0
+  },
+  "benignBrowserPageErrorNote": "WebKit emitted \"Fetch API cannot load ... due to access control checks\" for a same-origin skin.json fetch during initial navigation. Verified benign: in-page fetch returns ok:true/status 200, all skin assets (tokens.css + 9 generated PNGs) return 200, and the skin renders correctly. Not a product defect; not a real-Safari result.",
+  "errorSamples": {
+    "pageErrors": [],
+    "benignBrowserPageErrors": [
+      "Fetch API cannot load http: /localhost:4199/assets/ui/soro-pon/skins/base/skin.json due to access control checks.",
+      "Fetch API cannot load http: /localhost:4199/assets/ui/soro-pon/skins/yorunoshirube/skin.json due to access control checks."
+    ],
+    "consoleErrors": [],
+    "failedRequests": [
+      "http://localhost:4199/assets/ui/soro-pon/SKIN-MANIFEST.json :: cancelled"
+    ]
+  },
+  "claimScope": "webkit 26.5 against a local production preview of this commit only. Not real Safari, not a real device, not a deploy. No memory claim.",
+  "pass": true
+}

@@ -1,0 +1,8 @@
+Batch 11 production build — frozen SHA 7548964df4565be47a2f18972b500ff42f08953d — 2026-07-26T01:46:33Z
+node v24.15.0 pnpm 11.1.2 playwright Version 1.61.1
+2f7d894757b6b135  444999  dist/assets/index-DX77IJN9.js
+b71c0f55f3205cea  25817  dist/assets/index-o4gla2TO.css
+e85ec287f9425c9e  211  dist/assets/ui/soro-pon/skins/base/tokens.css
+11e34501a0b1691b  4694  dist/assets/ui/soro-pon/skins/cute-pop/tokens.css
+f17f5f10720c39da  4185  dist/assets/ui/soro-pon/skins/yorunoshirube/tokens.css
+ee42c815cb94ce60  477  dist/index.html

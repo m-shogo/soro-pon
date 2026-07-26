@@ -1,0 +1,91 @@
+{
+  "label": "b11-ff-rotation",
+  "browser": "firefox",
+  "base": "http://localhost:4199",
+  "startedAt": "2026-07-26T02:02:25.936Z",
+  "durationMinutes": 25.5,
+  "cyclesCompleted": 23,
+  "maxMinutes": 25,
+  "maxCycles": 24,
+  "aborted": null,
+  "scenarioCounts": {
+    "S1": 2,
+    "S9": 2,
+    "S8": 2,
+    "S2": 2,
+    "S7": 2,
+    "S10": 2,
+    "S3": 2,
+    "S11": 2,
+    "S5": 2,
+    "S4": 2,
+    "S12": 1,
+    "S13": 1,
+    "S14": 1
+  },
+  "matchesReachedResult": 10,
+  "matchesFailedResult": 0,
+  "cyclesWithNote": 0,
+  "totalPageErrors": 0,
+  "totalConsoleErrors": 0,
+  "totalFailedRequests": 4,
+  "errorSamples": [
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/base/skin.json :: NS_BINDING_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png?v=4 :: NS_BINDING_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: NS_BINDING_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png?v=4 :: NS_BINDING_ABORTED"
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: NS_BINDING_ABORTED"
+    }
+  ],
+  "warmupExcluded": {
+    "cycles": 7,
+    "policy": "first 5min OR first 10 cycles (longer wins)"
+  },
+  "trends": {
+    "heapUsedBytes": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "domNodes": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "jsListeners": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "liveTimers": {
+      "first10Median": 0,
+      "last10Median": 0,
+      "growthPct": null
+    },
+    "localStorageBytes": {
+      "first10Median": 19097,
+      "last10Median": 19495,
+      "growthPct": 2.1
+    },
+    "matchCyclePerf": {
+      "firstP95": null,
+      "lastP95": null,
+      "slowdownPct": null
+    }
+  },
+  "memoryAuthority": "not measured (stability-only run, per matrix)"
+}

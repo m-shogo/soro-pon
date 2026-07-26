@@ -1,0 +1,99 @@
+{
+  "label": "b11-wk-rotation",
+  "browser": "webkit",
+  "base": "http://localhost:4199",
+  "startedAt": "2026-07-26T02:28:06.236Z",
+  "durationMinutes": 19.3,
+  "cyclesCompleted": 24,
+  "maxMinutes": 25,
+  "maxCycles": 24,
+  "aborted": null,
+  "scenarioCounts": {
+    "S1": 2,
+    "S9": 2,
+    "S8": 2,
+    "S2": 2,
+    "S7": 2,
+    "S10": 2,
+    "S3": 2,
+    "S11": 2,
+    "S5": 2,
+    "S4": 2,
+    "S12": 2,
+    "S13": 1,
+    "S14": 1
+  },
+  "matchesReachedResult": 10,
+  "matchesFailedResult": 0,
+  "cyclesWithNote": 0,
+  "totalPageErrors": 2,
+  "totalConsoleErrors": 0,
+  "totalFailedRequests": 2,
+  "errorSamples": [
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/SKIN-MANIFEST.json :: cancelled"
+    },
+    {
+      "kind": "pageerror",
+      "text": "Fetch API cannot load http: /localhost:4199/assets/ui/soro-pon/skins/base/skin.json due to access control checks."
+    },
+    {
+      "kind": "pageerror",
+      "text": "Fetch API cannot load http: /localhost:4199/assets/ui/soro-pon/skins/yorunoshirube/skin.json due to access control checks."
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/base/tokens.css :: cancelled"
+    },
+    {
+      "kind": "pageerror",
+      "text": "Fetch API cannot load http: /localhost:4199/assets/ui/soro-pon/skins/cute-pop/skin.json due to access control checks."
+    },
+    {
+      "kind": "requestfailed",
+      "text": "http://localhost:4199/assets/ui/soro-pon/skins/base/tokens.css :: cancelled"
+    },
+    {
+      "kind": "pageerror",
+      "text": "Fetch API cannot load http: /localhost:4199/assets/ui/soro-pon/skins/cute-pop/skin.json due to access control checks."
+    }
+  ],
+  "warmupExcluded": {
+    "cycles": 8,
+    "policy": "first 5min OR first 10 cycles (longer wins)"
+  },
+  "trends": {
+    "heapUsedBytes": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "domNodes": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "jsListeners": {
+      "first10Median": null,
+      "last10Median": null,
+      "growthPct": null
+    },
+    "liveTimers": {
+      "first10Median": 0,
+      "last10Median": 0,
+      "growthPct": null
+    },
+    "localStorageBytes": {
+      "first10Median": 19348,
+      "last10Median": 19920,
+      "growthPct": 3
+    },
+    "matchCyclePerf": {
+      "firstP95": null,
+      "lastP95": null,
+      "slowdownPct": null
+    }
+  },
+  "memoryAuthority": "not measured (stability-only run, per matrix)"
+}

@@ -63,21 +63,23 @@ This batch cannot promote RC to READY while real-device, real-Safari,
 Fill immediately before execution:
 
 ```text
-Host OS:            *(report)*
-Node/pnpm:          *(report)*
-Playwright:         *(report)*
-Firefox:            *(report, Playwright-bundled)*
-WebKit:             *(report, Playwright-bundled — NOT Safari)*
+Host OS:            macOS 26.4.1 (25E253)
+Node/pnpm:          v24.15.0 / 11.1.2
+Playwright:         1.61.1
+Firefox:            151.0 (Playwright-bundled)
+WebKit:             26.5 (Playwright-bundled — NOT Safari)
 Build command:      pnpm build
 Preview command:    production artifact via vite preview
-Preview port:       4199 unless unavailable and recorded
-Frozen HEAD:        *(report; must equal origin/main)*
+Preview port:       4199
+Frozen HEAD:        7548964 (== origin/main)
 Worktree:           clean
-Integrity suite:    PASS on Frozen HEAD
-Full unit count:    *(report)*
-Review-added cases: 38 collected / 38 PASS
-Artifact hashes:    *(report)*
-GitHub CI:          PASS or explicitly unavailable; never inferred from push
+Integrity suite:    PASS on Frozen HEAD (28-file suite green)
+Full unit count:    425/425
+Review-added cases: green on frozen SHA (Integrity Contracts workflow PASS)
+Artifact hashes:    index-DX77IJN9.js 2f7d894757b6b135; index-o4gla2TO.css
+                    b71c0f55f3205cea; index.html ee42c815cb94ce60
+GitHub CI:          PASS — CI run 30183371492, Integrity run 30183371473
+                    (both green on 7548964)
 ```
 
 The old `6a844dd` Batch 10 artifact is historical comparison context only.
@@ -190,3 +192,29 @@ or an open P0/P1 exists
 RC vocabulary remains `READY` / `LIMITED READY` / `NOT READY`. Batch 11
 leaves RC **LIMITED READY** by rule while real-device, real-Safari,
 real-AT, and real-deploy gaps remain.
+
+## Actual outcome
+
+Executed 2026-07-26 on frozen SHA `7548964`. Decision: **COMPLETE**.
+
+```text
+B11-PREFLIGHT-01    PASS  clean HEAD==origin/main==7548964; versions recorded
+B11-INTEGRITY-01    PASS  28-file integrity suite green; CI+Integrity workflows green
+B11-BUILD-01        PASS  typecheck 0 / unit 425 / skin 18 / build ok; artifact 2f7d894757b6b135
+B11-FF-01           PASS  Firefox 151.0 core flow 15/15
+B11-FF-02           PASS  23 cycles / 25.5 min, 10/10 Result, 0 page/console errors
+B11-FF-03           PASS  4 failed requests all NS_BINDING_ABORTED (benign); 0 non-benign
+B11-WK-01           PASS  WebKit 26.5 core flow 15/15 (2 benign access-control-checks bucketed)
+B11-WK-02           PASS  24 cycles / 19.3 min, 10/10 Result, 0 console errors, 0 non-benign page errors
+B11-WK-03           PASS  page-errors all access-control-checks (assets 200); 0 non-benign
+B11-INTEGRITY-UI-01 PASS  same-ID overwrite confirmation exercised in both engines
+                          (first 読み込む does not write; 上書きして読み込む confirms);
+                          invalid-JSON reject shown; no silent overwrite
+B11-COMPARE-01      PASS  functional/stability table produced; memory kept Chromium-only
+B11-DOCS-01         PASS  README/CLAUDE/RELEASE-DEMO-GATES synced; RC stays LIMITED READY
+```
+
+Reaching the green precondition required 4 fixes (1 PRODUCT_DEFECT
+build-breaker + 3 TEST_DATA_DEFECT) landed on origin/main; product
+behavior unchanged. Full results:
+[BATCH-11-PRODUCTION-CROSS-BROWSER-REPORT.md](./BATCH-11-PRODUCTION-CROSS-BROWSER-REPORT.md).

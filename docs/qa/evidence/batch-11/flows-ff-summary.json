@@ -1,0 +1,124 @@
+{
+  "testId": "B11-FF-01",
+  "browser": "firefox",
+  "engineVersion": "151.0",
+  "isRealSafari": false,
+  "base": "http://localhost:4199",
+  "buildType": "production (vite build → vite preview)",
+  "commit": "7548964df4565be47a2f18972b500ff42f08953d",
+  "ranAt": "2026-07-26T01:53:11.369Z",
+  "memory": {
+    "available": false,
+    "reason": "CDP memory domain not available outside Chromium; not measured (per matrix). No memory-leak claim."
+  },
+  "results": [
+    {
+      "id": "B11-ff.1",
+      "label": "TOP renders on production artifact (skin A)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.2",
+      "label": "skin switch A→B applies",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.3",
+      "label": "reload restores skin B",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.4",
+      "label": "Import rejects invalid JSON with visible reasons",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.5a",
+      "label": "same-ID import first action shows overwrite confirmation (does not silently write)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.5",
+      "label": "Import accepts a valid deck → Deck Detail",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.6",
+      "label": "Deck Editor opens with primary controls",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.7",
+      "label": "3-player match reaches Result (cute-pop)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.8",
+      "label": "Result → TOP navigation",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.9",
+      "label": "4-player match reaches Result (yorunoshirube)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.10",
+      "label": "final reload lands on a recoverable screen",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "B11-ff.11",
+      "label": "no genuine page errors (WebKit access-control-checks fetch noise classified benign)",
+      "ok": true,
+      "detail": "genuine=0 benignBrowser=0 []"
+    },
+    {
+      "id": "B11-ff.12",
+      "label": "no console errors",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "id": "B11-ff.13",
+      "label": "no unhandled promise rejections",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "id": "B11-ff.14",
+      "label": "no non-benign failed requests",
+      "ok": true,
+      "detail": "benign=1 nonBenign=0 []"
+    }
+  ],
+  "errorCounts": {
+    "pageErrors": 0,
+    "benignBrowserPageErrors": 0,
+    "consoleErrors": 0,
+    "unhandledRejections": 0,
+    "failedRequestsBenign": 1,
+    "failedRequestsNonBenign": 0
+  },
+  "errorSamples": {
+    "pageErrors": [],
+    "benignBrowserPageErrors": [],
+    "consoleErrors": [],
+    "failedRequests": [
+      "http://localhost:4199/assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png?v=5 :: NS_BINDING_ABORTED"
+    ]
+  },
+  "claimScope": "firefox 151.0 against a local production preview of this commit only. Not real Safari, not a real device, not a deploy. No memory claim.",
+  "pass": true
+}
