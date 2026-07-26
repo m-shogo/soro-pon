@@ -260,6 +260,12 @@ const SCENARIOS = {
     // 「読み込む」はTOPの「JSONを読み込む」にも部分一致するためexact指定
     // (Batch 7で確認済みのgetByRole substringピットフォールと同種)
     await page.getByRole('button', { name: '読み込む', exact: true }).click();
+    // animal-starterは既存の公式starterとID衝突するため、integrity強化後のbuildでは
+    // 同一ID上書き確認(上書きして読み込む)を挟む。確認を押して取り込む。
+    const overwrite = page.getByRole('button', { name: '上書きして読み込む', exact: true });
+    if (await overwrite.count()) {
+      await overwrite.click();
+    }
     // saveDeckはid upsertのため同一deckの再importは有界(localStorage増殖しない)
     await page.waitForSelector('text=デッキ情報');
     await gotoTop(page);
