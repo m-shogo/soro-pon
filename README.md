@@ -19,11 +19,18 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit: contract defined, NOT executed
+Batch 11 production Firefox/WebKit: COMPLETE (frozen SHA 7548964)
+  Firefox 151.0 + Playwright WebKit 26.5 on the local production preview:
+  core flow 15/15 each, ~20-25 min / 23-24 cycle rotations, 10/10 matches
+  to Result, 0 product defects. Playwright WebKit is NOT real Safari;
+  no memory claim for Firefox/WebKit.
 Post-Batch-10 integrity + residual closure:
   product/test/CI/doc fixes committed
   92 targeted test definitions across 28 Integrity files committed
-  exact-current-SHA verification pending
+  frozen SHA 7548964: typecheck/unit 425/skin/build green and CI +
+    Integrity workflows green (the exact-SHA verification the Batch 11
+    precondition required); broader residual-closure verification of the
+    concurrent work-stream otherwise continues under its own tracking
 ```
 
 Review records:
@@ -174,10 +181,7 @@ Batch 10:
 Still open/unclaimed:
 
 ```text
-exact-current-SHA install/typecheck/test/skin validation/build
-GitHub Actions result for that exact SHA
 Python 3.13 install + pip check + asset fixtures on that exact SHA
-Batch 11 production Firefox/WebKit execution
 physical iPhone Safari / iPad / Android
 real hosting deployment
 rollback of an actually deployed immutable artifact

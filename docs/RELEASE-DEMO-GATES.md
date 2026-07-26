@@ -108,8 +108,11 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
-Post-Batch-10 integrity/residual fixes: committed; verification pending
-Batch 11 production Firefox/WebKit: CONTRACT DEFINED / NOT EXECUTED
+Post-Batch-10 integrity/residual fixes: committed; frozen SHA 7548964
+  green on CI + Integrity workflows (wider closure continues separately)
+Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
+  (FF 151.0 + Playwright WebKit 26.5 prod-preview core 15/15 + rotations,
+  0 product defects; WebKit is not Safari; no FF/WK memory claim)
 RC status: LIMITED READY
 ```
 

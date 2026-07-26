@@ -10,9 +10,13 @@ official finals: 18
 historical Gate 4/5/6: PASS within recorded scopes
 RC: LIMITED READY
 Batch 7 COMPLETE / Batch 8 CONDITIONAL / Batch 9 COMPLETE / Batch 10 CONDITIONAL
-Batch 11: contract only, NOT executed
+Batch 11: COMPLETE on frozen SHA 7548964 (FF 151.0 + Playwright WebKit
+  26.5 prod-preview core 15/15 each + rotations, 0 product defects; WebKit
+  != Safari; no FF/WK memory claim)
 post-Batch-10 integrity/residual scope: 92 definitions across 28 files
-exact-current-SHA verification: pending
+frozen SHA 7548964: typecheck/unit 425/skin/build + CI + Integrity green
+  (exact-SHA verification for the Batch 11 precondition); wider residual
+  closure continues under the concurrent work-stream's own tracking
 ```
 
 「MVP/H1開始」「画像生成前」「次はasset Batch 5」は古い指示。
