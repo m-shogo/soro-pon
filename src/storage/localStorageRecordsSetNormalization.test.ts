@@ -82,7 +82,16 @@ describe('set-like records collections', () => {
 
     expect(loaded.records.roleCollection).toEqual(['deck:duplicate', 'deck:after-cap']);
     expect(loaded.records.achievements).toEqual(['a-duplicate', 'a-after-cap']);
-    expect(loaded.records.recentMatchKeys).toEqual(['match-duplicate', 'match-after-cap']);
+    // normalizeRecordsPayload prepends lastMatchKey ('match-3' from storedPayload)
+    // to recentMatchKeys by design, so the deduped ['match-duplicate',
+    // 'match-after-cap'] is preceded by 'match-3'. The dedupe-before-cap intent
+    // still holds: the 21 duplicates collapse to one and the trailing unique
+    // 'match-after-cap' survives.
+    expect(loaded.records.recentMatchKeys).toEqual([
+      'match-3',
+      'match-duplicate',
+      'match-after-cap',
+    ]);
     expect(loaded.issues.some((issue) => issue.code === 'L9007')).toBe(true);
   });
 });
