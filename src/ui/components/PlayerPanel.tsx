@@ -7,6 +7,7 @@ export function PlayerPanel({
   handCount,
   active = false,
   self = false,
+  showState = false,
 }: {
   name: string;
   kind: 'human' | 'cpu';
@@ -14,6 +15,7 @@ export function PlayerPanel({
   handCount: number;
   active?: boolean;
   self?: boolean;
+  showState?: boolean;
 }) {
   const label = `${self ? '自分' : '相手'}、${name}、${active ? '現在の手番' : '待機中'}、手牌${handCount}枚、捨て牌${discardCount}枚`;
   return (
@@ -32,7 +34,9 @@ export function PlayerPanel({
           手牌 {handCount} / 捨て牌 {discardCount}
         </span>
       </span>
-      <span className="sp-player-panel__state">{active ? '手番' : '待機'}</span>
+      {showState ? (
+        <span className="sp-player-panel__state">{active ? '手番' : '待機'}</span>
+      ) : null}
     </div>
   );
 }

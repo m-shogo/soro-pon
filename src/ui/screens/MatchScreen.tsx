@@ -156,6 +156,7 @@ export function MatchScreen({
             handCount={player.hand.length}
             discardCount={player.discards.length}
             active={player.id === currentPlayer?.id}
+            showState
           />
           <div style={smallTileVars}>
             <PlayedTiles player={player} deck={deck} ronTileId={ronTileId} />
@@ -175,6 +176,7 @@ export function MatchScreen({
             discardCount={human.discards.length}
             active={human.id === currentPlayer?.id}
             self
+            showState
           />
           <div style={smallTileVars}>
             <PlayedTiles player={human} deck={deck} ronTileId={ronTileId} />
