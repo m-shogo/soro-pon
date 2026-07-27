@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "batch": 12,
+  "sessionId": "B12-SAFARI-MAC-20260727",
+  "gateIds": [
+    "B12-SAFARI-MAC-01",
+    "B12-SAFARI-MAC-ROTATION-01",
+    "B12-IPHONE-SAFARI-01",
+    "B12-BATCH8-EVIDENCE-CLOSURE-01"
+  ],
+  "executionSha": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+  "artifactAggregateSha256": "8e2cd6193325862a3e2728ee05fb8dd02b3630c0c5102970fb6d114b01296647",
+  "startedAtUtc": "2026-07-27T02:18:00Z",
+  "endedAtUtc": "2026-07-27T02:37:43Z",
+  "executionMode": "automated-ax",
+  "environment": {
+    "kind": "mac-safari",
+    "os": {
+      "name": "macOS",
+      "version": "26.4.1 (25E253)"
+    },
+    "browser": {
+      "name": "Safari",
+      "version": "26.4 (21624.1.16.11.4)",
+      "engine": "WebKit"
+    },
+    "device": {
+      "genericModel": "Apple-silicon Mac",
+      "physical": true,
+      "screenCapturePixels": "2474x1736",
+      "orientation": "landscape"
+    },
+    "assistiveTechnology": {
+      "name": "VoiceOver",
+      "version": null,
+      "actuallyEnabled": false,
+      "humanObservedOutput": false,
+      "offConfirmedAtEnd": "VoiceOver process absent; VoiceOver Utility alone remained open"
+    }
+  },
+  "artifact": {
+    "baseUrl": "loopback-redacted",
+    "networkBinding": "127.0.0.1",
+    "localPreview": true,
+    "realDeploy": false,
+    "manifestEvidence": "../local-deploy/artifact-manifests.json"
+  },
+  "automationChannels": {
+    "safariWebDriver": {
+      "result": "BLOCKED",
+      "error": "session not created: Allow Remote Automation is disabled"
+    },
+    "appleEventsJavaScript": {
+      "result": "BLOCKED",
+      "error": "Allow JavaScript from Apple Events is disabled"
+    },
+    "systemEventsAccessibility": {
+      "result": "PARTIAL",
+      "error": "4-player continuation lost the AX window; later calls were denied with -25211"
+    }
+  },
+  "scenarios": [
+    {
+      "scenarioId": "stable-safari-cute-pop-3p-result",
+      "skin": "cute-pop",
+      "playerCount": 3,
+      "expected": "TOP to Result and TOP return in stable Safari",
+      "actual": "TOP, skin switch, player selection, match start, tile operation, win action, Result, and TOP return completed through AX automation",
+      "classification": "SUPPLEMENTAL_ONLY",
+      "result": "PASS",
+      "evidence": [
+        "01-result-3p-cute-pop.png"
+      ],
+      "blocker": "This is AX automation, not a human manual session or VoiceOver",
+      "unblockStep": "Repeat the complete checklist with approved Safari WebDriver or a human reviewer"
+    },
+    {
+      "scenarioId": "stable-safari-yorunoshirube-4p-result",
+      "skin": "yorunoshirube",
+      "playerCount": 4,
+      "expected": "TOP to Result in stable Safari",
+      "actual": "Skin and 4-player setup began; Result was not reached after the AX window became unavailable",
+      "classification": "ENVIRONMENT_BLOCKER",
+      "result": "BLOCKED",
+      "evidence": [],
+      "blocker": "System Events window loss followed by Accessibility denial",
+      "unblockStep": "Restore an approved control channel and rerun from a clean Safari session"
+    },
+    {
+      "scenarioId": "physical-iphone-discovery",
+      "skin": null,
+      "playerCount": null,
+      "expected": "Usable connected physical iPhone session",
+      "actual": "A paired iPhone 16 on iOS 18.7.8 was listed, but its tunnel state was unavailable; it was not used",
+      "classification": "ENVIRONMENT_BLOCKER",
+      "result": "BLOCKED",
+      "evidence": [],
+      "blocker": "Device was not actively available to the session",
+      "unblockStep": "Connect, unlock, trust, establish a tunnel or reachable LAN URL, then run the physical checklist"
+    },
+    {
+      "scenarioId": "ios-simulator-supplement",
+      "skin": null,
+      "playerCount": null,
+      "expected": "Optional non-physical supplemental app launch",
+      "actual": "Booted iPhone Simulator Safari stopped at its first-run browser setup and did not reach the app",
+      "classification": "SUPPLEMENTAL_ONLY",
+      "result": "BLOCKED",
+      "evidence": [],
+      "blocker": "Safari first-run UI requires interactive completion",
+      "unblockStep": "Complete simulator browser setup if supplemental coverage is desired; never treat it as a physical-device pass"
+    }
+  ],
+  "counts": {
+    "cycles": 0,
+    "resultsReached": 1,
+    "consoleErrors": null,
+    "pageErrors": null,
+    "unhandledRejections": null,
+    "failedRequestsBenign": null,
+    "failedRequestsNonBenign": null,
+    "deadEnds": 0,
+    "corruptions": 0
+  },
+  "defects": [
+    {
+      "classification": "ENVIRONMENT_BLOCKER",
+      "count": 1,
+      "summary": "Safari control channels were unavailable or became unavailable; no product defect was reproduced"
+    }
+  ],
+  "video": "none",
+  "claimScope": "Stable Safari 26.4 on macOS 26.4.1, frozen artifact 8e2cd6..., automated AX only, one Cute Pop 3-player Result; no full Safari, rotation, VoiceOver, iOS Safari, or physical-device claim",
+  "explicitNonClaims": [
+    "Playwright WebKit is Safari",
+    "AX automation is VoiceOver",
+    "the paired iPhone was connected or tested",
+    "the iOS Simulator was a physical device or reached the app",
+    "console, page, promise, or network error count is zero",
+    "Safari rotation or memory soak passed"
+  ],
+  "privacyReview": {
+    "containsUserName": false,
+    "containsLocalAbsolutePath": false,
+    "containsDeviceNameOrSerial": false,
+    "containsCookieTokenOrCredential": false,
+    "containsPrivatePayload": false
+  }
+}

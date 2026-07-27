@@ -1,0 +1,627 @@
+{
+  "schemaVersion": 1,
+  "gateIds": [
+    "B12-DEPLOY-01",
+    "B12-DEPLOY-SMOKE-01",
+    "B12-ROLLBACK-01",
+    "B12-ROLLBACK-VERIFY-01"
+  ],
+  "ranAtUtc": "2026-07-27T02:10:19.793Z",
+  "environment": {
+    "kind": "local immutable artifact server",
+    "networkBinding": "127.0.0.1",
+    "browser": "Playwright Chromium",
+    "realDeploy": false
+  },
+  "releases": {
+    "current": {
+      "sha": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+      "files": [
+        {
+          "path": "assets/index-DX77IJN9.js",
+          "bytes": 444999,
+          "sha256": "2f7d894757b6b135d1b545b3fb52c3b2b653bd5d9bd73bf0e0909def0d75bc36"
+        },
+        {
+          "path": "assets/index-o4gla2TO.css",
+          "bytes": 25817,
+          "sha256": "b71c0f55f3205cea9c68e6ab6fba447a22362e448727d232a8e029ae4d0a22f4"
+        },
+        {
+          "path": "assets/ui/soro-pon/ASSET-MANIFEST.md",
+          "bytes": 2979,
+          "sha256": "52d354e6a666f1ad8af5b374fd4855f1ac08ef63034f7225bac58acd6d252c9c"
+        },
+        {
+          "path": "assets/ui/soro-pon/SKIN-CONTRACT.json",
+          "bytes": 8545,
+          "sha256": "7463ad5214e2b9e7ae38a6db060f85d95f5ddfcb21f13a6c59342d0c415c5c9e"
+        },
+        {
+          "path": "assets/ui/soro-pon/SKIN-MANIFEST.json",
+          "bytes": 412,
+          "sha256": "c3c7189e54dd58f010c691234e1974c12ae8c8270d4203909bfa033cc8b8e173"
+        },
+        {
+          "path": "assets/ui/soro-pon/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/generated/placeholders/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/base/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/base/skin.json",
+          "bytes": 7737,
+          "sha256": "5abcc929faa13bdacfb95a0c07f95f2dc2016314979ef33659b06e187d28af93"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/base/tokens.css",
+          "bytes": 211,
+          "sha256": "e85ec287f9425c9e13b10ddb25923f44a7f2b67b0deae566c42ed511ac48535d"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/candidates/proof-button-primary-2x.png",
+          "bytes": 1066,
+          "sha256": "b28523b04882ba90de46ba846f5adcddbcd30ae51436fc9ecdbbf79354ea44ac"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/candidates/proof-panel-paper-2x.png",
+          "bytes": 3717,
+          "sha256": "f0ceb2e98efb00c1f1431e73647e4512849e9bbd2e4c070565ef4b9302ba37eb"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png",
+          "bytes": 8153,
+          "sha256": "9058c7df6d2b176fcb1edf534bd853c98063930d4fa7c4d2bc7dc9f85b31abcc"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png",
+          "bytes": 34616,
+          "sha256": "75b05dd048cb89545c83324540bf66a8d665c8b4cd1e43747cea044cca65e8fc"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png",
+          "bytes": 1786,
+          "sha256": "160309900e890b6361e799ecdb6e94ecffe438a1917a6ce16a50e459a90c9eff"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png",
+          "bytes": 199135,
+          "sha256": "feadabf5974419e6877bd682a63837551d0f756ed89f5e5ece9c6ca3169f93a4"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png",
+          "bytes": 4221,
+          "sha256": "571a030b0f871fe69944cf2e714da25e949ad4a4fe880a3ab4ad05270a8e827a"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png",
+          "bytes": 298275,
+          "sha256": "36422d1e1306c0a621eae0537ceb67f52b07dc25cf91e122158689f15e74303a"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png",
+          "bytes": 1848567,
+          "sha256": "bf8e9febc93187db8f39e2aa4f9618c7e3d54ac78b9bfe07052d0e4bfa6d6cf5"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png",
+          "bytes": 723519,
+          "sha256": "2a3d92b09741d965f175de96fd69ed6f89bf33e63e501bfbc88e6a14c36a332c"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png",
+          "bytes": 420980,
+          "sha256": "dc6dead33c09320c4a54ca08faa98277c40ba668fba8986f552ee8ec6a66a7b0"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/skin.json",
+          "bytes": 5050,
+          "sha256": "7680090f6f1b69aac13db8478c32602073f9f5c97dae24a853604f51a1206c1e"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/tokens.css",
+          "bytes": 4694,
+          "sha256": "11e34501a0b1691b97143ace3202d967766b0a039ea23d1489a4b8bc92cb4e4e"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/badge-info-background-candidate-b.png",
+          "bytes": 19052,
+          "sha256": "faac85ee8afe20760f1df6d2798065044c3e5100192860ca68b421edda61bb08"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/badge-info-background-candidate-c.png",
+          "bytes": 17893,
+          "sha256": "6380e2265d0676a4d31c42a1e2db758f7e9f355eced09dff74a6c8c44f4382a7"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-paper-default-candidate-b.png",
+          "bytes": 127213,
+          "sha256": "f690da07b91da2a3d7190a16862ce5da3da58045995d6bbdf214f3ca676d9587"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-paper-default-candidate-c.png",
+          "bytes": 119929,
+          "sha256": "e0d0cf0f2f1a1b0b4c3bbaed611bf5644357886bee6efa162cfbd014931386be"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-result-frame-candidate-a.png",
+          "bytes": 153344,
+          "sha256": "8c5b8619a96839e06edfd7c57f03df18b38e1f1dd3a8b75c0c693e02589c577c"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-result-frame-candidate-c.png",
+          "bytes": 277715,
+          "sha256": "74a88b11e0faea1eb59a3a050dea647accd2d54ec696e4f2d4a7de8aaafdb22f"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/proof-button-primary-2x.png",
+          "bytes": 1048,
+          "sha256": "9762c6319e99ddda2dbbca50e08ed2224a164d06d750cab3db48cc68940d9dc6"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/proof-panel-paper-2x.png",
+          "bytes": 3645,
+          "sha256": "9fd815a0b4e234375988bb192a2a6a1ac52e1cef5727620c54e73e8c9c1940db"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/badge-info-background.png",
+          "bytes": 21256,
+          "sha256": "2643f17472a1b9274f1ea5a88e5e650e3102feaf7ee5e7bc370cc71036736fe1"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-primary-background.png",
+          "bytes": 20131,
+          "sha256": "a52f7b525d67a0b1c19bfaf0e9eb9fe67fcc8dabf45eae33e9ce6c4ce435b456"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-secondary-background.png",
+          "bytes": 22759,
+          "sha256": "e03db615418aee55a91ecffb690b9eca3728267ae1abc032a85d9ac92761cca8"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-modal-background.png",
+          "bytes": 260407,
+          "sha256": "bad504fe44fdfdccf6b0a6deb8c5ffb5306591678d29f2479da367ae8d5288fe"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-paper-default.png",
+          "bytes": 140093,
+          "sha256": "1e7a8242d62076e3a0156d0e33db0196ecc9d97c2244954d3a6a2f29bdf6905a"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-result-frame.png",
+          "bytes": 262574,
+          "sha256": "a49b6aadeba75888c5690579306ee7604b61431daf2b0c349cb0db15a141fffb"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png",
+          "bytes": 1655281,
+          "sha256": "473bd6abd1f548ef4103790ce94259e9027b4fbb64da838e9347642a7b865ab6"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-back-base.png",
+          "bytes": 200989,
+          "sha256": "e437bf8d1c6ffe3c08a248ff6cc01904c6abc530be54e2e550f8e8fee71f9974"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-face-base.png",
+          "bytes": 170162,
+          "sha256": "d24e396748ecb7255f45d78db68aa99f5afd05f323c64dd69a2e01210221b103"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/skin.json",
+          "bytes": 3926,
+          "sha256": "5ea42f686984bf2f2976eec30d1216bdba47296ba16de20419e5588520053ace"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/tokens.css",
+          "bytes": 4185,
+          "sha256": "f17f5f10720c39da674c234b70a02971f98adbcd0ea48bf4722c01c3aec9e661"
+        },
+        {
+          "path": "assets/ui/soro-pon/v1/README.md",
+          "bytes": 1355,
+          "sha256": "a28b07a405269b9098cd608d4da33b803dcb6bca04c10e61012576a1dc135f8f"
+        },
+        {
+          "path": "assets/ui/soro-pon/v1/manifest.json",
+          "bytes": 2242,
+          "sha256": "7d7a7944af93ab4fc1efa1006c8adb31fc96e18ce769468092a3bb0c51ea8680"
+        },
+        {
+          "path": "index.html",
+          "bytes": 477,
+          "sha256": "ee42c815cb94ce60772c45abad69c5fd869df61ade766d7d4654b286bd5a15ca"
+        }
+      ],
+      "fileCount": 47,
+      "totalBytes": 7530155,
+      "aggregateSha256": "8e2cd6193325862a3e2728ee05fb8dd02b3630c0c5102970fb6d114b01296647"
+    },
+    "previous": {
+      "sha": "9b9ba1aaf5f8041b0eec202869e1dd67c234f693",
+      "files": [
+        {
+          "path": "assets/index-Cuda8L-o.js",
+          "bytes": 416818,
+          "sha256": "c6a6aff4390d9b1c177639c43b9087cb6e20f76ce343c6b443d7e826f9f4e577"
+        },
+        {
+          "path": "assets/index-o4gla2TO.css",
+          "bytes": 25817,
+          "sha256": "b71c0f55f3205cea9c68e6ab6fba447a22362e448727d232a8e029ae4d0a22f4"
+        },
+        {
+          "path": "assets/ui/soro-pon/ASSET-MANIFEST.md",
+          "bytes": 2979,
+          "sha256": "52d354e6a666f1ad8af5b374fd4855f1ac08ef63034f7225bac58acd6d252c9c"
+        },
+        {
+          "path": "assets/ui/soro-pon/SKIN-CONTRACT.json",
+          "bytes": 8545,
+          "sha256": "7463ad5214e2b9e7ae38a6db060f85d95f5ddfcb21f13a6c59342d0c415c5c9e"
+        },
+        {
+          "path": "assets/ui/soro-pon/SKIN-MANIFEST.json",
+          "bytes": 412,
+          "sha256": "c3c7189e54dd58f010c691234e1974c12ae8c8270d4203909bfa033cc8b8e173"
+        },
+        {
+          "path": "assets/ui/soro-pon/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/generated/placeholders/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/base/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/base/skin.json",
+          "bytes": 7737,
+          "sha256": "5abcc929faa13bdacfb95a0c07f95f2dc2016314979ef33659b06e187d28af93"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/base/tokens.css",
+          "bytes": 211,
+          "sha256": "e85ec287f9425c9e13b10ddb25923f44a7f2b67b0deae566c42ed511ac48535d"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/candidates/proof-button-primary-2x.png",
+          "bytes": 1066,
+          "sha256": "b28523b04882ba90de46ba846f5adcddbcd30ae51436fc9ecdbbf79354ea44ac"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/candidates/proof-panel-paper-2x.png",
+          "bytes": 3717,
+          "sha256": "f0ceb2e98efb00c1f1431e73647e4512849e9bbd2e4c070565ef4b9302ba37eb"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/badge-info-background.png",
+          "bytes": 8153,
+          "sha256": "9058c7df6d2b176fcb1edf534bd853c98063930d4fa7c4d2bc7dc9f85b31abcc"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/button-primary-background-2x.png",
+          "bytes": 34616,
+          "sha256": "75b05dd048cb89545c83324540bf66a8d665c8b4cd1e43747cea044cca65e8fc"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/button-secondary-2x.png",
+          "bytes": 1786,
+          "sha256": "160309900e890b6361e799ecdb6e94ecffe438a1917a6ce16a50e459a90c9eff"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/panel-modal-background.png",
+          "bytes": 199135,
+          "sha256": "feadabf5974419e6877bd682a63837551d0f756ed89f5e5ece9c6ca3169f93a4"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/panel-paper-2x.png",
+          "bytes": 4221,
+          "sha256": "571a030b0f871fe69944cf2e714da25e949ad4a4fe880a3ab4ad05270a8e827a"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/panel-result-frame.png",
+          "bytes": 298275,
+          "sha256": "36422d1e1306c0a621eae0537ceb67f52b07dc25cf91e122158689f15e74303a"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/table-background.png",
+          "bytes": 1848567,
+          "sha256": "bf8e9febc93187db8f39e2aa4f9618c7e3d54ac78b9bfe07052d0e4bfa6d6cf5"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/tile-back-base.png",
+          "bytes": 723519,
+          "sha256": "2a3d92b09741d965f175de96fd69ed6f89bf33e63e501bfbc88e6a14c36a332c"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/generated/final/tile-face-base.png",
+          "bytes": 420980,
+          "sha256": "dc6dead33c09320c4a54ca08faa98277c40ba668fba8986f552ee8ec6a66a7b0"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/skin.json",
+          "bytes": 5050,
+          "sha256": "7680090f6f1b69aac13db8478c32602073f9f5c97dae24a853604f51a1206c1e"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/cute-pop/tokens.css",
+          "bytes": 4694,
+          "sha256": "11e34501a0b1691b97143ace3202d967766b0a039ea23d1489a4b8bc92cb4e4e"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/badge-info-background-candidate-b.png",
+          "bytes": 19052,
+          "sha256": "faac85ee8afe20760f1df6d2798065044c3e5100192860ca68b421edda61bb08"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/badge-info-background-candidate-c.png",
+          "bytes": 17893,
+          "sha256": "6380e2265d0676a4d31c42a1e2db758f7e9f355eced09dff74a6c8c44f4382a7"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-paper-default-candidate-b.png",
+          "bytes": 127213,
+          "sha256": "f690da07b91da2a3d7190a16862ce5da3da58045995d6bbdf214f3ca676d9587"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-paper-default-candidate-c.png",
+          "bytes": 119929,
+          "sha256": "e0d0cf0f2f1a1b0b4c3bbaed611bf5644357886bee6efa162cfbd014931386be"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-result-frame-candidate-a.png",
+          "bytes": 153344,
+          "sha256": "8c5b8619a96839e06edfd7c57f03df18b38e1f1dd3a8b75c0c693e02589c577c"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/panel-result-frame-candidate-c.png",
+          "bytes": 277715,
+          "sha256": "74a88b11e0faea1eb59a3a050dea647accd2d54ec696e4f2d4a7de8aaafdb22f"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/proof-button-primary-2x.png",
+          "bytes": 1048,
+          "sha256": "9762c6319e99ddda2dbbca50e08ed2224a164d06d750cab3db48cc68940d9dc6"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/candidates/proof-panel-paper-2x.png",
+          "bytes": 3645,
+          "sha256": "9fd815a0b4e234375988bb192a2a6a1ac52e1cef5727620c54e73e8c9c1940db"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/.gitkeep",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/badge-info-background.png",
+          "bytes": 21256,
+          "sha256": "2643f17472a1b9274f1ea5a88e5e650e3102feaf7ee5e7bc370cc71036736fe1"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-primary-background.png",
+          "bytes": 20131,
+          "sha256": "a52f7b525d67a0b1c19bfaf0e9eb9fe67fcc8dabf45eae33e9ce6c4ce435b456"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/button-secondary-background.png",
+          "bytes": 22759,
+          "sha256": "e03db615418aee55a91ecffb690b9eca3728267ae1abc032a85d9ac92761cca8"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-modal-background.png",
+          "bytes": 260407,
+          "sha256": "bad504fe44fdfdccf6b0a6deb8c5ffb5306591678d29f2479da367ae8d5288fe"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-paper-default.png",
+          "bytes": 140093,
+          "sha256": "1e7a8242d62076e3a0156d0e33db0196ecc9d97c2244954d3a6a2f29bdf6905a"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/panel-result-frame.png",
+          "bytes": 262574,
+          "sha256": "a49b6aadeba75888c5690579306ee7604b61431daf2b0c349cb0db15a141fffb"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/table-background.png",
+          "bytes": 1655281,
+          "sha256": "473bd6abd1f548ef4103790ce94259e9027b4fbb64da838e9347642a7b865ab6"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-back-base.png",
+          "bytes": 200989,
+          "sha256": "e437bf8d1c6ffe3c08a248ff6cc01904c6abc530be54e2e550f8e8fee71f9974"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/generated/final/tile-face-base.png",
+          "bytes": 170162,
+          "sha256": "d24e396748ecb7255f45d78db68aa99f5afd05f323c64dd69a2e01210221b103"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/skin.json",
+          "bytes": 3926,
+          "sha256": "5ea42f686984bf2f2976eec30d1216bdba47296ba16de20419e5588520053ace"
+        },
+        {
+          "path": "assets/ui/soro-pon/skins/yorunoshirube/tokens.css",
+          "bytes": 4185,
+          "sha256": "f17f5f10720c39da674c234b70a02971f98adbcd0ea48bf4722c01c3aec9e661"
+        },
+        {
+          "path": "assets/ui/soro-pon/v1/README.md",
+          "bytes": 1355,
+          "sha256": "a28b07a405269b9098cd608d4da33b803dcb6bca04c10e61012576a1dc135f8f"
+        },
+        {
+          "path": "assets/ui/soro-pon/v1/manifest.json",
+          "bytes": 2242,
+          "sha256": "7d7a7944af93ab4fc1efa1006c8adb31fc96e18ce769468092a3bb0c51ea8680"
+        },
+        {
+          "path": "index.html",
+          "bytes": 477,
+          "sha256": "c49cc2bf6a82fad5935d77d43a4ae2d50154a64bb5a77e3d979bf021f2b009a4"
+        }
+      ],
+      "fileCount": 47,
+      "totalBytes": 7501974,
+      "aggregateSha256": "d3e18cdcc536e1f19d2995c3de93f19e0246c1e18182c2f0c2d097f37a937e63"
+    }
+  },
+  "audit": [
+    {
+      "action": "deploy",
+      "release": "current",
+      "sha": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+      "aggregateSha256": "8e2cd6193325862a3e2728ee05fb8dd02b3630c0c5102970fb6d114b01296647",
+      "atUtc": "2026-07-27T02:10:01.223Z"
+    },
+    {
+      "action": "rollback",
+      "release": "previous",
+      "sha": "9b9ba1aaf5f8041b0eec202869e1dd67c234f693",
+      "aggregateSha256": "d3e18cdcc536e1f19d2995c3de93f19e0246c1e18182c2f0c2d097f37a937e63",
+      "atUtc": "2026-07-27T02:10:08.277Z"
+    },
+    {
+      "action": "redeploy",
+      "release": "current",
+      "sha": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+      "aggregateSha256": "8e2cd6193325862a3e2728ee05fb8dd02b3630c0c5102970fb6d114b01296647",
+      "atUtc": "2026-07-27T02:10:14.087Z"
+    }
+  ],
+  "smoke": [
+    {
+      "label": "after-deploy",
+      "expectedSha": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+      "releaseHeader": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+      "aggregateSha256": "8e2cd6193325862a3e2728ee05fb8dd02b3630c0c5102970fb6d114b01296647",
+      "deepLinkStatus": 200,
+      "deepLinkMime": "text/html; charset=utf-8",
+      "invalidImportRejected": true,
+      "result3p": true,
+      "result4p": true,
+      "storageBefore": {
+        "decks": 1,
+        "records": 0
+      },
+      "storageAfter": {
+        "decks": 1,
+        "records": 2
+      },
+      "missingAssetStatus": 404,
+      "errors": {
+        "console": [],
+        "page": [],
+        "failedRequests": [
+          "http://127.0.0.1:63073/assets/ui/soro-pon/skins/base/skin.json :: net::ERR_ABORTED"
+        ]
+      },
+      "failedRequestsBenign": [
+        "http://127.0.0.1:63073/assets/ui/soro-pon/skins/base/skin.json :: net::ERR_ABORTED"
+      ],
+      "failedRequestsNonBenign": [],
+      "pass": true
+    },
+    {
+      "label": "after-rollback",
+      "expectedSha": "9b9ba1aaf5f8041b0eec202869e1dd67c234f693",
+      "releaseHeader": "9b9ba1aaf5f8041b0eec202869e1dd67c234f693",
+      "aggregateSha256": "d3e18cdcc536e1f19d2995c3de93f19e0246c1e18182c2f0c2d097f37a937e63",
+      "deepLinkStatus": 200,
+      "deepLinkMime": "text/html; charset=utf-8",
+      "invalidImportRejected": true,
+      "result3p": true,
+      "result4p": true,
+      "storageBefore": {
+        "decks": 1,
+        "records": 2
+      },
+      "storageAfter": {
+        "decks": 1,
+        "records": 4
+      },
+      "missingAssetStatus": 404,
+      "errors": {
+        "console": [],
+        "page": [],
+        "failedRequests": []
+      },
+      "failedRequestsBenign": [],
+      "failedRequestsNonBenign": [],
+      "pass": true
+    },
+    {
+      "label": "after-redeploy",
+      "expectedSha": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+      "releaseHeader": "555c02dcdfec3f6fbb4a28942bc63af95e3b665f",
+      "aggregateSha256": "8e2cd6193325862a3e2728ee05fb8dd02b3630c0c5102970fb6d114b01296647",
+      "deepLinkStatus": 200,
+      "deepLinkMime": "text/html; charset=utf-8",
+      "invalidImportRejected": true,
+      "result3p": true,
+      "result4p": true,
+      "storageBefore": {
+        "decks": 1,
+        "records": 4
+      },
+      "storageAfter": {
+        "decks": 1,
+        "records": 6
+      },
+      "missingAssetStatus": 404,
+      "errors": {
+        "console": [],
+        "page": [],
+        "failedRequests": []
+      },
+      "failedRequestsBenign": [],
+      "failedRequestsNonBenign": [],
+      "pass": true
+    }
+  ],
+  "claimScope": "SUPPLEMENTAL_ONLY: loopback immutable-artifact deploy/rollback simulation and Chromium smoke. Not staging, production, CDN/cache invalidation, real Safari, or a deployed-artifact rollback.",
+  "explicitNonClaims": [
+    "real deploy",
+    "staging deploy",
+    "production deploy",
+    "CDN invalidation",
+    "deployed-artifact rollback",
+    "Safari validation"
+  ],
+  "pass": true
+}
