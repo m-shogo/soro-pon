@@ -19,10 +19,15 @@ const TIER_B_SIZES = [SIZES[0], SIZES[4]] as const; // phone代表 + desktop代�
 const SKINS = ['yorunoshirube', 'cute-pop'] as const;
 
 const ANIMAL_DECK = JSON.parse(readFileSync('samples/animal-starter.deck.json', 'utf-8'));
+// AppRootのnewSeed()は Date.now() % 1_000_000 を使う。この値では最初の
+// 対局seedが77001となり、既定のanimal 3人戦で人間初手が即ツモ可能になる。
+// Result描画が目的のtestで、実行時刻由来の長いランダム対局を避ける。
+const FIXED_NOW_MS = 1_700_000_000_077;
 
 async function seedDeck(page: import('@playwright/test').Page, skinId: string) {
   await page.addInitScript(
-    ({ skin, deck }) => {
+    ({ skin, deck, nowMs }) => {
+      Date.now = () => nowMs;
       window.localStorage.clear();
       window.localStorage.setItem('soro-pon.skin.v1', skin);
       window.localStorage.setItem(
@@ -30,7 +35,7 @@ async function seedDeck(page: import('@playwright/test').Page, skinId: string) {
         JSON.stringify({ version: 1, decks: [{ deck, source: 'official', updatedAtMs: 1000 }] }),
       );
     },
-    { skin: skinId, deck: ANIMAL_DECK },
+    { skin: skinId, deck: ANIMAL_DECK, nowMs: FIXED_NOW_MS },
   );
 }
 
@@ -39,7 +44,7 @@ async function playToResult(page: import('@playwright/test').Page) {
   await page.getByRole('button', { name: /まず遊ぶ/ }).click();
   await page.waitForSelector('text=対局設定');
   await page.getByRole('button', { name: '対局開始' }).click();
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(750);
   for (let i = 0; i < 4000; i++) {
     if ((await page.getByRole('heading', { name: '対戦結果' }).count()) > 0) {
       return;
