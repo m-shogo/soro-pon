@@ -1,52 +1,96 @@
 # Batch 13 Handoff
 
-## Current state
+## Current authority
 
 ```text
-result: CONDITIONAL
-RC: LIMITED READY
-execution candidate: 2a447930ad6d1181dd0cc9c648b07ae3534dd081
-preview branch: codex/batch13-preview
+result: BLOCKED
+branch: codex/batch13-preview
+local HEAD: 1c37c5200ad00ed6df72e5483b5af1e2aa34ff23
+origin preview HEAD: 7b9568162fcbb066e8b4800b375cc045bb536832
+origin/main: 37110de0f5dda98411123cf0aed86069e5e97011
 draft PR: https://github.com/m-shogo/soro-pon/pull/10
-CI run: 30237605574
-Integrity run: 30237605563
+main merge / production deploy: NOT STARTED
 ```
 
-UI/product/test work is committed. Local integrity 101, unit 432, skin 18,
-visual 80, supplemental cross-browser 96, build, and Python 92 are green.
-Stable Safari 26.4 reached Result in all four skin/player combinations.
+Only the remaining Batch 13 gates below should be continued. Do not reread
+Batch 8–12 in full.
 
-## External operation waiting
+## New accessibility commits
 
-Cloudflare Dashboard sign-in is the only human account operation requested.
-After sign-in:
+- `7465bf4` `fix(a11y): 表示専用牌を画像として伝える`
+  - Game discard, Deck Detail tile and Result tile use static image semantics.
+  - Interactive hand tiles keep button/toggle semantics.
+- `1c37c52` `fix(a11y): 捨て牌の所有者を読み上げる`
+  - Each discard label includes the player name.
 
-1. Create/connect Pages project to `m-shogo/soro-pon`.
-2. Use production branch `main`, command `pnpm build`, output `dist`, Node 24.
-3. Capture the `codex/batch13-preview` deployment URL and ID.
-4. Run `B13_DEPLOY_URL=<url> pnpm qa:batch13:deployed-smoke`.
-5. Only after Preview PASS, fast-forward the exact SHA to `main`.
-6. Run production smoke.
-7. Use two successful production deployments to prove formal rollback and
-   current restore; do not use a Preview deployment as the rollback target.
+The commits are local only and have not been pushed.
 
-## Residual blockers
+## Verification completed
 
-- Safari rotation/soak: `BLOCKED`, 4/20 cycles, 190/1,200 seconds.
-- Safari＋real VoiceOver mandatory flow: `BLOCKED`; only Safari web-content
-  recognition and TOP static caption are `VOICEOVER_PASS`.
-- Safari console/page/network: `NOT TESTED`.
-- Cloudflare Preview/production/rollback/current restore: not complete until
-  real URLs and deployment history pass smoke.
+- Final focused tests: 22/22 PASS.
+- Final local gate on product frozen SHA `1c37c52`:
+  - integrity 102/102
+  - unit 434/434
+  - skin 18/18
+  - visual 80/80
+  - Python asset 92/92
+  - typecheck PASS
+  - production build PASS
+  - build aggregate SHA
+    `db7c527e9dcbbd7545d806045f34486ac69aaf0d5d4b922cda947946f6c1b582`
+- Real VoiceOver confirmed the change-affected path:
+  - static discard: `フクロウ、最新の捨て牌、イメージ`
+  - no button action on the static discard
+  - interactive hand: `イルカ、切り替えボタン`
+  - final-build owner context:
+    `相手、トモリ、待機中、手牌8枚、捨て牌1枚、グループ`
+  - TOP, Match Setup and Game were traversed
+  - classification: `VOICEOVER_PASS`
+- Deck Detail and Result reuse the verified static tile component and passed
+  focused tests; overwrite dialog and focus return were unchanged and retain
+  passing focused coverage. These paths are `SUPPLEMENTAL_ONLY` in this
+  session, not new direct VoiceOver claims.
+- VoiceOver is OFF; process absence was confirmed.
+- Final post-fix Safari rotation:
+  - 24/24 cycles
+  - 30m54s (`1854` seconds)
+  - Result reached 2 times
+  - product failure 0
+  - harness failure 0
+  - dead-end 0
+  - corruption 0
+- Old pre-fix Safari rotation remains historical only:
+  24/24 cycles, 30m58s PASS.
 
-VoiceOver was turned off and its process absence confirmed. Safari was not
-quit because it was a pre-existing user application.
+## Not yet complete
+
+- QA evidence/documentation commit and branch push.
+- Exact pushed-SHA CI and Integrity.
+- Cloudflare registration/GitHub authorization completion has not been
+  confirmed in chat. Preview, production, rollback and current restore are not
+  started.
+
+## Next execution order
+
+1. Commit only the selected supporting evidence and synchronized docs.
+2. Push `codex/batch13-preview` and wait for
+   exact-SHA CI + Integrity.
+3. After the user confirms Cloudflare registration, deploy one Preview and run
+   deployed smoke.
+4. Only if all mandatory gates pass: integrate PR #10 to `main`, production
+   deploy, formal production rollback, current restore, final smoke/CI.
+5. Synchronize report, matrix, handoff and release docs.
+
+## Working tree / evidence
+
+Commit only VoiceOver PNGs `23`, `26`, `27`, `28`, `31` and
+`rotation-soak-final.tsv`. Other untracked captures are failed, ambiguous or
+superseded and must not be used as PASS evidence.
 
 Physical iPhone Safari remains `KNOWN UNVERIFIED` /
-`POST-RELEASE DEVICE GATE`, not an RC or production blocker. Do not promote
-macOS Safari, Playwright WebKit, or Simulator results into that claim.
+`POST-RELEASE DEVICE GATE`, not an RC or production blocker.
 
-Canonical details:
+Canonical detail sources, only when needed:
 
 - `docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md`
 - `docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md`

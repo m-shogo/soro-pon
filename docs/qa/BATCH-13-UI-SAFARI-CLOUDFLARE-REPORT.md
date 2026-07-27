@@ -6,19 +6,18 @@
 BATCH 13 RESULT: CONDITIONAL
 RC STATUS: LIMITED READY
 Start HEAD: 37110de0f5dda98411123cf0aed86069e5e97011
-Frozen execution SHA: 2a447930ad6d1181dd0cc9c648b07ae3534dd081
+Product frozen SHA: 1c37c5200ad00ed6df72e5483b5af1e2aa34ff23
 Preview branch: codex/batch13-preview
 Preview PR: #10
-CI run: 30237605574 SUCCESS
-Integrity run: 30237605563 SUCCESS
+Final candidate CI run: PENDING
+Final candidate Integrity run: PENDING
 ```
 
-UI刷新、両skin × 3人/4人、ローカル品質ゲート、実Safari主要4経路は
-PASSした。完成必須のSafari rotation/soak、Safari＋実VoiceOver主要
-フローは環境制御チャネル喪失によりBLOCKEDである。Cloudflare Pages
-Preview / production / rollback / current復帰はアカウント認証待ちであり、
-未実施をPASSとして扱わない。このためCOMPLETEおよびRC READYへは昇格
-しない。
+UI刷新、両skin × 3人/4人、ローカル品質ゲート、実Safari主要4経路、
+修正後Safari rotation/soak、変更影響範囲の実VoiceOver確認はPASSした。
+Cloudflare Pages Preview / production / rollback / current復帰は登録完了
+確認待ちであり、未実施をPASSとして扱わない。このためCOMPLETEおよび
+RC READYへは昇格しない。
 
 物理iPhone Safariは要件どおり `KNOWN UNVERIFIED` /
 `POST-RELEASE DEVICE GATE` とし、RC/production blockerではない。
@@ -38,6 +37,9 @@ Preview / production / rollback / current復帰はアカウント認証待ちで
   tokenと登録assetだけを差し替える。
 - portraitのRotatePrompt表示中も`AppRoot`を維持し、進行中対局を破棄
   しないよう修正した（`b9efbe0`）。
+- 表示専用牌をbuttonではなくimage semanticsにし、捨て牌には所有者名を
+  含めた。自分の手牌は操作可能な切り替えボタンを維持した
+  (`7465bf4`, `1c37c52`)。
 
 詳細契約:
 
@@ -73,25 +75,25 @@ Before/Afterとも0であり、別の24 collisionを捏造しない。
 
 ## ローカル検証
 
-凍結SHA `2a447930`のproduct/test/build内容に対し、次を実行した。
+凍結SHA `1c37c52`のproduct/test/build内容に対し、次を実行した。
 未コミットの文書変更は実行対象コードへ影響しない。
 
 | Gate | Result |
 |---|---:|
 | `pnpm install --frozen-lockfile` | PASS |
-| Integrity Contracts | 101/101 PASS |
+| Integrity Contracts | 102/102 PASS |
 | `pnpm typecheck` | PASS |
-| unit | 432/432 PASS |
+| unit | 434/434 PASS |
 | skin | 18/18 PASS |
 | visual | 80/80 PASS |
 | Firefox + Playwright WebKit supplemental | 96/96 PASS |
 | production build | PASS |
 | deterministic rebuild | PASS |
 | Python asset fixtures | 92/92 PASS |
-| exact-SHA GitHub CI | 30237605574 SUCCESS |
-| exact-SHA GitHub Integrity | 30237605563 SUCCESS |
-| exact-SHA CI Python 3.13 + `pip check` | PASS |
-| secret scan | 0 high-risk matches |
+| final-candidate GitHub CI | PENDING |
+| final-candidate GitHub Integrity | PENDING |
+| final-candidate CI Python 3.13 + `pip check` | PENDING |
+| secret scan | 0 high-risk matches; 59 UUID false positives classified |
 | Markdown relative-link scan | 181 files / 0 missing |
 | source maps in `dist` | 0 |
 
@@ -105,15 +107,15 @@ Vite: 6.4.3
 pnpm-lock.yaml SHA-256:
   59585c15d19cd347571e229ce7ec8cbc1b5f1adeeb9829d9657f68f889098629
 build aggregate SHA-256:
-  75be0293df0b02dc773a3a093b885091861ff8accf1b9a0615140ca1690fed3c
+  db7c527e9dcbbd7545d806045f34486ac69aaf0d5d4b922cda947946f6c1b582
 JS SHA-256:
-  17b1ffeaba6038d92811d7ba6d937fff045314e2703e68d0edef79cdd7793ef5
+  349278594d5643b679435b746ff35c4b0d6cd03f12696b5863daddb8b49c8670
 CSS SHA-256:
-  82dfdbaf320f8ecd549e95e0f32f4f486fa63797de2cd1877c8e09096564a5ea
+  426c7335e758157a6c9a1f444b50451e680b946be4f5d61fa000dd2cd83a1cfa
 HTML SHA-256:
-  5d20a1d2566b5efcd133083cd87e8050e0c700f3e583da9b3bd14e985ea2ad4a
+  e573f91d49438e461b34cca5c4fa11ef31440878398a47378a3c22d95ed328aa
 dist files: 48
-dist bytes: 7,540,295
+dist bytes: 7,540,688
 feature flags: none
 required environment variables: none
 ```
@@ -139,34 +141,52 @@ accessibility windowが途中で0件となり、その後の完全チェック�
 継続不能だった。
 
 ```text
-rotation: BLOCKED
-completed cycles: 4 / required 20
-observed window: 190秒 / required 1,200秒
+rotation: PASS
+completed cycles: 24 / required 20
+observed window: 1,854秒 / required 1,200秒
+portrait rotate-prompt: 24 / 24
+landscape game: 22 / 24
+landscape Result: 2 / 24
+HTTP 200: 24 / 24
+Safari process present: 24 / 24
+product failure / dead-end / corruption: 0 / 0 / 0
 console errors: NOT TESTED
 page errors: NOT TESTED
 network errors: NOT TESTED
 ```
 
-rotationの4完了cycleでは、portrait `rotate-prompt`からlandscape
-`game`へ戻り、HTTP 200、Safari process、次のdiscard操作を確認した。
-cycle 5前に制御チャネルを失ったため、20cycle/20分PASSは主張しない。
+修正後ビルドで24cycleを最初から実行した。portrait
+`rotate-prompt`からlandscapeの`game`または`Result`へ戻り、Result後は
+同じメンバーで再戦した。1cycleの`wait`は次cycleで正常進行し、停止、
+dead-end、harness failureには至らなかった。
 
 ## 実VoiceOver
 
-VoiceOverを実際にONにし、Safariのcaption panelで次を観測した。
+VoiceOverを実際にONにし、Safariのcaption panelで変更影響範囲を観測
+した。
 
 ```text
-VOICEOVER_PASS:
-  "soro-pon、Webコンテンツ"
-VOICEOVER_PASS:
-  "Vamp Pon 世界の中で流行っている記憶札遊び"
-overall mandatory VoiceOver flow: BLOCKED
+TOP action: VOICEOVER_PASS
+Match Setup 3人戦 toggle: VOICEOVER_PASS
+Game static discard:
+  "フクロウ、最新の捨て牌、イメージ" — VOICEOVER_PASS
+Game owner context:
+  "相手、トモリ、待機中、手牌8枚、捨て牌1枚、グループ"
+  — VOICEOVER_PASS
+Game interactive hand:
+  "イルカ、切り替えボタン" — VOICEOVER_PASS
+Deck Detail / Result static TileCard:
+  shared component + focused/visual tests — SUPPLEMENTAL_ONLY
+overwrite dialog / focus return:
+  unchanged Dialog contract tests — SUPPLEMENTAL_ONLY
+change-affected real VoiceOver gate: VOICEOVER_PASS
 ```
 
-Safari accessibility window喪失後だったため、TOP以外のMatch Setup、
-Deck Detail、JSON Import、overwrite dialog、Game、seat、hand、action、
-live region、Result、focus returnを通しで操作・観測できなかった。終了時
-にVoiceOverアプリを終了し、process不在を確認した。
+全要素の再巡回は行わず、修正対象と完成必須のTOP / Match Setup / Game
+へ限定した。Deck Detail / Resultは同じ`TileCard interactive={false}`の
+DOM契約、dialog / focus returnは既存focused testで補助確認したため、
+実VoiceOverの直接観測へ昇格しない。終了時にVoiceOverアプリを終了し、
+process不在を確認した。
 
 ## Cloudflare Pages
 
@@ -237,13 +257,14 @@ responsive visual、safe-area、touch-target testはmitigationであり、
 ## Exact claim scope / non-claims
 
 Claimする範囲は、凍結候補のローカル自動検証、real stable macOS Safariの
-4 Result経路、real VoiceOverのTOP静的読み上げ2項目までである。
+4 Result経路と修正後24cycle、real VoiceOverのTOP / Match Setup /
+Gameにおける静的捨て牌・所有者文脈・操作可能手牌までである。
 
 Claimしない:
 
-- Safari rotation 20cycle/20分PASS
 - Safari console/page/network error 0
-- Safari＋VoiceOver主要フローPASS
+- Deck Detail / Result / overwrite dialog / focus returnを今回の実VoiceOver
+  直接観測として扱うこと
 - 物理iPhone Safari PASS
 - Playwright WebKitをSafariとして扱うこと
 - local previewをCloudflare deployとして扱うこと
