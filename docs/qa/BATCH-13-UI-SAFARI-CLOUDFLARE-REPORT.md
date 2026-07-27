@@ -9,8 +9,9 @@ Start HEAD: 37110de0f5dda98411123cf0aed86069e5e97011
 Product frozen SHA: 1c37c5200ad00ed6df72e5483b5af1e2aa34ff23
 Preview branch: codex/batch13-preview
 Preview PR: #10
-Final candidate CI run: PENDING
-Final candidate Integrity run: PENDING
+Preview candidate SHA: e6bcb82c035b52a2cfed5b7f062da5581a9ca070
+Preview candidate CI run: 30253119733 SUCCESS
+Preview candidate Integrity run: 30253119813 SUCCESS
 ```
 
 UI刷新、両skin × 3人/4人、ローカル品質ゲート、実Safari主要4経路、
@@ -90,9 +91,9 @@ Before/Afterとも0であり、別の24 collisionを捏造しない。
 | production build | PASS |
 | deterministic rebuild | PASS |
 | Python asset fixtures | 92/92 PASS |
-| final-candidate GitHub CI | PENDING |
-| final-candidate GitHub Integrity | PENDING |
-| final-candidate CI Python 3.13 + `pip check` | PENDING |
+| preview-candidate GitHub CI | 30253119733 SUCCESS |
+| preview-candidate GitHub Integrity | 30253119813 SUCCESS |
+| preview-candidate CI Python 3.13 + `pip check` | PASS |
 | secret scan | 0 high-risk matches; 59 UUID false positives classified |
 | Markdown relative-link scan | 181 files / 0 missing |
 | source maps in `dist` | 0 |

@@ -5,10 +5,12 @@
 ```text
 result: BLOCKED
 branch: codex/batch13-preview
-local HEAD: 1c37c5200ad00ed6df72e5483b5af1e2aa34ff23
-origin preview HEAD: 7b9568162fcbb066e8b4800b375cc045bb536832
+product frozen SHA: 1c37c5200ad00ed6df72e5483b5af1e2aa34ff23
+pushed preview candidate: e6bcb82c035b52a2cfed5b7f062da5581a9ca070
 origin/main: 37110de0f5dda98411123cf0aed86069e5e97011
 draft PR: https://github.com/m-shogo/soro-pon/pull/10
+CI run: 30253119733 SUCCESS
+Integrity run: 30253119813 SUCCESS
 main merge / production deploy: NOT STARTED
 ```
 
@@ -23,7 +25,7 @@ Batch 8–12 in full.
 - `1c37c52` `fix(a11y): 捨て牌の所有者を読み上げる`
   - Each discard label includes the player name.
 
-The commits are local only and have not been pushed.
+The commits are pushed on `codex/batch13-preview`.
 
 ## Verification completed
 
@@ -61,25 +63,23 @@ The commits are local only and have not been pushed.
   - corruption 0
 - Old pre-fix Safari rotation remains historical only:
   24/24 cycles, 30m58s PASS.
+- Pushed candidate `e6bcb82c…`:
+  - CI run `30253119733` SUCCESS, including `asset-python`
+  - Integrity run `30253119813` SUCCESS
 
 ## Not yet complete
 
-- QA evidence/documentation commit and branch push.
-- Exact pushed-SHA CI and Integrity.
 - Cloudflare registration/GitHub authorization completion has not been
   confirmed in chat. Preview, production, rollback and current restore are not
   started.
 
 ## Next execution order
 
-1. Commit only the selected supporting evidence and synchronized docs.
-2. Push `codex/batch13-preview` and wait for
-   exact-SHA CI + Integrity.
-3. After the user confirms Cloudflare registration, deploy one Preview and run
+1. After the user confirms Cloudflare registration, deploy one Preview and run
    deployed smoke.
-4. Only if all mandatory gates pass: integrate PR #10 to `main`, production
+2. Only if all mandatory gates pass: integrate PR #10 to `main`, production
    deploy, formal production rollback, current restore, final smoke/CI.
-5. Synchronize report, matrix, handoff and release docs.
+3. Synchronize report, matrix, handoff and release docs.
 
 ## Working tree / evidence
 
