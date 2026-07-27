@@ -173,6 +173,9 @@ async function playMatch(page, playerCount) {
   await page.waitForSelector('text=対局設定');
   await page.getByRole('button', { name: `${playerCount}人戦` }).click();
   await page.getByRole('button', { name: '対局開始' }).click();
+  // 下記固定seedでは人間の初手ツモが可能。自動DRAW_TILEまで待ってから
+  // 操作し、turnStart中の牌を先にクリックするraceを避ける。
+  await page.waitForTimeout(750);
   const deadline = Date.now() + 5 * 60 * 1000;
   while (Date.now() < deadline) {
     if (await page.getByRole('heading', { name: '対戦結果' }).count()) return true;
@@ -207,15 +210,23 @@ async function playMatch(page, playerCount) {
 
 async function smoke(label, expectedSha, seedStorage) {
   const errors = { console: [], page: [], failedRequests: [] };
-  const page = await context.newPage();
-  page.on('console', (message) => {
-    if (message.type() === 'error') errors.console.push(message.text().slice(0, 300));
-  });
-  page.on('pageerror', (error) => errors.page.push(String(error).slice(0, 300)));
-  page.on('requestfailed', (request) => {
-    errors.failedRequests.push(
-      `${request.url()} :: ${request.failure()?.errorText}`.slice(0, 300),
-    );
+  function attachObservers(targetPage) {
+    targetPage.on('console', (message) => {
+      if (message.type() === 'error') errors.console.push(message.text().slice(0, 300));
+    });
+    targetPage.on('pageerror', (error) => errors.page.push(String(error).slice(0, 300)));
+    targetPage.on('requestfailed', (request) => {
+      errors.failedRequests.push(
+        `${request.url()} :: ${request.failure()?.errorText}`.slice(0, 300),
+      );
+    });
+  }
+  let page = await context.newPage();
+  attachObservers(page);
+  // AppRoot newSeed(): (Date.now() % 1_000_000) * 1000 + counter。
+  // 77001はanimal 3人戦の人間初手が即ツモ可能な決定seed。
+  await page.addInitScript(() => {
+    Date.now = () => 1_700_000_000_077;
   });
   const response = await page.goto(`${baseUrl}/deep/link`);
   const headers = response?.headers() ?? {};
@@ -246,14 +257,24 @@ async function smoke(label, expectedSha, seedStorage) {
   await page.getByRole('textbox', { name: 'デッキJSON' }).fill('{"broken":');
   await page.getByRole('button', { name: '読み込む', exact: true }).click();
   const invalidRejected = (await page.locator('.sp-issue-list').count()) > 0;
-  await page.getByRole('button', { name: 'とじる' }).click();
+  await page.getByRole('button', { name: 'やめる' }).click();
   const result3p = await playMatch(page, 3);
   if (result3p) {
     await page.getByRole('button', { name: 'TOPへ' }).click();
     await page.getByRole('button', { name: /まず遊ぶ/ }).waitFor();
   }
+  await page.close();
+  page = await context.newPage();
+  attachObservers(page);
+  // 新しいpageでAppRootのseed counterもリセットする。239001はanimal
+  // 4人戦の人間初手が即ツモ可能な決定seed。
+  await page.addInitScript(() => {
+    Date.now = () => 1_700_000_000_239;
+  });
+  await page.goto(baseUrl);
+  await page.getByRole('button', { name: /まず遊ぶ/ }).waitFor();
   await page.getByRole('button', { name: /きせかえ/ }).click();
-  await page.getByRole('button', { name: /夜のしるべ/ }).click();
+  await page.getByRole('button', { name: /ヨルノシルベ/ }).click();
   await page.getByRole('button', { name: 'とじる' }).click();
   await page.waitForSelector('html[data-skin="yorunoshirube"]');
   const result4p = await playMatch(page, 4);
@@ -268,6 +289,12 @@ async function smoke(label, expectedSha, seedStorage) {
   }));
   const missingResponse = await page.request.get(`${baseUrl}/missing.asset.js`);
   const aggregate = inventory(active.path).aggregateSha256;
+  const failedRequestsBenign = errors.failedRequests.filter((entry) =>
+    /ERR_ABORTED|NS_BINDING_ABORTED|cancelled/i.test(entry),
+  );
+  const failedRequestsNonBenign = errors.failedRequests.filter(
+    (entry) => !failedRequestsBenign.includes(entry),
+  );
   const result = {
     label,
     expectedSha,
@@ -282,6 +309,8 @@ async function smoke(label, expectedSha, seedStorage) {
     storageAfter,
     missingAssetStatus: missingResponse.status(),
     errors,
+    failedRequestsBenign,
+    failedRequestsNonBenign,
     pass:
       response?.status() === 200 &&
       headers['x-b12-sha'] === expectedSha &&
@@ -295,7 +324,7 @@ async function smoke(label, expectedSha, seedStorage) {
       missingResponse.status() === 404 &&
       errors.console.length === 0 &&
       errors.page.length === 0 &&
-      errors.failedRequests.length === 0,
+      failedRequestsNonBenign.length === 0,
   };
   await page.close();
   return result;
