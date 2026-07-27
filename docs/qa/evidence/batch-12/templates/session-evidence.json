@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "batch": 12,
+  "sessionId": "B12-REPLACE-WITH-NON-PERSONAL-ID",
+  "gateIds": [],
+  "executionSha": null,
+  "artifactAggregateSha256": null,
+  "startedAtUtc": null,
+  "endedAtUtc": null,
+  "executionMode": "manual",
+  "environment": {
+    "kind": "replace: mac-safari | physical-iphone | physical-ipad | physical-android | windows-at | local-immutable-server",
+    "os": {
+      "name": null,
+      "version": null
+    },
+    "browser": {
+      "name": null,
+      "version": null,
+      "engine": null
+    },
+    "device": {
+      "genericModel": null,
+      "physical": null,
+      "screenCssPixels": null,
+      "orientation": null
+    },
+    "assistiveTechnology": {
+      "name": null,
+      "version": null,
+      "actuallyEnabled": false,
+      "humanObservedOutput": false,
+      "offConfirmedAtEnd": null
+    }
+  },
+  "artifact": {
+    "baseUrl": null,
+    "networkBinding": null,
+    "localPreview": false,
+    "realDeploy": false,
+    "manifestEvidence": null
+  },
+  "scenarios": [
+    {
+      "scenarioId": "replace",
+      "skin": null,
+      "playerCount": null,
+      "expected": null,
+      "actual": null,
+      "classification": "NOT TESTED",
+      "result": "NOT TESTED",
+      "evidence": [],
+      "blocker": null,
+      "unblockStep": null
+    }
+  ],
+  "counts": {
+    "cycles": 0,
+    "resultsReached": 0,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "unhandledRejections": 0,
+    "failedRequestsBenign": 0,
+    "failedRequestsNonBenign": 0,
+    "deadEnds": 0,
+    "corruptions": 0
+  },
+  "defects": [],
+  "video": "none",
+  "claimScope": null,
+  "explicitNonClaims": [],
+  "privacyReview": {
+    "containsUserName": false,
+    "containsLocalAbsolutePath": false,
+    "containsDeviceNameOrSerial": false,
+    "containsCookieTokenOrCredential": false,
+    "containsPrivatePayload": false
+  }
+}
+

@@ -63,6 +63,12 @@ docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
   Current unexecuted production Firefox/WebKit QA contract.
 
+docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-MATRIX.md
+  Batch 12 real Safari/device/AT execution contract and per-gate claim scope.
+
+docs/qa/BATCH-12-MANUAL-SAFARI-DEVICE-AT-CHECKLIST.md
+  Redaction-safe human checklist for real Safari, physical devices, and AT.
+
 docs/IMPLEMENTATION-WORKFLOW.md
   Compact current implementation state and next executable sequence.
 
@@ -142,6 +148,8 @@ docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md
 docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md
 docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-MATRIX.md
+docs/qa/BATCH-12-MANUAL-SAFARI-DEVICE-AT-CHECKLIST.md
 docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
 docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
 docs/release/SOAK-RUNBOOK.md

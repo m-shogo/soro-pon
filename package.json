@@ -19,6 +19,7 @@
     "test:visual:update": "playwright test --update-snapshots",
     "test:visual:crossbrowser": "playwright test --config=playwright.crossbrowser.config.ts",
     "test:visual:crossbrowser:update": "playwright test --config=playwright.crossbrowser.config.ts --update-snapshots",
+    "qa:batch12:local-deploy": "node scripts/qa/run-batch12-local-deploy-rollback.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
     "asset:image:generate": "tools/asset-factory/soro-pon-ui/scripts/codex-generate-raw.sh"
