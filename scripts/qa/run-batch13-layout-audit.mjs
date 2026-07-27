@@ -7,7 +7,10 @@ const argument = (name, fallback) => {
   return index >= 0 ? process.argv[index + 1] : fallback;
 };
 
-const baseUrl = argument('--base-url', 'http://127.0.0.1:4173');
+const baseUrl = argument(
+  '--base-url',
+  process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173',
+);
 const phase = argument('--phase', 'after');
 const outputDirectory = argument(
   '--output',
