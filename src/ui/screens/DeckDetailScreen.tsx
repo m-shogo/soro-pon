@@ -109,7 +109,7 @@ export function DeckDetailScreen({
                     fallbackLabel={tile.fallbackLabel}
                     {...(category ? { categoryColor: category.color, categoryName: category.name } : {})}
                     showName={false}
-                    disabled
+                    interactive={false}
                   />
                 );
               })}

@@ -9,6 +9,27 @@ import { DeckDetailScreen } from './DeckDetailScreen';
 afterEach(cleanup);
 
 describe('DeckDetailScreen deletion safety', () => {
+  it('表示専用牌をボタンではなく画像として伝える', () => {
+    const deck = deckProjectSchema.parse(buildMinimalDeck());
+
+    render(
+      <DeckDetailScreen
+        deck={deck}
+        validation={{ status: 'playable', issues: [] }}
+        onBack={() => {}}
+        onStartSetup={() => {}}
+        onEdit={() => {}}
+        onExport={() => {}}
+        onDelete={() => {}}
+      />,
+    );
+
+    const tileName = deck.tiles[0]?.name;
+    expect(tileName).toBeDefined();
+    expect(screen.getAllByRole('img', { name: tileName }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: tileName })).toBeNull();
+  });
+
   it('削除ボタンだけでは削除せず、不可逆性を確認後に実行する', () => {
     const deck = deckProjectSchema.parse(buildMinimalDeck());
     const onDelete = vi.fn();

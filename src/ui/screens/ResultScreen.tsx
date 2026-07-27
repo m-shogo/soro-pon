@@ -110,7 +110,7 @@ export function ResultScreen({
                                 ? { categoryColor: category.color, categoryName: category.name }
                                 : {})}
                               showName={false}
-                              disabled
+                              interactive={false}
                               {...(wildcardInstanceIds.has(instanceId)
                                 ? { emphasis: 'tsumo' as const }
                                 : {})}

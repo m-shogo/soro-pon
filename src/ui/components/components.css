@@ -145,6 +145,10 @@
   cursor: default;
 }
 
+.sp-tile--static {
+  cursor: default;
+}
+
 .sp-tile--selected {
   transform: translateY(calc(var(--tile-h, 64px) * -0.18));
   box-shadow: var(--sp-shadow-tile-raised), var(--sp-shadow-lantern-soft);

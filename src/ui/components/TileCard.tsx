@@ -19,6 +19,8 @@ export type TileCardProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   emphasis?: TileEmphasis;
   faceDown?: boolean;
   showName?: boolean;
+  /** 捨て牌など、選択不能な表示専用牌はbutton semanticsを持たせない。 */
+  interactive?: boolean;
 };
 
 // 牌のslotは「base面 + 状態レイヤー」の合成(ADR-015)。
@@ -62,8 +64,10 @@ export function TileCard({
   emphasis,
   faceDown = false,
   showName = true,
+  interactive = true,
   className,
   style,
+  'aria-label': ariaLabel,
   ...rest
 }: TileCardProps) {
   const baseSlot = baseSlotFor(faceDown);
@@ -75,6 +79,7 @@ export function TileCard({
     dimmed ? 'sp-tile--dimmed' : '',
     emphasis !== undefined ? 'sp-tile--win' : '',
     faceDown ? 'sp-tile--back' : '',
+    !interactive ? 'sp-tile--static' : '',
     className ?? '',
   ]
     .filter(Boolean)
@@ -93,8 +98,27 @@ export function TileCard({
       : {}),
   };
   if (faceDown) {
+    if (!interactive) {
+      return (
+        <div
+          className={classes}
+          style={mergedStyle}
+          role="img"
+          aria-label={ariaLabel ?? '伏せ牌'}
+        >
+          <SkinLayer slot={baseSlot} />
+          <span className="sp-tile__back-mark">◆</span>
+        </div>
+      );
+    }
     return (
-      <button type="button" className={classes} style={mergedStyle} aria-label="伏せ牌" {...rest}>
+      <button
+        type="button"
+        className={classes}
+        style={mergedStyle}
+        aria-label={ariaLabel ?? '伏せ牌'}
+        {...rest}
+      >
         <SkinLayer slot={baseSlot} />
         <span className="sp-tile__back-mark">◆</span>
       </button>
@@ -107,15 +131,8 @@ export function TileCard({
       : emphasis === 'tsumo'
         ? `${name}(ツモできる)`
         : name;
-  return (
-    <button
-      type="button"
-      className={classes}
-      style={mergedStyle}
-      aria-label={accessibleName}
-      aria-pressed={selected}
-      {...rest}
-    >
+  const content = (
+    <>
       {/* スキン画像はfallback背景の上・文字の下の独立レイヤー(P0-6)。
           base面の上へ状態レイヤーを合成する(ADR-015)。 */}
       <SkinLayer slot={baseSlot} />
@@ -127,6 +144,30 @@ export function TileCard({
         {emoji ?? fallbackLabel}
       </span>
       {showName && <span className="sp-tile__name">{name}</span>}
+    </>
+  );
+  if (!interactive) {
+    return (
+      <div
+        className={classes}
+        style={mergedStyle}
+        role="img"
+        aria-label={ariaLabel ?? accessibleName}
+      >
+        {content}
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className={classes}
+      style={mergedStyle}
+      aria-label={ariaLabel ?? accessibleName}
+      aria-pressed={selected}
+      {...rest}
+    >
+      {content}
     </button>
   );
 }

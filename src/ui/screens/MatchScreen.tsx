@@ -85,7 +85,7 @@ function PlayedTiles({
                 tile={tile}
                 deck={deck}
                 small
-                disabled
+                interactive={false}
                 className={newest ? 'sp-tile--latest' : undefined}
                 aria-label={`${deck.tiles.find((item) => item.id === tile.tileId)?.name ?? '牌'}${newest ? '、最新の捨て牌' : ''}`}
                 {...(tile.instanceId === ronTileId ? { emphasis: 'ron' as const } : {})}
