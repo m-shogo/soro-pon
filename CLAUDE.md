@@ -2,7 +2,7 @@
 
 Claude Code向け補足。共通ルールの正本は `AGENTS.md`。
 
-## Current Status — 2026-07-25
+## Current Status — 2026-07-27
 
 ```text
 MVP 1-14 / multi-skin / H1-H11: complete
@@ -17,6 +17,10 @@ post-Batch-10 integrity/residual scope: 92 definitions across 28 files
 frozen SHA 7548964: typecheck/unit 425/skin/build + CI + Integrity green
   (exact-SHA verification for the Batch 11 precondition); wider residual
   closure continues under the concurrent work-stream's own tracking
+Batch 12: CONDITIONAL on frozen SHA 555c02d; build/integrity/unit/skin/
+  visual/CI/Python 3.13 and local immutable rollback green. Stable Safari
+  26.4 reached one AX-driven 3p Result only. Physical Apple/Android,
+  Safari+VoiceOver, NVDA/JAWS, and real deploy/rollback remain blocked.
 ```
 
 「MVP/H1開始」「画像生成前」「次はasset Batch 5」は古い指示。
@@ -35,6 +39,7 @@ docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
 docs/release/STORAGE-RECOVERY-POLICY.md
 docs/SKIN-DISTRIBUTION.md
 ```
@@ -54,8 +59,10 @@ docs/SKIN-DISTRIBUTION.md
 10. pnpm build + artifact hash/inventory
 11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
 12. If product/test/workflow changes, discard results and restart from step 1.
-13. Execute Batch 11 on the same SHA/artifact.
-14. Commit report/evidence, then synchronize readiness docs.
+13. Execute the remaining Batch 12 real-environment gates without substituting
+    WebKit, Simulator, AX automation, or local preview for the named target.
+14. Record BLOCKED evidence honestly and keep RC LIMITED READY until every
+    mandatory promotion gate is green.
 ```
 
 Do not duplicate the targeted file list here; `.github/workflows/integrity.yml`

@@ -1,6 +1,6 @@
 # Soro-pon Documentation Index
 
-## Current Status — 2026-07-25
+## Current Status — 2026-07-27
 
 ```text
 Gameplay MVP phases 1-14: complete
@@ -13,9 +13,12 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit: contract defined, not executed
-Post-Batch-10 integrity/residual fixes: committed; exact-SHA verification pending
-Integrity definitions: 92 across 28 files, committed and unexecuted
+Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
+Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
+Batch 12 exact-SHA build/CI/Integrity/Python 3.13: PASS
+Integrity execution: 101/101 across 28 files; unit 425/425; skin 18/18;
+  visual 70/70
+Full stable Safari, physical devices, real AT, and deployed rollback: BLOCKED
 ```
 
 Do not treat historical green commands, old asset checkpoints, or numbered
@@ -35,6 +38,7 @@ docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
 ```
 
 ## Canonical Roles
@@ -61,10 +65,16 @@ docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
   loader-owned skin trust, immutable Actions, and exact remaining evidence.
 
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
-  Current unexecuted production Firefox/WebKit QA contract.
+  Historical Batch 11 execution contract.
+
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-REPORT.md
+  Completed Batch 11 Firefox/Playwright-WebKit evidence.
 
 docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-MATRIX.md
-  Batch 12 real Safari/device/AT execution contract and per-gate claim scope.
+  Executed Batch 12 gate matrix and per-gate claim scope.
+
+docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
+  Current Batch 12 evidence, non-claims, blockers, and RC decision.
 
 docs/qa/BATCH-12-MANUAL-SAFARI-DEVICE-AT-CHECKLIST.md
   Redaction-safe human checklist for real Safari, physical devices, and AT.
@@ -135,9 +145,8 @@ Python dependency consistency was not checked after install
 entry/risk/performance/operations docs were stale or ambiguous
 ```
 
-Targeted integrity definitions committed: **92 cases across 28 files**. They
-remain unverified against the final exact SHA until the prescribed commands and
-Batch 11 are executed.
+Batch 12 frozen SHA executed **101 integrity tests across 28 files**, all PASS.
+Historical documents retain their original case counts and claims.
 
 ## Release / Operations
 
@@ -148,7 +157,9 @@ docs/qa/BATCH-8-VOICEOVER-ACCEPTANCE-REPORT.md
 docs/qa/BATCH-9-EXTENDED-SOAK-REPORT.md
 docs/qa/BATCH-10-REAL-DEVICE-RELEASE-REPORT.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-REPORT.md
 docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-MATRIX.md
+docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
 docs/qa/BATCH-12-MANUAL-SAFARI-DEVICE-AT-CHECKLIST.md
 docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
 docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md

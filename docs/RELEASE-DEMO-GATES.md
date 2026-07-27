@@ -100,7 +100,7 @@ Gate 6 was historically passed in Batch 6. Later findings do not erase that
 historical decision, but newer code must be reverified before it is presented
 as the current RC artifact.
 
-## Current RC Readiness — 2026-07-25
+## Current RC Readiness — 2026-07-27
 
 ```text
 Historical Gate 6: PASS
@@ -114,6 +114,13 @@ Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
   (FF 151.0 + Playwright WebKit 26.5 prod-preview core 15/15 + rotations,
   0 product defects; WebKit is not Safari; no FF/WK memory claim)
 RC status: LIMITED READY
+Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
+  build/unit/skin/visual/CI/Integrity/exact-SHA CI Python 3.13 PASS
+  stable Safari 26.4: one AX-driven 3-player Result, supplemental only
+  local immutable deploy/rollback rehearsal PASS, supplemental only
+  full Safari, physical Apple/Android, Safari+VoiceOver, NVDA/JAWS,
+  and authorized deployed rollback remain BLOCKED
+RC status after Batch 12: LIMITED READY
 ```
 
 Review reports:
@@ -219,23 +226,21 @@ Main CI/Integrity actions pinned to immutable commit SHAs
 Python asset job runs exact top-level pins + pip check + fixtures
 ```
 
-Integrity definitions: **92 committed cases across 28 files**, not yet executed
-on the final exact SHA.
+Batch 12 frozen SHA executed **101 integrity tests across 28 files**, all PASS.
 
-### Current verification required
+### Current verification result
 
 ```text
-stop concurrent writers
-freeze clean HEAD == origin/main
-pnpm install --frozen-lockfile
-run Integrity Contracts workflow equivalent
-confirm all 92 targeted cases are collected and pass
-pnpm typecheck
-pnpm test
-pnpm skin:validate
-pnpm build
-run Python 3.13 install + pip check + asset fixtures
-complete Batch 11 on the same SHA/artifact
+frozen SHA 555c02d
+frozen install PASS
+Integrity Contracts 101/101 PASS
+typecheck PASS
+unit 425/425 PASS
+skin 18/18 PASS
+visual 70/70 PASS
+production build PASS
+exact-SHA CI Python 3.13 + pip check + 92 fixtures PASS
+CI and Integrity workflows PASS
 ```
 
 Any product/test/dependency/workflow change invalidates partial current-SHA
@@ -244,8 +249,7 @@ evidence and restarts the sequence.
 ### Still open / unclaimed
 
 ```text
-exact-current-SHA verification and observed GitHub Actions result
-Batch 11 production Firefox/WebKit
+full stable Safari core and rotation
 physical iPhone Safari / iPad / Android
 real deploy to selected hosting
 rollback of an actually deployed immutable artifact

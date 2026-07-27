@@ -13,7 +13,7 @@ Initial integrity review:    docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 Continuation review:         docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 Deep-dive review:            docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 Residual closure:            docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
-Current executable QA:       docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+Current executable QA:       docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-MATRIX.md
 Storage contract:            docs/release/STORAGE-RECOVERY-POLICY.md
 Migration contract:          docs/MIGRATIONS.md
 Skin distribution boundary:  docs/SKIN-DISTRIBUTION.md
@@ -21,7 +21,7 @@ Operations applicability:    docs/OPERATIONS-READINESS.md
 Risk status:                 docs/TECHNICAL-RISK-REGISTER.md
 ```
 
-## Current Status — 2026-07-25
+## Current Status — 2026-07-27
 
 ```text
 Gameplay MVP phases 1-14: complete
@@ -37,12 +37,14 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit: contract defined, not executed
-Post-Batch-10 code-side residual closure: committed
-Integrity scope: 92 definitions across 28 files, unexecuted on final SHA
+Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
+Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
+Batch 12 exact-SHA build/CI/Integrity/Python: PASS
+Current residual gates: full Safari, physical devices, real AT,
+  authorized deploy/rollback
 ```
 
-Current phase: **RC exact-SHA evidence closure**. Do not restart MVP, H1-H11,
+Current phase: **Batch 12 real-environment evidence closure**. Do not restart MVP, H1-H11,
 asset Batch 5, or any obsolete implementation sequence.
 
 ## Completed Foundations
@@ -150,8 +152,7 @@ supply chain:
   Python asset CI installs exact top-level pins and runs pip check
 ```
 
-Targeted integrity definitions committed: **92 across 28 files**. They are not
-release evidence until executed on the exact final SHA.
+Batch 12 frozen SHA executed **101 integrity tests across 28 files**, all PASS.
 
 ## Next Executable Work
 
@@ -161,23 +162,23 @@ release evidence until executed on the exact final SHA.
 3. Record exact SHA and Node/pnpm/Playwright/browser/Python versions.
 4. pnpm install --frozen-lockfile
 5. Run .github/workflows/integrity.yml equivalent locally.
-6. Confirm all 92 targeted tests are collected and pass.
+6. Confirm all 101 targeted tests are collected and pass.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
 10. pnpm build and record artifact inventory/hash.
 11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
 12. Fix any failure; if code/test/workflow changes, restart from step 1.
-13. Execute all Batch 11 production Firefox/WebKit items on the same SHA/artifact.
-14. Commit evidence/report and only then update Batch 11 status.
+13. Execute the remaining Batch 12 real Safari/device/AT/deploy gates on the
+    same SHA/artifact.
+14. Commit evidence/report and only then update Batch 12 status.
 ```
 
 The exact targeted file list is maintained in
 `.github/workflows/integrity.yml`; do not maintain a second command list here.
 
-Batch 11 cannot itself promote RC to READY. Real devices, real Safari,
-remaining real AT, cryptographic external-skin installer identity, and real
-deploy/rollback remain separate evidence.
+Batch 12 cannot promote RC to READY while full real Safari, physical devices,
+real AT, and authorized deploy/rollback remain blocked.
 
 ## CI / Browser Boundaries
 

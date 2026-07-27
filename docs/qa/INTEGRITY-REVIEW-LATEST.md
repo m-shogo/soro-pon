@@ -1,9 +1,13 @@
 # Latest Integrity Review State
 
-Date: 2026-07-24  
-Authority: latest compact status for post-Batch-10 integrity work  
+Date: 2026-07-27
+Authority: historical compact status; current authority is the Batch 12 report
 RC: **LIMITED READY**  
-Batch 11: **NOT EXECUTED**
+Batch 11: **COMPLETE**; Batch 12: **CONDITIONAL**
+
+Batch 12 frozen SHA `555c02d` passed 101/101 integrity tests across 28 files.
+See `BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md`. Counts below remain
+historical.
 
 This file supersedes aggregate counts and CI-synchronization notes in:
 

@@ -1,10 +1,15 @@
 # Current Integrity Review Status
 
-Date: 2026-07-24  
+Date: 2026-07-27
 Scope: post-Batch-10 integrity work  
-Status: **FIXES AND TEST DEFINITIONS COMMITTED / EXACT-SHA EXECUTION PENDING**  
+Status: **HISTORICAL SNAPSHOT — SUPERSEDED BY BATCH 12 EXACT-SHA EXECUTION**
 RC: **LIMITED READY**  
-Batch 11: **NOT EXECUTED**
+Batch 11: **COMPLETE**; Batch 12: **CONDITIONAL**
+
+Current evidence is
+`BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md`: frozen SHA `555c02d`
+passed 101/101 integrity tests across 28 files. The historical counts below are
+retained and must not be read as current status.
 
 This file is the current compact status for the integrity reviews. It
 supersedes only stale aggregate counts/status summaries in earlier entry
@@ -157,7 +162,7 @@ freeze clean exact SHA
 run frozen install + nine-file integrity suite
 run typecheck/full unit/skin validation/build
 observe or explicitly mark GitHub CI unavailable
-execute Batch 11 on the same artifact
+Batch 11 execution was the historical next step and later completed
 ```
 
 Separate residual product/evidence risks remain:

@@ -9,6 +9,11 @@ Not a new feature Gate. Gate 6 remains PASS. Batch 8 (CONDITIONAL) and
 Batch 9 (COMPLETE) results, scopes, and evidence are unchanged by this
 batch.
 
+> Current-status note (2026-07-27): Batch 12 device discovery saw the paired
+> iPhone 16 record but an unavailable tunnel, so no new physical-iPhone PASS was
+> claimed. Use the Batch 12 report for current device availability; retain this
+> report as historical evidence for its own session.
+
 ## 1. Executive result
 
 **CONDITIONAL.**

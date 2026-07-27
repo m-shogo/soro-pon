@@ -8,6 +8,10 @@ scope. Batch 8 (CONDITIONAL), Batch 9 (COMPLETE), and Batch 10
 (CONDITIONAL) evidence is historical and is neither erased nor
 generalized to this newer, integrity-hardened product HEAD.
 
+> Current-status note (2026-07-27): Batch 12 is `CONDITIONAL` on frozen SHA
+> `555c02d`; RC remains `LIMITED READY`. This Batch 11 report stays historical,
+> and its Playwright WebKit results are not Safari results.
+
 ## 1. Executive result
 
 **COMPLETE.** On the exact clean `main` SHA frozen after the post-Batch-10

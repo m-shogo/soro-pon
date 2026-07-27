@@ -4,7 +4,7 @@
 ローカルファーストなカスタム牌ゲームです。Vamp-pon世界の「記憶札遊び」
 として扱います。
 
-## Current Status — 2026-07-25
+## Current Status — 2026-07-27
 
 ```text
 Gameplay MVP phases 1-14: complete
@@ -24,6 +24,12 @@ Batch 11 production Firefox/WebKit: COMPLETE (frozen SHA 7548964)
   core flow 15/15 each, ~20-25 min / 23-24 cycle rotations, 10/10 matches
   to Result, 0 product defects. Playwright WebKit is NOT real Safari;
   no memory claim for Firefox/WebKit.
+Batch 12 real Safari/device/AT: CONDITIONAL (frozen SHA 555c02d)
+  exact-SHA build/unit/skin/visual/CI/Integrity/Python 3.13 PASS;
+  stable Safari 26.4 reached one 3-player Result through automated AX only;
+  local immutable deploy/rollback rehearsal PASS.
+  Full Safari, physical iPhone/iPad/Android, Safari+VoiceOver, NVDA/JAWS,
+  and real deploy/rollback remain BLOCKED. RC stays LIMITED READY.
 Post-Batch-10 integrity + residual closure:
   product/test/CI/doc fixes committed
   92 targeted test definitions across 28 Integrity files committed
@@ -42,9 +48,9 @@ docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 ```
 
-Historical Batch 10 evidence does not validate the newer product HEAD. Fresh
-verification and Batch 11 must use one frozen exact commit and one production
-artifact.
+Historical Batch 10/11 evidence remains scoped to its recorded artifacts.
+Current Batch 12 evidence and remaining gates are in
+`docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md`.
 
 ## Integrity Hardening Result
 
@@ -181,7 +187,6 @@ Batch 10:
 Still open/unclaimed:
 
 ```text
-Python 3.13 install + pip check + asset fixtures on that exact SHA
 physical iPhone Safari / iPad / Android
 real hosting deployment
 rollback of an actually deployed immutable artifact

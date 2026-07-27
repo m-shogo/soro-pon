@@ -2,7 +2,7 @@
 
 このrepoでAIエージェントが作業するときの必須ルール。
 
-## Current Status — 2026-07-25
+## Current Status — 2026-07-27
 
 ```text
 Gameplay MVP phases 1-14: complete
@@ -15,11 +15,15 @@ Batch 7: COMPLETE
 Batch 8 real VoiceOver + Chrome: CONDITIONAL
 Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
-Batch 11 production Firefox/WebKit: contract defined, NOT executed
+Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
+Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
 Post-Batch-10 integrity/residual closure:
   code/test/CI/doc fixes committed
-  92 targeted definitions across 28 files committed
-  exact-current-SHA verification pending
+  101 targeted tests across 28 files PASS on Batch 12 frozen SHA
+  full unit 425/425, skin 18/18, visual 70/70, build, CI, Integrity,
+  and exact-SHA CI Python 3.13 green
+Remaining: full stable Safari, physical Apple/Android, Safari+VoiceOver,
+  NVDA/JAWS, and authorized deploy/rollback
 ```
 
 「MVP Phase 1開始」「H1から順に実装」「次はasset Batch 5」は古い状態。
@@ -40,6 +44,7 @@ docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
+docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
 ```
 
 Canonical truth:
@@ -149,14 +154,14 @@ Major dependencies require `docs/DEPENDENCY-POLICY.md` and ADR review.
 3. Record exact SHA and toolchain/browser/Python versions.
 4. pnpm install --frozen-lockfile
 5. Run .github/workflows/integrity.yml equivalent.
-6. Confirm all 92 targeted definitions are collected and pass.
+6. Confirm all 101 targeted tests across 28 files are collected and pass.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
 10. pnpm build + artifact inventory/hash
 11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
 12. If anything changes, discard results and restart from step 1.
-13. Execute Batch 11 on the same production artifact.
+13. Execute the still-open Batch 12 real-environment gates on the same artifact.
 ```
 
 A workflow file, local command from an older SHA, or historical Batch PASS is
@@ -182,5 +187,5 @@ commands and results, or explicitly not executed
 GitHub Actions result, or visibility limitation
 skin/screen/data impact
 remaining risks
-Batch 11 / RC status
+Batch 12 / RC status
 ```

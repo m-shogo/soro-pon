@@ -20,6 +20,11 @@ RC: LIMITED READY
 This report records committed implementation and test definitions. It does not
 convert definitions into PASS results and does not approve a release.
 
+> Historical-status note (2026-07-27): Batch 11 later completed, and Batch 12
+> frozen SHA `555c02d` passed exact-SHA CI, Integrity, and Python 3.13. This
+> report's “not observed/not executed” verdict remains true for its own session;
+> use `BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md` for current status.
+
 ## Closed / Mitigated Findings
 
 ### Records retention ordering
