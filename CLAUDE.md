@@ -21,6 +21,12 @@ Batch 12: CONDITIONAL on frozen SHA 555c02d; build/integrity/unit/skin/
   visual/CI/Python 3.13 and local immutable rollback green. Stable Safari
   26.4 reached one AX-driven 3p Result only. Physical Apple/Android,
   Safari+VoiceOver, NVDA/JAWS, and real deploy/rollback remain blocked.
+Batch 13: CONDITIONAL; shared table-centered 3p/4p UI, both skins,
+  integrity 101/unit 432/skin 18/visual 80/build/Python 92 PASS.
+  Stable Safari 26.4 reached Result on all four paths. Rotation stopped
+  at 4/20, the mandatory Safari+VoiceOver flow is BLOCKED, and Cloudflare
+  Preview/production/rollback awaits account sign-in. Physical iPhone
+  Safari is KNOWN UNVERIFIED/post-release/non-blocking.
 ```
 
 「MVP/H1開始」「画像生成前」「次はasset Batch 5」は古い指示。
@@ -40,6 +46,8 @@ docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
 docs/release/STORAGE-RECOVERY-POLICY.md
 docs/SKIN-DISTRIBUTION.md
 ```

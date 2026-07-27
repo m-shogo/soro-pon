@@ -121,6 +121,14 @@ Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
   full Safari, physical Apple/Android, Safari+VoiceOver, NVDA/JAWS,
   and authorized deployed rollback remain BLOCKED
 RC status after Batch 12: LIMITED READY
+Batch 13 readable table UI / Safari / Cloudflare: CONDITIONAL
+  shared 3p/4p UI and local gates PASS
+  stable Safari 26.4 four Result paths PASS
+  Safari rotation 4/20: BLOCKED
+  mandatory Safari+VoiceOver flow: BLOCKED
+  Cloudflare Preview/production/rollback/current restore: awaiting sign-in
+  physical iPhone Safari: KNOWN UNVERIFIED / post-release / non-blocking
+RC status after current Batch 13 evidence: LIMITED READY
 ```
 
 Review reports:
@@ -249,18 +257,19 @@ evidence and restarts the sequence.
 ### Still open / unclaimed
 
 ```text
-full stable Safari core and rotation
-physical iPhone Safari / iPad / Android
-real deploy to selected hosting
+full stable Safari rotation/soak
+physical iPhone Safari: KNOWN UNVERIFIED post-release gate, non-blocking
+physical iPad / Android
+Cloudflare Pages Preview and production
 rollback of an actually deployed immutable artifact
-Safari + VoiceOver
+Safari + VoiceOver mandatory flow
 NVDA / JAWS
 remaining Batch 8 Result/Cute Pop VoiceOver evidence
 validated backup restore/merge UI
 true transaction/version model for advertised concurrent multi-tab editing
 cryptographic external skin signature/entitlement/installer authority
 Python transitive dependency hash lock
-provider-specific CSP/security headers
+deployed provider-specific CSP/security-header verification
 ```
 
 ## Gate 7 — Installed / Paid Skin Ready

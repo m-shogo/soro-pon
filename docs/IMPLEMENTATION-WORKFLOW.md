@@ -13,7 +13,7 @@ Initial integrity review:    docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 Continuation review:         docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 Deep-dive review:            docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 Residual closure:            docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
-Current executable QA:       docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-MATRIX.md
+Current executable QA:       docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
 Storage contract:            docs/release/STORAGE-RECOVERY-POLICY.md
 Migration contract:          docs/MIGRATIONS.md
 Skin distribution boundary:  docs/SKIN-DISTRIBUTION.md
@@ -40,12 +40,15 @@ Batch 10 production preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
 Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
 Batch 12 exact-SHA build/CI/Integrity/Python: PASS
-Current residual gates: full Safari, physical devices, real AT,
-  authorized deploy/rollback
+Batch 13 table-centered readable UI: implemented
+Batch 13 local gates and Safari 4 Result paths: PASS
+Current residual gates: Safari rotation/soak, full Safari+VoiceOver,
+  Cloudflare Preview/production/rollback/current restore
+Physical iPhone Safari: KNOWN UNVERIFIED, post-release, non-blocking
 ```
 
-Current phase: **Batch 12 real-environment evidence closure**. Do not restart MVP, H1-H11,
-asset Batch 5, or any obsolete implementation sequence.
+Current phase: **Batch 13 real-environment and Cloudflare closure**. Do not
+restart MVP, H1-H11, asset Batch 5, or any obsolete implementation sequence.
 
 ## Completed Foundations
 

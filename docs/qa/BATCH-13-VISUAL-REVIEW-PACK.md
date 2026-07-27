@@ -17,7 +17,7 @@ sub-44px enabled targets, or top-level region collisions.
 
 ## Reviewed visual baselines
 
-The following eight new baselines were generated independently from existing
+The following twelve new baselines were generated independently from existing
 visual snapshots and reviewed before acceptance:
 
 | Baseline group | Classification | Review |
@@ -26,6 +26,8 @@ visual snapshots and reviewed before acceptance:
 | Cute Pop 4p compact / desktop | EXPECTED_DESIGN_CHANGE, FIXED_COLLISION | four readable seats, stable action row, patterns behind dedicated surfaces |
 | Yorunoshirube 3p compact / desktop | EXPECTED_DESIGN_CHANGE, FIXED_READABILITY | ink/light decoration remains behind opaque information surfaces |
 | Yorunoshirube 4p compact / desktop | EXPECTED_DESIGN_CHANGE, FIXED_COLLISION | left/top/right/self overview; status and labels no longer sit directly on decoration |
+| Cute Pop focus / action compact | EXPECTED_DESIGN_CHANGE, FIXED_READABILITY | keyboard focus ring, selected tile, primary and disabled actions remain distinct |
+| Yorunoshirube focus / action compact | EXPECTED_DESIGN_CHANGE, FIXED_READABILITY | focus and selected states remain visible without relying on glow or color alone |
 
 ## Human-oriented review
 
@@ -43,3 +45,16 @@ Focus is represented by the shared double-ring contract and selected tiles use
 both elevation and `aria-pressed`. Result appearance remains covered by the
 existing both-skin Result suite.
 
+## Decision
+
+```text
+REGRESSION: 0
+UNKNOWN: 0
+automated layout audit: 24/24 PASS
+new reviewed snapshots: 12
+```
+
+The Before audit reproduced 24 opponent-row overflow findings. The After audit
+records zero overflow, viewport escape, sub-44px enabled target, and top-level
+region collision findings across all 24 skin/player/viewport cases. This is
+loopback visual and geometry evidence; it is not a physical-device claim.

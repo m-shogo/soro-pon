@@ -17,13 +17,18 @@ Batch 9 extended soak: COMPLETE
 Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
 Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
+Batch 13 table UI/Safari/Cloudflare: CONDITIONAL
+  shared 3p/4p table UI and local gates PASS; stable Safari 4/4 Result
+  paths PASS; rotation 4/20 and full Safari+VoiceOver BLOCKED;
+  Cloudflare deploy/rollback awaits account sign-in
+  physical iPhone Safari: KNOWN UNVERIFIED, post-release, non-blocking
 Post-Batch-10 integrity/residual closure:
   code/test/CI/doc fixes committed
   101 targeted tests across 28 files PASS on Batch 12 frozen SHA
   full unit 425/425, skin 18/18, visual 70/70, build, CI, Integrity,
   and exact-SHA CI Python 3.13 green
-Remaining: full stable Safari, physical Apple/Android, Safari+VoiceOver,
-  NVDA/JAWS, and authorized deploy/rollback
+Remaining: Safari rotation/soak, full Safari+VoiceOver, iPad/Android,
+  NVDA/JAWS, and Cloudflare Preview/production/rollback/current restore
 ```
 
 「MVP Phase 1開始」「H1から順に実装」「次はasset Batch 5」は古い状態。
@@ -45,6 +50,8 @@ docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
 ```
 
 Canonical truth:
