@@ -141,4 +141,23 @@ for (const skin of SKINS) {
       });
     }
   }
+
+  test(`${skin} compact focus and action state`, async ({ page }) => {
+    await page.setViewportSize(SIZES[0]);
+    await openMatch(page, skin, 4);
+
+    const handTiles = page.locator('.sp-self-hand-zone .sp-tile');
+    expect(await handTiles.count()).toBeGreaterThan(0);
+    const firstTile = handTiles.first();
+
+    await firstTile.focus();
+    await expect(firstTile).toBeFocused();
+    await expect(page).toHaveScreenshot(`batch13-focus-${skin}-4p-compact.png`);
+
+    await firstTile.click();
+    await expect(firstTile).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('button', { name: /捨てる/ })).toBeEnabled();
+    await expectNoLayoutDefect(page);
+    await expect(page).toHaveScreenshot(`batch13-action-${skin}-4p-compact.png`);
+  });
 }
