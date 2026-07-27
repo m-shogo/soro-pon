@@ -57,6 +57,11 @@ for cycle in $(seq 1 "$cycles"); do
     play_action=$(osascript "$ax_script" play-step)
   elif [[ "$landscape_state" == result ]]; then
     play_action=$(osascript "$ax_script" click-prefix 'もう一局')
+  elif [[ "$landscape_state" == top ]]; then
+    play_action=$(osascript "$ax_script" click-prefix 'まず遊ぶ')
+  elif [[ "$landscape_state" == setup ]]; then
+    osascript "$ax_script" click-prefix '4人戦' >/dev/null
+    play_action=$(osascript "$ax_script" click-prefix '対局開始')
   fi
 
   http_status=$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:4174/)
