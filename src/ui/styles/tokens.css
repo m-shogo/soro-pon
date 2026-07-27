@@ -112,11 +112,34 @@
   --sp-font-xl: clamp(24px, 3.2svh + 0.4rem, 34px);
   --sp-line-tight: 1.25;
   --sp-line-normal: 1.5;
+  --sp-line-status: 1.35;
+  --sp-weight-normal: 400;
+  --sp-weight-medium: 600;
+  --sp-weight-strong: 700;
+  --sp-letter-normal: 0.02em;
+  --sp-letter-status: 0.06em;
+  --sp-text-max: 68ch;
+
+  /* ---- semantic information surfaces ---- */
+  --sp-surface-info: color-mix(in srgb, var(--sp-color-ink-panel) 92%, transparent);
+  --sp-surface-info-raised: color-mix(
+    in srgb,
+    var(--sp-color-ink-panel-raised) 96%,
+    transparent
+  );
+  --sp-surface-overlay: color-mix(in srgb, var(--sp-color-ink-panel) 94%, transparent);
+  --sp-safe-top: env(safe-area-inset-top, 0px);
+  --sp-safe-right: env(safe-area-inset-right, 0px);
+  --sp-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --sp-safe-left: env(safe-area-inset-left, 0px);
 
   /* ---- z-index ---- */
   --sp-z-board: 1;
+  --sp-z-seat: 5;
+  --sp-z-status: 6;
   --sp-z-hand: 10;
   --sp-z-actions: 20;
+  --sp-z-message: 30;
   --sp-z-overlay: 100;
   --sp-z-modal: 200;
   --sp-z-rotate-prompt: 300;
@@ -133,4 +156,6 @@
   /* ---- layout ---- */
   --sp-touch-min: 44px;
   --sp-touch-primary: 54px;
+  --sp-breakpoint-compact: 900px;
+  --sp-breakpoint-desktop: 1200px;
 }

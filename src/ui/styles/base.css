@@ -38,8 +38,8 @@
   .sp-game-safe-area {
     position: absolute;
     inset: 0;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right)
-      env(safe-area-inset-bottom) env(safe-area-inset-left);
+    padding: var(--sp-safe-top) var(--sp-safe-right) var(--sp-safe-bottom)
+      var(--sp-safe-left);
     display: flex;
     flex-direction: column;
   }
