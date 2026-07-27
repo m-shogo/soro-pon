@@ -100,4 +100,3 @@ cannot pass these gates.
 Record UTC end time, completed/failed/blocked scenario IDs, Result count, cycle
 count, console/page/network error counts, defect classifications, evidence file
 names, exact claim scope, explicit non-claims, and concrete unblock steps.
-

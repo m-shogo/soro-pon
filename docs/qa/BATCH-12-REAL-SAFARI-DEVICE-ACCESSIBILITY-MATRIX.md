@@ -1,6 +1,6 @@
 # Batch 12 — Real Safari / Device / Accessibility Matrix
 
-Status: **PRE-EXECUTION CONTRACT**  
+Status: **PRE-EXECUTION CONTRACT**
 RC vocabulary: `READY` / `LIMITED READY` / `NOT READY`
 
 This matrix is the execution contract for Batch 12. An unexecuted real
@@ -87,4 +87,3 @@ record. Do not record user names, local absolute paths, device names, serial
 numbers, UDIDs, cookies, tokens, credentials, private payloads, or signing
 identities. Record `Video: none` when no video exists. Manual and automated
 steps must be separate records.
-
