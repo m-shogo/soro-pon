@@ -27,18 +27,19 @@ export function App() {
   const metrics = useResponsiveMetrics();
   const hash = useHashRoute();
 
-  if (metrics.isPortrait) {
-    return <RotatePrompt />;
-  }
-
   return (
     <SkinProvider>
       <div className="sp-game-shell" data-density={metrics.density}>
-        <div className="sp-game-safe-area">
+        <div
+          className="sp-game-safe-area"
+          aria-hidden={metrics.isPortrait || undefined}
+          inert={metrics.isPortrait || undefined}
+        >
           <AppErrorBoundary>
             {hash === '#/gallery' ? <ComponentGallery /> : <AppRoot />}
           </AppErrorBoundary>
         </div>
+        {metrics.isPortrait ? <RotatePrompt /> : null}
       </div>
     </SkinProvider>
   );
