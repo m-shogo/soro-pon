@@ -1,0 +1,128 @@
+/* Batch 14 role-composer pass.
+ * Preserve the editor's production inputs/validation, but visually organize
+ * role creation as a game-building bench instead of a settings form.
+ */
+@layer layout {
+  #sp-tabpanel-roles {
+    --sp-role-rule: color-mix(in srgb, var(--sp-color-ink) 16%, transparent);
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(10px, 1.3vw, 16px);
+    border-radius: 7px;
+    border-color: var(--sp-role-rule);
+    background: color-mix(in srgb, var(--sp-color-paper-aged) 96%, transparent);
+    box-shadow: none;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child::after {
+    content: '役を組む';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    color: var(--sp-color-ink-soft);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child > div {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: minmax(150px, 0.8fr) repeat(3, minmax(132px, 1fr));
+    gap: 6px !important;
+    align-items: stretch !important;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child > div + div {
+    grid-template-columns: repeat(3, minmax(132px, 1fr)) minmax(180px, 1.2fr);
+    padding-top: 9px;
+    border-top: 1px solid var(--sp-role-rule);
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-select,
+  #sp-tabpanel-roles > .sp-paper-panel:first-child select,
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink {
+    min-height: 48px;
+    padding: 6px 9px;
+    border-radius: 5px;
+    box-shadow: none;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink:not(:disabled):hover,
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink:not(:disabled):focus-visible {
+    transform: none;
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 58%, transparent);
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink:disabled {
+    opacity: 0.38;
+  }
+
+  /* Existing roles become a compact score sheet rather than repeated cards. */
+  #sp-tabpanel-roles > .sp-paper-panel:last-child {
+    border-radius: 7px;
+    box-shadow: none;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:last-child .sp-screen__col {
+    gap: 0 !important;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:last-child .sp-screen__col > div {
+    min-height: 42px;
+    padding: 6px 2px;
+    border-bottom: 1px solid var(--sp-role-rule);
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:last-child .sp-screen__col > div:last-child {
+    border-bottom: 0;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:last-child .sp-button--ghost {
+    margin-left: auto;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    #sp-tabpanel-roles > .sp-paper-panel:first-child {
+      padding: 7px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child::after {
+      display: none;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child > div,
+    #sp-tabpanel-roles > .sp-paper-panel:first-child > div + div {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px !important;
+      padding-top: 5px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child > div:first-of-type {
+      padding-top: 0;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink {
+      min-height: 36px;
+      padding: 3px 5px;
+      font-size: 9px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:last-child .sp-screen__col > div {
+      min-height: 34px;
+      padding-block: 3px;
+      gap: 4px !important;
+    }
+  }
+}
