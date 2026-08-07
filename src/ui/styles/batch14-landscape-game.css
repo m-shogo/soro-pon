@@ -80,9 +80,17 @@
       height: 18px;
     }
 
+    .sp-table-seat .sp-player-panel__name {
+      font-size: 10px;
+      letter-spacing: 0.01em;
+    }
+
+    /* Counts/state are still present in the accessible label. In a tiny game
+       viewport the visible panel only needs identity + active edge; the river
+       itself already communicates discard activity. */
     .sp-table-seat .sp-player-panel__meta,
     .sp-table-seat .sp-player-panel__state {
-      opacity: 0.62;
+      display: none;
     }
 
     .sp-table-status {
@@ -171,6 +179,37 @@
 
     #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div[style*='border-bottom'] {
       padding: 4px 5px !important;
+    }
+
+    /* Role composer: keep the existing safe-template logic, but read as one
+       game-building bench instead of a stack of independent form controls. */
+    #sp-tabpanel-roles > .sp-paper-panel:first-child {
+      padding: 7px 9px;
+      border-radius: 5px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child > .sp-paper-panel__title {
+      margin-bottom: 4px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child > div {
+      gap: 4px !important;
+      margin-top: 4px !important;
+      padding-top: 4px;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-ink) 10%, transparent);
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink {
+      min-height: 32px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 9px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:nth-child(2) {
+      border-radius: 5px;
     }
   }
 }
