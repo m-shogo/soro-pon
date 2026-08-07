@@ -2,7 +2,7 @@
 
 Claude Code向け補足。共通ルールの正本は `AGENTS.md`。
 
-## Current Status — 2026-07-27
+## Current Status — 2026-08-07
 
 ```text
 MVP 1-14 / multi-skin / H1-H11: complete
@@ -27,6 +27,11 @@ Batch 13: CONDITIONAL; shared table-centered 3p/4p UI, both skins,
   at 4/20, the mandatory Safari+VoiceOver flow is BLOCKED, and Cloudflare
   Preview/production/rollback awaits account sign-in. Physical iPhone
   Safari is KNOWN UNVERIFIED/post-release/non-blocking.
+Batch 14: ACTIVE on PR #10 / Issue #12. Product direction is visual-quality
+  first: board-first match UI, mahjong-like discard rivers, hand/action
+  hierarchy, loadout-style deck browsing/detail/editor. Keep engine/schema/
+  semantic reading order stable while iterating presentation. Do not call the
+  UI finished merely because CI is green; visual quality is an acceptance gate.
 ```
 
 「MVP/H1開始」「画像生成前」「次はasset Batch 5」は古い指示。
@@ -137,6 +142,52 @@ no skin-specific screens
 layout/hit areas/focus/z-index/game meaning are skin-invariant
 skins change typed allowlisted presentation values only
 shared renderers/components before screen-local implementations
+```
+
+### Batch 14 Visual Quality Contract
+
+Treat these as durable design lessons, not one-off taste notes:
+
+```text
+GOAL
+  The app must read as a purpose-built game, not an admin dashboard or a
+  collection of generic web cards. CI green is necessary but never sufficient.
+
+MATCH
+  table/tiles/discard river/hand/turn/action are the visual hierarchy
+  player metadata and utility chrome are subordinate
+  discard placement should evoke a mahjong river without changing DOM order
+  self hand owns the lower edge; drawn tile and selected tile must read instantly
+  do not solve hierarchy by adding more panels, labels, badges, or decoration
+
+DECK UX
+  browsing should feel like choosing a loadout/deck, not opening settings
+  show actual tile faces/previews early; prefer visual inventory over text metadata
+  editor may retain semantic forms/validation but presentation should feel like a
+  game workspace, with validation as an inspector rather than the main content
+
+ANTI-PATTERNS
+  no generic AI ensemble/collage look
+  no glossy gacha-style over-polish
+  no excessive bloom, neon/cyberpunk treatment, gradient-for-gradient's-sake,
+  crowded symmetry, repeated rounded cards, or dashboard KPI-card composition
+  no decorative layer that competes with text or reduces readability
+  avoid making every element equally loud; deliberate negative space is required
+
+ART DIRECTION
+  Yorunoshirube: night desk / paper / black ink / lantern light / memory notebook
+  Cute Pop: bright / cute / friendly / pop, but still authored and coherent
+  use controlled saturation, clear occlusion, strong silhouette, thumbnail
+  readability, and a small number of intentional focal points
+  HTML/CSS/SVG fallback must remain production-usable; future PNG/final assets
+  must be swappable without changing DOM/layout/hit areas/state/text
+
+ITERATION
+  judge each pass at the actual landscape target, especially 844x390
+  identify the weakest 3 visual problems first and fix those before adding polish
+  compare hierarchy/spacing/occlusion, not only pixel-diff stability
+  preserve successful lessons in canonical Git docs so future agents inherit them
+  do not let an older screenshot or prior design constrain a clearly better solution
 ```
 
 Asset Batches 1-4 are closed. Do not restart image generation without a new
