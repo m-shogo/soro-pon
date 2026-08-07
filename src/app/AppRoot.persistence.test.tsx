@@ -179,7 +179,7 @@ describe('AppRoot persistence integrity', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /^デッキ一覧/ }));
     fireEvent.click(screen.getByRole('button', { name: /編集対象デッキ/ }));
-    fireEvent.click(screen.getByRole('button', { name: '編集' }));
+    fireEvent.click(screen.getByRole('button', { name: 'デッキを編集' }));
     fireEvent.change(screen.getByLabelText('デッキ名'), { target: { value: '古いdraft' } });
 
     replaceStoredDeck(id, '別タブ更新版', 2);
