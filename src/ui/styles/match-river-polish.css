@@ -1,0 +1,169 @@
+/* Batch 14.1: discard-river and self-seat hierarchy refinements.
+ * CSS-only: semantic order and match state remain unchanged.
+ */
+@layer layout {
+  /* Mahjong-like discard rivers: regular blocks are easier to scan than
+     free wrapping rows, while all text and tiles keep their DOM order. */
+  .sp-table-stage [data-seat-position='top'] .sp-seat-played__tiles,
+  .sp-table-stage [data-seat-position='self'] .sp-seat-played__tiles {
+    display: grid;
+    grid-template-columns: repeat(6, max-content);
+    gap: 2px;
+    justify-content: center;
+  }
+
+  .sp-table-stage [data-seat-position='left'] .sp-seat-played__tiles,
+  .sp-table-stage [data-seat-position='right'] .sp-seat-played__tiles {
+    display: grid;
+    grid-template-columns: repeat(3, max-content);
+    gap: 2px;
+    justify-content: center;
+  }
+
+  .sp-table-stage .sp-seat-played__head {
+    justify-content: center;
+    gap: 5px;
+    opacity: 0.42;
+  }
+
+  .sp-table-stage .sp-seat-played__empty {
+    display: block;
+    padding: 3px 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--sp-surface-overlay) 50%, transparent);
+    opacity: 0.5;
+  }
+
+  /* The human identity remains available on the table but becomes secondary;
+     their real visual anchor is the large hand directly below the board. */
+  .sp-table-stage [data-seat-position='self'] .sp-player-panel {
+    min-height: 30px;
+    width: min(190px, 78%);
+    padding-block: 1px;
+    opacity: 0.78;
+  }
+
+  .sp-table-stage [data-seat-position='self'] .sp-player-panel--active {
+    opacity: 1;
+  }
+
+  .sp-table-stage [data-seat-position='self'] .sp-player-panel__seal {
+    width: 21px;
+    height: 21px;
+  }
+
+  .sp-table-stage [data-seat-position='self'] .sp-seat-played {
+    bottom: 36px;
+  }
+
+  /* Active opponent is signalled at the perimeter rather than by filling an
+     entire card, keeping the board surface dominant. */
+  .sp-table-seat .sp-player-panel--active::after {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--sp-color-lantern-0);
+    box-shadow: var(--sp-shadow-lantern-soft);
+    pointer-events: none;
+  }
+
+  .sp-table-stage [data-seat-position='top'] .sp-player-panel--active::after {
+    left: 50%;
+    bottom: -10px;
+    transform: translateX(-50%);
+  }
+
+  .sp-table-stage [data-seat-position='left'] .sp-player-panel--active::after {
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .sp-table-stage [data-seat-position='right'] .sp-player-panel--active::after {
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .sp-table-stage [data-seat-position='self'] .sp-player-panel--active::after {
+    left: 50%;
+    top: -10px;
+    transform: translateX(-50%);
+  }
+
+  /* The hand is the strongest foreground plane. */
+  .sp-self-hand-zone {
+    position: relative;
+  }
+
+  .sp-self-hand-zone::before {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: 0;
+    height: 70%;
+    border-radius: 50% 50% 0 0;
+    background: radial-gradient(ellipse at bottom, color-mix(in srgb, black 28%, transparent), transparent 68%);
+    pointer-events: none;
+  }
+
+  .sp-self-hand-zone .sp-tile {
+    z-index: 1;
+  }
+
+  .sp-self-hand-zone .sp-tile--selected {
+    z-index: 3;
+  }
+
+  .sp-self-hand-zone .sp-tile--drawn::after {
+    content: '';
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: 2px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--sp-color-lantern-0);
+    opacity: 0.75;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-table-stage [data-seat-position='top'] .sp-seat-played__tiles,
+    .sp-table-stage [data-seat-position='self'] .sp-seat-played__tiles {
+      grid-template-columns: repeat(6, max-content);
+      gap: 1px;
+    }
+
+    .sp-table-stage [data-seat-position='left'] .sp-seat-played__tiles,
+    .sp-table-stage [data-seat-position='right'] .sp-seat-played__tiles {
+      grid-template-columns: repeat(3, max-content);
+      gap: 1px;
+    }
+
+    .sp-table-stage .sp-seat-played__head {
+      display: none;
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-player-panel {
+      min-height: 25px;
+      width: min(156px, 72%);
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-player-panel__seal {
+      width: 18px;
+      height: 18px;
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-seat-played {
+      bottom: 27px;
+    }
+
+    .sp-table-seat .sp-player-panel--active::after {
+      width: 5px;
+      height: 5px;
+    }
+  }
+}
