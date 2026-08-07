@@ -7,6 +7,7 @@ const REQUIRED_FILES = {
   request017: 'docs/asset-requests/017-BATCH-14-YORUNOSHIRUBE-TABLE-BACKGROUND-REFINEMENT.md',
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
+  landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
   match: 'src/ui/screens/MatchScreen.tsx',
   editor: 'src/ui/screens/DeckEditorScreen.tsx',
 };
@@ -31,22 +32,16 @@ function forbidText(fileKey, needle, reason) {
   }
 }
 
-// Durable agent instruction: CI green is not visual approval and anti-patterns
-// are explicitly recorded rather than being chat-only taste.
 requireText('claude', 'Batch 14 Visual Quality Contract', 'future agents must inherit the visual quality gate');
 requireText('claude', 'CI green is necessary but never sufficient', 'visual approval must stay distinct from code correctness');
 requireText('claude', 'no generic AI ensemble/collage look', 'generic generated composition must stay explicitly prohibited');
 
-// Learning ledger + stable reason codes. These codes are used by future asset
-// reviews so rejected concepts do not silently return with a different seed.
 for (const code of ['AI-01', 'AI-02', 'AI-03', 'AI-04', 'AI-05', 'AI-06', 'AI-07', 'UI-01', 'GAME-01', 'ASSET-04']) {
   requireText('learning', code, 'visual failure taxonomy must remain machine-checkable and reusable');
 }
 requireText('learning', 'weakest three', 'every pass must identify the largest visual defects before adding polish');
 requireText('learning', 'Candidate A/B/C must be conceptually different', 'candidate diversity cannot collapse to seed variations');
 
-// Every new generation brief must carry enough art direction to prevent model
-// defaults from choosing the composition/material/style by accident.
 for (const heading of [
   '## Visual Thesis',
   '## Composition Contract',
@@ -60,9 +55,8 @@ for (const heading of [
 requireText('request017', 'central 60-70%', 'gameplay center must stay quiet for tiles and discard rivers');
 requireText('request017', 'near-duplicate candidates', 'candidate diversity must remain explicit');
 
-// The authored override intentionally comes after generic polish layers so it
-// can remove SaaS/AI presentation defaults without rewriting semantic DOM.
 requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored anti-AI override must stay loaded');
+requireText('app', "import './ui/styles/batch14-landscape-game.css';", 'compact landscape composition must stay loaded after authored polish');
 requireText('authoredCss', 'generic AI/SaaS treatments', 'file purpose must remain explicit');
 requireText('authoredCss', '.sp-deck-select-card', 'deck selection must retain non-marketplace treatment');
 requireText('authoredCss', '.sp-table-stage', 'match table must retain art-first treatment');
@@ -70,8 +64,17 @@ requireText('authoredCss', '.sp-deck-editor-tile-preview', 'editor must retain a
 requireText('authoredCss', 'backdrop-filter: none', 'glass blur must stay actively neutralized in authored layer');
 forbidText('authoredCss', 'radial-gradient(', 'authored layer must not reintroduce decorative radial gradients');
 
-// Match chrome should not expose skin/debug identity or long assistant-like
-// narration. State copy is intentionally compact and game-native.
+// Compact landscape is deliberately composed as a game canvas. Utility/actions
+// overlay screen edges so the table and self hand retain vertical ownership.
+requireText('landscapeCss', '844x390 is a game viewport', 'target viewport intent must remain explicit');
+requireText('landscapeCss', '.sp-match-utility', 'utility overlay composition must remain defined');
+requireText('landscapeCss', 'position: absolute', 'edge controls must not consume dedicated layout rows in compact landscape');
+requireText('landscapeCss', 'grid-template-rows: minmax(0, 1fr) auto', 'table and hand must own the compact vertical layout');
+requireText('landscapeCss', '.sp-match-action-zone', 'actions must remain an edge control rather than a full-width web toolbar');
+requireText('landscapeCss', 'right: max(5px, var(--sp-safe-right))', 'right-edge action placement must respect safe area');
+requireText('landscapeCss', '.sp-seat-played__head', 'discard river labels should disappear when space is scarce');
+requireText('landscapeCss', 'display: none', 'compact mode must remove redundant discard labels');
+
 forbidText('match', "from '../skins/useSkin'", 'skin/debug identity should not occupy match utility chrome');
 forbidText('match', 'Cute Pop', 'match chrome must not display skin labels');
 forbidText('match', 'ヨルノシルベ', 'match chrome must not display skin labels');
@@ -80,9 +83,6 @@ forbidText('match', '山から1枚引いています', 'long assistant-like phas
 requireText('match', "turnStart: '手番準備'", 'compact phase language is part of the authored game UI');
 requireText('match', '<strong>そろぽん</strong>', 'utility identity should stay compact');
 
-// The editor should edit recognizable game objects, not only abstract fields.
-// Existing schema/validation semantics stay untouched; the preview uses the same
-// TileCard renderer as match/detail so it cannot drift into a separate fake tile.
 requireText('editor', "import { TileCard } from '../components/TileCard';", 'editor must reuse the production tile renderer');
 requireText('editor', 'className="sp-deck-editor-tile-preview"', 'tile rows must retain live visual preview');
 requireText('editor', 'primaryCategory.color', 'preview must reflect the live primary category color');
