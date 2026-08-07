@@ -30,6 +30,29 @@ describe('DeckDetailScreen deletion safety', () => {
     expect(screen.queryByRole('button', { name: tileName })).toBeNull();
   });
 
+  it('牌セットを主役にした概要と主要CTAを保持する', () => {
+    const deck = deckProjectSchema.parse(buildMinimalDeck());
+    const totalTileCount = deck.tiles.reduce((total, tile) => total + tile.count, 0);
+
+    render(
+      <DeckDetailScreen
+        deck={deck}
+        validation={{ status: 'playable', issues: [] }}
+        onBack={() => {}}
+        onStartSetup={() => {}}
+        onEdit={() => {}}
+        onExport={() => {}}
+        onDelete={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole('region', { name: 'デッキ概要' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: `牌 ${deck.tiles.length}種` })).toBeTruthy();
+    expect(screen.getByText(String(totalTileCount))).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'このデッキで対局' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'デッキを編集' })).toBeTruthy();
+  });
+
   it('削除ボタンだけでは削除せず、不可逆性を確認後に実行する', () => {
     const deck = deckProjectSchema.parse(buildMinimalDeck());
     const onDelete = vi.fn();
