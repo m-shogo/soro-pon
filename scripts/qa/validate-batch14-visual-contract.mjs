@@ -58,7 +58,7 @@ for (const requestKey of ['request017', 'request018']) {
   requireText(requestKey, 'central 60-70%', 'gameplay center must stay quiet for tiles and discard rivers');
   requireText(requestKey, 'near-duplicate candidates', 'candidate diversity must remain explicit');
 }
-requireText('request017', 'one restrained warm lantern', 'Yorunoshirube lighting must stay authored rather than neon');
+requireText('request017', 'one primary warm lantern source', 'Yorunoshirube lighting must stay authored rather than neon');
 requireText('request018', 'matte printed board/paper', 'Cute Pop material must stay tactile rather than candy-gloss');
 requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern guard must explicitly reject generic gradient polish');
 
