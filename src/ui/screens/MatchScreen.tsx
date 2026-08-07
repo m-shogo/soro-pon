@@ -14,7 +14,6 @@ import {
 import { PlayerPanel } from '../components/PlayerPanel';
 import { TileCard } from '../components/TileCard';
 import { useResponsiveMetrics } from '../layout/useResponsiveMetrics';
-import { useSkin } from '../skins/useSkin';
 import type { MatchController } from '../hooks/useMatchController';
 
 function TileView({
@@ -45,14 +44,14 @@ function TileView({
 }
 
 const PHASE_LABEL: Record<string, string> = {
-  turnStart: '手番を準備しています',
-  draw: '山から1枚引いています',
-  afterDrawAction: 'あがるか、捨てる牌を選びます',
-  discardSelect: '選んだ牌を捨てます',
-  reactionRon: 'ロンできるか確認しています',
-  turnEnd: '次の手番へ進みます',
-  roundEnd: '対局が決着しました',
-  result: '結果を表示します',
+  turnStart: '手番準備',
+  draw: '牌を引く',
+  afterDrawAction: '選択',
+  discardSelect: '捨て牌選択',
+  reactionRon: 'ロン判定',
+  turnEnd: '次の手番',
+  roundEnd: '決着',
+  result: '結果',
 };
 
 const FOUR_PLAYER_POSITIONS: TableSeatPosition[] = ['left', 'top', 'right'];
@@ -108,7 +107,6 @@ export function MatchScreen({
   onExit: () => void;
 }) {
   const metrics = useResponsiveMetrics();
-  const { activeSkinId } = useSkin();
   const [exitConfirm, setExitConfirm] = useState(false);
   const { state } = controller;
   const human = state.players.find((player) => player.id === controller.humanPlayerId)!;
@@ -196,9 +194,8 @@ export function MatchScreen({
         utility={
           <>
             <div className="sp-match-utility__identity">
-              <strong>そろぽん対局</strong>
+              <strong>そろぽん</strong>
               <span>{playerCount}人戦</span>
-              <span>{activeSkinId === 'cute-pop' ? 'Cute Pop' : 'ヨルノシルベ'}</span>
             </div>
             <Button variant="ghost" onClick={() => setExitConfirm(true)}>
               中断
@@ -208,8 +205,8 @@ export function MatchScreen({
         center={
           <div className="sp-table-status" role="status" aria-live="polite" aria-atomic="true">
             <span className="sp-table-status__eyebrow">第{state.turnCount + 1}手</span>
-            <strong className="sp-table-status__turn">{turnLabel}の手番</strong>
-            <span>山 残り{state.drawPile.length}枚</span>
+            <strong className="sp-table-status__turn">{turnLabel}</strong>
+            <span>山 {state.drawPile.length}</span>
             <span className="sp-table-status__phase">{phaseLabel}</span>
           </div>
         }
@@ -233,26 +230,16 @@ export function MatchScreen({
         actions={
           <ActionPanel>
             {controller.humanCanTsumo && (
-              <Button
-                variant="primary"
-                lantern
-                subLabel="引いた9枚であがる"
-                onClick={controller.declareTsumo}
-              >
+              <Button variant="primary" lantern onClick={controller.declareTsumo}>
                 ツモ
               </Button>
             )}
             {controller.humanRonPending && controller.humanCanRon && (
               <>
-                <Button
-                  variant="primary"
-                  lantern
-                  subLabel="8枚と捨て牌であがる"
-                  onClick={controller.declareRon}
-                >
+                <Button variant="primary" lantern onClick={controller.declareRon}>
                   ロン
                 </Button>
-                <Button variant="ink" subLabel="今回はあがらない" onClick={controller.passRon}>
+                <Button variant="ink" onClick={controller.passRon}>
                   パス
                 </Button>
               </>
@@ -260,7 +247,7 @@ export function MatchScreen({
             {!controller.humanRonPending && (
               <Button
                 variant="primary"
-                subLabel={canDiscard ? '選んだ牌を捨てる' : '先に手牌を選ぶ'}
+                {...(!canDiscard ? { subLabel: '牌を選択' } : {})}
                 disabled={!canDiscard}
                 onClick={controller.discardSelected}
               >
