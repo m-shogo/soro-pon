@@ -5,6 +5,7 @@ const REQUIRED_FILES = {
   learning: 'docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md',
   template: 'docs/asset-requests/TEMPLATE.md',
   request017: 'docs/asset-requests/017-BATCH-14-YORUNOSHIRUBE-TABLE-BACKGROUND-REFINEMENT.md',
+  request018: 'docs/asset-requests/018-BATCH-14-CUTE-POP-TABLE-BACKGROUND-REFINEMENT.md',
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
   landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
@@ -50,10 +51,16 @@ for (const heading of [
   '## Review Notes / Learning Capture',
 ]) {
   requireText('template', heading, 'new asset requests must preserve authored generation fields');
-  requireText('request017', heading, 'Batch 14 table background request must follow the authored request contract');
+  requireText('request017', heading, 'Yorunoshirube table brief must follow the authored request contract');
+  requireText('request018', heading, 'Cute Pop table brief must follow the authored request contract');
 }
-requireText('request017', 'central 60-70%', 'gameplay center must stay quiet for tiles and discard rivers');
-requireText('request017', 'near-duplicate candidates', 'candidate diversity must remain explicit');
+for (const requestKey of ['request017', 'request018']) {
+  requireText(requestKey, 'central 60-70%', 'gameplay center must stay quiet for tiles and discard rivers');
+  requireText(requestKey, 'near-duplicate candidates', 'candidate diversity must remain explicit');
+}
+requireText('request017', 'one restrained warm lantern', 'Yorunoshirube lighting must stay authored rather than neon');
+requireText('request018', 'matte printed board/paper', 'Cute Pop material must stay tactile rather than candy-gloss');
+requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern guard must explicitly reject generic gradient polish');
 
 requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored anti-AI override must stay loaded');
 requireText('app', "import './ui/styles/batch14-landscape-game.css';", 'compact landscape composition must stay loaded after authored polish');
@@ -64,8 +71,6 @@ requireText('authoredCss', '.sp-deck-editor-tile-preview', 'editor must retain a
 requireText('authoredCss', 'backdrop-filter: none', 'glass blur must stay actively neutralized in authored layer');
 forbidText('authoredCss', 'radial-gradient(', 'authored layer must not reintroduce decorative radial gradients');
 
-// Compact landscape is deliberately composed as a game canvas. Utility/actions
-// overlay screen edges so the table and self hand retain vertical ownership.
 requireText('landscapeCss', '844x390 is a game viewport', 'target viewport intent must remain explicit');
 requireText('landscapeCss', '.sp-match-utility', 'utility overlay composition must remain defined');
 requireText('landscapeCss', 'position: absolute', 'edge controls must not consume dedicated layout rows in compact landscape');
@@ -73,7 +78,8 @@ requireText('landscapeCss', 'grid-template-rows: minmax(0, 1fr) auto', 'table an
 requireText('landscapeCss', '.sp-match-action-zone', 'actions must remain an edge control rather than a full-width web toolbar');
 requireText('landscapeCss', 'right: max(5px, var(--sp-safe-right))', 'right-edge action placement must respect safe area');
 requireText('landscapeCss', '.sp-seat-played__head', 'discard river labels should disappear when space is scarce');
-requireText('landscapeCss', 'display: none', 'compact mode must remove redundant discard labels');
+requireText('landscapeCss', '.sp-player-panel__meta', 'compact player panels must suppress redundant visible metadata');
+requireText('landscapeCss', '#sp-tabpanel-roles', 'role composer must retain compact game-building treatment');
 
 forbidText('match', "from '../skins/useSkin'", 'skin/debug identity should not occupy match utility chrome');
 forbidText('match', 'Cute Pop', 'match chrome must not display skin labels');
