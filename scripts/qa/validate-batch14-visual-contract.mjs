@@ -8,6 +8,7 @@ const REQUIRED_FILES = {
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
   match: 'src/ui/screens/MatchScreen.tsx',
+  editor: 'src/ui/screens/DeckEditorScreen.tsx',
 };
 
 const files = Object.fromEntries(
@@ -65,6 +66,7 @@ requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored
 requireText('authoredCss', 'generic AI/SaaS treatments', 'file purpose must remain explicit');
 requireText('authoredCss', '.sp-deck-select-card', 'deck selection must retain non-marketplace treatment');
 requireText('authoredCss', '.sp-table-stage', 'match table must retain art-first treatment');
+requireText('authoredCss', '.sp-deck-editor-tile-preview', 'editor must retain a visible game-object anchor beside form controls');
 requireText('authoredCss', 'backdrop-filter: none', 'glass blur must stay actively neutralized in authored layer');
 forbidText('authoredCss', 'radial-gradient(', 'authored layer must not reintroduce decorative radial gradients');
 
@@ -77,6 +79,14 @@ forbidText('match', '手番を準備しています', 'long assistant-like phase
 forbidText('match', '山から1枚引いています', 'long assistant-like phase narration must not return');
 requireText('match', "turnStart: '手番準備'", 'compact phase language is part of the authored game UI');
 requireText('match', '<strong>そろぽん</strong>', 'utility identity should stay compact');
+
+// The editor should edit recognizable game objects, not only abstract fields.
+// Existing schema/validation semantics stay untouched; the preview uses the same
+// TileCard renderer as match/detail so it cannot drift into a separate fake tile.
+requireText('editor', "import { TileCard } from '../components/TileCard';", 'editor must reuse the production tile renderer');
+requireText('editor', 'className="sp-deck-editor-tile-preview"', 'tile rows must retain live visual preview');
+requireText('editor', 'primaryCategory.color', 'preview must reflect the live primary category color');
+requireText('editor', 'showName={false}', 'preview should remain a compact visual object rather than another text panel');
 
 if (failures.length > 0) {
   console.error('Batch 14 visual contract drift detected:');
