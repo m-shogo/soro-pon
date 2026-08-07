@@ -33,6 +33,7 @@ Use these codes in asset requests, review notes and future approval packs.
 | UI-01 | Admin-form smell | form controls and validation become the visual subject | show tiles/loadout first; forms are tools, validation is an inspector |
 | UI-02 | Web marketplace smell | floating cards with shadow/hover lift and KPI mini-cards | use flat selectable surfaces, inventory preview and game-specific hierarchy |
 | UI-03 | Panel nesting | card inside panel inside rounded container | remove one or more framing levels; whitespace/dividers may do the job |
+| UI-04 | Assistant-like narration | UI constantly explains what it is doing in full sentences | use compact game-state labels; explain only when the player needs help |
 | GAME-01 | Table not dominant | player chrome/status panels overpower play field | table, discards, hand, turn and actions are the hierarchy |
 | GAME-02 | Discards read as feed/list | thrown tiles wrap arbitrarily beside player cards | regular river-like grid while preserving DOM/reading order |
 | GAME-03 | Self hand lacks ownership | own seat panel competes with hand | lower-edge hand owns the screen; self metadata becomes subordinate |
@@ -88,21 +89,31 @@ Correction:
 - selection surfaces are flatter and rely on tile previews rather than card chrome
 - hover/focus uses an authored edge cue instead of floating-card animation
 
-### 3. Deck editor needs visual inventory, not merely nicer forms
+### 3. Deck editor became more game-like when the edited object appeared beside the controls
 
-Current constraint:
+Initial problem:
 
-The production editor DOM and validation behavior are valuable and should not be
-rewritten casually. Styling can reduce admin-form smell, but the next deeper
-iteration should show a live tile inventory/preview close to editing controls.
+The production editor DOM and validation behavior were valuable, but polishing
+the form surfaces alone still left `UI-01` admin-form smell. The player was
+editing names/counts/categories without seeing the same object they recognize in
+match play.
 
-Do next:
+Implemented correction:
 
-1. add tile-face preview to the tile editor using the existing `TileCard`
-2. keep semantic labels and validation intact
-3. avoid adding a second preview card around every row
-4. make count/category changes visibly update the preview
-5. retain an inspector model for validation rather than a central warning panel
+1. reuse the production `TileCard` renderer inside each tile-edit row
+2. preview the live name/emoji/fallback/category treatment
+3. show count beside the tile rather than creating another metric card
+4. keep semantic labels, schema validation and save behavior unchanged
+5. keep validation as a side inspector
+6. avoid wrapping the preview in another decorative card
+
+Reusable lesson:
+
+> When the domain has a strong visual object (tile, card, character, item), put
+> that real object next to its editor. Styling abstract fields harder is not a
+> substitute for editing the thing itself.
+
+This is now protected by the Batch 14 visual-contract CI guard.
 
 ### 4. Image generation must be art-directed, not prompt-adjective-driven
 
@@ -134,6 +145,48 @@ how this attempt differs from rejected attempts
 ```
 
 Candidate A/B/C must be conceptually different, not seed variations.
+
+### 5. Game UI should communicate state, not narrate itself
+
+Initial problem:
+
+The match status used full explanatory sentences such as "手番を準備しています"
+and the utility strip displayed the active skin name. These were understandable
+but made the screen feel like a tool/demo describing its own implementation.
+
+Correction:
+
+- remove skin/debug identity from match chrome
+- replace full-sentence phase narration with compact game-state vocabulary
+- keep turn owner and draw-pile count visible
+- reserve explanatory sublabels for moments where the player actually needs help
+- keep accessibility labels and semantic status regions even when visible copy is shorter
+
+Reusable lesson:
+
+> Native-feeling game UI assumes the player is playing. It does not continuously
+> explain that it is a game UI. Visible copy should earn its space.
+
+### 6. Visual safeguards must become executable when the failure is expensive to repeat
+
+Documentation alone is easy for a future agent to skip. Batch 14 therefore adds
+`scripts/qa/validate-batch14-visual-contract.mjs` and runs it in CI.
+
+The guard intentionally checks durable, high-value constraints rather than pixel
+style preferences:
+
+- learning ledger/reason codes remain present
+- generated-asset briefs keep composition/focal/failure sections
+- authored anti-AI override remains loaded
+- decorative radial gradients do not return in the authored override layer
+- match chrome does not re-add skin labels or long assistant-like narration
+- deck editor continues to reuse the production `TileCard` preview
+
+Reusable lesson:
+
+> If a regression would recreate a known systemic failure, encode the invariant
+> in CI. Keep subjective visual approval human/visual, but make the surrounding
+> process and architecture machine-checkable.
 
 ## Skin-specific authored language
 
