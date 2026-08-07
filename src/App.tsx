@@ -6,6 +6,7 @@ import './ui/styles/base.css';
 import './ui/styles/layout.css';
 import './ui/styles/match-polish.css';
 import './ui/styles/deck-polish.css';
+import './ui/styles/deck-editor-polish.css';
 import './ui/styles/screens.css';
 import './ui/styles/motion.css';
 import { AppRoot } from './app/AppRoot';
