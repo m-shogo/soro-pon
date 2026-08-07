@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { buildMinimalDeck } from '../../test-support/builders/deckBuilder';
 import { DeckDetailScreen } from './DeckDetailScreen';
@@ -46,9 +46,10 @@ describe('DeckDetailScreen deletion safety', () => {
       />,
     );
 
-    expect(screen.getByRole('region', { name: 'デッキ概要' })).toBeTruthy();
+    const summary = screen.getByRole('region', { name: 'デッキ概要' });
+    expect(summary).toBeTruthy();
+    expect(within(summary).getByText(String(totalTileCount))).toBeTruthy();
     expect(screen.getByRole('region', { name: `牌 ${deck.tiles.length}種` })).toBeTruthy();
-    expect(screen.getByText(String(totalTileCount))).toBeTruthy();
     expect(screen.getByRole('button', { name: 'このデッキで対局' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'デッキを編集' })).toBeTruthy();
   });
