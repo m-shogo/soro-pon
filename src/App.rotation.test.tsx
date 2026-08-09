@@ -47,9 +47,10 @@ describe('App rotation lifecycle', () => {
 
     testState.isPortrait = true;
     rerender(<App />);
-    expect(document.querySelector('.sp-rotate-prompt')?.textContent).toContain(
-      'soro-ponは横画面の遊びです。',
-    );
+    const guidance = screen.getByRole('status');
+    expect(guidance.textContent).toContain('soro-ponは横画面の遊びです。');
+    expect(guidance.getAttribute('aria-live')).toBe('polite');
+    expect(guidance.getAttribute('aria-atomic')).toBe('true');
     expect(screen.getByTestId('app-root').getAttribute('data-mount-id')).toBe(mountId);
     expect(screen.getByTestId('app-root').parentElement?.hasAttribute('inert')).toBe(true);
 
