@@ -2,7 +2,7 @@
 
 Claude Code向け補足。共通ルールの正本は `AGENTS.md`。
 
-## Current Status — 2026-08-07
+## Current Status — 2026-08-09
 
 ```text
 MVP 1-14 / multi-skin / H1-H11: complete
@@ -13,25 +13,24 @@ Batch 7 COMPLETE / Batch 8 CONDITIONAL / Batch 9 COMPLETE / Batch 10 CONDITIONAL
 Batch 11: COMPLETE on frozen SHA 7548964 (FF 151.0 + Playwright WebKit
   26.5 prod-preview core 15/15 each + rotations, 0 product defects; WebKit
   != Safari; no FF/WK memory claim)
-post-Batch-10 integrity/residual scope: 92 definitions across 28 files
-frozen SHA 7548964: typecheck/unit 425/skin/build + CI + Integrity green
-  (exact-SHA verification for the Batch 11 precondition); wider residual
-  closure continues under the concurrent work-stream's own tracking
 Batch 12: CONDITIONAL on frozen SHA 555c02d; build/integrity/unit/skin/
   visual/CI/Python 3.13 and local immutable rollback green. Stable Safari
   26.4 reached one AX-driven 3p Result only. Physical Apple/Android,
   Safari+VoiceOver, NVDA/JAWS, and real deploy/rollback remain blocked.
 Batch 13: CONDITIONAL; shared table-centered 3p/4p UI, both skins,
-  integrity 101/unit 432/skin 18/visual 80/build/Python 92 PASS.
+  integrity 101/unit 432/skin 18/visual 80/build/Python 92 PASS in recorded scope.
   Stable Safari 26.4 reached Result on all four paths. Rotation stopped
   at 4/20, the mandatory Safari+VoiceOver flow is BLOCKED, and Cloudflare
   Preview/production/rollback awaits account sign-in. Physical iPhone
   Safari is KNOWN UNVERIFIED/post-release/non-blocking.
-Batch 14: ACTIVE on PR #10 / Issue #12. Product direction is visual-quality
-  first: board-first match UI, mahjong-like discard rivers, hand/action
-  hierarchy, loadout-style deck browsing/detail/editor. Keep engine/schema/
-  semantic reading order stable while iterating presentation. Do not call the
-  UI finished merely because CI is green; visual quality is an acceptance gate.
+Batch 14: ACTIVE on PR #10 / Issue #12. Product direction is visual +
+  interaction quality first: board-first match UI, mahjong-like rivers,
+  hand/action hierarchy, game-workspace deck UX, outcome-first Result,
+  ledger-like Collection, landscape Match Setup, simplified TOP IA.
+  Interaction hardening now covers touch targets, pressed feedback,
+  touch-vs-hover modality, Reduce Motion, focus/scroll affordance and
+  state-readable CTAs. Keep engine/schema/semantic reading order stable.
+  CI green is necessary but never sufficient for visual approval.
 ```
 
 「MVP/H1開始」「画像生成前」「次はasset Batch 5」は古い指示。
@@ -45,6 +44,8 @@ docs/README.md
 docs/MASTER-SPEC.md
 docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
+docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md
+docs/design/SOROPON-INTERACTION-UX-CONTRACT.md
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
@@ -61,24 +62,22 @@ docs/SKIN-DISTRIBUTION.md
 
 ```text
 1. Stop concurrent writers.
-2. clean worktree; HEAD == origin/main; record exact SHA.
-3. Record toolchain/browser/Python versions.
+2. clean worktree; record exact target SHA/base.
+3. Record toolchain/browser/Python versions when exact release evidence is in scope.
 4. pnpm install --frozen-lockfile
-5. Run .github/workflows/integrity.yml equivalent (28 files).
-6. Confirm all 92 targeted definitions are collected/PASS.
+5. Run .github/workflows/integrity.yml equivalent.
+6. Run visual + interaction UX contract guards declared in CI.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
-10. pnpm build + artifact hash/inventory
+10. pnpm build + artifact hash/inventory when release evidence is in scope.
 11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
-12. If product/test/workflow changes, discard results and restart from step 1.
-13. Execute the remaining Batch 12 real-environment gates without substituting
-    WebKit, Simulator, AX automation, or local preview for the named target.
-14. Record BLOCKED evidence honestly and keep RC LIMITED READY until every
-    mandatory promotion gate is green.
+12. If product/test/workflow changes, discard final verification and restart from step 1 on the new SHA.
+13. Execute remaining real-environment release gates only when they are in current scope; never substitute WebKit/Simulator/local preview for a named target.
+14. Record BLOCKED evidence honestly and keep RC LIMITED READY until every mandatory promotion gate is green.
 ```
 
-Do not duplicate the targeted file list here; `.github/workflows/integrity.yml`
+Do not duplicate the targeted integrity file list here; `.github/workflows/integrity.yml`
 is the executable list.
 
 ## Integrity Contract
@@ -188,6 +187,34 @@ ITERATION
   compare hierarchy/spacing/occlusion, not only pixel-diff stability
   preserve successful lessons in canonical Git docs so future agents inherit them
   do not let an older screenshot or prior design constrain a clearly better solution
+```
+
+### Batch 14 Interaction UX Contract
+
+Source of truth: `docs/design/SOROPON-INTERACTION-UX-CONTRACT.md`.
+
+```text
+TARGETS
+  frequent gameplay CTA: keep ~44px target height
+  compact secondary controls: 32-36px only when 44px would steal critical board space
+  never depend on a target below WCAG AA's minimum boundary
+
+INPUT MODE
+  touch gets immediate pressed feedback and no sticky desktop hover state
+  hover-only treatment is gated to fine pointers
+  focus ring stays visible; scroll regions reserve focus margin/padding
+
+ACTION HIERARCHY
+  strongest treatment belongs to an action that is executable now
+  instruction/wait states remain visually quieter than actionable CTA
+  echo important selections into the commit CTA before acting
+  routine play navigation must dominate maintenance/destructive operations
+
+MOTION
+  one-time, state-explaining motion only
+  restrained travel; avoid scale/depth/parallax/blur choreography
+  prefers-reduced-motion completely disables nonessential draw/pulse/result/rotate animation
+  state remains understandable without any motion
 ```
 
 Asset Batches 1-4 are closed. Do not restart image generation without a new
