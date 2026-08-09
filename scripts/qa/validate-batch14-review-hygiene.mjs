@@ -94,16 +94,18 @@ requireText(
 );
 
 for (const phrase of [
-  'current PR HEAD',
+  'Batch 14 visual/UI review is **COMPLETE**',
+  'reviewed PR HEAD',
+  'main squash integration',
   'workflow artifact',
   '844x390',
   '1440x900',
   'deck editor tile workspace',
   'deck editor role composer',
   'weakest three',
-  'final merge to `main` should use squash',
+  'squash-after-current-head-approval policy',
 ]) {
-  requireText('reviewDoc', phrase, 'the review handoff must preserve the clean evidence and merge policy');
+  requireText('reviewDoc', phrase, 'the completed review handoff must preserve evidence, future review boundaries and Git hygiene');
 }
 
 if (failures.length > 0) {
