@@ -291,7 +291,7 @@ export function DeckEditorScreen({
               : '要修正(対局不可)'}
         </Badge>
         <div className="sp-screen__spacer" />
-        <Button variant="primary" onClick={handleSave}>
+        <Button variant="primary" onClick={handleSave} disabled={!isDirty}>
           保存する
         </Button>
         <Button
@@ -302,7 +302,7 @@ export function DeckEditorScreen({
         </Button>
       </div>
       {saveError !== null && (
-        <div className="sp-insight-strip">
+        <div className="sp-insight-strip" role="alert">
           <span className="sp-insight-strip__item">{saveError}</span>
         </div>
       )}
@@ -325,6 +325,7 @@ export function DeckEditorScreen({
           className="sp-screen__col sp-screen__col--main sp-screen__col--scroll"
           role="tabpanel"
           id={`sp-tabpanel-${tab}`}
+          aria-labelledby={`sp-tab-${tab}`}
         >
           {tab === 'basic' && (
             <PaperPanel title="基本情報">
