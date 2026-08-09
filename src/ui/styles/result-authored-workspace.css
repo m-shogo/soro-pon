@@ -86,16 +86,20 @@
     gap: var(--sp-space-8);
   }
 
+  /* Keep all side panels flat, but only the ink ranking panel becomes
+   * transparent. Reward/coin paper stays opaque enough on the dark skin. */
   .sp-result-screen__side > .sp-paper-panel,
   .sp-result-screen__ledger > .sp-paper-panel {
-    border-width: 0 0 1px;
     border-radius: 0;
-    background: transparent;
     box-shadow: none;
   }
 
-  .sp-result-screen__ledger > .sp-paper-panel[aria-selected='true'],
-  .sp-result-screen__ledger > .sp-paper-panel[data-selected='true'] {
+  .sp-result-screen__ledger > .sp-paper-panel--ink {
+    border-width: 0 0 1px;
+    background: transparent;
+  }
+
+  .sp-result-screen__ledger > .sp-paper-panel--selected {
     box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 48%, transparent);
   }
 
