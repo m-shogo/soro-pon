@@ -28,6 +28,7 @@
     "qa:batch16:deck-detail-contract": "node scripts/qa/validate-batch16-deck-detail-contract.mjs",
     "qa:batch17:tile-workbench-contract": "node scripts/qa/validate-batch17-tile-workbench-contract.mjs",
     "qa:batch18:category-workbench-contract": "node scripts/qa/validate-batch18-category-workbench-contract.mjs",
+    "qa:batch19:bonus-workbench-contract": "node scripts/qa/validate-batch19-bonus-workbench-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
