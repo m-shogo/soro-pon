@@ -247,7 +247,7 @@ export function MatchScreen({
             )}
             {!controller.humanRonPending && (
               <Button
-                variant="primary"
+                variant={canDiscard ? 'primary' : 'ghost'}
                 disabled={!canDiscard}
                 onClick={controller.discardSelected}
               >
