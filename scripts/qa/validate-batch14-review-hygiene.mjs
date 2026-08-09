@@ -53,13 +53,16 @@ for (const needle of [
   'page.screenshot({',
   'document.documentElement.dataset.skin',
   '.toBe(skin)',
+  "element.type === 'checkbox' || element.type === 'radio'",
+  "const label = element.closest('label');",
+  'const hitRect = (element: HTMLElement): DOMRect =>',
   'smallerThanWcagMinimum',
   'smallFrequentMatchActions',
   'deck-editor-tiles-${skin}-${size.label}',
   'deck-editor-roles-${skin}-${size.label}',
   'match-action-${skin}-4p-compact',
 ]) {
-  requireText('capture', needle, 'the visual review matrix, skin-ready boundary and usability probes must stay complete');
+  requireText('capture', needle, 'the visual review matrix, skin-ready boundary and actual labeled hit-target probes must stay complete');
 }
 forbidText(
   'capture',
