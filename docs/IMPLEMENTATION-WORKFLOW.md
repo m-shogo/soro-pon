@@ -2,18 +2,14 @@
 
 ## Purpose
 
-Compact operational view of completed foundations, current release state,
-and the next executable work. Detailed history lives in evidence-backed
-Batch/review reports, not duplicated here.
+Current operational view of completed foundations, release state and the next executable work. Detailed history belongs in evidence-backed Batch/review reports; do not duplicate old phase narratives here.
 
 ```text
 Product/rule truth:          docs/MASTER-SPEC.md
 Release/readiness truth:     docs/RELEASE-DEMO-GATES.md
-Initial integrity review:    docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
-Continuation review:         docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
-Deep-dive review:            docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
-Residual closure:            docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
-Current executable QA:       docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
+Visual quality lessons:      docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md
+Interaction UX contract:     docs/design/SOROPON-INTERACTION-UX-CONTRACT.md
+Current visual QA flow:      docs/qa/BATCH-14-VISUAL-REVIEW.md
 Storage contract:            docs/release/STORAGE-RECOVERY-POLICY.md
 Migration contract:          docs/MIGRATIONS.md
 Skin distribution boundary:  docs/SKIN-DISTRIBUTION.md
@@ -21,7 +17,7 @@ Operations applicability:    docs/OPERATIONS-READINESS.md
 Risk status:                 docs/TECHNICAL-RISK-REGISTER.md
 ```
 
-## Current Status — 2026-07-27
+## Current Status — 2026-08-09
 
 ```text
 Gameplay MVP phases 1-14: complete
@@ -39,16 +35,21 @@ Batch 9 extended soak: COMPLETE
 Batch 10 production preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
 Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
-Batch 12 exact-SHA build/CI/Integrity/Python: PASS
-Batch 13 table-centered readable UI: implemented
-Batch 13 local gates and Safari 4 Result paths: PASS
-Current residual gates: Safari rotation/soak, full Safari+VoiceOver,
-  Cloudflare Preview/production/rollback/current restore
+Batch 13 table UI/Safari/Cloudflare: CONDITIONAL
+Batch 14 authored game UI/UX: COMPLETE
+  PR #10 squash-merged to main: 30c6e84393a216ae5f561e955886595d12c89f8f
+  Issue #12: CLOSED / completed
+  reviewed PR HEAD: f134755fb961b455f751c661c98018233dbd76cb
+  Visual Review 31314974844: SUCCESS
+  CI 31314974888: SUCCESS
+  Integrity 31314974887: SUCCESS
+  visual artifact 9038478453
 Physical iPhone Safari: KNOWN UNVERIFIED, post-release, non-blocking
+Residual release gates: Safari rotation/soak, full Safari+VoiceOver,
+  iPad/Android, NVDA/JAWS, Cloudflare Preview/production/rollback/current restore
 ```
 
-Current phase: **Batch 13 real-environment and Cloudflare closure**. Do not
-restart MVP, H1-H11, asset Batch 5, or any obsolete implementation sequence.
+Current phase: **post-Batch-14 mainline**. Start new product work from current `main` with a new explicit objective. Do not restart MVP, H1-H11, asset Batch 5, Batch 13 UI work, or Batch 14 unless a new defect specifically requires it.
 
 ## Completed Foundations
 
@@ -60,60 +61,19 @@ Deck Editor / Collection / achievements / records
 multi-skin shared UI and H1-H11 hardening
 candidate -> review -> final asset pipeline
 18 official final assets
+board-first 3p/4p match UI and mahjong-like discard rivers
+loadout-style deck browse/detail/editor workspace
+current-head artifact visual review instead of committed screenshot churn
+interaction UX contract for pointer targets/focus/motion/action hierarchy
+desktop authored composition + compact 844x390 composition
 ```
 
-Restore/replay and marketplace/payment are future products, not implied by
-foundation work.
+Restore/replay and marketplace/payment are future products, not implied by foundation work.
 
-## Integrity / Residual Closure Result
-
-Fixed code/contract defects now include:
+## Integrity / UX Behavior
 
 ```text
-recovery cleanup could throw after corrupt storage
-read denial could be misused as an empty Store for mutation
-records/settings corrupt raw backup or warning gaps
-record/coin and match-achievement persistence was not atomic
-app could write collections larger than its own read schema
-old/partial payloads lacked bounded salvage
-same-ID import silently overwrote an existing deck
-stale import/editor/detail state could overwrite or delete newer data
-new deck IDs could collide
-variant/role/bonus duplicate-ID contract was incomplete
-tile membership duplicates could inflate feasibility counts
-group fields ignored by the engine could survive persistence
-ScoreBonus cap could contradict one award
-valid deck body could be lost because wrapper metadata was damaged
-one malformed match row could wipe all progress
-persisted duplicate deck IDs were ambiguous
-set-like arrays could cap before dedupe and lose later unique values
-write paths lacked final runtime schema validation
-unpersisted achievement could be shown as unlocked
-missing deck/variant could leave a blank route
-silent legacy v0 migration persistence
-browser-fragile export Blob URL lifecycle
-reset omitted backup keys or hid partial failure
-forensic backup had no in-app raw export path
-ErrorBoundary emergency reset retained false-success behavior
-deck deletion lacked confirmation/restore guidance
-danger dialog focused destructive confirmation
-dialog message lacked aria-describedby association
-MatchSession React identity used a bounded gameplay seed
-Editor live diagnostics differed from production boundaries
-skin preload rejection/unmount races could leave stale/loading state
-skin inheritance exact-limit check was off by one
-runtime external-SVG/registry trust checks were incomplete
-manifest origin could self-elevate without loader-owned classification
-unsafe import diagnostics were unbounded
-GitHub Actions used mutable major tags
-Python dependency consistency was not checked after install
-stale Batch 11 baseline and entry/risk/performance/distribution docs
-```
-
-Current integrity behavior:
-
-```text
-read denial:
+storage read denial:
   L9005 session fallback for display
   every mutation/export fails closed
 
@@ -135,7 +95,9 @@ import/editor:
   visible legacy migration review
   explicit same-ID overwrite review
   bounded unsafe-field diagnostics
-  live Editor uses the production integrated validator
+  live Editor uses production validator
+  editor form targets have shared hooks and 24px+ effective pointer targets
+  compact role presets remain visible/scrollable instead of flex-shrinking away
 
 reset/recovery/destructive UI:
   active + forensic + skin keys covered
@@ -143,6 +105,7 @@ reset/recovery/destructive UI:
   failed file creation is not reported as success
   partial reset failure stops reload and is shown
   danger dialogs focus cancellation first
+  modal/focus traps are not stacked for reset confirmation
 
 skin runtime:
   failed preload returns to ready with previous/fallback skin
@@ -155,57 +118,62 @@ supply chain:
   Python asset CI installs exact top-level pins and runs pip check
 ```
 
-Batch 12 frozen SHA executed **101 integrity tests across 28 files**, all PASS.
-
 ## Next Executable Work
 
+For any new code/UI objective:
+
 ```text
-1. Stop every concurrent writer.
-2. Confirm clean worktree and HEAD == origin/main.
-3. Record exact SHA and Node/pnpm/Playwright/browser/Python versions.
+1. Stop concurrent writers.
+2. Confirm clean worktree and start from current origin/main.
+3. Record exact SHA and relevant Node/pnpm/Playwright/browser/Python versions.
 4. pnpm install --frozen-lockfile
-5. Run .github/workflows/integrity.yml equivalent locally.
-6. Confirm all 101 targeted tests are collected and pass.
+5. Run .github/workflows/integrity.yml equivalent.
+6. Run Batch 14 visual quality, review-hygiene and Interaction UX contract guards.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
-10. pnpm build and record artifact inventory/hash.
-11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
-12. Fix any failure; if code/test/workflow changes, restart from step 1.
-13. Execute the remaining Batch 12 real Safari/device/AT/deploy gates on the
-    same SHA/artifact.
-14. Commit evidence/report and only then update Batch 12 status.
+10. pnpm build
+11. Run Python asset fixtures when asset tooling is in scope.
+12. If UI/UX changed, run the current-head Batch 14 Visual Review; review the artifact at 844x390 and 1440x900 for both skins and required 3p/4p surfaces.
+13. Fix the weakest three visible/interaction problems before adding decoration.
+14. If product/test/workflow changes, restart final verification on the new SHA.
+15. Keep still-open real Safari/device/AT/deploy gates separate; run them only when in scope.
 ```
 
-The exact targeted file list is maintained in
-`.github/workflows/integrity.yml`; do not maintain a second command list here.
+The exact targeted integrity file list lives in `.github/workflows/integrity.yml`; do not maintain a second hardcoded list here.
 
-Batch 12 cannot promote RC to READY while full real Safari, physical devices,
-real AT, and authorized deploy/rollback remain blocked.
+RC remains `LIMITED READY` while the named residual real-environment/deployment gates remain unresolved. Physical iPhone Safari remains post-release non-blocking under the existing project decision.
 
-## CI / Browser Boundaries
-
-GitHub workflows now define:
+## CI / Visual Review Boundaries
 
 ```text
-CI:
+Main CI:
   immutable action commit SHAs
   frozen install
-  recovery-focused named step
+  critical integrity step
+  Batch 14 visual quality contract
+  Batch 14 visual review hygiene contract
+  Interaction UX contract
   strict typecheck
   full unit suite
   skin validation
   production build
-  Python 3.13 exact top-level pins + pip check + asset fixtures
+  Python asset fixtures in separate job
 
-Integrity Contracts:
-  immutable action commit SHAs
-  28 targeted integrity files
-  strict typecheck
+Batch 14 Visual Review:
+  captures current changed UI in GitHub Actions
+  both skins
+  844x390 + 1440x900
+  TOP / deck list / detail / editor basic / tile / role
+  3p + 4p setup/table
+  compact selected-tile/action state
+  24px enabled pointer-target floor
+  44px frequent match-action floor
+  viewport/bounded-overflow/painted-object occlusion checks
+  screenshots uploaded as short-lived artifact, not committed baselines
 ```
 
-A workflow definition is not a PASS result. Visual, cross-browser, soak,
-physical-device, real-AT, and deploy checks remain separate release gates.
+A workflow definition is not a PASS result. An older artifact is not approval for changed UI. Playwright WebKit is not Safari. Emulation is not a physical device. Automated accessibility is not real screen-reader evidence.
 
 ## UI / Skin Rules
 
@@ -221,3 +189,15 @@ loader-owned origin classification is not a cryptographic package signature
 ```
 
 Read the mandatory UI documents in `AGENTS.md` before UI work.
+
+## Git Hygiene
+
+```text
+current main contains Batch 14 as one squash feature commit
+current review screenshots belong in Actions artifacts
+historical evidence remains immutable
+retired executable screenshot baselines do not return as current approval
+one coherent objective -> one active manual PR
+long exploratory commit chains are squash-integrated after approval
+closeout docs are synchronized immediately after merge
+```

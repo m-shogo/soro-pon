@@ -1,6 +1,6 @@
 # AGENTS.md
 
-このrepoでAIエージェントが作業するときの必須ルール。
+このrepoでAIエージェントが作業するときの必須ルール。詳細な履歴は各Batch/reportへ置き、このファイルは**現在地と壊してはいけない契約**だけを正本化する。
 
 ## Current Status — 2026-08-09
 
@@ -18,29 +18,22 @@ Batch 10 production-preview / real-device validation: CONDITIONAL
 Batch 11 production Firefox/WebKit: COMPLETE on frozen SHA 7548964
 Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
 Batch 13 table UI/Safari/Cloudflare: CONDITIONAL
-  shared 3p/4p table UI and local gates PASS; stable Safari 4/4 Result
-  paths PASS; rotation 4/20 and full Safari+VoiceOver BLOCKED;
-  Cloudflare deploy/rollback awaits account sign-in
-  physical iPhone Safari: KNOWN UNVERIFIED, post-release, non-blocking
-Batch 14: ACTIVE on PR #10 / Issue #12
-  board-first match UI / mahjong-like rivers / hand+action hierarchy
-  deck browse/detail/editor authored game-workspace pass
-  result/collection/setup/TOP information hierarchy pass
-  interaction UX hardening: touch targets, pressed feedback, pointer-mode hover,
-  Reduce Motion, focus/scroll affordance, state-readable actions
-  current-head visual review is Actions artifact based; do not churn committed PNG baselines
-  final integration to main uses squash so working-branch commit churn does not enter mainline
-Post-Batch-10 integrity/residual closure:
-  code/test/CI/doc fixes committed
-  101 targeted tests across 28 files PASS on Batch 12 frozen SHA
-  historical full unit 425/425, skin 18/18, visual 70/70, build, CI,
-  Integrity, and exact-SHA CI Python 3.13 green within recorded scope
+Batch 14 authored game UI/UX: COMPLETE
+  PR #10 squash-merged to main as 30c6e84393a216ae5f561e955886595d12c89f8f
+  Issue #12 closed as completed
+  reviewed PR HEAD: f134755fb961b455f751c661c98018233dbd76cb
+  Visual Review run 31314974844: SUCCESS
+  CI run 31314974888: SUCCESS
+  Integrity run 31314974887: SUCCESS
+  visual artifact: 9038478453
+  current review screenshots are short-lived Actions artifacts, not Git baselines
+Physical iPhone Safari: KNOWN UNVERIFIED, post-release, non-blocking
 Remaining release evidence: Safari rotation/soak, full Safari+VoiceOver,
-  iPad/Android, NVDA/JAWS, and Cloudflare Preview/production/rollback/current restore
+  iPad/Android, NVDA/JAWS, Cloudflare Preview/production/rollback/current restore
 ```
 
-「MVP Phase 1開始」「H1から順に実装」「次はasset Batch 5」は古い状態。
-現在のproduct workは **Batch 14 UI/UX quality on PR #10**。engine/schema/game rules/semantic reading orderを変えず、実画面の使いやすさ・視線誘導・操作感・ authored visual qualityを改善する。CI greenだけでvisual完成扱いしない。
+Batch 14は完了済み。`PR #10 ACTIVE`、`Issue #12 OPEN`、`Batch 13 UI polish next` は古い状態。
+次のproduct workは **最新mainから新しい明確な目的で開始**する。既存のMVP/H1-H11/asset Batch 5/Batch 14を理由なく再開しない。
 
 ## Read First
 
@@ -55,14 +48,8 @@ docs/RELEASE-DEMO-GATES.md
 docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md
 docs/design/SOROPON-INTERACTION-UX-CONTRACT.md
 docs/qa/BATCH-14-VISUAL-REVIEW.md
-docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
-docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
-docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
-docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
-docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
-docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
-docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md
-docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
+docs/release/STORAGE-RECOVERY-POLICY.md
+docs/SKIN-DISTRIBUTION.md
 ```
 
 Canonical truth:
@@ -72,23 +59,19 @@ docs/MASTER-SPEC.md                              product/rules
 docs/RELEASE-DEMO-GATES.md                       readiness
 docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md visual/UI failure lessons
 docs/design/SOROPON-INTERACTION-UX-CONTRACT.md  touch/focus/motion/action hierarchy
-docs/qa/BATCH-14-VISUAL-REVIEW.md                current-head visual evidence flow / Git hygiene
-the latest Batch/review report                   exact scope/evidence
-docs/IMPLEMENTATION-WORKFLOW.md                  next executable order
+docs/qa/BATCH-14-VISUAL-REVIEW.md               current-head visual evidence flow / Git hygiene
+docs/IMPLEMENTATION-WORKFLOW.md                  current execution order
 docs/release/STORAGE-RECOVERY-POLICY.md          persistence/recovery
 docs/SKIN-DISTRIBUTION.md                        external-package boundary
 ```
 
 Historical/numbered docs cannot override current evidence.
 
-## Mandatory UI / Design / Skin Read
+## UI / Skin Contract
 
-Before changing UI/CSS/components/assets/motion/responsive/skin loading:
+Before changing UI/CSS/components/assets/motion/responsive/skin loading, also read:
 
 ```text
-docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md
-docs/design/SOROPON-INTERACTION-UX-CONTRACT.md
-docs/qa/BATCH-14-VISUAL-REVIEW.md
 docs/DESIGN-SYSTEM.md
 docs/SKIN-SYSTEM.md
 docs/SKIN-FOUNDATION-HARDENING.md
@@ -97,13 +80,10 @@ docs/SKIN-AUTHORING-GUIDE.md
 docs/DESIGN-IMPLEMENTATION-POLICY.md
 docs/ASSET-PIPELINE.md
 docs/IMAGE-ASSET-WORKFLOW.md
-docs/ASSET-PRODUCTION-ROADMAP.md
 docs/48-responsive-crisp-ui-system.md
 docs/49-ui-quality-gate-and-codex-design-rules.md
 docs/50-pro-ui-production-quality-checklist.md
 ```
-
-## Current UI / Skin Contract
 
 ```text
 one shared layout/component system
@@ -123,35 +103,37 @@ both official skins retain fallback behavior
 VISUAL HIERARCHY
   purpose-built game, not admin dashboard / SaaS card collection
   table/tiles/rivers/hand/actions before utility chrome
-  actual game objects before labels, cards, metrics or decorative surfaces
+  actual game objects before labels/cards/metrics/decorative surfaces
   flatten panel nesting and decorative gradients before adding polish
 
 TOUCH / POINTER
   frequent gameplay actions retain ~44px target height
-  compact secondary controls may use 32-36px when necessary for 844x390
-  never rely on sticky hover or pointer-only choreography
-  touch gets immediate :active feedback; fine pointer hover is separately gated
+  compact secondary controls may use 32-36px when 44px would steal board space
+  enabled pointer targets never fall below the WCAG 24px boundary
+  checkbox/radio QA measures the enclosing label when the label is the actual target
+  touch gets immediate :active feedback; fine-pointer hover is separately gated
   safe-area and thumb-reachable primary action placement are mandatory
 
 ACTION HIERARCHY
-  strongest treatment belongs to the action that is actually executable now
+  strongest treatment belongs to an action executable now
   disabled/instructional controls stay visually quiet
-  selection must echo into commit CTA where useful (e.g. 4人戦 -> 4人戦をはじめる)
+  selection echoes into commit CTA where useful
   maintenance/destructive actions do not compete with routine play navigation
   irreversible actions require explicit confirmation
 
 FOCUS / MOTION
   DOM order remains semantic/focus order
-  focus ring stays visible and scroll containers leave room around focused items
+  focus ring stays visible; scroll containers leave room around focused items
   motion communicates state only; no decorative infinite gameplay motion
   prefers-reduced-motion disables nonessential tile/pulse/result/orientation motion
 
 QUALITY GATE
   judge actual landscape target, especially 844x390
+  also review 1440x900 so desktop does not become a phone UI pinned to a corner
   identify weakest 3 visible/interaction problems before adding decoration
   CI green is necessary but never sufficient for visual approval
-  visual approval uses the current HEAD Actions artifact, not an older committed snapshot
-  current polish captures belong in short-lived artifact storage, not Git history
+  UI changes use a current-head Actions artifact, never an older committed snapshot
+  current polish captures stay out of Git history
 ```
 
 Forbidden:
@@ -165,7 +147,7 @@ external package self-promotion to official
 generic AI/SaaS dashboard card convergence
 hover-only required state on touch
 nonessential infinite gameplay animation
-using Batch 13 snapshots as Batch 14 approval
+using Batch 13 snapshots as Batch 14/current approval
 committing a fresh screenshot baseline for every polish pass
 ```
 
@@ -186,8 +168,7 @@ stale observed deck update/delete is rejected
 reset reloads only after every known key is removed
 ```
 
-Never describe optimistic fingerprint protection as transactional CAS. Never
-describe raw forensic export as validated restore.
+Never describe optimistic fingerprint protection as transactional CAS. Never describe raw forensic export as validated restore.
 
 ## Architecture Boundaries
 
@@ -204,7 +185,7 @@ shared deck JSON contains no image/URL/base64/path/html/script/style fields
 ```text
 844x390 reference, not a fixed canvas
 phone landscape: 100svw x 100svh
-PC: centered table + outer support
+PC: centered authored workspace/table + outer support
 no whole-app transform: scale()
 
 TypeScript / React / Vite / Zod / Vitest / Playwright / localStorage
@@ -216,47 +197,35 @@ Major dependencies require `docs/DEPENDENCY-POLICY.md` and ADR review.
 
 ```text
 1. Stop concurrent writers.
-2. clean worktree; HEAD == target branch/base as required by current task.
-3. Record exact SHA and toolchain/browser/Python versions.
+2. clean worktree; start from current main unless the task explicitly uses a PR branch.
+3. Record exact target SHA and relevant toolchain versions.
 4. pnpm install --frozen-lockfile
 5. Run .github/workflows/integrity.yml equivalent.
-6. Run interaction/visual/review-hygiene contract guards declared in CI.
+6. Run visual / review-hygiene / interaction UX contract guards declared in CI.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
-10. pnpm build + artifact inventory/hash
-11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
-12. For UI/UX work, run current-head Batch 14 Visual Review and keep screenshots in the workflow artifact.
-13. If anything changes, discard results and restart from step 1 for the final SHA.
+10. pnpm build
+11. Run Python asset fixtures as declared in CI when asset tooling is in scope.
+12. For UI/UX changes, run current-head Batch 14 Visual Review and review the artifact.
+13. If product/test/workflow changes, discard old evidence and restart final verification on the new SHA.
 14. Execute still-open real-environment release gates only when they are in scope.
 ```
 
-A workflow file, local command from an older SHA, historical Batch PASS, or an artifact from another HEAD is
-not evidence for the current artifact.
+A workflow definition, older SHA PASS, historical Batch PASS, or artifact from another HEAD is not evidence for current changed UI.
 
-## Work / Report
+## Git Hygiene / Work
 
 ```text
 one purpose per commit
 small testable changes
-fetch latest SHA before sequential file writes
+fetch latest SHA before sequential writes
 never overwrite concurrent changes blindly
-docs and implementation synchronized
-push/commit result recorded
+keep one active manual PR per coherent objective; do not spawn parallel branches casually
 current visual-review PNGs stay in Actions artifacts; historical evidence stays immutable
-keep active manual development in the current PR instead of spawning parallel branches
-final integration to main uses squash after current-head visual approval
+retire superseded executable snapshot baselines instead of endlessly refreshing them
+for long working histories, integrate to main with squash after current-head approval
+remove/close completed issue/PR state from current-status docs immediately after merge
 ```
 
-Report:
-
-```text
-changed files and commits
-exact verification SHA
-commands and results, or explicitly not executed
-GitHub Actions result, or visibility limitation
-current-head visual artifact and review status when UI changed
-skin/screen/data impact
-remaining risks
-Batch 12 / RC status
-```
+Report exact changed files/SHA, verification results, Actions status, visual artifact status when UI changed, remaining risks, and RC status.
