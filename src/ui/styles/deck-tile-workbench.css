@@ -1,0 +1,361 @@
+/* Batch 17 tile editing workbench.
+ *
+ * The shelf is the primary surface: users choose a real tile, then edit only
+ * that tile in one inspector. Avoid repeated form rows and decorative card lift.
+ */
+@layer screens {
+  .sp-tile-workbench {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: var(--sp-color-cream);
+  }
+
+  .sp-tile-workbench__header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 38px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-tile-workbench__header h2 {
+    margin: 0;
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-tile-workbench__header span {
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-tile-workbench__header .sp-button {
+    min-height: 34px;
+    box-shadow: none;
+  }
+
+  .sp-tile-workbench__body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .sp-tile-workbench__shelf {
+    --tile-w: clamp(42px, 4.1vw, 58px);
+    --tile-h: clamp(56px, 5.5vw, 78px);
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 4px;
+    align-content: start;
+    overflow: hidden auto;
+    padding: 3px 4px 5px;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+    scroll-padding: 6px;
+  }
+
+  .sp-tile-workbench__choice {
+    min-width: 0;
+    min-height: 104px;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    align-content: start;
+    gap: 2px;
+    padding: 5px 3px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--sp-color-cream-dim);
+    font: inherit;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .sp-tile-workbench__choice:hover,
+  .sp-tile-workbench__choice:focus-visible {
+    transform: none;
+    border-color: color-mix(in srgb, var(--sp-color-cream) 18%, transparent);
+    background: color-mix(in srgb, var(--sp-color-night) 18%, transparent);
+  }
+
+  .sp-tile-workbench__choice[data-selected='true'] {
+    border-color: color-mix(in srgb, var(--sp-color-lantern-0) 64%, transparent);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 65%, transparent);
+    color: var(--sp-color-cream);
+  }
+
+  .sp-tile-workbench__choice .sp-tile {
+    transform: none;
+    box-shadow: var(--sp-shadow-tile);
+  }
+
+  .sp-tile-workbench__choice-name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 9px;
+  }
+
+  .sp-tile-workbench__choice-count {
+    font-family: var(--sp-font-family-num);
+    font-size: 8px;
+    opacity: 0.75;
+  }
+
+  .sp-tile-workbench__editor {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden auto;
+    padding: 7px 8px;
+    border-left: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 42%, transparent);
+    background: color-mix(in srgb, var(--sp-color-night) 14%, transparent);
+    scroll-padding: 6px;
+  }
+
+  .sp-tile-workbench__editor-head {
+    --tile-w: 48px;
+    --tile-h: 64px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 68px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-tile-workbench__selected-preview {
+    flex: none;
+  }
+
+  .sp-tile-workbench__editor-head > div:last-child {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sp-tile-workbench__editor-head strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-tile-workbench__editor-head span {
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-tile-workbench__fields {
+    display: grid;
+    grid-template-columns: minmax(130px, 1.4fr) minmax(72px, 0.65fr) minmax(78px, 0.7fr) minmax(72px, 0.55fr);
+    gap: 5px;
+  }
+
+  .sp-tile-workbench__fields .sp-field {
+    min-width: 0;
+  }
+
+  .sp-tile-workbench__fields .sp-form-control,
+  .sp-tile-workbench__fields input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sp-tile-workbench__categories {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(112px, 0.38fr);
+    gap: 7px;
+    align-items: start;
+    padding-top: 6px;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-tile-workbench__category-list {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .sp-tile-workbench__category-list .sp-toggle {
+    min-width: 0;
+    padding-inline: 4px;
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+    border-radius: 4px;
+    color: var(--sp-color-cream-dim);
+    overflow: hidden;
+  }
+
+  .sp-tile-workbench__category-list .sp-toggle:has(input:checked) {
+    border-color: color-mix(in srgb, var(--sp-color-lantern-0) 44%, transparent);
+    color: var(--sp-color-cream);
+  }
+
+  .sp-tile-workbench__category-list .sp-toggle span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sp-tile-workbench__danger {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 6px;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-tile-workbench__danger .sp-button {
+    min-height: 30px;
+    opacity: 0.68;
+    box-shadow: none;
+  }
+
+  .sp-tile-workbench__danger .sp-button:hover,
+  .sp-tile-workbench__danger .sp-button:focus-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .sp-tile-workbench__empty {
+    grid-column: 1 / -1;
+    display: grid;
+    place-items: center;
+    min-height: 140px;
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-sm);
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-tile-workbench {
+      gap: 4px;
+    }
+
+    .sp-tile-workbench__header {
+      min-height: 30px;
+      padding-bottom: 3px;
+    }
+
+    .sp-tile-workbench__header h2 {
+      font-size: 11px;
+    }
+
+    .sp-tile-workbench__header span {
+      font-size: 7px;
+    }
+
+    .sp-tile-workbench__header .sp-button {
+      min-height: 30px;
+      padding: 2px 6px;
+      font-size: 9px;
+    }
+
+    .sp-tile-workbench__body {
+      grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+      gap: 4px;
+    }
+
+    .sp-tile-workbench__shelf {
+      --tile-w: 36px;
+      --tile-h: 48px;
+      grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+      gap: 2px;
+      padding: 2px;
+    }
+
+    .sp-tile-workbench__choice {
+      min-height: 78px;
+      gap: 1px;
+      padding: 2px 1px;
+      border-radius: 3px;
+    }
+
+    .sp-tile-workbench__choice-name {
+      font-size: 7px;
+    }
+
+    .sp-tile-workbench__choice-count {
+      font-size: 7px;
+    }
+
+    .sp-tile-workbench__editor {
+      gap: 4px;
+      padding: 4px 5px;
+    }
+
+    .sp-tile-workbench__editor-head {
+      --tile-w: 36px;
+      --tile-h: 48px;
+      min-height: 50px;
+      gap: 5px;
+      padding-bottom: 3px;
+    }
+
+    .sp-tile-workbench__editor-head strong {
+      font-size: 10px;
+    }
+
+    .sp-tile-workbench__editor-head span {
+      font-size: 7px;
+    }
+
+    .sp-tile-workbench__fields {
+      grid-template-columns: minmax(110px, 1.3fr) 64px 68px 62px;
+      gap: 3px;
+    }
+
+    .sp-tile-workbench__fields .sp-field__label {
+      font-size: 7px;
+    }
+
+    .sp-tile-workbench__fields .sp-form-control,
+    .sp-tile-workbench__fields input {
+      min-height: 30px;
+      padding: 2px 4px;
+      font-size: 9px;
+    }
+
+    .sp-tile-workbench__categories {
+      grid-template-columns: minmax(0, 1fr) 104px;
+      gap: 4px;
+      padding-top: 3px;
+    }
+
+    .sp-tile-workbench__category-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    .sp-tile-workbench__category-list .sp-toggle {
+      min-height: 26px;
+      padding: 1px 3px;
+      font-size: 7px;
+    }
+
+    .sp-tile-workbench__danger {
+      padding-top: 3px;
+    }
+
+    .sp-tile-workbench__danger .sp-button {
+      min-height: 26px;
+      padding: 2px 5px;
+      font-size: 8px;
+    }
+  }
+}
