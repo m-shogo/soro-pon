@@ -131,11 +131,10 @@ export function TopScreen({
         <div className="sp-top-menu sp-screen__col--scroll">
           <Button
             variant="primary"
-            subLabel="すぐに対戦をはじめます"
-            onClick={onPlayNow}
-            disabled={!hasPlayableDeck}
+            subLabel={hasPlayableDeck ? 'すぐに対戦をはじめます' : '遊べるデッキを作成・読み込みします'}
+            onClick={hasPlayableDeck ? onPlayNow : onDeckList}
           >
-            まず遊ぶ
+            {hasPlayableDeck ? 'まず遊ぶ' : 'デッキを準備'}
           </Button>
           <Button variant="paper" subLabel="保存したデッキを確認・編集します" onClick={onDeckList}>
             デッキ一覧
