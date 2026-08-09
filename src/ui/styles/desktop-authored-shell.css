@@ -1,0 +1,76 @@
+/* Batch 14 desktop composition.
+ *
+ * Phone landscape owns the compact rules. Wide monitors need an intentional
+ * game/workbench composition instead of stretching the viewport while leaving
+ * phone-sized content pinned to the upper-left corner.
+ */
+@layer screens {
+  @media (min-width: 1000px) and (min-height: 600px) {
+    .sp-deck-select,
+    .sp-screen:has([id^='sp-tabpanel-']),
+    .sp-match-setup {
+      width: min(100%, 1280px);
+      margin-inline: auto;
+      padding-inline: clamp(28px, 4vw, 56px);
+    }
+
+    .sp-deck-select__grid {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 380px));
+      justify-content: start;
+      align-content: start;
+      gap: clamp(12px, 1.3vw, 18px);
+    }
+
+    .sp-deck-select-card {
+      min-height: 250px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body {
+      gap: clamp(16px, 1.7vw, 24px);
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+      width: min(320px, 26%);
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] {
+      padding: clamp(14px, 1.5vw, 20px);
+    }
+
+    .sp-match-setup__body {
+      flex: none;
+      width: 100%;
+      height: min(560px, calc(100vh - 150px));
+      min-height: 420px;
+      margin-block: auto;
+      grid-template-columns: minmax(340px, 0.82fr) minmax(480px, 1.18fr);
+      gap: clamp(16px, 2vw, 28px);
+    }
+
+    .sp-match-setup__config,
+    .sp-match-setup__players {
+      padding: clamp(18px, 2vw, 26px);
+    }
+
+    .sp-match-setup__count-options .sp-button {
+      min-height: 52px;
+    }
+
+    .sp-match-setup__player-grid {
+      gap: 10px;
+    }
+
+    .sp-match-setup__player-grid .sp-player-panel {
+      min-height: 58px;
+    }
+
+    .sp-match-setup__actions {
+      align-self: end;
+    }
+
+    .sp-match-setup__actions .sp-button {
+      width: min(320px, 100%);
+      min-height: 58px;
+    }
+  }
+}
