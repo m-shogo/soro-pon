@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { validateDeckForUse } from '../../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { buildMinimalDeck } from '../../test-support/builders/deckBuilder';
@@ -21,8 +21,10 @@ describe('DeckEditorInspector', () => {
     expect(view.container.textContent).toContain('検証');
 
     const metrics = screen.getByLabelText('編集中デッキの構成');
-    expect(within(metrics).getByText(String(totalTileCount))).toBeTruthy();
-    expect(within(metrics).getByText(String(deck.categories.length))).toBeTruthy();
-    expect(within(metrics).getByText(String(activeVariant?.winRoles.length ?? 0))).toBeTruthy();
+    const text = metrics.textContent ?? '';
+    expect(text).toContain(`牌${totalTileCount}${deck.tiles.length}種`);
+    expect(text).toContain(`カテゴリ${deck.categories.length}`);
+    expect(text).toContain(`役${activeVariant?.winRoles.length ?? 0}`);
+    expect(text).toContain('ボーナス');
   });
 });
