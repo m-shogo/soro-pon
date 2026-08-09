@@ -14,8 +14,8 @@ const STATUS_LABEL: Record<DeckValidationResult['status'], string> = {
 
 const SOURCE_LABEL: Record<StoredDeck['source'], string> = {
   official: '公式',
+  created: '自作',
   imported: '読み込み',
-  custom: '自作',
 };
 
 export function DeckListScreen({
