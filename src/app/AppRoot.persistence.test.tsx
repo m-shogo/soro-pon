@@ -78,7 +78,7 @@ describe('AppRoot persistence integrity', () => {
   it('旧形式importは変換内容の表示だけでは保存せず、同じ入力の2回目で保存する', () => {
     render(<AppRoot />);
 
-    fireEvent.click(screen.getByRole('button', { name: /^デッキを読み込む/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^JSONを読み込む/ }));
     fireEvent.change(screen.getByLabelText('デッキJSON'), {
       target: { value: legacyDeckJson() },
     });
@@ -100,7 +100,7 @@ describe('AppRoot persistence integrity', () => {
     render(<AppRoot />);
 
     const raw = legacyDeckJson('legacy-review-edit-test');
-    fireEvent.click(screen.getByRole('button', { name: /^デッキを読み込む/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^JSONを読み込む/ }));
     const textarea = screen.getByLabelText('デッキJSON');
     fireEvent.change(textarea, { target: { value: raw } });
     fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
@@ -121,7 +121,7 @@ describe('AppRoot persistence integrity', () => {
     render(<AppRoot />);
 
     const incoming = JSON.stringify(currentDeck(id, '読み込んだ更新版'));
-    fireEvent.click(screen.getByRole('button', { name: /^デッキを読み込む/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^JSONを読み込む/ }));
     fireEvent.change(screen.getByLabelText('デッキJSON'), { target: { value: incoming } });
     fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
 
@@ -139,7 +139,7 @@ describe('AppRoot persistence integrity', () => {
     render(<AppRoot />);
 
     const incoming = JSON.stringify(currentDeck(id, '更新版'));
-    fireEvent.click(screen.getByRole('button', { name: /^デッキを読み込む/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^JSONを読み込む/ }));
     const textarea = screen.getByLabelText('デッキJSON');
     fireEvent.change(textarea, { target: { value: incoming } });
     fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
@@ -156,7 +156,7 @@ describe('AppRoot persistence integrity', () => {
     render(<AppRoot />);
 
     const incoming = JSON.stringify(currentDeck(id, '読み込み予定版'));
-    fireEvent.click(screen.getByRole('button', { name: /^デッキを読み込む/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^JSONを読み込む/ }));
     fireEvent.change(screen.getByLabelText('デッキJSON'), { target: { value: incoming } });
     fireEvent.click(screen.getByRole('button', { name: '読み込む' }));
     expect(screen.getByRole('button', { name: '上書きして読み込む' })).toBeTruthy();
