@@ -33,6 +33,7 @@
     "qa:batch21:adaptive-inspector-contract": "node scripts/qa/validate-batch21-adaptive-inspector-contract.mjs",
     "qa:batch22:collection-ledger-contract": "node scripts/qa/validate-batch22-collection-ledger-contract.mjs",
     "qa:batch23:result-evidence-contract": "node scripts/qa/validate-batch23-result-evidence-contract.mjs",
+    "qa:batch24:editor-cleanup-contract": "node scripts/qa/validate-batch24-editor-cleanup-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
