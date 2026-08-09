@@ -3,7 +3,7 @@
  * quiet ledger; it must not compete through nested cards, glow or dashboard
  * treatment. Keep one authored focal light on the winning call only.
  */
-@layer layout {
+@layer screens {
   .sp-result-screen > .sp-screen__header {
     min-height: 36px;
     padding: 2px 0 5px;
@@ -182,28 +182,40 @@
     .sp-result-screen__side {
       width: min(190px, 24%);
       min-width: 164px;
-      gap: 4px;
+      gap: 3px;
       padding-left: 4px;
     }
 
-    .sp-result-screen__ledger,
+    .sp-result-screen__ledger {
+      gap: 2px;
+      min-height: 0;
+    }
+
     .sp-result-screen__actions {
-      gap: 4px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3px;
+      margin-top: auto;
+    }
+
+    .sp-result-screen__actions .sp-button:first-child {
+      grid-column: 1 / -1;
     }
 
     .sp-result-screen__ledger > .sp-paper-panel {
-      padding: 4px 5px;
+      padding: 3px 4px;
     }
 
     .sp-result-screen__ledger .sp-paper-panel__title {
-      margin-bottom: 3px;
-      padding-bottom: 2px;
-      font-size: 10px;
+      margin-bottom: 2px;
+      padding-bottom: 1px;
+      font-size: 9px;
+      line-height: 1.1;
     }
 
     .sp-result-screen__ledger .sp-issue-list {
-      gap: 1px;
-      font-size: 9px;
+      gap: 0;
+      font-size: 8px;
+      line-height: 1.15;
     }
 
     .sp-result-screen__achievement-list li:nth-child(n + 3) {
@@ -212,18 +224,20 @@
 
     .sp-result-screen__more-achievements,
     .sp-result-screen__coin-note {
-      margin-top: 2px;
-      font-size: 8px;
+      margin-top: 1px;
+      font-size: 7px;
+      line-height: 1.15;
     }
 
     .sp-result-screen__coin-value {
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .sp-result-screen__actions .sp-button {
-      min-height: 32px;
-      padding-block: 2px;
-      font-size: 10px;
+      min-height: 30px;
+      padding: 1px 4px;
+      font-size: 9px;
+      line-height: 1.1;
     }
   }
 }
