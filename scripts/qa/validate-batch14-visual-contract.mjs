@@ -9,6 +9,7 @@ const REQUIRED_FILES = {
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
   workspaceCss: 'src/ui/styles/deck-editor-authored-workspace.css',
+  matchRiverCss: 'src/ui/styles/match-river-polish.css',
   landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
   match: 'src/ui/screens/MatchScreen.tsx',
   editor: 'src/ui/screens/DeckEditorScreen.tsx',
@@ -81,6 +82,12 @@ forbidText('workspaceCss', "[style*='border-bottom']", 'editor styling must not 
 forbidText('workspaceCss', 'radial-gradient(', 'editor workspace must not use decorative radial gradients');
 forbidText('workspaceCss', 'linear-gradient(', 'editor workspace must not use decorative linear gradients');
 forbidText('workspaceCss', 'backdrop-filter:', 'editor workspace must not use glass blur');
+
+requireText('matchRiverCss', 'regular blocks are easier to scan', 'discard rivers must stay grid-led and mahjong-readable');
+requireText('matchRiverCss', 'physical edge rather than an ornamental glow/fog composition', 'self hand must keep authored physical grounding');
+requireText('matchRiverCss', 'border-radius: 0', 'empty-state/drawn markers must not regress into pill decoration');
+forbidText('matchRiverCss', 'radial-gradient(', 'match river layer must not use decorative radial gradients');
+forbidText('matchRiverCss', 'linear-gradient(', 'match river layer must not use decorative linear gradients');
 
 requireText('landscapeCss', '844x390 is a game viewport', 'target viewport intent must remain explicit');
 requireText('landscapeCss', '.sp-match-utility', 'utility overlay composition must remain defined');
