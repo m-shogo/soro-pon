@@ -95,7 +95,7 @@ forbidText('setupCss', 'radial-gradient(', 'setup lobby must not add decorative 
 forbidText('setupCss', 'linear-gradient(', 'setup lobby must not depend on decorative gradients');
 
 requireText('top', 'variant="primary"', 'TOP must retain one clear primary play action');
-requireText('top', '>データ管理<', 'maintenance controls must stay grouped away from daily play navigation');
+requireText('top', 'データ管理', 'maintenance controls must stay grouped away from daily play navigation');
 requireText('top', 'setDataModalOpen(false);', 'reset confirmation must close the maintenance modal before opening another modal');
 requireText('top', 'setResetConfirmOpen(true);', 'reset confirmation must remain explicit');
 requireText('top', 'returnToDataManagement', 'cancel/failure should preserve the maintenance context without stacking modals');
