@@ -9,6 +9,7 @@ const REQUIRED_FILES = {
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
   workspaceCss: 'src/ui/styles/deck-editor-authored-workspace.css',
+  deckBrowserCss: 'src/ui/styles/deck-browser-authored-workspace.css',
   matchRiverCss: 'src/ui/styles/match-river-polish.css',
   landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
   match: 'src/ui/screens/MatchScreen.tsx',
@@ -66,6 +67,7 @@ requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern 
 
 requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored anti-AI override must stay loaded');
 requireText('app', "import './ui/styles/deck-editor-authored-workspace.css';", 'authored editor workspace pass must stay loaded');
+requireText('app', "import './ui/styles/deck-browser-authored-workspace.css';", 'authored deck browsing pass must stay loaded');
 requireText('app', "import './ui/styles/batch14-landscape-game.css';", 'compact landscape composition must stay loaded after authored polish');
 requireText('authoredCss', 'generic AI/SaaS treatments', 'file purpose must remain explicit');
 requireText('authoredCss', '.sp-deck-select-card', 'deck selection must retain non-marketplace treatment');
@@ -82,6 +84,14 @@ forbidText('workspaceCss', "[style*='border-bottom']", 'editor styling must not 
 forbidText('workspaceCss', 'radial-gradient(', 'editor workspace must not use decorative radial gradients');
 forbidText('workspaceCss', 'linear-gradient(', 'editor workspace must not use decorative linear gradients');
 forbidText('workspaceCss', 'backdrop-filter:', 'editor workspace must not use glass blur');
+
+requireText('deckBrowserCss', 'Deck identity must come from its actual tiles', 'deck browse/detail hierarchy must remain object-led');
+requireText('deckBrowserCss', '.sp-deck-loadout__tile-item:hover .sp-tile', 'detail tiles must explicitly neutralize hover lift');
+requireText('deckBrowserCss', '.sp-deck-select-card:hover .sp-deck-select-card__preview .sp-tile:nth-child(odd)', 'deck preview tiles must explicitly neutralize hover choreography');
+requireText('deckBrowserCss', 'background: transparent', 'count/stat chrome must stay visually quiet');
+forbidText('deckBrowserCss', 'radial-gradient(', 'deck browse/detail pass must not use decorative radial gradients');
+forbidText('deckBrowserCss', 'linear-gradient(', 'deck browse/detail pass must not use decorative linear gradients');
+forbidText('deckBrowserCss', 'translateY(', 'deck browse/detail pass must not reintroduce hover lift');
 
 requireText('matchRiverCss', 'regular blocks are easier to scan', 'discard rivers must stay grid-led and mahjong-readable');
 requireText('matchRiverCss', 'physical edge rather than an ornamental glow/fog composition', 'self hand must keep authored physical grounding');
