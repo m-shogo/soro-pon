@@ -41,7 +41,7 @@ export function DeckDetailScreen({
         title={deck.name}
         badges={
           <Badge variant={canPlay ? 'info' : 'warning'}>
-            {canPlay ? '対局できます' : '対局できません(要修正)'}
+            {canPlay ? '対局可' : '要修正'}
           </Badge>
         }
         actions={
@@ -103,7 +103,6 @@ export function DeckDetailScreen({
           <section className="sp-deck-loadout__tiles" aria-label={`牌 ${deck.tiles.length}種`}>
             <div className="sp-deck-loadout__section-head">
               <div>
-                <span className="sp-deck-loadout__eyebrow">TILE SET</span>
                 <h2>牌セット</h2>
               </div>
               <span>{deck.tiles.length}種 / 合計{totalTileCount}枚</span>
@@ -131,10 +130,9 @@ export function DeckDetailScreen({
           <section className="sp-deck-loadout__roles" aria-label={`役 ${roleCount}件`}>
             <div className="sp-deck-loadout__section-head">
               <div>
-                <span className="sp-deck-loadout__eyebrow">WIN ROLES</span>
-                <h2>このデッキの役</h2>
+                <h2>役</h2>
               </div>
-              <span>{roleCount}件</span>
+              <span>{roleCount}役</span>
             </div>
             <div className="sp-deck-loadout__role-grid">
               {normalVariant?.winRoles.map((role) => (
@@ -150,8 +148,8 @@ export function DeckDetailScreen({
         </div>
 
         <aside className="sp-screen__col sp-screen__col--side sp-screen__col--scroll sp-deck-loadout__side">
-          <PaperPanel variant="ink" title="デッキ状態">
-            <p className="sp-deck-loadout__description">{deck.description || '説明はまだありません。'}</p>
+          <PaperPanel variant="ink" title="状態">
+            <p className="sp-deck-loadout__description">{deck.description || '説明なし'}</p>
             <ValidationIssueList issues={validation.issues} />
           </PaperPanel>
         </aside>
