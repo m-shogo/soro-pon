@@ -57,6 +57,8 @@ jobs:
         run: pnpm qa:batch22:collection-ledger-contract
       - name: Batch 23 result evidence contract
         run: pnpm qa:batch23:result-evidence-contract
+      - name: Batch 24 editor cleanup contract
+        run: pnpm qa:batch24:editor-cleanup-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
