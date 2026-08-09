@@ -1,0 +1,60 @@
+/* Batch 22: the collection is a match ledger, not a dashboard or admin history page. */
+@layer layout {
+  .sp-collection-screen > .sp-collection-summary,
+  .sp-collection-screen > .sp-collection-screen__body {
+    width: min(1180px, 100%);
+    margin-inline: auto;
+  }
+
+  .sp-collection-screen__main > .sp-paper-panel:first-child {
+    border-top: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 42%, transparent);
+  }
+
+  .sp-collection-screen__main > .sp-paper-panel:first-child .sp-paper-panel__title {
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-collection-screen__recent {
+    width: min(260px, 28%);
+  }
+
+  .sp-collection-screen__main,
+  .sp-collection-screen__recent {
+    scrollbar-gutter: stable;
+  }
+
+  .sp-collection-screen__main > .sp-paper-panel,
+  .sp-collection-screen__recent > .sp-paper-panel {
+    box-shadow: none;
+  }
+
+  .sp-collection-screen .sp-collection-ranking > li:first-child {
+    min-height: 44px;
+    font-size: var(--sp-font-md);
+  }
+
+  @media (min-width: 1100px) and (min-height: 650px) {
+    .sp-collection-screen {
+      justify-content: center;
+    }
+
+    .sp-collection-screen > .sp-collection-screen__body {
+      max-height: min(680px, calc(100vh - 150px));
+    }
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-collection-screen__recent {
+      width: min(190px, 24%);
+      min-width: 160px;
+    }
+
+    .sp-collection-screen__main > .sp-paper-panel:first-child {
+      min-height: 68px;
+    }
+
+    .sp-collection-screen__main > .sp-paper-panel:first-child .sp-collection-empty {
+      padding-block: 7px;
+    }
+  }
+}

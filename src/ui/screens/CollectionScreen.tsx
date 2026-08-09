@@ -26,16 +26,13 @@ export function CollectionScreen({
     .map((key) => {
       const [deckId, roleId] = key.split(':');
       const deck = decks.find((d) => d.deck.id === deckId)?.deck;
-      const role = deck?.variants
-        .flatMap((v) => v.winRoles)
-        .find((r) => r.id === roleId);
+      const role = deck?.variants.flatMap((v) => v.winRoles).find((r) => r.id === roleId);
       return role ? { key, role, deckName: deck?.name ?? '' } : null;
     })
     .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
   const unlocked = new Set(records.achievements ?? []);
   const title = titleFor(unlocked.size);
-
   const topResults = [...records.records]
     .filter((record) => record.humanWon && record.totalPoints !== undefined)
     .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
@@ -62,7 +59,9 @@ export function CollectionScreen({
         </div>
         <div>
           <dt>実績</dt>
-          <dd>{unlocked.size} / {ACHIEVEMENTS.length}</dd>
+          <dd>
+            {unlocked.size} / {ACHIEVEMENTS.length}
+          </dd>
         </div>
         <div>
           <dt>あがった役</dt>
@@ -72,6 +71,24 @@ export function CollectionScreen({
 
       <div className="sp-screen__body sp-collection-screen__body">
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll sp-collection-screen__main">
+          <PaperPanel variant="aged" title="高得点 Top 10">
+            {topResults.length === 0 ? (
+              <p className="sp-collection-empty">勝利記録はまだありません。</p>
+            ) : (
+              <ol className="sp-collection-ranking">
+                {topResults.map((record, index) => (
+                  <li key={`${record.dateMs}-${index}`}>
+                    <strong>{record.totalPoints}点</strong>
+                    <span>{record.selectedWinRoleName ?? '-'}</span>
+                    <small>
+                      {record.deckName} / {formatDate(record.dateMs)}
+                    </small>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </PaperPanel>
+
           <PaperPanel title="クリアボード">
             <div className="sp-clear-board">
               {ACHIEVEMENTS.map((achievement) => {
@@ -109,22 +126,6 @@ export function CollectionScreen({
                   </div>
                 ))}
               </div>
-            )}
-          </PaperPanel>
-
-          <PaperPanel variant="aged" title="高得点 Top 10">
-            {topResults.length === 0 ? (
-              <p className="sp-collection-empty">勝利記録はまだありません。</p>
-            ) : (
-              <ol className="sp-collection-ranking">
-                {topResults.map((record, index) => (
-                  <li key={`${record.dateMs}-${index}`}>
-                    <strong>{record.totalPoints}点</strong>
-                    <span>{record.selectedWinRoleName ?? '-'}</span>
-                    <small>{record.deckName} / {formatDate(record.dateMs)}</small>
-                  </li>
-                ))}
-              </ol>
             )}
           </PaperPanel>
         </div>

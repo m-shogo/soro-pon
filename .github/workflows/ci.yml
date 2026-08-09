@@ -53,6 +53,8 @@ jobs:
         run: pnpm qa:batch20:role-workbench-contract
       - name: Batch 21 adaptive inspector contract
         run: pnpm qa:batch21:adaptive-inspector-contract
+      - name: Batch 22 collection ledger contract
+        run: pnpm qa:batch22:collection-ledger-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
