@@ -1,0 +1,351 @@
+/* Batch 18 category editing palette.
+ *
+ * Categories are visual swatches first. Select one swatch, then edit that
+ * category in one inspector. Keep the palette aligned with the tile workbench.
+ */
+@layer screens {
+  .sp-category-workbench {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: var(--sp-color-cream);
+  }
+
+  .sp-category-workbench__header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 38px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-category-workbench__header h2 {
+    margin: 0;
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-category-workbench__header span {
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-category-workbench__header .sp-button {
+    min-height: 34px;
+    box-shadow: none;
+  }
+
+  .sp-category-workbench__body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(260px, 0.92fr);
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .sp-category-workbench__palette {
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    gap: 5px;
+    align-content: start;
+    overflow: hidden auto;
+    padding: 3px 5px 5px 3px;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+    scroll-padding: 6px;
+  }
+
+  .sp-category-workbench__choice {
+    min-width: 0;
+    min-height: 104px;
+    display: grid;
+    grid-template-rows: 40px auto auto;
+    align-content: center;
+    justify-items: stretch;
+    gap: 5px;
+    padding: 7px;
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--sp-color-cream-dim);
+    font: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .sp-category-workbench__choice:hover,
+  .sp-category-workbench__choice:focus-visible {
+    transform: none;
+    border-color: color-mix(in srgb, var(--sp-color-cream) 18%, transparent);
+    background: color-mix(in srgb, var(--sp-color-night) 16%, transparent);
+  }
+
+  .sp-category-workbench__choice[data-selected='true'] {
+    border-color: color-mix(in srgb, var(--sp-color-lantern-0) 62%, transparent);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 64%, transparent);
+    color: var(--sp-color-cream);
+  }
+
+  .sp-category-workbench__swatch,
+  .sp-category-workbench__selected-swatch {
+    display: grid;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 20%, transparent);
+    border-radius: 4px;
+    background: var(--category-swatch, var(--sp-color-paper-aged));
+    color: var(--sp-color-ink);
+    font-size: 19px;
+    text-shadow: 0 1px 0 color-mix(in srgb, white 45%, transparent);
+  }
+
+  .sp-category-workbench__choice .sp-category-chip {
+    max-width: 100%;
+    justify-content: flex-start;
+    overflow: hidden;
+    border-radius: 3px;
+  }
+
+  .sp-category-workbench__usage {
+    font-size: 8px;
+    opacity: 0.72;
+  }
+
+  .sp-category-workbench__editor {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden auto;
+    padding: 7px 8px;
+    border-left: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 42%, transparent);
+    background: color-mix(in srgb, var(--sp-color-night) 14%, transparent);
+    scroll-padding: 6px;
+  }
+
+  .sp-category-workbench__selected {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    min-height: 66px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-category-workbench__selected-swatch {
+    width: 62px;
+    height: 52px;
+    font-size: 24px;
+  }
+
+  .sp-category-workbench__selected > div {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sp-category-workbench__selected strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-category-workbench__selected span {
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-category-workbench__fields {
+    display: grid;
+    grid-template-columns: minmax(130px, 1.35fr) 72px minmax(88px, 0.7fr);
+    gap: 6px;
+  }
+
+  .sp-category-workbench__fields .sp-field {
+    min-width: 0;
+  }
+
+  .sp-category-workbench__fields .sp-form-control,
+  .sp-category-workbench__fields input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sp-category-workbench__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 12px;
+    padding-top: 6px;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    color: var(--sp-color-cream-dim);
+    font-size: 8px;
+  }
+
+  .sp-category-workbench__danger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 7px;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-category-workbench__danger > span {
+    color: var(--sp-color-cream-dim);
+    font-size: 8px;
+  }
+
+  .sp-category-workbench__danger .sp-button {
+    flex: none;
+    min-height: 30px;
+    opacity: 0.68;
+    box-shadow: none;
+  }
+
+  .sp-category-workbench__danger .sp-button:hover,
+  .sp-category-workbench__danger .sp-button:focus-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .sp-category-workbench__empty {
+    grid-column: 1 / -1;
+    display: grid;
+    place-items: center;
+    min-height: 140px;
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-sm);
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-category-workbench {
+      gap: 4px;
+    }
+
+    .sp-category-workbench__header {
+      min-height: 30px;
+      padding-bottom: 3px;
+    }
+
+    .sp-category-workbench__header h2 {
+      font-size: 11px;
+    }
+
+    .sp-category-workbench__header span {
+      font-size: 7px;
+    }
+
+    .sp-category-workbench__header .sp-button {
+      min-height: 30px;
+      padding: 2px 6px;
+      font-size: 9px;
+    }
+
+    .sp-category-workbench__body {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.92fr);
+      gap: 4px;
+    }
+
+    .sp-category-workbench__palette {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 3px;
+      padding: 2px;
+    }
+
+    .sp-category-workbench__choice {
+      min-height: 74px;
+      grid-template-rows: 26px auto auto;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 3px;
+    }
+
+    .sp-category-workbench__swatch {
+      font-size: 14px;
+    }
+
+    .sp-category-workbench__choice .sp-category-chip {
+      padding: 1px 3px;
+      font-size: 7px;
+    }
+
+    .sp-category-workbench__usage {
+      font-size: 7px;
+    }
+
+    .sp-category-workbench__editor {
+      gap: 4px;
+      padding: 4px 5px;
+    }
+
+    .sp-category-workbench__selected {
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 6px;
+      min-height: 48px;
+      padding-bottom: 3px;
+    }
+
+    .sp-category-workbench__selected-swatch {
+      width: 44px;
+      height: 38px;
+      font-size: 17px;
+    }
+
+    .sp-category-workbench__selected strong {
+      font-size: 10px;
+    }
+
+    .sp-category-workbench__selected span {
+      font-size: 7px;
+    }
+
+    .sp-category-workbench__fields {
+      grid-template-columns: minmax(120px, 1.3fr) 62px minmax(80px, 0.7fr);
+      gap: 3px;
+    }
+
+    .sp-category-workbench__fields .sp-field__label {
+      font-size: 7px;
+    }
+
+    .sp-category-workbench__fields .sp-form-control,
+    .sp-category-workbench__fields input {
+      min-height: 30px;
+      padding: 2px 4px;
+      font-size: 9px;
+    }
+
+    .sp-category-workbench__meta {
+      gap: 3px 8px;
+      padding-top: 3px;
+      font-size: 7px;
+    }
+
+    .sp-category-workbench__danger {
+      gap: 4px;
+      padding-top: 4px;
+    }
+
+    .sp-category-workbench__danger > span {
+      font-size: 7px;
+    }
+
+    .sp-category-workbench__danger .sp-button {
+      min-height: 26px;
+      padding: 2px 5px;
+      font-size: 8px;
+    }
+  }
+}
