@@ -14,6 +14,7 @@ import './ui/styles/deck-browser-authored-workspace.css';
 import './ui/styles/result-authored-workspace.css';
 import './ui/styles/batch14-landscape-game.css';
 import './ui/styles/deck-role-composer.css';
+import './ui/styles/interaction-ux.css';
 import './ui/styles/screens.css';
 import './ui/styles/motion.css';
 import { AppRoot } from './app/AppRoot';
