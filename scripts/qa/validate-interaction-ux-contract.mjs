@@ -69,6 +69,7 @@ requireText('landscape', 'bottom: max(4px, var(--sp-safe-bottom))', 'primary act
 forbidText('landscape', "[style*='border-bottom']", 'compact editor selectors must not depend on serialized inline-style text');
 
 requireText('match', "const discardActionLabel = canDiscard ? '捨てる' : canSelect ? '牌を選ぶ' : '待機';", 'primary discard action must explain the next available step even when compact sublabels are hidden');
+requireText('match', "variant={canDiscard ? 'primary' : 'ghost'}", 'discard action should only gain primary emphasis after a tile is selected');
 requireText('match', "afterDrawAction: '選ぶ'", 'phase copy should use direct game language rather than form-like terminology');
 forbidText('match', "subLabel: '牌を選択'", 'compact gameplay must not depend on a sublabel that disappears in landscape');
 
