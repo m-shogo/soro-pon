@@ -1,0 +1,252 @@
+/* Batch 20: role editing is preset-led and selection-based, not a repeated form table. */
+.sp-role-workbench {
+  display: grid;
+  gap: var(--sp-space-8);
+  min-width: 0;
+}
+
+.sp-role-workbench__header,
+.sp-role-workbench__presets,
+.sp-role-workbench__editor,
+.sp-role-workbench__choice {
+  border: var(--sp-border-divider-ink);
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.sp-role-workbench__header {
+  padding: var(--sp-space-8) var(--sp-space-10);
+}
+
+.sp-role-workbench__header h2 {
+  margin: 0;
+  font-size: var(--sp-font-lg);
+}
+
+.sp-role-workbench__header span,
+.sp-role-workbench__selected-head > span,
+.sp-role-workbench__selected-head p,
+.sp-role-workbench__warning,
+.sp-role-workbench__locked-note {
+  color: var(--sp-color-ink-soft);
+  font-size: var(--sp-font-xs);
+}
+
+.sp-role-workbench__presets {
+  display: grid;
+  gap: 6px;
+  padding: var(--sp-space-8);
+}
+
+.sp-role-workbench__preset-main,
+.sp-role-workbench__specific {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) repeat(3, minmax(130px, 1fr));
+  gap: 6px;
+  align-items: stretch;
+}
+
+.sp-role-workbench__specific {
+  grid-template-columns: repeat(3, minmax(120px, 1fr)) minmax(180px, 1.2fr);
+  padding-top: 6px;
+  border-top: var(--sp-border-divider-ink);
+}
+
+.sp-role-workbench__specific .sp-role-workbench__warning {
+  grid-column: 1 / -1;
+}
+
+.sp-role-workbench__presets .sp-button--ink {
+  min-height: 44px;
+  width: 100%;
+  white-space: normal;
+  line-height: 1.2;
+  transform: none;
+}
+
+.sp-role-workbench__body {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.82fr) minmax(250px, 1.18fr);
+  gap: var(--sp-space-8);
+  min-height: 0;
+}
+
+.sp-role-workbench__list {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sp-role-workbench__choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 3px var(--sp-space-6);
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 8px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  border-radius: 0;
+  transform: none;
+}
+
+.sp-role-workbench__choice[data-selected='true'] {
+  border-left-color: var(--sp-color-accent);
+  background: var(--sp-color-paper-subtle);
+}
+
+.sp-role-workbench__choice strong,
+.sp-role-workbench__choice small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-role-workbench__choice small {
+  grid-column: 2;
+  color: var(--sp-color-ink-soft);
+}
+
+.sp-role-workbench__points {
+  min-width: 42px;
+  font-family: var(--sp-font-family-num);
+  font-size: var(--sp-font-sm);
+}
+
+.sp-role-workbench__editor {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-space-8);
+  min-width: 0;
+  padding: var(--sp-space-10);
+}
+
+.sp-role-workbench__selected-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 3px var(--sp-space-8);
+  align-items: center;
+}
+
+.sp-role-workbench__selected-head p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.sp-role-workbench__fields {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) 100px;
+  gap: var(--sp-space-8);
+  align-items: end;
+}
+
+.sp-role-workbench__rule-ledger {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  border-top: var(--sp-border-divider-ink);
+  border-bottom: var(--sp-border-divider-ink);
+}
+
+.sp-role-workbench__rule-ledger > div {
+  padding: 5px 6px;
+  border-right: var(--sp-border-divider-ink);
+}
+
+.sp-role-workbench__rule-ledger > div:last-child {
+  border-right: 0;
+}
+
+.sp-role-workbench__rule-ledger dt {
+  color: var(--sp-color-ink-soft);
+  font-size: var(--sp-font-xs);
+}
+
+.sp-role-workbench__rule-ledger dd {
+  margin: 2px 0 0;
+  font-size: var(--sp-font-sm);
+}
+
+.sp-role-workbench__locked-note {
+  margin: 0;
+}
+
+.sp-role-workbench__empty {
+  padding: var(--sp-space-12);
+  border-top: var(--sp-border-divider-ink);
+  border-bottom: var(--sp-border-divider-ink);
+  color: var(--sp-color-ink-soft);
+  font-size: var(--sp-font-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sp-role-workbench__choice:hover {
+    background: var(--sp-color-paper-subtle);
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) and (max-height: 500px) {
+  .sp-role-workbench {
+    gap: 5px;
+  }
+
+  .sp-role-workbench__header {
+    padding: 4px 7px;
+  }
+
+  .sp-role-workbench__header h2 {
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-role-workbench__presets {
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .sp-role-workbench__preset-main,
+  .sp-role-workbench__specific {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .sp-role-workbench__presets .sp-button--ink {
+    min-height: 36px;
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+
+  .sp-role-workbench__body {
+    grid-template-columns: minmax(155px, 0.72fr) minmax(230px, 1.28fr);
+    gap: 5px;
+  }
+
+  .sp-role-workbench__choice {
+    min-height: 36px;
+    padding: 3px 6px;
+  }
+
+  .sp-role-workbench__choice small {
+    font-size: 10px;
+  }
+
+  .sp-role-workbench__editor {
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .sp-role-workbench__fields {
+    grid-template-columns: minmax(110px, 1fr) 82px;
+    gap: 5px;
+  }
+
+  .sp-role-workbench__rule-ledger > div {
+    padding: 3px 4px;
+  }
+}
