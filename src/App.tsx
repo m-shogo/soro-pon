@@ -25,6 +25,7 @@ import './ui/styles/deck-tile-workbench.css';
 import './ui/styles/deck-category-workbench.css';
 import './ui/styles/deck-bonus-workbench.css';
 import './ui/styles/deck-editor-adaptive-inspector.css';
+import './ui/styles/collection-ledger-stage.css';
 import './ui/styles/motion.css';
 import { AppRoot } from './app/AppRoot';
 import { AppErrorBoundary } from './ui/components/AppErrorBoundary';
