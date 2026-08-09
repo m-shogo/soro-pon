@@ -7,7 +7,8 @@
  *
  * References used for the contract:
  * - Apple HIG: frequent game controls / buttons should target ~44x44pt and
- *   custom controls need a visible pressed state.
+ *   custom controls need a visible pressed state. Secondary game controls may
+ *   be smaller when space is constrained, but still need a comfortable target.
  * - WCAG 2.2 SC 2.5.8: pointer targets need at least 24x24 CSS px or spacing.
  * - WCAG focus guidance: keyboard focus must remain obvious and unobscured.
  */
@@ -25,6 +26,12 @@
       .sp-field textarea
     ) {
     touch-action: manipulation;
+  }
+
+  /* Frequent gameplay actions keep the full 44px target regardless of the
+     compact visual treatment used by earlier layout layers. */
+  .sp-match-action-zone .sp-button {
+    min-height: var(--sp-touch-min);
   }
 
   /* Tabs are frequent navigation on editor screens. Use the full touch target
@@ -99,10 +106,11 @@
   }
 
   /* Touch browsers can keep :hover latched after a tap. Neutralize hover-only
-     presentation there so the screen does not appear stuck in a fake state. */
+     presentation there so the screen does not appear stuck in a fake state.
+     :active is excluded so the visible press response above remains intact. */
   @media (hover: none), (pointer: coarse) {
-    .sp-button:hover:not(:disabled),
-    .sp-icon-button:hover:not(:disabled) {
+    .sp-button:hover:not(:disabled):not(:active),
+    .sp-icon-button:hover:not(:disabled):not(:active) {
       filter: none;
     }
 
@@ -127,9 +135,18 @@
   }
 
   @media (max-width: 899px), (max-height: 430px) {
+    /* Secondary controls are deliberately smaller than the 44px gameplay CTA
+       in the constrained landscape viewport. 32-36px remains above WCAG AA's
+       24px minimum and preserves the table as the primary visual surface. */
     .sp-tab {
       min-height: 36px;
       padding: 4px 10px;
+    }
+
+    .sp-match-utility > .sp-button,
+    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
+    #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
+      min-height: 32px;
     }
 
     .sp-field input[type='text'],
