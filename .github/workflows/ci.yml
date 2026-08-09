@@ -51,6 +51,8 @@ jobs:
         run: pnpm qa:batch19:bonus-workbench-contract
       - name: Batch 20 role workbench contract
         run: pnpm qa:batch20:role-workbench-contract
+      - name: Batch 21 adaptive inspector contract
+        run: pnpm qa:batch21:adaptive-inspector-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
