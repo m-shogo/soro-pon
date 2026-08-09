@@ -71,9 +71,6 @@
       background: color-mix(in srgb, var(--sp-color-night) 48%, transparent);
     }
 
-    /* The upper-right utility owns the exit control. Reserve a few physical
-       pixels below that control instead of letting the right player identity
-       sit underneath it. The river can still use the full shared table area. */
     .sp-table-stage [data-seat-position='right'] .sp-player-panel {
       margin-top: 8px;
     }
@@ -92,9 +89,6 @@
       letter-spacing: 0.01em;
     }
 
-    /* Counts/state are still present in the accessible label. In a tiny game
-       viewport the visible panel only needs identity + active edge; the river
-       itself already communicates discard activity. */
     .sp-table-seat .sp-player-panel__meta,
     .sp-table-seat .sp-player-panel__state {
       display: none;
@@ -126,6 +120,13 @@
       min-height: calc(var(--tile-h, 64px) + 2px);
       padding: 1px max(128px, calc(var(--sp-safe-right) + 120px)) 1px max(5px, var(--sp-safe-left));
       border-top-color: color-mix(in srgb, var(--sp-color-cream) 6%, transparent);
+      /* The hand reserves the action column with right padding. The empty padded
+         section itself must not intercept pointer input intended for actions. */
+      pointer-events: none;
+    }
+
+    .sp-self-hand-zone .sp-tile {
+      pointer-events: auto;
     }
 
     .sp-self-hand-zone .sp-tile--drawn {
@@ -166,9 +167,6 @@
       pointer-events: none;
     }
 
-    /* Deck editing: on phone-landscape, inspector must not steal a quarter
-       of the canvas while the user is arranging tiles. It becomes a narrow
-       status rail and the actual editor gets the width. */
     .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
       width: min(164px, 21%);
     }
@@ -188,8 +186,6 @@
       padding: 4px 5px !important;
     }
 
-    /* Role composer: keep the existing safe-template logic, but read as one
-       game-building bench instead of a stack of independent form controls. */
     #sp-tabpanel-roles > .sp-paper-panel:first-child {
       padding: 7px 9px;
       border-radius: 5px;
