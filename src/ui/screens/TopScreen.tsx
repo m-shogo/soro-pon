@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { MatchRecord } from '../../schemas/storageSchema';
+import { useMemo, useState } from 'react';
+import type { MatchRecord, StoredDeck } from '../../schemas/storageSchema';
 import {
   buildLocalDataRecoveryBundle,
   serializeLocalDataRecoveryBundle,
@@ -8,8 +8,8 @@ import { resetAllLocalData } from '../../storage/resetLocalData';
 import { Button } from '../components/Button';
 import { Dialog } from '../components/Dialog';
 import { Modal } from '../components/Modal';
-import { PaperPanel } from '../components/PaperPanel';
 import { SkinSelector } from '../components/SkinSelector';
+import { TileCard } from '../components/TileCard';
 import { InkDivider } from '../primitives/InkDivider';
 
 function formatDate(ms: number): string {
@@ -53,6 +53,7 @@ export function TopScreen({
   onImport,
   onCollection,
   hasPlayableDeck,
+  featuredDeck,
   coins,
   recentRecords,
 }: {
@@ -61,6 +62,7 @@ export function TopScreen({
   onImport: () => void;
   onCollection: () => void;
   hasPlayableDeck: boolean;
+  featuredDeck?: StoredDeck;
   coins: number;
   recentRecords: MatchRecord[];
 }) {
@@ -72,6 +74,17 @@ export function TopScreen({
     tone: 'status' | 'error';
     message: string;
   } | null>(null);
+
+  const featuredProject = featuredDeck?.deck;
+  const previewTiles = featuredProject?.tiles.slice(0, 8) ?? [];
+  const categoryById = useMemo(
+    () => new Map(featuredProject?.categories.map((category) => [category.id, category]) ?? []),
+    [featuredProject],
+  );
+  const totalTiles = featuredProject?.tiles.reduce((sum, tile) => sum + tile.count, 0) ?? 0;
+  const activeVariant = featuredProject?.variants.find(
+    (variant) => variant.id === featuredProject.activeVariantId,
+  );
 
   const handleRecoveryExport = () => {
     setRecoveryNotice(null);
@@ -123,73 +136,129 @@ export function TopScreen({
 
   return (
     <div className="sp-screen sp-top-screen">
-      <div className="sp-screen__header">
+      <div className="sp-screen__header sp-top-screen__header">
         <h1 className="sp-screen__title">soro-pon</h1>
         <span className="sp-screen__subtitle">Vamp Pon 世界の中で流行っている記憶札遊び</span>
       </div>
-      <div className="sp-screen__body" style={{ alignItems: 'stretch' }}>
-        <div className="sp-top-menu sp-screen__col--scroll">
+
+      <div className="sp-top-stage">
+        <section className="sp-top-stage__hero" aria-labelledby="sp-top-featured-deck-title">
+          <div className="sp-top-stage__hero-head">
+            <span className="sp-top-stage__kicker">今夜の記憶札</span>
+            <span className="sp-top-stage__status" data-ready={hasPlayableDeck || undefined}>
+              {hasPlayableDeck ? '対局可' : '準備が必要'}
+            </span>
+          </div>
+
+          <div className="sp-top-stage__deck-copy">
+            <h2 id="sp-top-featured-deck-title">
+              {featuredProject?.name ?? 'デッキを準備'}
+            </h2>
+            <p>{featuredProject?.description || '牌を選び、役を作って競う。'}</p>
+          </div>
+
+          {featuredProject !== undefined && (
+            <>
+              <div className="sp-top-stage__rack" aria-hidden="true">
+                {previewTiles.map((tile) => {
+                  const category = categoryById.get(tile.primaryCategoryId);
+                  return (
+                    <TileCard
+                      key={tile.id}
+                      name={tile.name}
+                      {...(tile.emoji !== undefined ? { emoji: tile.emoji } : {})}
+                      fallbackLabel={tile.fallbackLabel}
+                      {...(category
+                        ? { categoryColor: category.color, categoryName: category.name }
+                        : {})}
+                      showName={false}
+                      interactive={false}
+                    />
+                  );
+                })}
+              </div>
+
+              <dl className="sp-top-stage__deck-spec" aria-label={`${featuredProject.name}の構成`}>
+                <div>
+                  <dt>牌</dt>
+                  <dd>{totalTiles}枚</dd>
+                </div>
+                <div>
+                  <dt>種類</dt>
+                  <dd>{featuredProject.tiles.length}種</dd>
+                </div>
+                <div>
+                  <dt>役</dt>
+                  <dd>{activeVariant?.winRoles.length ?? 0}組</dd>
+                </div>
+                <div>
+                  <dt>カテゴリ</dt>
+                  <dd>{featuredProject.categories.length}</dd>
+                </div>
+              </dl>
+            </>
+          )}
+
           <Button
             variant="primary"
-            subLabel={hasPlayableDeck ? 'すぐに対戦をはじめます' : '遊べるデッキを作成・読み込みします'}
+            subLabel={hasPlayableDeck ? 'このデッキで対局設定へ' : '遊べるデッキを作成・読み込みします'}
             onClick={hasPlayableDeck ? onPlayNow : onDeckList}
           >
             {hasPlayableDeck ? 'まず遊ぶ' : 'デッキを準備'}
           </Button>
-          <Button variant="paper" subLabel="保存したデッキを確認・編集します" onClick={onDeckList}>
-            デッキ一覧
-          </Button>
-          <Button variant="paper" subLabel="デッキデータ(JSON)を読み込みます" onClick={onImport}>
-            JSONを読み込む
-          </Button>
-          <Button
-            variant="paper"
-            subLabel={`あがった役と記録。記憶コイン ${coins}`}
-            onClick={onCollection}
-          >
-            記憶帳
-          </Button>
-          <InkDivider />
-          <div className="sp-top-menu__secondary">
-            <Button
-              variant="ink"
-              subLabel="見た目を切り替えます"
-              onClick={() => setSkinModalOpen(true)}
-            >
-              きせかえ
+        </section>
+
+        <nav className="sp-top-stage__nav" aria-label="ホームメニュー">
+          <div className="sp-top-stage__nav-main">
+            <Button variant="ink" subLabel="保存したデッキを選ぶ・編集" onClick={onDeckList}>
+              デッキ一覧
             </Button>
             <Button
-              variant="ghost"
-              subLabel="退避・初期化"
-              onClick={() => setDataModalOpen(true)}
+              variant="ink"
+              subLabel={`あがった役と記録 / 記憶コイン ${coins}`}
+              onClick={onCollection}
             >
+              記憶帳
+            </Button>
+          </div>
+
+          <div className="sp-top-stage__utility" aria-label="その他の操作">
+            <Button variant="ghost" onClick={onImport}>
+              JSONを読み込む
+            </Button>
+            <Button variant="ghost" onClick={() => setSkinModalOpen(true)}>
+              きせかえ
+            </Button>
+            <Button variant="ghost" onClick={() => setDataModalOpen(true)}>
               データ管理
             </Button>
           </div>
-          <p className="sp-top-tagline">
-            記憶の札を集め、役を作って競う。
-          </p>
-        </div>
-        <div className="sp-screen__spacer" />
-        {recentRecords.length > 0 && (
-          <div className="sp-screen__col sp-screen__col--side">
-            <PaperPanel variant="ink" title="最近の記録">
-              <ul className="sp-issue-list">
+
+          <p className="sp-top-tagline">記憶の札を集め、役を作って競う。</p>
+
+          {recentRecords.length > 0 && (
+            <div className="sp-top-stage__recent">
+              <div className="sp-top-stage__recent-head">
+                <strong>最近の記録</strong>
+                <span>{recentRecords.length}局</span>
+              </div>
+              <ol>
                 {recentRecords.map((record, i) => (
                   <li key={`${record.dateMs}-${i}`}>
-                    {formatDate(record.dateMs)}
-                    <br />
-                    {record.reason === 'draw'
-                      ? '流局'
-                      : `${record.winnerName}が「${record.selectedWinRoleName ?? ''}」で${
-                          record.reason === 'tsumo' ? 'ツモ' : 'ロン'
-                        }`}
+                    <time>{formatDate(record.dateMs)}</time>
+                    <span>
+                      {record.reason === 'draw'
+                        ? '流局'
+                        : `${record.winnerName} / ${record.selectedWinRoleName ?? ''} / ${
+                            record.reason === 'tsumo' ? 'ツモ' : 'ロン'
+                          }`}
+                    </span>
                   </li>
                 ))}
-              </ul>
-            </PaperPanel>
-          </div>
-        )}
+              </ol>
+            </div>
+          )}
+        </nav>
       </div>
 
       <Modal open={skinModalOpen} title="きせかえ" onClose={() => setSkinModalOpen(false)}>
