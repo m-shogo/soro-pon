@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import type { CategoryDefinition } from '../../domain/category';
 import type { TileDefinition } from '../../domain/tile';
 import { Button } from './Button';
@@ -61,7 +61,7 @@ export function DeckCategoryWorkbench({
                 aria-label={`${category.name}を編集`}
                 aria-pressed={selected}
                 data-selected={selected || undefined}
-                style={{ '--category-swatch': category.color } as React.CSSProperties}
+                style={{ '--category-swatch': category.color } as CSSProperties}
                 onClick={() => setSelectedCategoryId(category.id)}
               >
                 <span className="sp-category-workbench__swatch" aria-hidden="true">
@@ -85,7 +85,7 @@ export function DeckCategoryWorkbench({
           >
             <div
               className="sp-category-workbench__selected"
-              style={{ '--category-swatch': selectedCategory.color } as React.CSSProperties}
+              style={{ '--category-swatch': selectedCategory.color } as CSSProperties}
             >
               <span className="sp-category-workbench__selected-swatch" aria-hidden="true">
                 {selectedCategory.icon ?? selectedCategory.name.slice(0, 1)}
