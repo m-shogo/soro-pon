@@ -21,16 +21,11 @@ async function boot(page: Page, skin: SkinId, size: CaptureSize, seedOffset = 0)
       window.localStorage.clear();
       window.localStorage.setItem('soro-pon.skin.v1', skinId);
     },
-    {
-      skinId: skin,
-      nowMs: 1_700_000_000_000 + seedOffset,
-    },
+    { skinId: skin, nowMs: 1_700_000_000_000 + seedOffset },
   );
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'soro-pon' })).toBeVisible();
-  await expect
-    .poll(() => page.evaluate(() => document.documentElement.dataset.skin))
-    .toBe(skin);
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.skin)).toBe(skin);
 }
 
 async function capture(page: Page, name: string) {
@@ -157,9 +152,7 @@ async function expectMatchGeometry(page: Page) {
         const b = right.getBoundingClientRect();
         const overlapWidth = Math.min(a.right, b.right) - Math.max(a.left, b.left);
         const overlapHeight = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-        if (overlapWidth > 1 && overlapHeight > 1) {
-          collisions.push(`${left.className} <> ${right.className}`);
-        }
+        if (overlapWidth > 1 && overlapHeight > 1) collisions.push(`${left.className} <> ${right.className}`);
       }
     }
 
@@ -229,6 +222,11 @@ for (const skin of SKINS) {
       await page.getByRole('tab', { name: /^役/ }).click();
       await expect(page.getByRole('tabpanel')).toHaveAttribute('id', 'sp-tabpanel-roles');
       await capture(page, `deck-editor-roles-${skin}-${size.label}`);
+      await expectViewportContract(page);
+
+      await page.getByRole('tab', { name: /^ボーナス/ }).click();
+      await expect(page.getByRole('tabpanel')).toHaveAttribute('id', 'sp-tabpanel-bonuses');
+      await capture(page, `deck-editor-bonuses-${skin}-${size.label}`);
       await expectViewportContract(page);
     });
   }

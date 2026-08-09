@@ -15,6 +15,7 @@ import { validateDeckForUse } from '../../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
+import { DeckBonusWorkbench } from '../components/DeckBonusWorkbench';
 import { DeckCategoryWorkbench } from '../components/DeckCategoryWorkbench';
 import { DeckEditorInspector } from '../components/DeckEditorInspector';
 import { DeckTileWorkbench } from '../components/DeckTileWorkbench';
@@ -25,14 +26,11 @@ import { Tabs } from '../components/Tab';
 
 // 安全テンプレートのみで構造編集する(count-onlyの通常役は作れない)。
 // docs/70 §18 の推奨点数を使う。
-
 const CATEGORY_COLORS = ['#EF4444', '#3B82F6', '#22C55E', '#F59E0B', '#7C3AED', '#06B6D4', '#EC4899', '#84CC16'];
 
 function nextId(prefix: string, existing: string[]): string {
   let n = existing.length + 1;
-  while (existing.includes(`${prefix}${n}`)) {
-    n += 1;
-  }
+  while (existing.includes(`${prefix}${n}`)) n += 1;
   return `${prefix}${n}`;
 }
 
@@ -49,6 +47,12 @@ export function DeckEditorScreen({
   const [tab, setTab] = useState('basic');
   const [leaveConfirm, setLeaveConfirm] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [templateCategoryId, setTemplateCategoryId] = useState('');
+  const [setTileIds, setSetTileIds] = useState<[string, string, string]>(['', '', '']);
+
+  const validation = useMemo(() => validateDeckForUse(draft), [draft]);
+  const activeVariant = draft.variants.find((variant) => variant.id === draft.activeVariantId);
+  const isDirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(deck), [draft, deck]);
 
   const handleSave = () => {
     const parsed = deckProjectSchema.safeParse(draft);
@@ -62,9 +66,6 @@ export function DeckEditorScreen({
     setSaveError(null);
     onSave(parsed.data);
   };
-  const validation = useMemo(() => validateDeckForUse(draft), [draft]);
-  const activeVariant = draft.variants.find((v) => v.id === draft.activeVariantId);
-  const isDirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(deck), [draft, deck]);
 
   const updateVariant = (
     update: (variant: NonNullable<typeof activeVariant>) => NonNullable<typeof activeVariant>,
@@ -78,7 +79,7 @@ export function DeckEditorScreen({
   };
 
   const addCategory = () => {
-    const id = nextId('cat', draft.categories.map((c) => c.id));
+    const id = nextId('cat', draft.categories.map((category) => category.id));
     setDraft({
       ...draft,
       categories: [
@@ -95,20 +96,19 @@ export function DeckEditorScreen({
   const updateCategory = (id: string, patch: Partial<CategoryDefinition>) => {
     setDraft({
       ...draft,
-      categories: draft.categories.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+      categories: draft.categories.map((category) =>
+        category.id === id ? { ...category, ...patch } : category,
+      ),
     });
   };
   const removeCategory = (id: string) => {
-    setDraft({
-      ...draft,
-      categories: draft.categories.filter((c) => c.id !== id),
-    });
+    setDraft({ ...draft, categories: draft.categories.filter((category) => category.id !== id) });
   };
 
   const addTile = () => {
     const firstCategory = draft.categories[0];
     if (!firstCategory) return;
-    const id = nextId('tile', draft.tiles.map((t) => t.id));
+    const id = nextId('tile', draft.tiles.map((tile) => tile.id));
     setDraft({
       ...draft,
       tiles: [
@@ -127,13 +127,13 @@ export function DeckEditorScreen({
   const updateTile = (id: string, patch: Partial<TileDefinition>) => {
     setDraft({
       ...draft,
-      tiles: draft.tiles.map((t) => (t.id === id ? { ...t, ...patch } : t)),
+      tiles: draft.tiles.map((tile) => (tile.id === id ? { ...tile, ...patch } : tile)),
     });
   };
   const toggleTileCategory = (tile: TileDefinition, categoryId: string) => {
     const has = tile.categories.includes(categoryId);
     const categories = has
-      ? tile.categories.filter((c) => c !== categoryId)
+      ? tile.categories.filter((current) => current !== categoryId)
       : [...tile.categories, categoryId];
     if (categories.length === 0) return;
     const primaryCategoryId = categories.includes(tile.primaryCategoryId)
@@ -142,7 +142,7 @@ export function DeckEditorScreen({
     updateTile(tile.id, { categories, primaryCategoryId });
   };
   const removeTile = (id: string) => {
-    setDraft({ ...draft, tiles: draft.tiles.filter((t) => t.id !== id) });
+    setDraft({ ...draft, tiles: draft.tiles.filter((tile) => tile.id !== id) });
   };
 
   const addRoleFromTemplate = (
@@ -150,10 +150,10 @@ export function DeckEditorScreen({
     categoryId?: string,
   ) => {
     updateVariant((variant) => {
-      const existingIds = variant.winRoles.map((r) => r.id);
+      const existingIds = variant.winRoles.map((role) => role.id);
       let role: WinRole | null = null;
       if (template === 'threeSameCategory' && categoryId) {
-        const category = draft.categories.find((c) => c.id === categoryId);
+        const category = draft.categories.find((current) => current.id === categoryId);
         if (category) role = buildSameCategoryRoleTemplate(category, existingIds);
       }
       if (template === 'threeDifferentCategories') {
@@ -179,27 +179,23 @@ export function DeckEditorScreen({
     }));
   };
 
-  const [templateCategoryId, setTemplateCategoryId] = useState('');
-  const [setTileIds, setSetTileIds] = useState<[string, string, string]>(['', '', '']);
   const setTileIdsHaveDuplicate =
     setTileIds.some((id) => id !== '') &&
     new Set(setTileIds.filter((id) => id !== '')).size !== setTileIds.filter((id) => id !== '').length;
   const canAddSpecificSetRole =
-    setTileIds.every((id) => id !== '') &&
-    new Set(setTileIds).size === 3 &&
-    templateCategoryId !== '';
+    setTileIds.every((id) => id !== '') && new Set(setTileIds).size === 3 && templateCategoryId !== '';
 
   const addSpecificSetRole = () => {
-    const category = draft.categories.find((c) => c.id === templateCategoryId);
+    const category = draft.categories.find((current) => current.id === templateCategoryId);
     if (!category) return;
     const tiles = setTileIds.map((tileId) => {
-      const tile = draft.tiles.find((t) => t.id === tileId);
+      const tile = draft.tiles.find((current) => current.id === tileId);
       return { id: tileId, name: tile?.name ?? tileId };
     });
     updateVariant((variant) => {
       const role = buildSpecificSetRoleTemplate(
         { tiles, category },
-        variant.winRoles.map((r) => r.id),
+        variant.winRoles.map((current) => current.id),
       );
       if (!role) return variant;
       return { ...variant, winRoles: [...variant.winRoles, role] };
@@ -207,44 +203,54 @@ export function DeckEditorScreen({
   };
 
   const addSpecialBonus = (categoryId: string) => {
-    const category = draft.categories.find((c) => c.id === categoryId);
+    const category = draft.categories.find((current) => current.id === categoryId);
     if (!category) return;
     updateVariant((variant) => {
       const bonus = buildSpecialBonusTemplate(
         category,
-        variant.specialBonuses.map((b) => b.id),
+        variant.specialBonuses.map((current) => current.id),
       );
       return { ...variant, specialBonuses: [...variant.specialBonuses, bonus] };
     });
   };
-  const updateSpecialBonus = (id: string, patch: Partial<ReturnType<typeof buildSpecialBonusTemplate>>) => {
+  const updateSpecialBonus = (
+    id: string,
+    patch: Partial<ReturnType<typeof buildSpecialBonusTemplate>>,
+  ) => {
     updateVariant((variant) => ({
       ...variant,
-      specialBonuses: variant.specialBonuses.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+      specialBonuses: variant.specialBonuses.map((bonus) =>
+        bonus.id === id ? { ...bonus, ...patch } : bonus,
+      ),
     }));
   };
   const removeSpecialBonus = (id: string) => {
     updateVariant((variant) => ({
       ...variant,
-      specialBonuses: variant.specialBonuses.filter((b) => b.id !== id),
+      specialBonuses: variant.specialBonuses.filter((bonus) => bonus.id !== id),
     }));
   };
   const addScoreBonus = () => {
     updateVariant((variant) => {
-      const bonus = buildScoreBonusTemplate(variant.scoreBonuses.map((b) => b.id));
+      const bonus = buildScoreBonusTemplate(variant.scoreBonuses.map((current) => current.id));
       return { ...variant, scoreBonuses: [...variant.scoreBonuses, bonus] };
     });
   };
-  const updateScoreBonus = (id: string, patch: Partial<ReturnType<typeof buildScoreBonusTemplate>>) => {
+  const updateScoreBonus = (
+    id: string,
+    patch: Partial<ReturnType<typeof buildScoreBonusTemplate>>,
+  ) => {
     updateVariant((variant) => ({
       ...variant,
-      scoreBonuses: variant.scoreBonuses.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+      scoreBonuses: variant.scoreBonuses.map((bonus) =>
+        bonus.id === id ? { ...bonus, ...patch } : bonus,
+      ),
     }));
   };
   const removeScoreBonus = (id: string) => {
     updateVariant((variant) => ({
       ...variant,
-      scoreBonuses: variant.scoreBonuses.filter((b) => b.id !== id),
+      scoreBonuses: variant.scoreBonuses.filter((bonus) => bonus.id !== id),
     }));
   };
 
@@ -267,11 +273,13 @@ export function DeckEditorScreen({
           もどる
         </Button>
       </div>
+
       {saveError !== null && (
         <div className="sp-insight-strip" role="alert">
           <span className="sp-insight-strip__item">{saveError}</span>
         </div>
       )}
+
       <Tabs
         items={[
           { id: 'basic', label: '基本' },
@@ -286,6 +294,7 @@ export function DeckEditorScreen({
         activeId={tab}
         onSelect={setTab}
       />
+
       <div className="sp-screen__body">
         <div
           className="sp-screen__col sp-screen__col--main sp-screen__col--scroll"
@@ -368,6 +377,7 @@ export function DeckEditorScreen({
                     同じ牌3枚×3組 (120点)
                   </Button>
                 </div>
+
                 <div
                   style={{
                     display: 'flex',
@@ -399,6 +409,7 @@ export function DeckEditorScreen({
                     指定3枚+同カテゴリ2組 (100点)
                   </Button>
                 </div>
+
                 {setTileIdsHaveDuplicate && (
                   <p style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-danger)', margin: '4px 0 0' }}>
                     同じ牌が複数のスロットで選ばれています。3枚とも別の牌を選んでください。
@@ -408,10 +419,14 @@ export function DeckEditorScreen({
                   指定セットは上のカテゴリ選択も使います(残り2組のカテゴリ)。
                 </p>
               </PaperPanel>
+
               <PaperPanel title="役の一覧">
                 <div className="sp-screen__col" style={{ gap: 'var(--sp-space-8)' }}>
                   {activeVariant?.winRoles.map((role) => (
-                    <div key={role.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div
+                      key={role.id}
+                      style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}
+                    >
                       <TextField
                         label="役名"
                         value={role.name}
@@ -439,94 +454,20 @@ export function DeckEditorScreen({
             </>
           )}
 
-          {tab === 'bonuses' && (
-            <>
-              <PaperPanel variant="aged" title="特別ボーナス(単体ではあがれない)">
-                <div style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap', marginBottom: 'var(--sp-space-8)' }}>
-                  <SelectField
-                    label="ボーナス用カテゴリ"
-                    value={templateCategoryId}
-                    onChange={setTemplateCategoryId}
-                    placeholder="カテゴリを選ぶ"
-                    options={draft.categories.map((category) => ({ value: category.id, label: category.name }))}
-                  />
-                  <Button
-                    variant="ink"
-                    disabled={templateCategoryId === ''}
-                    onClick={() => addSpecialBonus(templateCategoryId)}
-                  >
-                    カテゴリ3枚以上で加点 (20点)
-                  </Button>
-                </div>
-                <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
-                  {activeVariant?.specialBonuses.map((bonus) => (
-                    <div key={bonus.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <TextField
-                        label="ボーナス名"
-                        value={bonus.name}
-                        maxLength={30}
-                        width="11em"
-                        onChange={(name) => updateSpecialBonus(bonus.id, { name })}
-                      />
-                      <NumberField
-                        label="ボーナス点数"
-                        min={1}
-                        max={300}
-                        value={bonus.points}
-                        onChange={(points) => updateSpecialBonus(bonus.id, { points })}
-                      />
-                      <span style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', flex: 1, minWidth: '10em' }}>
-                        {bonus.explanation}
-                      </span>
-                      <Button variant="ghost" onClick={() => removeSpecialBonus(bonus.id)}>
-                        削除
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </PaperPanel>
-              <PaperPanel title="スコアボーナス(機械的な加点)">
-                <div style={{ marginBottom: 'var(--sp-space-8)' }}>
-                  <Button variant="ink" onClick={addScoreBonus}>
-                    同じ牌3枚ボーナスを追加 (15点)
-                  </Button>
-                </div>
-                <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
-                  {activeVariant?.scoreBonuses.map((bonus) => (
-                    <div key={bonus.id} style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <TextField
-                        label="スコアボーナス名"
-                        value={bonus.name}
-                        maxLength={30}
-                        width="11em"
-                        onChange={(name) => updateScoreBonus(bonus.id, { name })}
-                      />
-                      <FormField label="点数" inline>
-                        <NumberField
-                          label="スコアボーナス点数"
-                          min={1}
-                          max={300}
-                          value={bonus.points}
-                          onChange={(points) => updateScoreBonus(bonus.id, { points })}
-                        />
-                      </FormField>
-                      <FormField label="上限" inline>
-                        <NumberField
-                          label="スコアボーナス上限"
-                          min={1}
-                          max={900}
-                          value={bonus.maxPoints ?? bonus.points}
-                          onChange={(maxPoints) => updateScoreBonus(bonus.id, { maxPoints })}
-                        />
-                      </FormField>
-                      <Button variant="ghost" onClick={() => removeScoreBonus(bonus.id)}>
-                        削除
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </PaperPanel>
-            </>
+          {tab === 'bonuses' && activeVariant && (
+            <DeckBonusWorkbench
+              categories={draft.categories}
+              specialBonuses={activeVariant.specialBonuses}
+              scoreBonuses={activeVariant.scoreBonuses}
+              templateCategoryId={templateCategoryId}
+              onTemplateCategoryChange={setTemplateCategoryId}
+              onAddSpecialBonus={addSpecialBonus}
+              onAddScoreBonus={addScoreBonus}
+              onUpdateSpecialBonus={updateSpecialBonus}
+              onRemoveSpecialBonus={removeSpecialBonus}
+              onUpdateScoreBonus={updateScoreBonus}
+              onRemoveScoreBonus={removeScoreBonus}
+            />
           )}
         </div>
 
