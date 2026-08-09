@@ -10,6 +10,11 @@ const REQUIRED_FILES = {
   match: 'src/ui/screens/MatchScreen.tsx',
   setup: 'src/ui/screens/MatchSetupScreen.tsx',
   setupCss: 'src/ui/styles/match-setup-authored.css',
+  top: 'src/ui/screens/TopScreen.tsx',
+  tabs: 'src/ui/components/Tab.tsx',
+  editor: 'src/ui/screens/DeckEditorScreen.tsx',
+  collection: 'src/ui/screens/CollectionScreen.tsx',
+  collectionCss: 'src/ui/styles/collection-authored.css',
   docs: 'docs/design/SOROPON-INTERACTION-UX-CONTRACT.md',
 };
 
@@ -40,6 +45,7 @@ requireText(
 );
 requireText('app', "import './ui/styles/interaction-ux.css';", 'interaction contract CSS must stay loaded');
 requireText('app', "import './ui/styles/match-setup-authored.css';", 'landscape setup lobby must stay loaded');
+requireText('app', "import './ui/styles/collection-authored.css';", 'collection ledger treatment must stay loaded');
 
 requireText('interaction', 'touch-action: manipulation', 'direct controls should use touch-appropriate manipulation behavior');
 requireText('interaction', '.sp-match-action-zone .sp-button', 'frequent match actions need an explicit target contract');
@@ -87,6 +93,25 @@ requireText('setupCss', '.sp-match-setup__rule-rail', 'setup rule summary must s
 requireText('setupCss', '.sp-match-setup__actions', 'setup start action must have an explicit placement region');
 forbidText('setupCss', 'radial-gradient(', 'setup lobby must not add decorative AI-style glow fields');
 forbidText('setupCss', 'linear-gradient(', 'setup lobby must not depend on decorative gradients');
+
+requireText('top', 'variant="primary"', 'TOP must retain one clear primary play action');
+requireText('top', '>データ管理<', 'maintenance controls must stay grouped away from daily play navigation');
+requireText('top', 'setDataModalOpen(false);', 'reset confirmation must close the maintenance modal before opening another modal');
+requireText('top', 'setResetConfirmOpen(true);', 'reset confirmation must remain explicit');
+requireText('top', 'returnToDataManagement', 'cancel/failure should preserve the maintenance context without stacking modals');
+
+requireText('tabs', 'id={`sp-tab-${item.id}`}', 'tabs need stable ids so panels can name their controlling tab');
+requireText('editor', 'aria-labelledby={`sp-tab-${tab}`}', 'active editor panel must be labelled by its active tab');
+requireText('editor', 'disabled={!isDirty}', 'save CTA should be actionable only when there is a change to commit');
+requireText('editor', 'className="sp-insight-strip" role="alert"', 'save validation failures must be announced immediately');
+
+requireText('collection', '<dl className="sp-collection-summary"', 'collection summary should be semantic data, not decorative KPI badges');
+requireText('collection', 'className="sp-collection-ranking"', 'high scores should remain a scan-friendly ordered ledger');
+requireText('collection', 'className="sp-collection-recent-list"', 'recent matches should remain a compact chronological ledger');
+forbidText('collection', "import { Badge }", 'collection header must not regress to dashboard badge metrics');
+requireText('collectionCss', 'records should read like a game ledger', 'collection authored CSS must retain its ledger intent');
+forbidText('collectionCss', 'radial-gradient(', 'collection should not regain decorative glow fields');
+forbidText('collectionCss', 'linear-gradient(', 'collection should not depend on decorative gradients');
 
 for (const phrase of [
   '44x44 pt',
