@@ -29,8 +29,10 @@ Batch 14: ACTIVE on PR #10 / Issue #12. Product direction is visual +
   ledger-like Collection, landscape Match Setup, simplified TOP IA.
   Interaction hardening now covers touch targets, pressed feedback,
   touch-vs-hover modality, Reduce Motion, focus/scroll affordance and
-  state-readable CTAs. Keep engine/schema/semantic reading order stable.
-  CI green is necessary but never sufficient for visual approval.
+  state-readable CTAs. Current-head visual review is Actions artifact based;
+  do not churn committed PNG baselines. Final integration to main uses squash.
+  Keep engine/schema/semantic reading order stable. CI green is necessary but
+  never sufficient for visual approval.
 ```
 
 「MVP/H1開始」「画像生成前」「次はasset Batch 5」は古い指示。
@@ -46,6 +48,7 @@ docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
 docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md
 docs/design/SOROPON-INTERACTION-UX-CONTRACT.md
+docs/qa/BATCH-14-VISUAL-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
@@ -66,15 +69,16 @@ docs/SKIN-DISTRIBUTION.md
 3. Record toolchain/browser/Python versions when exact release evidence is in scope.
 4. pnpm install --frozen-lockfile
 5. Run .github/workflows/integrity.yml equivalent.
-6. Run visual + interaction UX contract guards declared in CI.
+6. Run visual + interaction UX + review-hygiene contract guards declared in CI.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
 10. pnpm build + artifact hash/inventory when release evidence is in scope.
 11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
-12. If product/test/workflow changes, discard final verification and restart from step 1 on the new SHA.
-13. Execute remaining real-environment release gates only when they are in current scope; never substitute WebKit/Simulator/local preview for a named target.
-14. Record BLOCKED evidence honestly and keep RC LIMITED READY until every mandatory promotion gate is green.
+12. For UI/UX changes, run the current-head Batch 14 Visual Review and keep screenshots in the Actions artifact.
+13. If product/test/workflow changes, discard final verification and restart from step 1 on the new SHA.
+14. Execute remaining real-environment release gates only when they are in current scope; never substitute WebKit/Simulator/local preview for a named target.
+15. Record BLOCKED evidence honestly and keep RC LIMITED READY until every mandatory promotion gate is green.
 ```
 
 Do not duplicate the targeted integrity file list here; `.github/workflows/integrity.yml`
@@ -185,6 +189,8 @@ ITERATION
   judge each pass at the actual landscape target, especially 844x390
   identify the weakest 3 visual problems first and fix those before adding polish
   compare hierarchy/spacing/occlusion, not only pixel-diff stability
+  review the current HEAD Actions artifact; older Batch 13 snapshots are not Batch 14 approval
+  keep current polish screenshots out of Git history; historical evidence stays immutable
   preserve successful lessons in canonical Git docs so future agents inherit them
   do not let an older screenshot or prior design constrain a clearly better solution
 ```
@@ -228,11 +234,14 @@ Playwright WebKit != Safari
 emulation != physical device
 automated accessibility tree != real screen reader
 old SHA PASS != current SHA verification
+older visual artifact/snapshot != current HEAD visual approval
 successful push != CI success
 workflow definition != workflow PASS
 raw forensic export != validated restore
 loader-owned origin != cryptographic package identity
+working-branch commit history != final mainline history; squash final integration
 ```
 
 Report exact files/SHA, commands actually run, CI status or unavailable,
-browser/device scope, evidence, remaining risks, Batch 11 status, and RC status.
+browser/device scope, current-head visual artifact status when UI changed,
+evidence, remaining risks, Batch 11 status, and RC status.
