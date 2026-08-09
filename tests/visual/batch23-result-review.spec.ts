@@ -8,25 +8,33 @@ const SIZES = [
   { width: 1440, height: 900, label: 'desktop' },
 ] as const;
 const CAPTURE_DIR = 'test-results/batch14-review';
+const FIXED_NOW_MS = 1_700_000_230_000;
 
 type SkinId = (typeof SKINS)[number];
 type CaptureSize = (typeof SIZES)[number];
+type ReadyAction = 'result' | 'tsumo' | 'ron' | 'discard' | 'tile';
+
+type ResultSignature = {
+  title: string;
+  scoreRole: string | null;
+  totalPoints: string | null;
+};
 
 async function boot(page: Page, skin: SkinId, size: CaptureSize) {
   await page.setViewportSize({ width: size.width, height: size.height });
-  await page.addInitScript(({ skinId }) => {
-    // Keep the seed/session deterministic while preserving the production state path.
-    Date.now = () => 1_700_000_230_000;
+  await page.addInitScript(({ skinId, nowMs }) => {
+    // Keep the production seed/session path deterministic. No MatchState or
+    // Result state is injected; AppRoot still creates the match seed itself.
+    Date.now = () => nowMs;
     window.localStorage.clear();
     window.localStorage.setItem('soro-pon.skin.v1', skinId);
 
-    // Match progression uses timeouts only to pace CPU/flow presentation. Cap those
-    // waits in this evidence run so we can reach the real engine Result state quickly;
-    // no match state/action/result is injected or mutated by the test.
+    // Match progression uses timeouts only to pace CPU/flow presentation. Cap
+    // those waits so evidence runs stay fast without bypassing engine actions.
     const nativeSetTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) =>
       nativeSetTimeout(handler, Math.min(Number(timeout ?? 0), 8), ...args)) as typeof window.setTimeout;
-  }, { skinId: skin });
+  }, { skinId: skin, nowMs: FIXED_NOW_MS });
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'soro-pon' })).toBeVisible();
@@ -66,6 +74,35 @@ async function expectViewportContract(page: Page) {
   expect(result.tooSmall).toEqual([]);
 }
 
+async function waitForReadyAction(page: Page): Promise<ReadyAction> {
+  const handle = await page.waitForFunction(() => {
+    const isVisible = (element: Element | null): element is HTMLElement => {
+      if (!(element instanceof HTMLElement)) return false;
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
+    };
+    const enabledButtons = [...document.querySelectorAll<HTMLButtonElement>('button:not([disabled])')];
+    const hasButton = (label: string) =>
+      enabledButtons.some((button) => button.textContent?.trim() === label && isVisible(button));
+
+    if (
+      [...document.querySelectorAll('h1')].some(
+        (heading) => heading.textContent?.trim() === '対戦結果' && isVisible(heading),
+      )
+    ) {
+      return 'result';
+    }
+    if (hasButton('ツモ')) return 'tsumo';
+    if (hasButton('ロン')) return 'ron';
+    if (hasButton('捨てる')) return 'discard';
+    if (isVisible(document.querySelector('.sp-self-hand-zone .sp-tile:not([disabled])'))) return 'tile';
+    return null;
+  }, undefined, { timeout: 5_000 });
+
+  return (await handle.jsonValue()) as ReadyAction;
+}
+
 async function playRealMatchToResult(page: Page) {
   await page.getByRole('button', { name: /まず遊ぶ/ }).click();
   await expect(page.getByRole('heading', { name: '対局設定' })).toBeVisible();
@@ -74,35 +111,40 @@ async function playRealMatchToResult(page: Page) {
   await expect(page.getByRole('main', { name: '3人戦の対局卓' })).toBeVisible();
 
   for (let step = 0; step < 240; step += 1) {
-    if (await page.getByRole('heading', { name: '対戦結果' }).isVisible().catch(() => false)) {
-      return;
-    }
+    const action = await waitForReadyAction(page);
+    if (action === 'result') return;
 
-    const tsumo = page.getByRole('button', { name: 'ツモ', exact: true });
-    if (await tsumo.isVisible().catch(() => false)) {
-      await tsumo.click();
+    if (action === 'tsumo') {
+      await page.getByRole('button', { name: 'ツモ', exact: true }).click();
+      continue;
+    }
+    if (action === 'ron') {
+      await page.getByRole('button', { name: 'ロン', exact: true }).click();
+      continue;
+    }
+    if (action === 'discard') {
+      await page.getByRole('button', { name: '捨てる', exact: true }).click();
       continue;
     }
 
-    const ron = page.getByRole('button', { name: 'ロン', exact: true });
-    if (await ron.isVisible().catch(() => false)) {
-      await ron.click();
-      continue;
-    }
-
-    const firstPlayableTile = page.locator('.sp-self-hand-zone .sp-tile:not([disabled])').first();
-    if (await firstPlayableTile.isVisible().catch(() => false)) {
-      await firstPlayableTile.click();
-      const discard = page.getByRole('button', { name: '捨てる', exact: true });
-      if (await discard.isVisible().catch(() => false)) {
-        await discard.click();
-      }
-    }
-
-    await page.waitForTimeout(10);
+    await page.locator('.sp-self-hand-zone .sp-tile:not([disabled])').first().click();
   }
 
   throw new Error('実対局を240操作以内にResultまで進行できませんでした');
+}
+
+async function readResultSignature(page: Page): Promise<ResultSignature> {
+  // TotalPoints is a presentational count-up; wait for it to settle before
+  // comparing semantic Result output between two identical production runs.
+  await page.waitForTimeout(700);
+  const title = (await page.locator('.sp-result-frame .sp-paper-panel__title').innerText()).trim();
+  const scoreRoleLocator = page.locator('.sp-score-breakdown__row').first();
+  const totalPointsLocator = page.locator('.sp-score-breakdown__total-points');
+  return {
+    title,
+    scoreRole: (await scoreRoleLocator.count()) > 0 ? (await scoreRoleLocator.innerText()).trim() : null,
+    totalPoints: (await totalPointsLocator.count()) > 0 ? (await totalPointsLocator.innerText()).trim() : null,
+  };
 }
 
 for (const skin of SKINS) {
@@ -128,3 +170,21 @@ for (const skin of SKINS) {
     });
   }
 }
+
+test('fixed seed repeats the same semantic Result through real UI actions', async ({ page }) => {
+  test.setTimeout(45_000);
+  const skin: SkinId = 'yorunoshirube';
+  const size: CaptureSize = { width: 844, height: 390, label: 'compact' };
+
+  await boot(page, skin, size);
+  await playRealMatchToResult(page);
+  const first = await readResultSignature(page);
+
+  // Re-run from a fresh app/storage state while keeping the exact same upstream
+  // Date.now seed input and the same action-ready UI policy.
+  await boot(page, skin, size);
+  await playRealMatchToResult(page);
+  const second = await readResultSignature(page);
+
+  expect(second).toEqual(first);
+});
