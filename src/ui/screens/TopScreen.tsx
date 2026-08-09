@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import starterRaw from '../../samples/animal-starter.deck.json';
+import starterRaw from '../../../samples/animal-starter.deck.json';
 import type { DeckProject } from '../../domain/deck';
 import type { MatchRecord } from '../../schemas/storageSchema';
 import {
