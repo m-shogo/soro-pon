@@ -1,0 +1,217 @@
+/* Batch 19: bonus editing is a game-building workbench, not two stacked admin forms. */
+.sp-bonus-workbench {
+  display: grid;
+  gap: var(--sp-space-8);
+  min-width: 0;
+}
+
+.sp-bonus-workbench__header,
+.sp-bonus-workbench__preset,
+.sp-bonus-workbench__editor,
+.sp-bonus-workbench__choice {
+  border: var(--sp-border-divider-ink);
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.sp-bonus-workbench__header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  padding: var(--sp-space-8) var(--sp-space-10);
+}
+
+.sp-bonus-workbench__header h2 {
+  margin: 0;
+  font-size: var(--sp-font-lg);
+}
+
+.sp-bonus-workbench__header span,
+.sp-bonus-workbench__preset > span,
+.sp-bonus-workbench__selected-head > span,
+.sp-bonus-workbench__meta,
+.sp-bonus-workbench__description {
+  color: var(--sp-color-ink-soft);
+  font-size: var(--sp-font-xs);
+}
+
+.sp-bonus-workbench__presets {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(180px, 0.65fr);
+  gap: var(--sp-space-8);
+}
+
+.sp-bonus-workbench__preset {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-8);
+  min-width: 0;
+  padding: var(--sp-space-8);
+}
+
+.sp-bonus-workbench__preset > span {
+  flex: 1;
+  min-width: 8em;
+}
+
+.sp-bonus-workbench__body {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.82fr) minmax(250px, 1.18fr);
+  gap: var(--sp-space-8);
+  min-height: 0;
+}
+
+.sp-bonus-workbench__list {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sp-bonus-workbench__choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 3px var(--sp-space-6);
+  align-items: center;
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 8px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  border-radius: 0;
+  transform: none;
+}
+
+.sp-bonus-workbench__choice[data-selected='true'] {
+  border-left-color: var(--sp-color-accent);
+  background: var(--sp-color-paper-subtle);
+}
+
+.sp-bonus-workbench__choice strong,
+.sp-bonus-workbench__choice small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-bonus-workbench__choice small {
+  grid-column: 2 / -1;
+  color: var(--sp-color-ink-soft);
+}
+
+.sp-bonus-workbench__kind {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding-inline: 5px;
+  border: 1px solid var(--sp-color-ink-faint);
+  font-size: var(--sp-font-xs);
+  letter-spacing: 0.04em;
+}
+
+.sp-bonus-workbench__editor {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-space-8);
+  min-width: 0;
+  padding: var(--sp-space-10);
+}
+
+.sp-bonus-workbench__selected-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px var(--sp-space-8);
+  align-items: center;
+}
+
+.sp-bonus-workbench__selected-head > span:last-child {
+  grid-column: 1 / -1;
+}
+
+.sp-bonus-workbench__fields {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(90px, 0.55fr) minmax(90px, 0.55fr);
+  gap: var(--sp-space-8);
+  align-items: end;
+}
+
+.sp-bonus-workbench__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-space-8);
+}
+
+.sp-bonus-workbench__description {
+  margin: 0;
+}
+
+.sp-bonus-workbench__empty {
+  padding: var(--sp-space-12);
+  border-top: var(--sp-border-divider-ink);
+  border-bottom: var(--sp-border-divider-ink);
+  color: var(--sp-color-ink-soft);
+  font-size: var(--sp-font-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sp-bonus-workbench__choice:hover {
+    background: var(--sp-color-paper-subtle);
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) and (max-height: 500px) {
+  .sp-bonus-workbench {
+    gap: 5px;
+  }
+
+  .sp-bonus-workbench__header {
+    padding: 4px 7px;
+  }
+
+  .sp-bonus-workbench__header h2 {
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-bonus-workbench__presets {
+    grid-template-columns: minmax(0, 1.2fr) minmax(150px, 0.8fr);
+    gap: 5px;
+  }
+
+  .sp-bonus-workbench__preset {
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .sp-bonus-workbench__preset > span {
+    display: none;
+  }
+
+  .sp-bonus-workbench__body {
+    grid-template-columns: minmax(150px, 0.72fr) minmax(230px, 1.28fr);
+    gap: 5px;
+  }
+
+  .sp-bonus-workbench__choice {
+    min-height: 36px;
+    padding: 3px 6px;
+  }
+
+  .sp-bonus-workbench__choice small {
+    font-size: 10px;
+  }
+
+  .sp-bonus-workbench__editor {
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .sp-bonus-workbench__fields {
+    grid-template-columns: minmax(110px, 1fr) 82px 82px;
+    gap: 5px;
+  }
+}
