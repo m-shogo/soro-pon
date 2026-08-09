@@ -158,8 +158,8 @@
     border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
   }
 
-  /* Editor: workspace rail + plain work surface. Remove nested card-on-card
-     language so forms feel like tools placed on a desk. */
+  /* Editor shell only. Tab-specific visuals live in the current workbench
+   * layers (category/tile/role/bonus), never in old repeated-form selectors. */
   .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header {
     padding-inline: 0;
     border: 0;
@@ -186,58 +186,6 @@
     background: color-mix(in srgb, var(--sp-color-night) 20%, transparent);
   }
 
-  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div[style*='border-bottom'] {
-    padding: 9px 10px !important;
-    border-width: 0 0 1px !important;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div[style*='border-bottom']:focus-within {
-    border-color: color-mix(in srgb, var(--sp-color-lantern-0) 56%, var(--sp-color-ink)) !important;
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 48%, transparent);
-  }
-
-  /* The live tile face is the row's visual anchor. Controls edit the thing the
-     player can actually recognize in-game, rather than editing abstract data. */
-  .sp-deck-editor-tile-preview {
-    --tile-w: 42px;
-    --tile-h: 56px;
-    position: relative;
-    flex: none;
-    width: 58px;
-    min-height: 60px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-start;
-    padding-right: 10px;
-    border-right: 1px solid color-mix(in srgb, var(--sp-color-ink) 14%, transparent);
-  }
-
-  .sp-deck-editor-tile-preview > span {
-    position: absolute;
-    right: 3px;
-    bottom: 2px;
-    color: var(--sp-color-ink-soft);
-    font-size: 9px;
-    font-weight: 700;
-  }
-
-  .sp-deck-editor-tile-preview .sp-tile {
-    box-shadow: var(--sp-shadow-tile-raised);
-  }
-
-  #sp-tabpanel-roles > .sp-paper-panel:first-child,
-  #sp-tabpanel-bonuses > .sp-paper-panel:first-child {
-    background: var(--sp-color-paper-aged);
-  }
-
-  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
-  #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
-    border-radius: 6px;
-  }
-
   @media (max-width: 899px), (max-height: 430px) {
     .sp-table-stage {
       border-radius: 7px;
@@ -262,18 +210,6 @@
 
     .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] {
       border-radius: 5px;
-    }
-
-    .sp-deck-editor-tile-preview {
-      --tile-w: 34px;
-      --tile-h: 46px;
-      width: 47px;
-      min-height: 48px;
-      padding-right: 8px;
-    }
-
-    .sp-deck-editor-tile-preview > span {
-      font-size: 8px;
     }
   }
 }
