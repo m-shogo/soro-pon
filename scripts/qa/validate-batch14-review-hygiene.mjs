@@ -52,6 +52,8 @@ for (const needle of [
   'page.screenshot({',
   'smallerThanWcagMinimum',
   'smallFrequentMatchActions',
+  'deck-editor-tiles-${skin}-${size.label}',
+  'deck-editor-roles-${skin}-${size.label}',
   'match-action-${skin}-4p-compact',
 ]) {
   requireText('capture', needle, 'the visual review matrix and usability probes must stay complete');
@@ -63,6 +65,7 @@ forbidText(
 );
 
 requireText('workflow', 'name: Batch 14 Visual Review', 'artifact review needs a dedicated workflow');
+requireText('workflow', "- 'tests/visual/**'", 'every visual-test change must refresh current-head review evidence');
 requireText('workflow', 'pnpm qa:batch14:review-capture', 'workflow must run the canonical capture command');
 requireText(
   'workflow',
@@ -78,6 +81,8 @@ for (const phrase of [
   'workflow artifact',
   '844x390',
   '1440x900',
+  'deck editor tile workspace',
+  'deck editor role composer',
   'weakest three',
   'final merge to `main` should use squash',
 ]) {
