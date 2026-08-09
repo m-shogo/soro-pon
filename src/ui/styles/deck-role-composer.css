@@ -7,6 +7,14 @@
     --sp-role-rule: color-mix(in srgb, var(--sp-color-ink) 16%, transparent);
   }
 
+  /* The tabpanel is a vertical scroll container. Its panels are content blocks,
+     not flex items that may shrink to fit the viewport. Shrinking previously
+     collapsed the preset body to zero at 844x390 because the first panel also
+     owns overflow clipping. */
+  #sp-tabpanel-roles > .sp-paper-panel {
+    flex: 0 0 auto;
+  }
+
   #sp-tabpanel-roles > .sp-paper-panel:first-child {
     position: relative;
     overflow: hidden;
@@ -102,9 +110,12 @@
       display: none;
     }
 
+    /* Four compressed columns made preset labels unreadable and encouraged the
+       panel to collapse. Two columns give each game preset a clear choice area;
+       the parent tabpanel scrolls vertically when the score sheet follows. */
     #sp-tabpanel-roles > .sp-paper-panel:first-child > div,
     #sp-tabpanel-roles > .sp-paper-panel:first-child > div + div {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 4px !important;
       padding-top: 5px;
     }
@@ -114,14 +125,14 @@
     }
 
     #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink {
-      min-height: 36px;
-      padding: 3px 5px;
-      font-size: 9px;
+      min-height: 40px;
+      padding: 4px 6px;
+      font-size: 10px;
     }
 
     #sp-tabpanel-roles > .sp-paper-panel:last-child .sp-screen__col > div {
-      min-height: 34px;
-      padding-block: 3px;
+      min-height: 36px;
+      padding-block: 4px;
       gap: 4px !important;
     }
   }
