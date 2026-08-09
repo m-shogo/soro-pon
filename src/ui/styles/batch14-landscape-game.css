@@ -177,7 +177,7 @@
       min-width: 42px;
     }
 
-    #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div[style*='border-bottom'] {
+    #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
       padding: 4px 5px !important;
     }
 
