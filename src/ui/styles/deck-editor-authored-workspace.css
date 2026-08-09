@@ -71,6 +71,66 @@
     box-shadow: none;
   }
 
+  .sp-deck-editor-inspector {
+    display: grid;
+    gap: 7px;
+  }
+
+  .sp-deck-editor-inspector > .sp-paper-panel {
+    border-width: 0 0 1px;
+    border-radius: 0 !important;
+    background: transparent;
+  }
+
+  .sp-deck-editor-inspector__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 7px;
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-xs);
+  }
+
+  .sp-deck-editor-inspector__summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-editor-inspector__summary > div {
+    min-width: 0;
+    padding: 6px 7px;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-editor-inspector__summary dt {
+    margin: 0;
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-deck-editor-inspector__summary dd {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px;
+    margin: 2px 0 0;
+    color: var(--sp-color-cream);
+    font-family: var(--sp-font-family-num);
+    font-size: var(--sp-font-lg);
+    line-height: 1;
+  }
+
+  .sp-deck-editor-inspector__summary small {
+    color: var(--sp-color-cream-dim);
+    font-family: var(--sp-font-family-body);
+    font-size: 9px;
+  }
+
   /* Tile rows are the workbench objects. The selector deliberately follows
      the stable DOM structure instead of matching an inline style string. */
   #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
@@ -180,6 +240,23 @@
       width: min(198px, 25%);
       min-width: 170px;
       padding-left: 4px;
+    }
+
+    .sp-deck-editor-inspector {
+      gap: 4px;
+    }
+
+    .sp-deck-editor-inspector__status {
+      margin-bottom: 4px;
+      font-size: 9px;
+    }
+
+    .sp-deck-editor-inspector__summary > div {
+      padding: 4px 5px;
+    }
+
+    .sp-deck-editor-inspector__summary dd {
+      font-size: var(--sp-font-md);
     }
 
     #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
