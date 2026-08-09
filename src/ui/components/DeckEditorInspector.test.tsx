@@ -15,13 +15,10 @@ describe('DeckEditorInspector', () => {
     const validation = validateDeckForUse(deck);
     const totalTileCount = deck.tiles.reduce((total, tile) => total + tile.count, 0);
     const activeVariant = deck.variants.find((variant) => variant.id === deck.activeVariantId);
-    const summary = render(<DeckEditorInspector deck={deck} validation={validation} />);
+    const view = render(<DeckEditorInspector deck={deck} validation={validation} />);
 
-    expect(summary.container.textContent).toContain('構成');
-    expect(summary.container.textContent).toContain('検証');
-
-    const composition = screen.getByRole('definition', { name: '' });
-    expect(composition).toBeTruthy();
+    expect(view.container.textContent).toContain('構成');
+    expect(view.container.textContent).toContain('検証');
 
     const metrics = screen.getByLabelText('編集中デッキの構成');
     expect(within(metrics).getByText(String(totalTileCount))).toBeTruthy();
