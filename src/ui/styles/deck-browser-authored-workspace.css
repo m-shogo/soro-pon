@@ -1,0 +1,139 @@
+/* Batch 14.1 authored deck browsing/detail pass.
+ *
+ * Deck identity must come from its actual tiles, roles and status. Avoid
+ * marketplace-card theatre: no hover lift, floating count pills, decorative
+ * glow fields or nested promotional surfaces.
+ */
+@layer layout {
+  .sp-deck-loadout__tiles,
+  .sp-deck-loadout__roles {
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  .sp-deck-loadout__tiles {
+    background: color-mix(in srgb, var(--sp-color-night) 24%, transparent);
+    border-color: color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-deck-loadout__section-head {
+    margin-bottom: var(--sp-space-8);
+  }
+
+  .sp-deck-loadout__section-head h2 {
+    letter-spacing: 0.02em;
+  }
+
+  .sp-deck-loadout__tile-grid {
+    gap: clamp(4px, 0.7vw, 8px);
+  }
+
+  .sp-deck-loadout__tile-item {
+    padding-bottom: 13px;
+  }
+
+  .sp-deck-loadout__tile-item .sp-tile,
+  .sp-deck-loadout__tile-item:hover .sp-tile {
+    transform: none;
+    box-shadow: var(--sp-shadow-tile-raised);
+  }
+
+  .sp-deck-loadout__tile-item > span {
+    right: max(2px, calc((100% - var(--tile-w)) / 2));
+    bottom: 0;
+    min-width: 0;
+    padding: 0 2px;
+    border-radius: 0;
+    background: transparent;
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .sp-deck-loadout__roles {
+    background: color-mix(in srgb, var(--sp-surface-info) 34%, transparent);
+    border-color: color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-loadout__role-grid {
+    gap: 0;
+  }
+
+  .sp-deck-loadout__role-grid > * {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .sp-deck-loadout__role-grid > * + * {
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-select__grid {
+    gap: 7px;
+  }
+
+  .sp-deck-select-card {
+    min-height: 218px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--sp-color-night) 30%, transparent);
+    box-shadow: none;
+    transition: border-color var(--sp-motion-hover) var(--sp-ease-out);
+  }
+
+  .sp-deck-select-card:hover,
+  .sp-deck-select-card:focus-visible {
+    transform: none;
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 62%, transparent);
+  }
+
+  .sp-deck-select-card__preview {
+    min-height: calc(var(--tile-h) + 6px);
+    padding: 5px 4px 0;
+  }
+
+  .sp-deck-select-card__preview .sp-tile,
+  .sp-deck-select-card:hover .sp-deck-select-card__preview .sp-tile:nth-child(odd),
+  .sp-deck-select-card:focus-visible .sp-deck-select-card__preview .sp-tile:nth-child(odd) {
+    transform: none;
+  }
+
+  .sp-deck-select-card__stats {
+    gap: 0;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-select-card__stats span {
+    padding: 4px 5px;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .sp-deck-select-card__stats span + span {
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-select-card__description {
+    min-height: 2.5em;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-deck-loadout__tiles,
+    .sp-deck-loadout__roles,
+    .sp-deck-select-card {
+      border-radius: 4px;
+    }
+
+    .sp-deck-loadout__tile-item {
+      padding-bottom: 10px;
+    }
+
+    .sp-deck-select__grid {
+      gap: 4px;
+    }
+
+    .sp-deck-select-card {
+      min-height: 184px;
+    }
+  }
+}
