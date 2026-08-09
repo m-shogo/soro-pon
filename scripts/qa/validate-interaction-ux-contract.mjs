@@ -6,6 +6,9 @@ const REQUIRED_FILES = {
   interaction: 'src/ui/styles/interaction-ux.css',
   base: 'src/ui/styles/base.css',
   landscape: 'src/ui/styles/batch14-landscape-game.css',
+  match: 'src/ui/screens/MatchScreen.tsx',
+  setup: 'src/ui/screens/MatchSetupScreen.tsx',
+  setupCss: 'src/ui/styles/match-setup-authored.css',
   docs: 'docs/design/SOROPON-INTERACTION-UX-CONTRACT.md',
 };
 
@@ -35,6 +38,7 @@ requireText(
   'interaction behavior needs a stable cascade layer after components and before screen/motion layers',
 );
 requireText('app', "import './ui/styles/interaction-ux.css';", 'interaction contract CSS must stay loaded');
+requireText('app', "import './ui/styles/match-setup-authored.css';", 'landscape setup lobby must stay loaded');
 
 requireText('interaction', 'touch-action: manipulation', 'direct controls should use touch-appropriate manipulation behavior');
 requireText('interaction', '.sp-match-action-zone .sp-button', 'frequent match actions need an explicit target contract');
@@ -56,6 +60,25 @@ requireText('base', 'animation: none !important', 'Reduce Motion should fully st
 
 requireText('landscape', 'right: max(5px, var(--sp-safe-right))', 'primary actions must respect the right safe area');
 requireText('landscape', 'bottom: max(4px, var(--sp-safe-bottom))', 'primary actions must respect the bottom safe area');
+
+requireText('match', "const discardActionLabel = canDiscard ? '捨てる' : canSelect ? '牌を選ぶ' : '待機';", 'primary discard action must explain the next available step even when compact sublabels are hidden');
+requireText('match', "afterDrawAction: '選ぶ'", 'phase copy should use direct game language rather than form-like terminology');
+forbidText('match', "subLabel: '牌を選択'", 'compact gameplay must not depend on a sublabel that disappears in landscape');
+
+requireText('setup', 'className="sp-screen sp-match-setup"', 'match setup must keep its authored lobby hook');
+requireText('setup', 'className="sp-match-setup__rule-rail"', 'setup needs scannable rule facts instead of explanatory prose');
+requireText('setup', '{playerCount}人戦をはじめる', 'start CTA must echo the selected player count');
+requireText('setup', 'aria-pressed={playerCount === count}', 'player-count selection must expose its selected state');
+forbidText('setup', 'PLAYERS', 'setup must not add decorative English eyebrows');
+forbidText('setup', 'TABLE', 'setup must not add decorative English eyebrows');
+forbidText('setup', 'PaperPanel', 'setup should remain a game lobby rather than nested form panels');
+
+requireText('setupCss', 'use the landscape canvas as a game lobby', 'setup CSS must retain the horizontal-lobby design intent');
+requireText('setupCss', 'grid-template-columns: minmax(250px, 0.82fr) minmax(300px, 1.18fr)', 'desktop setup must use both halves of the landscape canvas');
+requireText('setupCss', '.sp-match-setup__rule-rail', 'setup rule summary must stay visually scannable');
+requireText('setupCss', '.sp-match-setup__actions', 'setup start action must have an explicit placement region');
+forbidText('setupCss', 'radial-gradient(', 'setup lobby must not add decorative AI-style glow fields');
+forbidText('setupCss', 'linear-gradient(', 'setup lobby must not depend on decorative gradients');
 
 for (const phrase of [
   '44x44 pt',
