@@ -21,9 +21,7 @@
       .sp-deck-card,
       .sp-skin-preview,
       .sp-toggle,
-      .sp-field input,
-      .sp-field select,
-      .sp-field textarea
+      .sp-form-control
     ) {
     touch-action: manipulation;
   }
@@ -43,31 +41,40 @@
     padding-inline: var(--sp-space-12);
   }
 
-  /* Form widgets are secondary controls, but they should never collapse into
-     tiny desktop-form targets on a phone in landscape. */
-  .sp-field input[type='text'],
-  .sp-field input[type='number'],
-  .sp-field select {
+  /* Form controls must expose their target contract even when a screen places a
+     TextField directly in a dense tile row instead of wrapping it in FormField.
+     The previous .sp-field descendant rule missed exactly that case. */
+  .sp-form-control {
+    box-sizing: border-box;
     min-height: 36px;
   }
 
-  .sp-field textarea {
+  .sp-text-input,
+  .sp-number-input,
+  .sp-select {
+    padding-block: 5px;
+  }
+
+  .sp-textarea {
     min-height: 64px;
     resize: vertical;
   }
 
-  .sp-field input[type='color'] {
+  .sp-color-input {
     min-width: var(--sp-touch-min);
     min-height: 36px;
     padding: 2px;
   }
 
+  /* The checkbox glyph may remain visually compact because the enclosing label
+     is the pointer target. Keep that label comfortably above WCAG's 24px floor. */
   .sp-toggle {
     min-height: 32px;
     padding: 3px 2px;
+    cursor: pointer;
   }
 
-  .sp-toggle input[type='checkbox'] {
+  .sp-toggle__input {
     width: 18px;
     height: 18px;
     margin: 0;
@@ -149,10 +156,17 @@
       min-height: 32px;
     }
 
-    .sp-field input[type='text'],
-    .sp-field input[type='number'],
-    .sp-field select,
-    .sp-field input[type='color'] {
+    .sp-form-control {
+      min-height: 32px;
+    }
+
+    .sp-text-input,
+    .sp-number-input,
+    .sp-select {
+      padding-block: 3px;
+    }
+
+    .sp-color-input {
       min-height: 32px;
     }
 
