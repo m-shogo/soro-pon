@@ -67,13 +67,17 @@ for (const needle of [
   '.sp-top-stage__deck-spec {',
   '.sp-deck-select__grid {',
   'grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));',
+  'align-content: center;',
   '.sp-deck-select-card__body {',
   'grid-template-columns: minmax(280px, 1.35fr) minmax(190px, 0.65fr);',
+  'height: min(590px, calc(100vh - 150px));',
   'grid-template-columns: minmax(0, 1.18fr) minmax(274px, 0.82fr);',
+  'justify-content: space-between;',
   '.sp-deck-select-card:only-child {',
+  'min-height: 260px;',
   'min-height: 44px;',
 ]) {
-  requireText('homeCss', needle, 'Batch 15 must preserve its authored desktop/compact spatial hierarchy');
+  requireText('homeCss', needle, 'Batch 15 must preserve its authored spatial hierarchy and avoid dead canvas space');
 }
 
 for (const forbidden of [
