@@ -49,6 +49,18 @@ Contract in 844x390-class viewport:
 - retain spacing and clear text labels
 - destructive actions stay visually subordinate until confirmation
 
+## Action hierarchy / cognitive load
+
+The likely next action must be easier to find than maintenance or destructive actions.
+
+- gameplay screens: the next playable action owns the strongest visual treatment
+- a disabled primary action should explain the next step with its visible label when compact mode hides secondary copy
+- selection must echo into the commit action (`4人戦` -> `4人戦をはじめる`) so users can verify state before acting
+- routine navigation and maintenance must not share equal emphasis
+- TOP keeps play/deck/collection actions in the main group; recovery/reset live under `データ管理`
+- irreversible operations require an additional explicit confirmation step
+- maintenance copy can be explanatory inside a modal; normal game chrome should stay short
+
 ## Input modality rules
 
 ### Touch / coarse pointer
