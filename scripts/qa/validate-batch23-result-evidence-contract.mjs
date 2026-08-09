@@ -6,6 +6,7 @@ const REQUIRED_FILES = {
   result: 'src/ui/screens/ResultScreen.tsx',
   resultCss: 'src/ui/styles/result-authored-workspace.css',
   controller: 'src/ui/hooks/useMatchController.ts',
+  landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
 };
 
 const files = Object.fromEntries(
@@ -38,13 +39,18 @@ for (const needle of [
 ]) {
   requireText('visual', needle, 'Result must be reached through the production route and real UI actions');
 }
-for (const forbidden of ['state.result =', "phase: 'result'", 'SHOW_RESULT', 'applyMatchAction(']) {
-  forbidText('visual', forbidden, 'visual test must not synthesize engine Result state');
+for (const forbidden of ['state.result =', "phase: 'result'", 'SHOW_RESULT', 'applyMatchAction(', 'force: true']) {
+  forbidText('visual', forbidden, 'visual test must not synthesize Result state or bypass real pointer hit-testing');
 }
 
 requireText('controller', "case 'roundEnd':", 'production controller must remain responsible for round-end progression');
 requireText('controller', "schedule({ type: 'SHOW_RESULT' }, 900);", 'production engine action path must remain canonical');
 requireText('controller', 'gameplay stateの変更はすべてapplyMatchAction経由', 'UI controller boundary must remain explicit');
+
+requireText('landscapeCss', '.sp-self-hand-zone {', 'compact hand composition must remain explicit');
+requireText('landscapeCss', 'pointer-events: none;', 'empty reserved hand area must let pointer input reach edge actions');
+requireText('landscapeCss', '.sp-self-hand-zone .sp-tile {', 'real hand tiles must remain interactive after the hand container becomes pointer-transparent');
+requireText('landscapeCss', 'pointer-events: auto;', 'real tiles and compact controls must retain pointer input');
 
 for (const needle of [
   'className="sp-screen sp-result-screen"',
