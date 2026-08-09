@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import type { MatchRecord, StoredDeck } from '../../schemas/storageSchema';
+import starterRaw from '../../../samples/animal-starter.deck.json';
+import type { DeckProject } from '../../domain/deck';
+import type { MatchRecord } from '../../schemas/storageSchema';
 import {
   buildLocalDataRecoveryBundle,
   serializeLocalDataRecoveryBundle,
@@ -11,6 +13,8 @@ import { Modal } from '../components/Modal';
 import { SkinSelector } from '../components/SkinSelector';
 import { TileCard } from '../components/TileCard';
 import { InkDivider } from '../primitives/InkDivider';
+
+const FEATURED_DECK = starterRaw as DeckProject;
 
 function formatDate(ms: number): string {
   const d = new Date(ms);
@@ -53,7 +57,6 @@ export function TopScreen({
   onImport,
   onCollection,
   hasPlayableDeck,
-  featuredDeck,
   coins,
   recentRecords,
 }: {
@@ -62,7 +65,6 @@ export function TopScreen({
   onImport: () => void;
   onCollection: () => void;
   hasPlayableDeck: boolean;
-  featuredDeck?: StoredDeck;
   coins: number;
   recentRecords: MatchRecord[];
 }) {
@@ -75,15 +77,14 @@ export function TopScreen({
     message: string;
   } | null>(null);
 
-  const featuredProject = featuredDeck?.deck;
-  const previewTiles = featuredProject?.tiles.slice(0, 8) ?? [];
+  const previewTiles = FEATURED_DECK.tiles.slice(0, 8);
   const categoryById = useMemo(
-    () => new Map(featuredProject?.categories.map((category) => [category.id, category]) ?? []),
-    [featuredProject],
+    () => new Map(FEATURED_DECK.categories.map((category) => [category.id, category])),
+    [],
   );
-  const totalTiles = featuredProject?.tiles.reduce((sum, tile) => sum + tile.count, 0) ?? 0;
-  const activeVariant = featuredProject?.variants.find(
-    (variant) => variant.id === featuredProject.activeVariantId,
+  const totalTiles = FEATURED_DECK.tiles.reduce((sum, tile) => sum + tile.count, 0);
+  const activeVariant = FEATURED_DECK.variants.find(
+    (variant) => variant.id === FEATURED_DECK.activeVariantId,
   );
 
   const handleRecoveryExport = () => {
@@ -151,53 +152,47 @@ export function TopScreen({
           </div>
 
           <div className="sp-top-stage__deck-copy">
-            <h2 id="sp-top-featured-deck-title">
-              {featuredProject?.name ?? 'デッキを準備'}
-            </h2>
-            <p>{featuredProject?.description || '牌を選び、役を作って競う。'}</p>
+            <h2 id="sp-top-featured-deck-title">{FEATURED_DECK.name}</h2>
+            <p>{FEATURED_DECK.description || '牌を選び、役を作って競う。'}</p>
           </div>
 
-          {featuredProject !== undefined && (
-            <>
-              <div className="sp-top-stage__rack" aria-hidden="true">
-                {previewTiles.map((tile) => {
-                  const category = categoryById.get(tile.primaryCategoryId);
-                  return (
-                    <TileCard
-                      key={tile.id}
-                      name={tile.name}
-                      {...(tile.emoji !== undefined ? { emoji: tile.emoji } : {})}
-                      fallbackLabel={tile.fallbackLabel}
-                      {...(category
-                        ? { categoryColor: category.color, categoryName: category.name }
-                        : {})}
-                      showName={false}
-                      interactive={false}
-                    />
-                  );
-                })}
-              </div>
+          <div className="sp-top-stage__rack" aria-hidden="true">
+            {previewTiles.map((tile) => {
+              const category = categoryById.get(tile.primaryCategoryId);
+              return (
+                <TileCard
+                  key={tile.id}
+                  name={tile.name}
+                  {...(tile.emoji !== undefined ? { emoji: tile.emoji } : {})}
+                  fallbackLabel={tile.fallbackLabel}
+                  {...(category
+                    ? { categoryColor: category.color, categoryName: category.name }
+                    : {})}
+                  showName={false}
+                  interactive={false}
+                />
+              );
+            })}
+          </div>
 
-              <dl className="sp-top-stage__deck-spec" aria-label={`${featuredProject.name}の構成`}>
-                <div>
-                  <dt>牌</dt>
-                  <dd>{totalTiles}枚</dd>
-                </div>
-                <div>
-                  <dt>種類</dt>
-                  <dd>{featuredProject.tiles.length}種</dd>
-                </div>
-                <div>
-                  <dt>役</dt>
-                  <dd>{activeVariant?.winRoles.length ?? 0}組</dd>
-                </div>
-                <div>
-                  <dt>カテゴリ</dt>
-                  <dd>{featuredProject.categories.length}</dd>
-                </div>
-              </dl>
-            </>
-          )}
+          <dl className="sp-top-stage__deck-spec" aria-label={`${FEATURED_DECK.name}の構成`}>
+            <div>
+              <dt>牌</dt>
+              <dd>{totalTiles}枚</dd>
+            </div>
+            <div>
+              <dt>種類</dt>
+              <dd>{FEATURED_DECK.tiles.length}種</dd>
+            </div>
+            <div>
+              <dt>役</dt>
+              <dd>{activeVariant?.winRoles.length ?? 0}組</dd>
+            </div>
+            <div>
+              <dt>カテゴリ</dt>
+              <dd>{FEATURED_DECK.categories.length}</dd>
+            </div>
+          </dl>
 
           <Button
             variant="primary"
