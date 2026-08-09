@@ -57,12 +57,9 @@ export function ResultScreen({
   );
 
   return (
-    <div className="sp-screen">
+    <div className="sp-screen sp-result-screen">
       <div className="sp-screen__header">
         <h1 className="sp-screen__title">対戦結果</h1>
-        <span className="sp-screen__subtitle">
-          夜の帳が下りた。記憶を積み重ねし者が、今宵の勝者となる。
-        </span>
       </div>
       <div className="sp-screen__body sp-result-enter">
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
@@ -78,9 +75,7 @@ export function ResultScreen({
             }
           >
             {result?.reason === 'draw' ? (
-              <p style={{ fontSize: 'var(--sp-font-sm)' }}>
-                山が尽きました。誰の記憶も確定しませんでした。
-              </p>
+              <p style={{ fontSize: 'var(--sp-font-sm)' }}>山が尽きました。</p>
             ) : (
               breakdown && (
                 <>
@@ -132,7 +127,7 @@ export function ResultScreen({
             )}
           </ResultFrame>
         </div>
-        <div className="sp-screen__col sp-screen__col--side">
+        <div className="sp-screen__col sp-screen__col--side sp-result-screen__side">
           <PaperPanel variant="ink" title="順位">
             <ul className="sp-issue-list">
               {state.players.map((player) => (
@@ -144,18 +139,18 @@ export function ResultScreen({
             </ul>
           </PaperPanel>
           {newlyUnlocked.length > 0 && (
-            <PaperPanel selected title="新しい実績">
+            <PaperPanel selected title="実績解除">
               <ul className="sp-issue-list">
                 {newlyUnlocked.map((achievement) => (
                   <li key={achievement.id}>
-                    <LanternGlow>★</LanternGlow> {achievement.title} — {achievement.description}
+                    ★ {achievement.title} — {achievement.description}
                   </li>
                 ))}
               </ul>
             </PaperPanel>
           )}
           {coinsEarned !== undefined && (
-            <PaperPanel title="獲得した記憶コイン">
+            <PaperPanel title="記憶コイン">
               <span
                 style={{
                   fontFamily: 'var(--sp-font-family-num)',
@@ -165,11 +160,11 @@ export function ResultScreen({
                 +{coinsEarned}
               </span>
               <p style={{ margin: 0, fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)' }}>
-                コインは見た目と記録のためのもの。対局は強くなりません。
+                記録用。対局性能には影響しません。
               </p>
             </PaperPanel>
           )}
-          <Button variant="primary" onClick={onRematch} subLabel="同じメンバーで再戦する">
+          <Button variant="primary" onClick={onRematch}>
             もう一局
           </Button>
           <Button variant="ink" onClick={onCollection}>
