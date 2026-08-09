@@ -87,7 +87,7 @@ describe('DeckDetailScreen deletion safety', () => {
     );
 
     expect(screen.getAllByText('注意あり').length).toBeGreaterThan(0);
-    expect(screen.getByRole('button', { name: 'このデッキで対局' })).not.toBeDisabled();
+    expect((screen.getByRole('button', { name: 'このデッキで対局' }) as HTMLButtonElement).disabled).toBe(false);
     const detailSummary = screen.getByText('検証詳細 1件');
     const details = detailSummary.closest('details');
     expect(details?.open).toBe(false);
@@ -118,7 +118,7 @@ describe('DeckDetailScreen deletion safety', () => {
     );
 
     expect(screen.getAllByText('要修正').length).toBeGreaterThan(0);
-    expect(screen.getByRole('button', { name: 'このデッキで対局' })).toBeDisabled();
+    expect((screen.getByRole('button', { name: 'このデッキで対局' }) as HTMLButtonElement).disabled).toBe(true);
     const detailSummary = screen.getByText('検証詳細 1件');
     const details = detailSummary.closest('details');
     expect(details?.open).toBe(true);
