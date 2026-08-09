@@ -1,0 +1,118 @@
+/* Batch 21: keep deck status visible while letting the workbench own the viewport. */
+@layer layout {
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+    width: min(240px, 24%);
+    min-width: 190px;
+  }
+
+  .sp-deck-editor-inspector__issue-counts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 6px;
+    border-top: var(--sp-border-divider-ink);
+    border-bottom: var(--sp-border-divider-ink);
+  }
+
+  .sp-deck-editor-inspector__issue-counts span {
+    min-width: 0;
+    padding: 4px 3px;
+    border-right: var(--sp-border-divider-ink);
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+    text-align: center;
+  }
+
+  .sp-deck-editor-inspector__issue-counts span:last-child {
+    border-right: 0;
+  }
+
+  .sp-deck-editor-inspector__issue-counts strong {
+    display: block;
+    margin-top: 1px;
+    color: var(--sp-color-cream);
+    font-family: var(--sp-font-family-num);
+    font-size: var(--sp-font-sm);
+  }
+
+  .sp-deck-editor-inspector__validation {
+    border-bottom: var(--sp-border-divider-ink);
+  }
+
+  .sp-deck-editor-inspector__validation summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-height: 32px;
+    padding: 4px 1px;
+    color: var(--sp-color-cream);
+    font-size: var(--sp-font-xs);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .sp-deck-editor-inspector__validation summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .sp-deck-editor-inspector__validation summary::after {
+    content: '＋';
+    color: var(--sp-color-cream-dim);
+    font-family: var(--sp-font-family-num);
+  }
+
+  .sp-deck-editor-inspector__validation[open] summary::after {
+    content: '−';
+  }
+
+  .sp-deck-editor-inspector__validation-body {
+    padding: 2px 0 7px;
+  }
+
+  .sp-deck-editor-inspector__validation-clear {
+    padding: 5px 1px 7px;
+    border-bottom: var(--sp-border-divider-ink);
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-xs);
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+      width: min(158px, 21%);
+      min-width: 148px;
+      padding-left: 3px;
+    }
+
+    .sp-deck-editor-inspector__summary > div {
+      padding: 3px 4px;
+    }
+
+    .sp-deck-editor-inspector__summary dd {
+      font-size: var(--sp-font-sm);
+    }
+
+    .sp-deck-editor-inspector__issue-counts {
+      margin-top: 3px;
+    }
+
+    .sp-deck-editor-inspector__issue-counts span {
+      padding: 2px 1px;
+      font-size: 8px;
+    }
+
+    .sp-deck-editor-inspector__issue-counts strong {
+      font-size: 10px;
+    }
+
+    .sp-deck-editor-inspector__validation summary {
+      min-height: 28px;
+      padding-block: 2px;
+      font-size: 9px;
+    }
+
+    .sp-deck-editor-inspector__validation-body {
+      padding-bottom: 4px;
+    }
+  }
+}
