@@ -110,6 +110,20 @@ async function expectMatchGeometry(page: Page) {
       const style = getComputedStyle(element);
       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
     });
+
+    // Seats intentionally use overflow: visible so each discard river can leave
+    // the metadata footprint and enter the shared table surface. Treat that as
+    // composition, not clipping. Containers that are expected to contain their
+    // own content still must not need scrolling.
+    const boundedOverflowElements = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.sp-match-utility, .sp-table-stage, .sp-table-center, .sp-self-hand-zone, .sp-match-action-zone, .sp-player-panel',
+      ),
+    ].filter((element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+
     const collisionElements = [
       ...document.querySelectorAll<HTMLElement>(
         '.sp-match-utility, .sp-table-seat, .sp-table-center, .sp-self-hand-zone, .sp-match-action-zone',
@@ -136,7 +150,7 @@ async function expectMatchGeometry(page: Page) {
     }
 
     return {
-      overflow: elements
+      overflow: boundedOverflowElements
         .filter(
           (element) =>
             element.scrollWidth > element.clientWidth + 1 ||
