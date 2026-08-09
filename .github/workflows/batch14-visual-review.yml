@@ -7,7 +7,7 @@ on:
       - 'src/ui/**'
       - 'src/app/**'
       - 'src/App.tsx'
-      - 'tests/visual/batch14-review-capture.spec.ts'
+      - 'tests/visual/**'
       - 'scripts/qa/validate-batch14-review-hygiene.mjs'
       - 'docs/qa/BATCH-14-VISUAL-REVIEW.md'
       - 'AGENTS.md'
