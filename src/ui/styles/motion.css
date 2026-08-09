@@ -1,19 +1,19 @@
 /*
  * motion層(P1-7): 意味のある一回性のモーションだけを置く。
- * reduced-motion時はbase.cssの全体無効化が優先される。
+ * reduced-motion時はbase.cssで非本質animationを完全停止する。
  */
 @layer motion {
 /* ================= Motion ================= */
 
-/* 引いた牌のポップ(意味のある1回だけの動き) */
+/* 引いた牌の短い到着。大きく飛ばさず、最新牌を見つけるためだけに動かす。 */
 .sp-tile--drawn {
   animation: sp-tile-drawn var(--sp-motion-tile) var(--sp-ease-out);
 }
 
 @keyframes sp-tile-drawn {
   from {
-    transform: translateY(-10px);
-    opacity: 0.4;
+    transform: translateY(-6px);
+    opacity: 0.65;
   }
   to {
     transform: translateY(0);
@@ -23,7 +23,7 @@
 
 /* ロン/ツモボタン出現時の2回だけのパルス(常時発光はしない) */
 .sp-button--lantern {
-  animation: sp-lantern-pulse 500ms var(--sp-ease-out) 2;
+  animation: sp-lantern-pulse 460ms var(--sp-ease-out) 2;
 }
 
 @keyframes sp-lantern-pulse {
@@ -36,7 +36,7 @@
   }
 }
 
-/* Resultの静かな入場 */
+/* Resultの静かな入場。勝敗情報の読了を邪魔しない短距離だけ。 */
 .sp-result-enter {
   animation: sp-result-enter var(--sp-motion-win) var(--sp-ease-out);
 }
@@ -44,7 +44,7 @@
 @keyframes sp-result-enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
