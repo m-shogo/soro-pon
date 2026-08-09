@@ -9,6 +9,8 @@ const REQUIRED_FILES = {
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
   workspaceCss: 'src/ui/styles/deck-editor-authored-workspace.css',
+  tileWorkbench: 'src/ui/components/DeckTileWorkbench.tsx',
+  tileWorkbenchCss: 'src/ui/styles/deck-tile-workbench.css',
   deckBrowserCss: 'src/ui/styles/deck-browser-authored-workspace.css',
   resultCss: 'src/ui/styles/result-authored-workspace.css',
   matchRiverCss: 'src/ui/styles/match-river-polish.css',
@@ -70,24 +72,45 @@ requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern 
 
 requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored anti-AI override must stay loaded');
 requireText('app', "import './ui/styles/deck-editor-authored-workspace.css';", 'authored editor workspace pass must stay loaded');
+requireText('app', "import './ui/styles/deck-tile-workbench.css';", 'tile-led editor workbench must stay loaded');
 requireText('app', "import './ui/styles/deck-browser-authored-workspace.css';", 'authored deck browsing pass must stay loaded');
 requireText('app', "import './ui/styles/result-authored-workspace.css';", 'outcome-first result pass must stay loaded');
 requireText('app', "import './ui/styles/batch14-landscape-game.css';", 'compact landscape composition must stay loaded after authored polish');
 requireText('authoredCss', 'generic AI/SaaS treatments', 'file purpose must remain explicit');
 requireText('authoredCss', '.sp-deck-select-card', 'deck selection must retain non-marketplace treatment');
 requireText('authoredCss', '.sp-table-stage', 'match table must retain art-first treatment');
-requireText('authoredCss', '.sp-deck-editor-tile-preview', 'editor must retain a visible game-object anchor beside form controls');
 requireText('authoredCss', 'backdrop-filter: none', 'glass blur must stay actively neutralized in authored layer');
 forbidText('authoredCss', 'radial-gradient(', 'authored layer must not reintroduce decorative radial gradients');
 
 requireText('workspaceCss', 'game-building workbench', 'editor polish must keep a game-workspace visual thesis');
-requireText('workspaceCss', '#sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div', 'tile-row styling must follow stable DOM structure');
 requireText('workspaceCss', 'border-left: 1px solid', 'validation rail must remain structurally separated without becoming a floating card');
 requireText('workspaceCss', 'transform: none', 'editor presets must not regain hover-lift behavior');
 forbidText('workspaceCss', "[style*='border-bottom']", 'editor styling must not depend on serialized inline-style text');
 forbidText('workspaceCss', 'radial-gradient(', 'editor workspace must not use decorative radial gradients');
 forbidText('workspaceCss', 'linear-gradient(', 'editor workspace must not use decorative linear gradients');
 forbidText('workspaceCss', 'backdrop-filter:', 'editor workspace must not use glass blur');
+
+requireText('editor', "import { DeckTileWorkbench } from '../components/DeckTileWorkbench';", 'editor tile tab must delegate presentation to the tile-focused workbench');
+requireText('editor', '<DeckTileWorkbench', 'tile tab must render the visual workbench');
+forbidText('editor', 'className="sp-deck-editor-tile-preview"', 'editor must not regress to repeated per-tile form rows');
+forbidText('editor', "import { TileCard } from '../components/TileCard';", 'production tile rendering belongs inside the focused workbench boundary');
+
+requireText('tileWorkbench', "import { TileCard } from './TileCard';", 'tile workbench must reuse the production tile renderer');
+requireText('tileWorkbench', 'aria-pressed={selected}', 'tile selection must expose state without color-only communication');
+requireText('tileWorkbench', 'className="sp-tile-workbench__shelf"', 'real tiles must remain the primary selection surface');
+requireText('tileWorkbench', 'className="sp-tile-workbench__editor"', 'only the selected tile should own the editing inspector');
+requireText('tileWorkbench', 'categoryColor: category.color', 'shelf previews must reflect the live primary category color');
+requireText('tileWorkbench', 'showName={false}', 'shelf tiles should stay compact visual objects');
+requireText('tileWorkbench', 'onToggleCategory(selectedTile, category.id)', 'category membership must continue using the existing safe toggle callback');
+
+requireText('tileWorkbenchCss', 'shelf is the primary surface', 'tile editing must retain the visual-object-first thesis');
+requireText('tileWorkbenchCss', '.sp-tile-workbench__shelf', 'tile shelf must remain a dedicated visual surface');
+requireText('tileWorkbenchCss', '.sp-tile-workbench__editor', 'selected-tile inspector must remain structurally distinct');
+requireText('tileWorkbenchCss', "[data-selected='true']", 'selected tile must have a non-color-only structural state');
+forbidText('tileWorkbenchCss', 'radial-gradient(', 'tile workbench must not use decorative radial gradients');
+forbidText('tileWorkbenchCss', 'linear-gradient(', 'tile workbench must not use decorative linear gradients');
+forbidText('tileWorkbenchCss', 'backdrop-filter:', 'tile workbench must not use glass blur');
+forbidText('tileWorkbenchCss', 'translateY(', 'tile workbench must not reintroduce hover lift');
 
 requireText('deckBrowserCss', 'Deck identity must come from its actual tiles', 'deck browse/detail hierarchy must remain object-led');
 requireText('deckBrowserCss', '.sp-deck-loadout__tile-item:hover .sp-tile', 'detail tiles must explicitly neutralize hover lift');
@@ -146,11 +169,6 @@ forbidText('deckList', 'DECK SELECT', 'decorative English eyebrow must not retur
 forbidText('deckList', 'OFFICIAL', 'source identity should stay compact Japanese copy');
 forbidText('deckList', 'CUSTOM', 'source identity should stay compact Japanese copy');
 forbidText('deckList', '説明はまだありません。', 'assistant-like empty copy must stay concise');
-
-requireText('editor', "import { TileCard } from '../components/TileCard';", 'editor must reuse the production tile renderer');
-requireText('editor', 'className="sp-deck-editor-tile-preview"', 'tile rows must retain live visual preview');
-requireText('editor', 'primaryCategory.color', 'preview must reflect the live primary category color');
-requireText('editor', 'showName={false}', 'preview should remain a compact visual object rather than another text panel');
 
 if (failures.length > 0) {
   console.error('Batch 14 visual contract drift detected:');
