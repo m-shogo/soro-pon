@@ -5,6 +5,7 @@ const REQUIRED_FILES = {
   app: 'src/App.tsx',
   interaction: 'src/ui/styles/interaction-ux.css',
   base: 'src/ui/styles/base.css',
+  motion: 'src/ui/styles/motion.css',
   landscape: 'src/ui/styles/batch14-landscape-game.css',
   match: 'src/ui/screens/MatchScreen.tsx',
   setup: 'src/ui/screens/MatchSetupScreen.tsx',
@@ -58,8 +59,14 @@ for (const selector of ['.sp-tile--drawn', '.sp-button--lantern', '.sp-result-en
 }
 requireText('base', 'animation: none !important', 'Reduce Motion should fully stop nonessential animation rather than only accelerate it');
 
+requireText('motion', 'transform: translateY(-6px)', 'drawn-tile arrival should stay restrained');
+requireText('motion', 'opacity: 0.65', 'drawn-tile arrival should stay readable during motion');
+requireText('motion', 'transform: translateY(4px)', 'result entrance should use minimal travel');
+forbidText('motion', 'scale(', 'gameplay motion should not depend on scaling transitions');
+
 requireText('landscape', 'right: max(5px, var(--sp-safe-right))', 'primary actions must respect the right safe area');
 requireText('landscape', 'bottom: max(4px, var(--sp-safe-bottom))', 'primary actions must respect the bottom safe area');
+forbidText('landscape', "[style*='border-bottom']", 'compact editor selectors must not depend on serialized inline-style text');
 
 requireText('match', "const discardActionLabel = canDiscard ? '捨てる' : canSelect ? '牌を選ぶ' : '待機';", 'primary discard action must explain the next available step even when compact sublabels are hidden');
 requireText('match', "afterDrawAction: '選ぶ'", 'phase copy should use direct game language rather than form-like terminology');
