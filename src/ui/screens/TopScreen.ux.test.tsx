@@ -1,20 +1,26 @@
 // @vitest-environment jsdom
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TopScreen } from './TopScreen';
 
 afterEach(cleanup);
 
-function renderTop() {
+function renderTop({
+  hasPlayableDeck = true,
+  onDeckList = () => {},
+}: {
+  hasPlayableDeck?: boolean;
+  onDeckList?: () => void;
+} = {}) {
   return render(
     <TopScreen
       onPlayNow={() => {}}
-      onDeckList={() => {}}
+      onDeckList={onDeckList}
       onImport={() => {}}
       onCollection={() => {}}
-      hasPlayableDeck
+      hasPlayableDeck={hasPlayableDeck}
       coins={12}
       recentRecords={[]}
     />,
@@ -22,6 +28,18 @@ function renderTop() {
 }
 
 describe('TopScreen interaction hierarchy', () => {
+  it('遊べるデッキがないとき主CTAを行き止まりにせず準備導線へ変える', async () => {
+    const user = userEvent.setup();
+    const onDeckList = vi.fn();
+    renderTop({ hasPlayableDeck: false, onDeckList });
+
+    const setup = screen.getByRole('button', { name: /デッキを準備/ });
+    expect((setup as HTMLButtonElement).disabled).toBe(false);
+
+    await user.click(setup);
+    expect(onDeckList).toHaveBeenCalledTimes(1);
+  });
+
   it('日常操作から初期化を外し、データ管理の中でのみ提示する', async () => {
     const user = userEvent.setup();
     renderTop();
