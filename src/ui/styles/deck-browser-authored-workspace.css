@@ -60,12 +60,12 @@
   }
 
   .sp-deck-loadout__role-grid > * {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
     border-radius: 0;
     box-shadow: none;
-  }
-
-  .sp-deck-loadout__role-grid > * + * {
-    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
   }
 
   .sp-deck-select__grid {
