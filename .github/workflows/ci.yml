@@ -37,6 +37,8 @@ jobs:
             src/engine/validation/validateDeckEntityIds.test.ts
       - name: Batch 14 visual quality contract
         run: pnpm qa:batch14:visual-contract
+      - name: Interaction UX contract
+        run: pnpm qa:interaction-ux
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm skin:validate
