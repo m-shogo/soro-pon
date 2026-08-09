@@ -22,6 +22,11 @@ function renderTop(): void {
   );
 }
 
+function openDataManagement(): void {
+  fireEvent.click(screen.getByRole('button', { name: /データ管理/ }));
+  expect(screen.getByRole('dialog', { name: 'データ管理' })).toBeTruthy();
+}
+
 beforeEach(() => {
   window.localStorage.clear();
 });
@@ -45,6 +50,7 @@ afterEach(() => {
 describe('TopScreen recovery export', () => {
   it('退避コピーがない場合はダウンロードせず状態を明示する', () => {
     renderTop();
+    openDataManagement();
 
     fireEvent.click(screen.getByRole('button', { name: /退避データを書き出す/ }));
 
@@ -67,6 +73,7 @@ describe('TopScreen recovery export', () => {
     });
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     renderTop();
+    openDataManagement();
 
     fireEvent.click(screen.getByRole('button', { name: /退避データを書き出す/ }));
 
@@ -86,6 +93,7 @@ describe('TopScreen recovery export', () => {
       }),
     });
     renderTop();
+    openDataManagement();
 
     fireEvent.click(screen.getByRole('button', { name: /退避データを書き出す/ }));
 
