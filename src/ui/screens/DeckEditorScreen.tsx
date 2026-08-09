@@ -17,6 +17,7 @@ import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { CategoryChip } from '../components/CategoryChip';
 import { DeckEditorInspector } from '../components/DeckEditorInspector';
+import { DeckTileWorkbench } from '../components/DeckTileWorkbench';
 import { Dialog } from '../components/Dialog';
 import {
   ColorField,
@@ -24,11 +25,9 @@ import {
   NumberField,
   SelectField,
   TextField,
-  Toggle,
 } from '../components/FormField';
 import { PaperPanel } from '../components/PaperPanel';
 import { Tabs } from '../components/Tab';
-import { TileCard } from '../components/TileCard';
 
 // 安全テンプレートのみで構造編集する(count-onlyの通常役は作れない)。
 // docs/70 §18 の推奨点数を使う。
@@ -400,106 +399,14 @@ export function DeckEditorScreen({
           )}
 
           {tab === 'tiles' && (
-            <PaperPanel title="牌">
-              <div className="sp-screen__col" style={{ gap: 'var(--sp-space-12)' }}>
-                {draft.tiles.map((tile) => {
-                  const primaryCategory = draft.categories.find(
-                    (category) => category.id === tile.primaryCategoryId,
-                  );
-                  return (
-                    <div
-                      key={tile.id}
-                      style={{
-                        borderBottom: 'var(--sp-border-divider-ink)',
-                        paddingBottom: 'var(--sp-space-8)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 'var(--sp-space-4)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <div className="sp-deck-editor-tile-preview" aria-label={`${tile.name}のプレビュー`}>
-                          <TileCard
-                            name={tile.name}
-                            {...(tile.emoji !== undefined ? { emoji: tile.emoji } : {})}
-                            fallbackLabel={tile.fallbackLabel}
-                            {...(primaryCategory
-                              ? {
-                                  categoryColor: primaryCategory.color,
-                                  categoryName: primaryCategory.name,
-                                }
-                              : {})}
-                            showName={false}
-                            interactive={false}
-                          />
-                          <span aria-hidden="true">×{tile.count}</span>
-                        </div>
-                        <TextField
-                          label="牌名"
-                          value={tile.name}
-                          maxLength={20}
-                          width="8em"
-                          onChange={(name) => updateTile(tile.id, { name })}
-                        />
-                        <TextField
-                          label="絵文字"
-                          value={tile.emoji ?? ''}
-                          maxLength={4}
-                          placeholder="絵文字"
-                          width="4em"
-                          onChange={(emoji) =>
-                            updateTile(tile.id, emoji === '' ? { emoji: undefined } : { emoji })
-                          }
-                        />
-                        <TextField
-                          label="代替1文字"
-                          value={tile.fallbackLabel}
-                          maxLength={4}
-                          width="3em"
-                          onChange={(fallbackLabel) => updateTile(tile.id, { fallbackLabel })}
-                        />
-                        <FormField label="枚数" inline>
-                          <NumberField
-                            label="枚数"
-                            min={1}
-                            max={10}
-                            value={tile.count}
-                            onChange={(count) => updateTile(tile.id, { count })}
-                          />
-                        </FormField>
-                        <Button variant="ghost" onClick={() => removeTile(tile.id)}>
-                          削除
-                        </Button>
-                      </div>
-                      <div style={{ display: 'flex', gap: 'var(--sp-space-8)', flexWrap: 'wrap', fontSize: 'var(--sp-font-xs)' }}>
-                        {draft.categories.map((category) => (
-                          <Toggle
-                            key={category.id}
-                            label={category.name}
-                            checked={tile.categories.includes(category.id)}
-                            onChange={() => toggleTileCategory(tile, category.id)}
-                          />
-                        ))}
-                        <FormField label="主カテゴリ" inline>
-                          <SelectField
-                            label="主カテゴリ"
-                            value={tile.primaryCategoryId}
-                            onChange={(primaryCategoryId) => updateTile(tile.id, { primaryCategoryId })}
-                            options={tile.categories.map((categoryId) => ({
-                              value: categoryId,
-                              label: draft.categories.find((c) => c.id === categoryId)?.name ?? categoryId,
-                            }))}
-                          />
-                        </FormField>
-                      </div>
-                    </div>
-                  );
-                })}
-                <Button variant="ink" onClick={addTile} disabled={draft.categories.length === 0}>
-                  牌を追加
-                </Button>
-              </div>
-            </PaperPanel>
+            <DeckTileWorkbench
+              tiles={draft.tiles}
+              categories={draft.categories}
+              onAddTile={addTile}
+              onUpdateTile={updateTile}
+              onToggleCategory={toggleTileCategory}
+              onRemoveTile={removeTile}
+            />
           )}
 
           {tab === 'roles' && (

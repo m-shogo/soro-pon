@@ -21,6 +21,7 @@ import './ui/styles/screens.css';
 import './ui/styles/desktop-authored-shell.css';
 import './ui/styles/home-loadout-stage.css';
 import './ui/styles/deck-detail-stage.css';
+import './ui/styles/deck-tile-workbench.css';
 import './ui/styles/motion.css';
 import { AppRoot } from './app/AppRoot';
 import { AppErrorBoundary } from './ui/components/AppErrorBoundary';
