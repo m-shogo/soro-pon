@@ -12,6 +12,7 @@ import './ui/styles/authored-visual-polish.css';
 import './ui/styles/deck-editor-authored-workspace.css';
 import './ui/styles/deck-browser-authored-workspace.css';
 import './ui/styles/result-authored-workspace.css';
+import './ui/styles/match-setup-authored.css';
 import './ui/styles/batch14-landscape-game.css';
 import './ui/styles/deck-role-composer.css';
 import './ui/styles/interaction-ux.css';
