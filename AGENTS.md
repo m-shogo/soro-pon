@@ -28,6 +28,8 @@ Batch 14: ACTIVE on PR #10 / Issue #12
   result/collection/setup/TOP information hierarchy pass
   interaction UX hardening: touch targets, pressed feedback, pointer-mode hover,
   Reduce Motion, focus/scroll affordance, state-readable actions
+  current-head visual review is Actions artifact based; do not churn committed PNG baselines
+  final integration to main uses squash so working-branch commit churn does not enter mainline
 Post-Batch-10 integrity/residual closure:
   code/test/CI/doc fixes committed
   101 targeted tests across 28 files PASS on Batch 12 frozen SHA
@@ -52,6 +54,7 @@ docs/IMPLEMENTATION-WORKFLOW.md
 docs/RELEASE-DEMO-GATES.md
 docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md
 docs/design/SOROPON-INTERACTION-UX-CONTRACT.md
+docs/qa/BATCH-14-VISUAL-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-REVIEW.md
 docs/qa/POST-BATCH-10-INTEGRITY-CONTINUATION.md
 docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
@@ -69,10 +72,11 @@ docs/MASTER-SPEC.md                              product/rules
 docs/RELEASE-DEMO-GATES.md                       readiness
 docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md visual/UI failure lessons
 docs/design/SOROPON-INTERACTION-UX-CONTRACT.md  touch/focus/motion/action hierarchy
+docs/qa/BATCH-14-VISUAL-REVIEW.md                current-head visual evidence flow / Git hygiene
 the latest Batch/review report                   exact scope/evidence
-docs/IMPLEMENTATION-WORKFLOW.md                   next executable order
-docs/release/STORAGE-RECOVERY-POLICY.md           persistence/recovery
-docs/SKIN-DISTRIBUTION.md                         external-package boundary
+docs/IMPLEMENTATION-WORKFLOW.md                  next executable order
+docs/release/STORAGE-RECOVERY-POLICY.md          persistence/recovery
+docs/SKIN-DISTRIBUTION.md                        external-package boundary
 ```
 
 Historical/numbered docs cannot override current evidence.
@@ -84,6 +88,7 @@ Before changing UI/CSS/components/assets/motion/responsive/skin loading:
 ```text
 docs/design/SOROPON-VISUAL-QUALITY-LEARNINGS.md
 docs/design/SOROPON-INTERACTION-UX-CONTRACT.md
+docs/qa/BATCH-14-VISUAL-REVIEW.md
 docs/DESIGN-SYSTEM.md
 docs/SKIN-SYSTEM.md
 docs/SKIN-FOUNDATION-HARDENING.md
@@ -145,6 +150,8 @@ QUALITY GATE
   judge actual landscape target, especially 844x390
   identify weakest 3 visible/interaction problems before adding decoration
   CI green is necessary but never sufficient for visual approval
+  visual approval uses the current HEAD Actions artifact, not an older committed snapshot
+  current polish captures belong in short-lived artifact storage, not Git history
 ```
 
 Forbidden:
@@ -158,6 +165,8 @@ external package self-promotion to official
 generic AI/SaaS dashboard card convergence
 hover-only required state on touch
 nonessential infinite gameplay animation
+using Batch 13 snapshots as Batch 14 approval
+committing a fresh screenshot baseline for every polish pass
 ```
 
 ## Persistence / Recovery Contract
@@ -211,17 +220,18 @@ Major dependencies require `docs/DEPENDENCY-POLICY.md` and ADR review.
 3. Record exact SHA and toolchain/browser/Python versions.
 4. pnpm install --frozen-lockfile
 5. Run .github/workflows/integrity.yml equivalent.
-6. Run interaction/visual contract guards declared in CI.
+6. Run interaction/visual/review-hygiene contract guards declared in CI.
 7. pnpm typecheck
 8. pnpm test
 9. pnpm skin:validate
 10. pnpm build + artifact inventory/hash
 11. Run Python 3.13 install + pip check + asset fixtures as declared in CI.
-12. If anything changes, discard results and restart from step 1 for the final SHA.
-13. Execute still-open real-environment release gates only when they are in scope.
+12. For UI/UX work, run current-head Batch 14 Visual Review and keep screenshots in the workflow artifact.
+13. If anything changes, discard results and restart from step 1 for the final SHA.
+14. Execute still-open real-environment release gates only when they are in scope.
 ```
 
-A workflow file, local command from an older SHA, or historical Batch PASS is
+A workflow file, local command from an older SHA, historical Batch PASS, or an artifact from another HEAD is
 not evidence for the current artifact.
 
 ## Work / Report
@@ -233,6 +243,9 @@ fetch latest SHA before sequential file writes
 never overwrite concurrent changes blindly
 docs and implementation synchronized
 push/commit result recorded
+current visual-review PNGs stay in Actions artifacts; historical evidence stays immutable
+keep active manual development in the current PR instead of spawning parallel branches
+final integration to main uses squash after current-head visual approval
 ```
 
 Report:
@@ -242,6 +255,7 @@ changed files and commits
 exact verification SHA
 commands and results, or explicitly not executed
 GitHub Actions result, or visibility limitation
+current-head visual artifact and review status when UI changed
 skin/screen/data impact
 remaining risks
 Batch 12 / RC status
