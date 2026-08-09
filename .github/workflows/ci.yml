@@ -43,6 +43,8 @@ jobs:
         run: pnpm qa:batch15:home-contract
       - name: Batch 16 deck detail contract
         run: pnpm qa:batch16:deck-detail-contract
+      - name: Batch 17 tile workbench contract
+        run: pnpm qa:batch17:tile-workbench-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
