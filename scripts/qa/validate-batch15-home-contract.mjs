@@ -34,7 +34,7 @@ requireText(
 );
 
 for (const needle of [
-  "import starterRaw from '../../samples/animal-starter.deck.json';",
+  "import starterRaw from '../../../samples/animal-starter.deck.json';",
   'const FEATURED_DECK = starterRaw as DeckProject;',
   "import { TileCard } from '../components/TileCard';",
   'className="sp-top-stage"',
