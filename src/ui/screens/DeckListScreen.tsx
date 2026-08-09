@@ -6,10 +6,16 @@ import { CategoryChip } from '../components/CategoryChip';
 import { TileCard } from '../components/TileCard';
 
 const STATUS_LABEL: Record<DeckValidationResult['status'], string> = {
-  playable: '遊べる',
+  playable: '対局可',
   playableWithWarnings: '注意あり',
   draft: '下書き',
   blocked: '使用不可',
+};
+
+const SOURCE_LABEL: Record<StoredDeck['source'], string> = {
+  official: '公式',
+  imported: '読み込み',
+  custom: '自作',
 };
 
 export function DeckListScreen({
@@ -36,8 +42,7 @@ export function DeckListScreen({
     <div className="sp-screen sp-deck-select">
       <div className="sp-screen__header sp-deck-select__header">
         <div>
-          <span className="sp-deck-select__eyebrow">DECK SELECT</span>
-          <h1 className="sp-screen__title">記憶札デッキリスト</h1>
+          <h1 className="sp-screen__title">デッキ選択</h1>
         </div>
         <div className="sp-deck-select__summary" aria-label="デッキ一覧の状態">
           <span><strong>{decks.length}</strong>デッキ</span>
@@ -48,7 +53,7 @@ export function DeckListScreen({
           新しいデッキ
         </Button>
         <Button variant="ink" onClick={onImport}>
-          JSONを読み込む
+          デッキを読み込む
         </Button>
         <Button variant="ghost" onClick={onBack}>
           TOPへ
@@ -75,13 +80,7 @@ export function DeckListScreen({
             >
               <div className="sp-deck-select-card__top">
                 <div className="sp-deck-select-card__title-wrap">
-                  <span className="sp-deck-select-card__source">
-                    {stored.source === 'official'
-                      ? 'OFFICIAL'
-                      : stored.source === 'imported'
-                        ? 'IMPORT'
-                        : 'CUSTOM'}
-                  </span>
+                  <span className="sp-deck-select-card__source">{SOURCE_LABEL[stored.source]}</span>
                   <strong className="sp-deck-select-card__title">{stored.deck.name}</strong>
                 </div>
                 <Badge variant={canPlay ? 'info' : 'warning'}>{STATUS_LABEL[status]}</Badge>
@@ -105,7 +104,7 @@ export function DeckListScreen({
               </div>
 
               <p className="sp-deck-select-card__description">
-                {stored.deck.description || '説明はまだありません。'}
+                {stored.deck.description || '説明なし'}
               </p>
 
               <div className="sp-deck-select-card__stats">
