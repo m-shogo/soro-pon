@@ -44,12 +44,12 @@ function TileView({
 }
 
 const PHASE_LABEL: Record<string, string> = {
-  turnStart: '手番準備',
-  draw: '牌を引く',
+  turnStart: '準備',
+  draw: '引く',
   afterDrawAction: '選択',
-  discardSelect: '捨て牌選択',
-  reactionRon: 'ロン判定',
-  turnEnd: '次の手番',
+  discardSelect: '打牌',
+  reactionRon: 'ロン',
+  turnEnd: '進行',
   roundEnd: '決着',
   result: '結果',
 };
@@ -74,7 +74,7 @@ function PlayedTiles({
       </div>
       <div className="sp-seat-played__tiles">
         {player.discards.length === 0 ? (
-          <span className="sp-seat-played__empty">まだありません</span>
+          <span className="sp-seat-played__empty" aria-hidden="true">—</span>
         ) : (
           player.discards.map((tile, index) => {
             const newest = index === player.discards.length - 1;
@@ -185,7 +185,7 @@ export function MatchScreen({
   ];
 
   const phaseLabel = PHASE_LABEL[state.phase] ?? state.phase;
-  const turnLabel = currentPlayer?.name ?? '確認中';
+  const turnLabel = currentPlayer?.name ?? '—';
 
   return (
     <div className="sp-match-screen" style={layoutVars} data-density={metrics.density}>
