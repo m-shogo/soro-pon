@@ -86,6 +86,7 @@
     gap: var(--sp-space-8);
   }
 
+  .sp-result-screen__side > .sp-paper-panel,
   .sp-result-screen__ledger > .sp-paper-panel {
     border-width: 0 0 1px;
     border-radius: 0;
