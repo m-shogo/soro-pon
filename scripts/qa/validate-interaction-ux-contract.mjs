@@ -14,6 +14,7 @@ const REQUIRED_FILES = {
   rotate: 'src/ui/components/RotatePrompt.tsx',
   tabs: 'src/ui/components/Tab.tsx',
   editor: 'src/ui/screens/DeckEditorScreen.tsx',
+  formControls: 'src/ui/components/FormField.tsx',
   collection: 'src/ui/screens/CollectionScreen.tsx',
   collectionCss: 'src/ui/styles/collection-authored.css',
   docs: 'docs/design/SOROPON-INTERACTION-UX-CONTRACT.md',
@@ -53,12 +54,27 @@ requireText('interaction', '.sp-match-action-zone .sp-button', 'frequent match a
 requireText('interaction', 'min-height: var(--sp-touch-min)', 'frequent match actions must retain the 44px touch token');
 requireText('interaction', '.sp-tab', 'editor navigation needs an explicit target contract');
 requireText('interaction', 'min-height: 36px', 'compact secondary controls need a deliberate constrained target size');
+requireText('interaction', '.sp-form-control', 'shared form controls need a target contract independent of screen wrapper structure');
+requireText('interaction', 'box-sizing: border-box', 'form-control target height must include border/padding predictably');
+requireText('interaction', '.sp-toggle__input', 'checkbox glyph and label target must be styled separately');
+requireText('interaction', '.sp-toggle {', 'checkbox labels must own a comfortable pointer target');
 requireText('interaction', '@media (hover: none), (pointer: coarse)', 'touch must not inherit desktop hover behavior');
 requireText('interaction', ':not(:active)', 'sticky-hover neutralization must not erase press feedback');
 requireText('interaction', '@media (hover: hover) and (pointer: fine)', 'hover feedback must be gated to precise pointers');
 requireText('interaction', 'scroll-padding: 10px', 'scroll containers need room for focused controls');
 requireText('interaction', 'scroll-margin: 10px', 'focused controls need room from clipped scroll edges');
 requireText('interaction', 'filter: brightness(0.92)', 'custom controls need immediate visible press feedback');
+
+for (const needle of [
+  'className="sp-form-control sp-text-input"',
+  'className="sp-form-control sp-textarea"',
+  'className="sp-form-control sp-number-input"',
+  'className="sp-form-control sp-select"',
+  'className="sp-form-control sp-color-input"',
+  'className="sp-toggle__input"',
+]) {
+  requireText('formControls', needle, 'shared form primitives must expose stable hooks for target sizing');
+}
 
 requireText('base', '@media (prefers-reduced-motion: reduce)', 'system Reduce Motion preference must stay supported');
 for (const selector of ['.sp-tile--drawn', '.sp-button--lantern', '.sp-result-enter', '.sp-rotate-prompt__icon']) {
