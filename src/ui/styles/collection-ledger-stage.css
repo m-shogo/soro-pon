@@ -26,7 +26,6 @@
   .sp-collection-screen__main > .sp-paper-panel,
   .sp-collection-screen__recent > .sp-paper-panel {
     box-shadow: none;
-    backdrop-filter: none;
   }
 
   .sp-collection-screen .sp-collection-ranking > li:first-child {
