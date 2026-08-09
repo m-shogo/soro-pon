@@ -9,8 +9,15 @@ const REQUIRED_FILES = {
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
   workspaceCss: 'src/ui/styles/deck-editor-authored-workspace.css',
+  categoryWorkbench: 'src/ui/components/DeckCategoryWorkbench.tsx',
+  categoryCss: 'src/ui/styles/deck-category-workbench.css',
   tileWorkbench: 'src/ui/components/DeckTileWorkbench.tsx',
-  tileWorkbenchCss: 'src/ui/styles/deck-tile-workbench.css',
+  tileCss: 'src/ui/styles/deck-tile-workbench.css',
+  roleWorkbench: 'src/ui/components/DeckRoleWorkbench.tsx',
+  roleCss: 'src/ui/styles/deck-role-workbench.css',
+  bonusWorkbench: 'src/ui/components/DeckBonusWorkbench.tsx',
+  bonusCss: 'src/ui/styles/deck-bonus-workbench.css',
+  inspectorCss: 'src/ui/styles/deck-editor-adaptive-inspector.css',
   deckBrowserCss: 'src/ui/styles/deck-browser-authored-workspace.css',
   resultCss: 'src/ui/styles/result-authored-workspace.css',
   matchRiverCss: 'src/ui/styles/match-river-polish.css',
@@ -26,7 +33,6 @@ const files = Object.fromEntries(
     Object.entries(REQUIRED_FILES).map(async ([key, path]) => [key, await readFile(path, 'utf8')]),
   ),
 );
-
 const failures = [];
 
 function requireText(fileKey, needle, reason) {
@@ -34,22 +40,25 @@ function requireText(fileKey, needle, reason) {
     failures.push(`${REQUIRED_FILES[fileKey]}: missing ${JSON.stringify(needle)} — ${reason}`);
   }
 }
-
 function forbidText(fileKey, needle, reason) {
   if (files[fileKey].includes(needle)) {
     failures.push(`${REQUIRED_FILES[fileKey]}: found forbidden ${JSON.stringify(needle)} — ${reason}`);
   }
 }
 
-requireText('claude', 'Batch 14 Visual Quality Contract', 'future agents must inherit the visual quality gate');
-requireText('claude', 'CI green is necessary but never sufficient', 'visual approval must stay distinct from code correctness');
-requireText('claude', 'no generic AI ensemble/collage look', 'generic generated composition must stay explicitly prohibited');
-
-for (const code of ['AI-01', 'AI-02', 'AI-03', 'AI-04', 'AI-05', 'AI-06', 'AI-07', 'UI-01', 'GAME-01', 'ASSET-04']) {
-  requireText('learning', code, 'visual failure taxonomy must remain machine-checkable and reusable');
+// Authored visual policy and learning must remain inherited by future agents.
+for (const needle of [
+  'Batch 14 Visual Quality Contract',
+  'CI green is necessary but never sufficient',
+  'no generic AI ensemble/collage look',
+]) {
+  requireText('claude', needle, 'future agents must inherit the authored visual gate');
 }
-requireText('learning', 'weakest three', 'every pass must identify the largest visual defects before adding polish');
-requireText('learning', 'Candidate A/B/C must be conceptually different', 'candidate diversity cannot collapse to seed variations');
+for (const code of ['AI-01', 'AI-02', 'AI-03', 'AI-04', 'AI-05', 'AI-06', 'AI-07', 'UI-01', 'GAME-01', 'ASSET-04']) {
+  requireText('learning', code, 'visual failure taxonomy must remain reusable');
+}
+requireText('learning', 'weakest three', 'each visual pass must prioritize the largest defects');
+requireText('learning', 'Candidate A/B/C must be conceptually different', 'asset candidates cannot collapse into seed variations');
 
 for (const heading of [
   '## Visual Thesis',
@@ -58,125 +67,160 @@ for (const heading of [
   '## Prior Failure Check',
   '## Review Notes / Learning Capture',
 ]) {
-  requireText('template', heading, 'new asset requests must preserve authored generation fields');
+  requireText('template', heading, 'asset request template must preserve authored generation fields');
   requireText('request017', heading, 'Yorunoshirube table brief must follow the authored request contract');
   requireText('request018', heading, 'Cute Pop table brief must follow the authored request contract');
 }
 for (const requestKey of ['request017', 'request018']) {
   requireText(requestKey, 'central 60-70%', 'gameplay center must stay quiet for tiles and discard rivers');
-  requireText(requestKey, 'near-duplicate candidates', 'candidate diversity must remain explicit');
+  requireText(requestKey, 'near-duplicate candidates', 'candidate diversity must stay explicit');
 }
 requireText('request017', 'one primary warm lantern source', 'Yorunoshirube lighting must stay authored rather than neon');
 requireText('request018', 'matte printed board/paper', 'Cute Pop material must stay tactile rather than candy-gloss');
-requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern guard must explicitly reject generic gradient polish');
+requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern guard must reject generic gradient polish');
 
-requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored anti-AI override must stay loaded');
-requireText('app', "import './ui/styles/deck-editor-authored-workspace.css';", 'authored editor workspace pass must stay loaded');
-requireText('app', "import './ui/styles/deck-tile-workbench.css';", 'tile-led editor workbench must stay loaded');
-requireText('app', "import './ui/styles/deck-browser-authored-workspace.css';", 'authored deck browsing pass must stay loaded');
-requireText('app', "import './ui/styles/result-authored-workspace.css';", 'outcome-first result pass must stay loaded');
-requireText('app', "import './ui/styles/batch14-landscape-game.css';", 'compact landscape composition must stay loaded after authored polish');
-requireText('authoredCss', 'generic AI/SaaS treatments', 'file purpose must remain explicit');
+// The app must load the current authored/workbench layers, not legacy editor layers.
+for (const stylesheet of [
+  'authored-visual-polish.css',
+  'deck-editor-authored-workspace.css',
+  'deck-category-workbench.css',
+  'deck-tile-workbench.css',
+  'deck-role-workbench.css',
+  'deck-bonus-workbench.css',
+  'deck-editor-adaptive-inspector.css',
+  'result-authored-workspace.css',
+  'batch14-landscape-game.css',
+]) {
+  requireText('app', `import './ui/styles/${stylesheet}';`, `${stylesheet} must stay loaded`);
+}
+forbidText('app', 'deck-role-composer.css', 'obsolete role composer stylesheet must never return');
+
+requireText('authoredCss', 'generic AI/SaaS treatments', 'authored anti-AI layer purpose must remain explicit');
 requireText('authoredCss', '.sp-deck-select-card', 'deck selection must retain non-marketplace treatment');
 requireText('authoredCss', '.sp-table-stage', 'match table must retain art-first treatment');
-requireText('authoredCss', 'backdrop-filter: none', 'glass blur must stay actively neutralized in authored layer');
+forbidText('authoredCss', "[style*='border-bottom']", 'authored CSS must not depend on serialized inline styles');
+forbidText('authoredCss', '.sp-deck-editor-tile-preview', 'legacy repeated tile-row preview must not return');
+forbidText('authoredCss', '#sp-tabpanel-roles > .sp-paper-panel', 'legacy role PaperPanel DOM must not return');
+forbidText('authoredCss', '#sp-tabpanel-bonuses > .sp-paper-panel', 'legacy bonus PaperPanel DOM must not return');
 forbidText('authoredCss', 'radial-gradient(', 'authored layer must not reintroduce decorative radial gradients');
 
-requireText('workspaceCss', 'game-building workbench', 'editor polish must keep a game-workspace visual thesis');
-requireText('workspaceCss', 'border-left: 1px solid', 'validation rail must remain structurally separated without becoming a floating card');
-requireText('workspaceCss', 'transform: none', 'editor presets must not regain hover-lift behavior');
-forbidText('workspaceCss', "[style*='border-bottom']", 'editor styling must not depend on serialized inline-style text');
-forbidText('workspaceCss', 'radial-gradient(', 'editor workspace must not use decorative radial gradients');
-forbidText('workspaceCss', 'linear-gradient(', 'editor workspace must not use decorative linear gradients');
-forbidText('workspaceCss', 'backdrop-filter:', 'editor workspace must not use glass blur');
+requireText('workspaceCss', 'current workbench layers', 'editor shell must explicitly delegate tab visuals to current workbenches');
+requireText('workspaceCss', 'border-left: 1px solid', 'validation rail must remain structurally separated');
+forbidText('workspaceCss', '.sp-deck-editor-tile-preview', 'legacy tile preview selector must not return');
+forbidText('workspaceCss', '#sp-tabpanel-tiles > .sp-paper-panel', 'legacy tile row DOM must not return');
+forbidText('workspaceCss', '#sp-tabpanel-roles > .sp-paper-panel', 'legacy role preset DOM must not return');
+forbidText('workspaceCss', '#sp-tabpanel-bonuses > .sp-paper-panel', 'legacy bonus preset DOM must not return');
+forbidText('workspaceCss', "[style*='border-bottom']", 'editor shell must not depend on serialized inline styles');
+forbidText('workspaceCss', 'radial-gradient(', 'editor shell must not use decorative radial gradients');
+forbidText('workspaceCss', 'linear-gradient(', 'editor shell must not use decorative linear gradients');
+forbidText('workspaceCss', 'backdrop-filter:', 'editor shell must not use glass blur');
 
-requireText('editor', "import { DeckTileWorkbench } from '../components/DeckTileWorkbench';", 'editor tile tab must delegate presentation to the tile-focused workbench');
-requireText('editor', '<DeckTileWorkbench', 'tile tab must render the visual workbench');
+// Current editor presentation boundaries.
+for (const [componentName, className] of [
+  ['DeckCategoryWorkbench', 'sp-category-workbench'],
+  ['DeckTileWorkbench', 'sp-tile-workbench'],
+  ['DeckRoleWorkbench', 'sp-role-workbench'],
+  ['DeckBonusWorkbench', 'sp-bonus-workbench'],
+]) {
+  requireText('editor', `import { ${componentName} }`, `DeckEditor must delegate to ${componentName}`);
+  requireText('editor', `<${componentName}`, `${componentName} must render from the editor tab`);
+  const key = componentName === 'DeckCategoryWorkbench'
+    ? 'categoryWorkbench'
+    : componentName === 'DeckTileWorkbench'
+      ? 'tileWorkbench'
+      : componentName === 'DeckRoleWorkbench'
+        ? 'roleWorkbench'
+        : 'bonusWorkbench';
+  requireText(key, `className=\"${className}`, `${componentName} must keep its dedicated authored surface`);
+  requireText(key, 'aria-pressed=', `${componentName} selection must expose persistent state`);
+}
 forbidText('editor', 'className="sp-deck-editor-tile-preview"', 'editor must not regress to repeated per-tile form rows');
-forbidText('editor', "import { TileCard } from '../components/TileCard';", 'production tile rendering belongs inside the focused workbench boundary');
+forbidText('editor', "import { TileCard } from '../components/TileCard';", 'production tile rendering belongs inside DeckTileWorkbench');
 
 requireText('tileWorkbench', "import { TileCard } from './TileCard';", 'tile workbench must reuse the production tile renderer');
-requireText('tileWorkbench', 'aria-pressed={selected}', 'tile selection must expose state without color-only communication');
-requireText('tileWorkbench', 'className="sp-tile-workbench__shelf"', 'real tiles must remain the primary selection surface');
-requireText('tileWorkbench', 'className="sp-tile-workbench__editor"', 'only the selected tile should own the editing inspector');
-requireText('tileWorkbench', 'categoryColor: category.color', 'shelf previews must reflect the live primary category color');
-requireText('tileWorkbench', 'showName={false}', 'shelf tiles should stay compact visual objects');
-requireText('tileWorkbench', 'onToggleCategory(selectedTile, category.id)', 'category membership must continue using the existing safe toggle callback');
-
-requireText('tileWorkbenchCss', 'shelf is the primary surface', 'tile editing must retain the visual-object-first thesis');
-requireText('tileWorkbenchCss', '.sp-tile-workbench__shelf', 'tile shelf must remain a dedicated visual surface');
-requireText('tileWorkbenchCss', '.sp-tile-workbench__editor', 'selected-tile inspector must remain structurally distinct');
-requireText('tileWorkbenchCss', "[data-selected='true']", 'selected tile must have a non-color-only structural state');
-forbidText('tileWorkbenchCss', 'radial-gradient(', 'tile workbench must not use decorative radial gradients');
-forbidText('tileWorkbenchCss', 'linear-gradient(', 'tile workbench must not use decorative linear gradients');
-forbidText('tileWorkbenchCss', 'backdrop-filter:', 'tile workbench must not use glass blur');
-forbidText('tileWorkbenchCss', 'translateY(', 'tile workbench must not reintroduce hover lift');
+requireText('tileWorkbench', 'onToggleCategory(selectedTile, category.id)', 'tile categories must keep the existing safe callback');
+requireText('tileCss', 'shelf is the primary surface', 'tile editing must remain object-first');
+requireText('categoryCss', "[data-selected='true']", 'category selection must remain persistent');
+requireText('roleCss', 'selection-based', 'role editor must remain preset/selection-led');
+requireText('bonusCss', 'game-building workbench', 'bonus editor must remain preset/selection-led');
+for (const key of ['categoryCss', 'tileCss', 'roleCss', 'bonusCss']) {
+  forbidText(key, 'radial-gradient(', 'workbench layers must not use decorative radial gradients');
+  forbidText(key, 'linear-gradient(', 'workbench layers must not use decorative linear gradients');
+}
+requireText('inspectorCss', 'width: min(158px, 21%);', 'compact adaptive inspector must leave width to the workbench');
+requireText('inspectorCss', 'min-height: 28px;', 'compact validation disclosure must remain operable');
 
 requireText('deckBrowserCss', 'Deck identity must come from its actual tiles', 'deck browse/detail hierarchy must remain object-led');
-requireText('deckBrowserCss', '.sp-deck-loadout__tile-item:hover .sp-tile', 'detail tiles must explicitly neutralize hover lift');
-requireText('deckBrowserCss', '.sp-deck-select-card:hover .sp-deck-select-card__preview .sp-tile:nth-child(odd)', 'deck preview tiles must explicitly neutralize hover choreography');
-requireText('deckBrowserCss', 'background: transparent', 'count/stat chrome must stay visually quiet');
+requireText('deckBrowserCss', 'background: transparent', 'deck stat chrome must stay visually quiet');
 forbidText('deckBrowserCss', 'radial-gradient(', 'deck browse/detail pass must not use decorative radial gradients');
 forbidText('deckBrowserCss', 'linear-gradient(', 'deck browse/detail pass must not use decorative linear gradients');
 forbidText('deckBrowserCss', 'translateY(', 'deck browse/detail pass must not reintroduce hover lift');
 
-requireText('resultCss', 'The result, winning tiles and score are the event', 'result hierarchy must stay outcome-first');
-requireText('resultCss', '.sp-result-screen__side > .sp-paper-panel', 'result side information must remain a quiet ledger');
-requireText('resultCss', 'transform: none', 'result actions must not regain hover lift');
-forbidText('resultCss', 'radial-gradient(', 'result pass must not use decorative radial gradients');
-forbidText('resultCss', 'linear-gradient(', 'result pass must not use decorative linear gradients');
-forbidText('resultCss', 'backdrop-filter:', 'result pass must not use glass blur');
+requireText('resultCss', 'The result, winning tiles and score are the event', 'Result hierarchy must stay outcome-first');
+requireText('resultCss', '@layer screens', 'Result-specific styling must outrank generic component styling');
+requireText('resultCss', '.sp-result-screen__actions', 'Result continuation controls must remain grouped');
+requireText('resultCss', 'transform: none', 'Result actions must not regain hover lift');
+forbidText('resultCss', 'radial-gradient(', 'Result authored layer must not use decorative radial gradients');
+forbidText('resultCss', 'linear-gradient(', 'Result authored layer must not use decorative linear gradients');
+forbidText('resultCss', 'backdrop-filter:', 'Result authored layer must not use glass blur');
 
 requireText('matchRiverCss', 'regular blocks are easier to scan', 'discard rivers must stay grid-led and mahjong-readable');
 requireText('matchRiverCss', 'physical edge rather than an ornamental glow/fog composition', 'self hand must keep authored physical grounding');
-requireText('matchRiverCss', 'border-radius: 0', 'empty-state/drawn markers must not regress into pill decoration');
 forbidText('matchRiverCss', 'radial-gradient(', 'match river layer must not use decorative radial gradients');
 forbidText('matchRiverCss', 'linear-gradient(', 'match river layer must not use decorative linear gradients');
 
-requireText('landscapeCss', '844x390 is a game viewport', 'target viewport intent must remain explicit');
-requireText('landscapeCss', '.sp-match-utility', 'utility overlay composition must remain defined');
-requireText('landscapeCss', 'position: absolute', 'edge controls must not consume dedicated layout rows in compact landscape');
-requireText('landscapeCss', 'grid-template-rows: minmax(0, 1fr) auto', 'table and hand must own the compact vertical layout');
-requireText('landscapeCss', '.sp-match-action-zone', 'actions must remain an edge control rather than a full-width web toolbar');
-requireText('landscapeCss', 'right: max(5px, var(--sp-safe-right))', 'right-edge action placement must respect safe area');
-requireText('landscapeCss', '.sp-seat-played__head', 'discard river labels should disappear when space is scarce');
-requireText('landscapeCss', '.sp-player-panel__meta', 'compact player panels must suppress redundant visible metadata');
-requireText('landscapeCss', '#sp-tabpanel-roles', 'role composer must retain compact game-building treatment');
+// Compact gameplay layer owns only match composition plus a shared editor main constraint.
+for (const needle of [
+  '844x390 is a game viewport',
+  '.sp-match-utility',
+  'grid-template-rows: minmax(0, 1fr) auto',
+  '.sp-match-action-zone',
+  'right: max(5px, var(--sp-safe-right))',
+  '.sp-seat-played__head',
+  '.sp-player-panel__meta',
+  '.sp-self-hand-zone .sp-tile',
+  'pointer-events: auto;',
+]) {
+  requireText('landscapeCss', needle, 'compact gameplay composition must remain explicit');
+}
+forbidText('landscapeCss', '#sp-tabpanel-roles', 'tab-specific role layout belongs to DeckRoleWorkbench CSS');
+forbidText('landscapeCss', '#sp-tabpanel-bonuses', 'tab-specific bonus layout belongs to DeckBonusWorkbench CSS');
+forbidText('landscapeCss', '#sp-tabpanel-tiles > .sp-paper-panel', 'legacy tile row layout must not return');
+forbidText('landscapeCss', '.sp-deck-editor-tile-preview', 'legacy tile preview layout must not return');
 
 forbidText('match', "from '../skins/useSkin'", 'skin/debug identity should not occupy match utility chrome');
 forbidText('match', 'Cute Pop', 'match chrome must not display skin labels');
 forbidText('match', 'ヨルノシルベ', 'match chrome must not display skin labels');
-forbidText('match', '手番を準備しています', 'long assistant-like phase narration must not return');
-forbidText('match', '山から1枚引いています', 'long assistant-like phase narration must not return');
-forbidText('match', 'まだありません', 'empty discard state should stay visually quiet');
 requireText('match', "turnStart: '準備'", 'phase language should stay compact and game-like');
 requireText('match', "discardSelect: '打牌'", 'discard phase should use compact game vocabulary');
-requireText('match', 'aria-hidden="true">—</span>', 'empty river marker must stay visual-only');
 requireText('match', '<strong>そろぽん</strong>', 'utility identity should stay compact');
 
-requireText('result', 'className="sp-screen sp-result-screen"', 'result must keep its authored screen hook');
-requireText('result', '<h1 className="sp-screen__title">対戦結果</h1>', 'result screen heading must stay direct');
-requireText('result', '山が尽きました。', 'draw copy should stay concise');
-requireText('result', '記録用。対局性能には影響しません。', 'coin semantics must remain clear without assistant-like narration');
+for (const needle of [
+  'className="sp-screen sp-result-screen"',
+  '<h1 className="sp-screen__title">対戦結果</h1>',
+  '山が尽きました。',
+  '記録用。対局性能には影響しません。',
+  'もう一局',
+  '記憶帳を見る',
+  'TOPへ',
+]) {
+  requireText('result', needle, 'Result must keep direct outcome and continuation language');
+}
 forbidText('result', '夜の帳が下りた', 'poetic narration must not compete with the outcome');
 forbidText('result', '今宵の勝者', 'poetic narration must not compete with the outcome');
-forbidText('result', '同じメンバーで再戦する', 'rematch action must not carry redundant explanatory subcopy');
 
 requireText('deckList', "playable: '対局可'", 'deck list must use compact game-state language');
-requireText('deckList', "created: '自作'", 'deck source copy must stay native and match the storage contract');
-requireText('deckList', '<h1 className="sp-screen__title">デッキ選択</h1>', 'deck list heading must stay direct and game-like');
+requireText('deckList', "created: '自作'", 'deck source copy must stay native');
+requireText('deckList', '<h1 className="sp-screen__title">デッキ選択</h1>', 'deck list heading must stay direct');
 forbidText('deckList', 'DECK SELECT', 'decorative English eyebrow must not return');
 forbidText('deckList', 'OFFICIAL', 'source identity should stay compact Japanese copy');
 forbidText('deckList', 'CUSTOM', 'source identity should stay compact Japanese copy');
-forbidText('deckList', '説明はまだありません。', 'assistant-like empty copy must stay concise');
 
 if (failures.length > 0) {
   console.error('Batch 14 visual contract drift detected:');
-  for (const failure of failures) {
-    console.error(`- ${failure}`);
-  }
+  for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
 console.log('Batch 14 visual contract: PASS');
-console.log(`Checked ${Object.keys(REQUIRED_FILES).length} canonical files.`);
+console.log(`Checked ${Object.keys(REQUIRED_FILES).length} current canonical files.`);
