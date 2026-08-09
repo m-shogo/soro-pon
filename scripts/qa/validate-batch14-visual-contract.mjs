@@ -8,6 +8,7 @@ const REQUIRED_FILES = {
   request018: 'docs/asset-requests/018-BATCH-14-CUTE-POP-TABLE-BACKGROUND-REFINEMENT.md',
   app: 'src/App.tsx',
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
+  workspaceCss: 'src/ui/styles/deck-editor-authored-workspace.css',
   landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
   match: 'src/ui/screens/MatchScreen.tsx',
   editor: 'src/ui/screens/DeckEditorScreen.tsx',
@@ -63,6 +64,7 @@ requireText('request018', 'matte printed board/paper', 'Cute Pop material must s
 requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern guard must explicitly reject generic gradient polish');
 
 requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored anti-AI override must stay loaded');
+requireText('app', "import './ui/styles/deck-editor-authored-workspace.css';", 'authored editor workspace pass must stay loaded');
 requireText('app', "import './ui/styles/batch14-landscape-game.css';", 'compact landscape composition must stay loaded after authored polish');
 requireText('authoredCss', 'generic AI/SaaS treatments', 'file purpose must remain explicit');
 requireText('authoredCss', '.sp-deck-select-card', 'deck selection must retain non-marketplace treatment');
@@ -70,6 +72,15 @@ requireText('authoredCss', '.sp-table-stage', 'match table must retain art-first
 requireText('authoredCss', '.sp-deck-editor-tile-preview', 'editor must retain a visible game-object anchor beside form controls');
 requireText('authoredCss', 'backdrop-filter: none', 'glass blur must stay actively neutralized in authored layer');
 forbidText('authoredCss', 'radial-gradient(', 'authored layer must not reintroduce decorative radial gradients');
+
+requireText('workspaceCss', 'game-building workbench', 'editor polish must keep a game-workspace visual thesis');
+requireText('workspaceCss', '#sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div', 'tile-row styling must follow stable DOM structure');
+requireText('workspaceCss', 'border-left: 1px solid', 'validation rail must remain structurally separated without becoming a floating card');
+requireText('workspaceCss', 'transform: none', 'editor presets must not regain hover-lift behavior');
+forbidText('workspaceCss', "[style*='border-bottom']", 'editor styling must not depend on serialized inline-style text');
+forbidText('workspaceCss', 'radial-gradient(', 'editor workspace must not use decorative radial gradients');
+forbidText('workspaceCss', 'linear-gradient(', 'editor workspace must not use decorative linear gradients');
+forbidText('workspaceCss', 'backdrop-filter:', 'editor workspace must not use glass blur');
 
 requireText('landscapeCss', '844x390 is a game viewport', 'target viewport intent must remain explicit');
 requireText('landscapeCss', '.sp-match-utility', 'utility overlay composition must remain defined');
