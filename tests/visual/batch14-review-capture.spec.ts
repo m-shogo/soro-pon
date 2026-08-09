@@ -124,13 +124,18 @@ async function expectMatchGeometry(page: Page) {
       return rect.width > 0 && rect.height > 0;
     });
 
+    // Compact mode deliberately overlays broad wrapper regions: utility spans
+    // the board while only its identity/button are painted, and the action-zone
+    // sits above a right-side gap reserved by hand padding. Detect real visual
+    // occlusion by comparing painted controls/game objects, not those wrappers.
     const collisionElements = [
       ...document.querySelectorAll<HTMLElement>(
-        '.sp-match-utility, .sp-table-seat, .sp-table-center, .sp-self-hand-zone, .sp-match-action-zone',
+        '.sp-match-utility__identity, .sp-match-utility > .sp-button, .sp-player-panel, .sp-table-center, .sp-self-hand-zone .sp-tile, .sp-match-action-zone .sp-button',
       ),
     ].filter((element) => {
       const rect = element.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
     });
     const collisions: string[] = [];
 
