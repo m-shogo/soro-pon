@@ -23,6 +23,7 @@
     "qa:batch13:layout-audit": "node scripts/qa/run-batch13-layout-audit.mjs",
     "qa:batch13:deployed-smoke": "node scripts/qa/run-batch13-deployed-smoke.mjs",
     "qa:batch14:visual-contract": "node scripts/qa/validate-batch14-visual-contract.mjs",
+    "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
     "asset:image:generate": "tools/asset-factory/soro-pon-ui/scripts/codex-generate-raw.sh"
@@ -44,7 +45,6 @@
     "@types/node": "^26.1.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@vitejs/plugin-react": "^4.5.0",
     "jsdom": "^29.1.1",
     "typescript": "^5.8.0",
     "vite": "^6.3.0",
