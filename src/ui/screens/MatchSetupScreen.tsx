@@ -35,10 +35,7 @@ export function MatchSetupScreen({
       <div className="sp-screen__body sp-match-setup__body">
         <section className="sp-match-setup__config" aria-labelledby="sp-match-setup-count-title">
           <div className="sp-match-setup__section-head">
-            <div>
-              <span className="sp-match-setup__kicker">PLAYERS</span>
-              <h2 id="sp-match-setup-count-title">人数を選ぶ</h2>
-            </div>
+            <h2 id="sp-match-setup-count-title">人数を選ぶ</h2>
             <strong>{playerCount}人戦</strong>
           </div>
 
@@ -74,10 +71,7 @@ export function MatchSetupScreen({
 
         <section className="sp-match-setup__players" aria-labelledby="sp-match-setup-members-title">
           <div className="sp-match-setup__section-head">
-            <div>
-              <span className="sp-match-setup__kicker">TABLE</span>
-              <h2 id="sp-match-setup-members-title">面子</h2>
-            </div>
+            <h2 id="sp-match-setup-members-title">面子</h2>
             <span>{playerCount}席</span>
           </div>
           <div className="sp-match-setup__player-grid">
