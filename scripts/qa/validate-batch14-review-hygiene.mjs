@@ -4,7 +4,7 @@ const REQUIRED_FILES = {
   packageJson: 'package.json',
   capture: 'tests/visual/batch14-review-capture.spec.ts',
   workflow: '.github/workflows/batch14-visual-review.yml',
-  roleComposerCss: 'src/ui/styles/deck-role-composer.css',
+  roleWorkbenchCss: 'src/ui/styles/deck-role-workbench.css',
   reviewDoc: 'docs/qa/BATCH-14-VISUAL-REVIEW.md',
 };
 
@@ -88,21 +88,12 @@ requireText('workflow', 'path: test-results/batch14-review', 'workflow must uplo
 requireText('workflow', 'retention-days: 7', 'review artifacts should remain short-lived instead of becoming repository history');
 requireText('workflow', 'if: always()', 'partial screenshots should survive a later layout assertion failure');
 
-requireText(
-  'roleComposerCss',
-  '#sp-tabpanel-roles > .sp-paper-panel {\n    flex: 0 0 auto;',
-  'role preset and score-sheet panels must scroll instead of flex-shrinking their contents out of the compact viewport',
-);
-requireText(
-  'roleComposerCss',
-  'grid-template-columns: repeat(2, minmax(0, 1fr));',
-  'compact role presets need readable two-column choice areas rather than four compressed form columns',
-);
-requireText(
-  'roleComposerCss',
-  'min-height: 40px;',
-  'compact role preset choices must remain large enough to read and operate',
-);
+requireText('roleWorkbenchCss', 'selection-based', 'role editor must remain a selection-led game-building workbench');
+requireText('roleWorkbenchCss', 'min-height: 44px;', 'roomy role choices must retain frequent-action touch sizing');
+requireText('roleWorkbenchCss', 'grid-template-columns: repeat(2, minmax(0, 1fr));', 'compact preset choices must remain readable');
+requireText('roleWorkbenchCss', 'transform: none', 'role choices must not regain hover lift');
+forbidText('roleWorkbenchCss', 'linear-gradient(', 'role workbench must not use decorative gradients');
+forbidText('roleWorkbenchCss', 'radial-gradient(', 'role workbench must not use decorative gradients');
 
 for (const phrase of [
   'Batch 14 visual/UI review is **COMPLETE**',
