@@ -41,6 +41,8 @@ jobs:
         run: pnpm qa:batch14:review-hygiene
       - name: Batch 15 home/loadout contract
         run: pnpm qa:batch15:home-contract
+      - name: Batch 16 deck detail contract
+        run: pnpm qa:batch16:deck-detail-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

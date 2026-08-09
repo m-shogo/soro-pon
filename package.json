@@ -25,6 +25,7 @@
     "qa:batch14:review-capture": "playwright test tests/visual/batch14-review-capture.spec.ts",
     "qa:batch14:review-hygiene": "node scripts/qa/validate-batch14-review-hygiene.mjs",
     "qa:batch15:home-contract": "node scripts/qa/validate-batch15-home-contract.mjs",
+    "qa:batch16:deck-detail-contract": "node scripts/qa/validate-batch16-deck-detail-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
