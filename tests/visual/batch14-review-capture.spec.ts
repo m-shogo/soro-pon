@@ -28,10 +28,6 @@ async function boot(page: Page, skin: SkinId, size: CaptureSize, seedOffset = 0)
   );
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'soro-pon' })).toBeVisible();
-  // SkinProvider loads registry/tokens/assets asynchronously. A visible heading
-  // only proves React mounted; it does not prove the requested skin was applied.
-  // Wait for applyDocumentSkin's canonical marker so the first TOP capture does
-  // not accidentally record the bundled/default fallback skin.
   await expect
     .poll(() => page.evaluate(() => document.documentElement.dataset.skin))
     .toBe(skin);
@@ -69,19 +65,13 @@ async function expectViewportContract(page: Page) {
       return rect.width > 0 && rect.height > 0;
     });
 
-    // Checkbox/radio activation includes the associated <label> area. Measuring
-    // only the native 18px box would report a false WCAG target-size failure even
-    // though the whole visible toggle row is clickable. Other controls keep their
-    // own DOM rectangle as the actual pointer target.
     const hitRect = (element: HTMLElement): DOMRect => {
       if (
         element instanceof HTMLInputElement &&
         (element.type === 'checkbox' || element.type === 'radio')
       ) {
         const label = element.closest('label');
-        if (label !== null) {
-          return label.getBoundingClientRect();
-        }
+        if (label !== null) return label.getBoundingClientRect();
       }
       return element.getBoundingClientRect();
     };
@@ -139,11 +129,6 @@ async function expectMatchGeometry(page: Page) {
       const style = getComputedStyle(element);
       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
     });
-
-    // Seats intentionally use overflow: visible so each discard river can leave
-    // the metadata footprint and enter the shared table surface. Treat that as
-    // composition, not clipping. Containers that are expected to contain their
-    // own content still must not need scrolling.
     const boundedOverflowElements = [
       ...document.querySelectorAll<HTMLElement>(
         '.sp-match-utility, .sp-table-stage, .sp-table-center, .sp-self-hand-zone, .sp-match-action-zone, .sp-player-panel',
@@ -152,11 +137,6 @@ async function expectMatchGeometry(page: Page) {
       const rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     });
-
-    // Compact mode deliberately overlays broad wrapper regions: utility spans
-    // the board while only its identity/button are painted, and the action-zone
-    // sits above a right-side gap reserved by hand padding. Detect real visual
-    // occlusion by comparing painted controls/game objects, not those wrappers.
     const collisionElements = [
       ...document.querySelectorAll<HTMLElement>(
         '.sp-match-utility__identity, .sp-match-utility > .sp-button, .sp-player-panel, .sp-table-center, .sp-self-hand-zone .sp-tile, .sp-match-action-zone .sp-button',
@@ -236,6 +216,11 @@ for (const skin of SKINS) {
       await capture(page, `deck-editor-${skin}-${size.label}`);
       await expectViewportContract(page);
 
+      await page.getByRole('tab', { name: /^カテゴリ/ }).click();
+      await expect(page.getByRole('tabpanel')).toHaveAttribute('id', 'sp-tabpanel-categories');
+      await capture(page, `deck-editor-categories-${skin}-${size.label}`);
+      await expectViewportContract(page);
+
       await page.getByRole('tab', { name: /^牌/ }).click();
       await expect(page.getByRole('tabpanel')).toHaveAttribute('id', 'sp-tabpanel-tiles');
       await capture(page, `deck-editor-tiles-${skin}-${size.label}`);
@@ -260,9 +245,7 @@ for (const skin of SKINS) {
         await expectViewportContract(page);
 
         await page.getByRole('button', { name: `${playerCount}人戦をはじめる` }).click();
-        await expect(
-          page.getByRole('main', { name: `${playerCount}人戦の対局卓` }),
-        ).toBeVisible();
+        await expect(page.getByRole('main', { name: `${playerCount}人戦の対局卓` })).toBeVisible();
         await capture(page, `match-${skin}-${playerCount}p-${size.label}`);
         await expectViewportContract(page);
         await expectMatchGeometry(page);
