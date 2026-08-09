@@ -13,6 +13,7 @@ const REQUIRED_FILES = {
   matchRiverCss: 'src/ui/styles/match-river-polish.css',
   landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
   match: 'src/ui/screens/MatchScreen.tsx',
+  deckList: 'src/ui/screens/DeckListScreen.tsx',
   editor: 'src/ui/screens/DeckEditorScreen.tsx',
 };
 
@@ -116,6 +117,14 @@ forbidText('match', '手番を準備しています', 'long assistant-like phase
 forbidText('match', '山から1枚引いています', 'long assistant-like phase narration must not return');
 requireText('match', "turnStart: '手番準備'", 'compact phase language is part of the authored game UI');
 requireText('match', '<strong>そろぽん</strong>', 'utility identity should stay compact');
+
+requireText('deckList', "playable: '対局可'", 'deck list must use compact game-state language');
+requireText('deckList', "created: '自作'", 'deck source copy must stay native and match the storage contract');
+requireText('deckList', '<h1 className="sp-screen__title">デッキ選択</h1>', 'deck list heading must stay direct and game-like');
+forbidText('deckList', 'DECK SELECT', 'decorative English eyebrow must not return');
+forbidText('deckList', 'OFFICIAL', 'source identity should stay compact Japanese copy');
+forbidText('deckList', 'CUSTOM', 'source identity should stay compact Japanese copy');
+forbidText('deckList', '説明はまだありません。', 'assistant-like empty copy must stay concise');
 
 requireText('editor', "import { TileCard } from '../components/TileCard';", 'editor must reuse the production tile renderer');
 requireText('editor', 'className="sp-deck-editor-tile-preview"', 'tile rows must retain live visual preview');
