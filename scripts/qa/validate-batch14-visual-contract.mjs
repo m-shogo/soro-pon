@@ -115,7 +115,10 @@ forbidText('match', 'Cute Pop', 'match chrome must not display skin labels');
 forbidText('match', 'ヨルノシルベ', 'match chrome must not display skin labels');
 forbidText('match', '手番を準備しています', 'long assistant-like phase narration must not return');
 forbidText('match', '山から1枚引いています', 'long assistant-like phase narration must not return');
-requireText('match', "turnStart: '手番準備'", 'compact phase language is part of the authored game UI');
+forbidText('match', 'まだありません', 'empty discard state should stay visually quiet');
+requireText('match', "turnStart: '準備'", 'phase language should stay compact and game-like');
+requireText('match', "discardSelect: '打牌'", 'discard phase should use compact game vocabulary');
+requireText('match', 'aria-hidden="true">—</span>', 'empty river marker must stay visual-only');
 requireText('match', '<strong>そろぽん</strong>', 'utility identity should stay compact');
 
 requireText('deckList', "playable: '対局可'", 'deck list must use compact game-state language');
