@@ -71,6 +71,13 @@
       background: color-mix(in srgb, var(--sp-color-night) 48%, transparent);
     }
 
+    /* The upper-right utility owns the exit control. Reserve a few physical
+       pixels below that control instead of letting the right player identity
+       sit underneath it. The river can still use the full shared table area. */
+    .sp-table-stage [data-seat-position='right'] .sp-player-panel {
+      margin-top: 8px;
+    }
+
     .sp-table-seat .sp-player-panel--active {
       box-shadow: inset 2px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 76%, transparent);
     }
