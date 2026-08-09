@@ -61,9 +61,14 @@ for (const needle of [
   'deck-editor-categories-${skin}-${size.label}',
   'deck-editor-tiles-${skin}-${size.label}',
   'deck-editor-roles-${skin}-${size.label}',
+  'deck-editor-bonuses-${skin}-${size.label}',
   'match-action-${skin}-4p-compact',
 ]) {
-  requireText('capture', needle, 'the visual review matrix, skin-ready boundary and actual labeled hit-target probes must stay complete');
+  requireText(
+    'capture',
+    needle,
+    'the visual review matrix, skin-ready boundary and actual labeled hit-target probes must stay complete',
+  );
 }
 forbidText(
   'capture',
