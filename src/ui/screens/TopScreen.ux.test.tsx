@@ -3,24 +3,21 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SkinProvider } from '../skins/SkinProvider';
 import { TopScreen } from './TopScreen';
 
 afterEach(cleanup);
 
 function renderTop() {
   return render(
-    <SkinProvider>
-      <TopScreen
-        onPlayNow={() => {}}
-        onDeckList={() => {}}
-        onImport={() => {}}
-        onCollection={() => {}}
-        hasPlayableDeck
-        coins={12}
-        recentRecords={[]}
-      />
-    </SkinProvider>,
+    <TopScreen
+      onPlayNow={() => {}}
+      onDeckList={() => {}}
+      onImport={() => {}}
+      onCollection={() => {}}
+      hasPlayableDeck
+      coins={12}
+      recentRecords={[]}
+    />,
   );
 }
 
