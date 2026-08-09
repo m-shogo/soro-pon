@@ -15,17 +15,11 @@ import { validateDeckForUse } from '../../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
-import { CategoryChip } from '../components/CategoryChip';
+import { DeckCategoryWorkbench } from '../components/DeckCategoryWorkbench';
 import { DeckEditorInspector } from '../components/DeckEditorInspector';
 import { DeckTileWorkbench } from '../components/DeckTileWorkbench';
 import { Dialog } from '../components/Dialog';
-import {
-  ColorField,
-  FormField,
-  NumberField,
-  SelectField,
-  TextField,
-} from '../components/FormField';
+import { FormField, NumberField, SelectField, TextField } from '../components/FormField';
 import { PaperPanel } from '../components/PaperPanel';
 import { Tabs } from '../components/Tab';
 
@@ -56,8 +50,6 @@ export function DeckEditorScreen({
   const [leaveConfirm, setLeaveConfirm] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // 保存前にschemaを通す。schema不正なデッキを保存するとstore読み込みが
-  // 破損扱いになるため、保存自体をブロックして理由を表示する。
   const handleSave = () => {
     const parsed = deckProjectSchema.safeParse(draft);
     if (!parsed.success) {
@@ -85,7 +77,6 @@ export function DeckEditorScreen({
     }));
   };
 
-  // ---- カテゴリ操作 ----
   const addCategory = () => {
     const id = nextId('cat', draft.categories.map((c) => c.id));
     setDraft({
@@ -114,12 +105,9 @@ export function DeckEditorScreen({
     });
   };
 
-  // ---- 牌操作 ----
   const addTile = () => {
     const firstCategory = draft.categories[0];
-    if (!firstCategory) {
-      return;
-    }
+    if (!firstCategory) return;
     const id = nextId('tile', draft.tiles.map((t) => t.id));
     setDraft({
       ...draft,
@@ -147,9 +135,7 @@ export function DeckEditorScreen({
     const categories = has
       ? tile.categories.filter((c) => c !== categoryId)
       : [...tile.categories, categoryId];
-    if (categories.length === 0) {
-      return; // 牌は最低1カテゴリ必要
-    }
+    if (categories.length === 0) return;
     const primaryCategoryId = categories.includes(tile.primaryCategoryId)
       ? tile.primaryCategoryId
       : categories[0]!;
@@ -159,7 +145,6 @@ export function DeckEditorScreen({
     setDraft({ ...draft, tiles: draft.tiles.filter((t) => t.id !== id) });
   };
 
-  // ---- 役テンプレート(docs/70 §18): 構築ロジックはsrc/app/editorTemplates.tsの純関数 ----
   const addRoleFromTemplate = (
     template: 'threeSameCategory' | 'threeDifferentCategories' | 'threeSameTile',
     categoryId?: string,
@@ -169,19 +154,13 @@ export function DeckEditorScreen({
       let role: WinRole | null = null;
       if (template === 'threeSameCategory' && categoryId) {
         const category = draft.categories.find((c) => c.id === categoryId);
-        if (category) {
-          role = buildSameCategoryRoleTemplate(category, existingIds);
-        }
+        if (category) role = buildSameCategoryRoleTemplate(category, existingIds);
       }
       if (template === 'threeDifferentCategories') {
         role = buildThreeDifferentCategoriesRoleTemplate(draft.categories.slice(0, 3), existingIds);
       }
-      if (template === 'threeSameTile') {
-        role = buildSameTileRoleTemplate(existingIds);
-      }
-      if (!role) {
-        return variant;
-      }
+      if (template === 'threeSameTile') role = buildSameTileRoleTemplate(existingIds);
+      if (!role) return variant;
       return { ...variant, winRoles: [...variant.winRoles, role] };
     });
   };
@@ -202,7 +181,6 @@ export function DeckEditorScreen({
 
   const [templateCategoryId, setTemplateCategoryId] = useState('');
   const [setTileIds, setSetTileIds] = useState<[string, string, string]>(['', '', '']);
-  // 同じ牌を複数スロットで選んでいないか(重複はテンプレート生成を許可しない)
   const setTileIdsHaveDuplicate =
     setTileIds.some((id) => id !== '') &&
     new Set(setTileIds.filter((id) => id !== '')).size !== setTileIds.filter((id) => id !== '').length;
@@ -211,12 +189,9 @@ export function DeckEditorScreen({
     new Set(setTileIds).size === 3 &&
     templateCategoryId !== '';
 
-  // specificSet + 同カテゴリ2組 (100点) テンプレート
   const addSpecificSetRole = () => {
     const category = draft.categories.find((c) => c.id === templateCategoryId);
-    if (!category) {
-      return;
-    }
+    if (!category) return;
     const tiles = setTileIds.map((tileId) => {
       const tile = draft.tiles.find((t) => t.id === tileId);
       return { id: tileId, name: tile?.name ?? tileId };
@@ -226,19 +201,14 @@ export function DeckEditorScreen({
         { tiles, category },
         variant.winRoles.map((r) => r.id),
       );
-      if (!role) {
-        return variant;
-      }
+      if (!role) return variant;
       return { ...variant, winRoles: [...variant.winRoles, role] };
     });
   };
 
-  // ---- ボーナス操作(構築ロジックはsrc/app/editorTemplates.ts) ----
   const addSpecialBonus = (categoryId: string) => {
     const category = draft.categories.find((c) => c.id === categoryId);
-    if (!category) {
-      return;
-    }
+    if (!category) return;
     updateVariant((variant) => {
       const bonus = buildSpecialBonusTemplate(
         category,
@@ -293,10 +263,7 @@ export function DeckEditorScreen({
         <Button variant="primary" onClick={handleSave} disabled={!isDirty}>
           保存する
         </Button>
-        <Button
-          variant="ghost"
-          onClick={() => (isDirty ? setLeaveConfirm(true) : onBack())}
-        >
+        <Button variant="ghost" onClick={() => (isDirty ? setLeaveConfirm(true) : onBack())}>
           もどる
         </Button>
       </div>
@@ -352,50 +319,13 @@ export function DeckEditorScreen({
           )}
 
           {tab === 'categories' && (
-            <PaperPanel title="カテゴリ">
-              <div className="sp-screen__col" style={{ gap: 'var(--sp-space-8)' }}>
-                {draft.categories.map((category) => (
-                  <div
-                    key={category.id}
-                    style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}
-                  >
-                    <CategoryChip
-                      name={category.name}
-                      color={category.color}
-                      {...(category.icon !== undefined ? { icon: category.icon } : {})}
-                    />
-                    <TextField
-                      label="カテゴリ名"
-                      value={category.name}
-                      maxLength={20}
-                      width="9em"
-                      onChange={(name) => updateCategory(category.id, { name })}
-                    />
-                    <ColorField
-                      label="カテゴリ色"
-                      value={category.color}
-                      onChange={(color) => updateCategory(category.id, { color })}
-                    />
-                    <TextField
-                      label="アイコン絵文字"
-                      value={category.icon ?? ''}
-                      maxLength={4}
-                      placeholder="絵文字"
-                      width="4em"
-                      onChange={(icon) =>
-                        updateCategory(category.id, icon === '' ? { icon: undefined } : { icon })
-                      }
-                    />
-                    <Button variant="ghost" onClick={() => removeCategory(category.id)}>
-                      削除
-                    </Button>
-                  </div>
-                ))}
-                <Button variant="ink" onClick={addCategory}>
-                  カテゴリを追加
-                </Button>
-              </div>
-            </PaperPanel>
+            <DeckCategoryWorkbench
+              categories={draft.categories}
+              tiles={draft.tiles}
+              onAddCategory={addCategory}
+              onUpdateCategory={updateCategory}
+              onRemoveCategory={removeCategory}
+            />
           )}
 
           {tab === 'tiles' && (
@@ -418,10 +348,7 @@ export function DeckEditorScreen({
                     value={templateCategoryId}
                     onChange={setTemplateCategoryId}
                     placeholder="カテゴリを選ぶ"
-                    options={draft.categories.map((category) => ({
-                      value: category.id,
-                      label: category.name,
-                    }))}
+                    options={draft.categories.map((category) => ({ value: category.id, label: category.name }))}
                   />
                   <Button
                     variant="ink"
@@ -511,6 +438,7 @@ export function DeckEditorScreen({
               </PaperPanel>
             </>
           )}
+
           {tab === 'bonuses' && (
             <>
               <PaperPanel variant="aged" title="特別ボーナス(単体ではあがれない)">
@@ -520,10 +448,7 @@ export function DeckEditorScreen({
                     value={templateCategoryId}
                     onChange={setTemplateCategoryId}
                     placeholder="カテゴリを選ぶ"
-                    options={draft.categories.map((category) => ({
-                      value: category.id,
-                      label: category.name,
-                    }))}
+                    options={draft.categories.map((category) => ({ value: category.id, label: category.name }))}
                   />
                   <Button
                     variant="ink"
@@ -604,10 +529,12 @@ export function DeckEditorScreen({
             </>
           )}
         </div>
+
         <div className="sp-screen__col sp-screen__col--side sp-screen__col--scroll">
           <DeckEditorInspector deck={draft} validation={validation} />
         </div>
       </div>
+
       <Dialog
         open={leaveConfirm}
         title="保存していない変更があります"

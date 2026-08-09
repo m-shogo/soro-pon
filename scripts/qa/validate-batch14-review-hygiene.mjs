@@ -58,6 +58,7 @@ for (const needle of [
   'const hitRect = (element: HTMLElement): DOMRect =>',
   'smallerThanWcagMinimum',
   'smallFrequentMatchActions',
+  'deck-editor-categories-${skin}-${size.label}',
   'deck-editor-tiles-${skin}-${size.label}',
   'deck-editor-roles-${skin}-${size.label}',
   'match-action-${skin}-4p-compact',
@@ -115,9 +116,7 @@ for (const phrase of [
 
 if (failures.length > 0) {
   console.error('Batch 14 visual review hygiene drift detected:');
-  for (const failure of failures) {
-    console.error(`- ${failure}`);
-  }
+  for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
