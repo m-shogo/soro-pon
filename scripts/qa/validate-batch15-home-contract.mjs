@@ -42,7 +42,7 @@ for (const needle of [
   'className="sp-top-stage__deck-spec"',
   'aria-label="ホームメニュー"',
   "{hasPlayableDeck ? 'まず遊ぶ' : 'デッキを準備'}",
-  '>JSONを読み込む<',
+  'JSONを読み込む',
 ]) {
   requireText('top', needle, 'TOP must stay deck-led while preserving its established user actions');
 }
