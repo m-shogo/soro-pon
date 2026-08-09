@@ -1,0 +1,46 @@
+name: Batch 14 Visual Review
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/ui/**'
+      - 'src/app/**'
+      - 'src/App.tsx'
+      - 'tests/visual/batch14-review-capture.spec.ts'
+      - 'playwright.config.ts'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/batch14-visual-review.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: batch14-visual-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Chromium for review capture
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Capture current Batch 14 UI
+        run: pnpm qa:batch14:review-capture
+      - name: Upload visual review artifact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: batch14-visual-review-${{ github.event.pull_request.number || 'manual' }}-${{ github.sha }}
+          path: test-results/batch14-review
+          if-no-files-found: warn
+          retention-days: 7
