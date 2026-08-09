@@ -1,0 +1,178 @@
+/*
+ * Interaction UX contract.
+ *
+ * This layer owns input-modality behavior only: hit targets, press feedback,
+ * focus visibility around scroll containers, and touch/hover differences.
+ * Layout, skin identity and decorative styling stay in their existing layers.
+ *
+ * References used for the contract:
+ * - Apple HIG: frequent game controls / buttons should target ~44x44pt and
+ *   custom controls need a visible pressed state. Secondary game controls may
+ *   be smaller when space is constrained, but still need a comfortable target.
+ * - WCAG 2.2 SC 2.5.8: pointer targets need at least 24x24 CSS px or spacing.
+ * - WCAG focus guidance: keyboard focus must remain obvious and unobscured.
+ */
+@layer interaction {
+  :where(
+      .sp-button,
+      .sp-tab,
+      .sp-tile,
+      .sp-icon-button,
+      .sp-deck-card,
+      .sp-skin-preview,
+      .sp-toggle,
+      .sp-form-control
+    ) {
+    touch-action: manipulation;
+  }
+
+  /* Frequent gameplay actions keep the full 44px target regardless of the
+     compact visual treatment used by earlier layout layers. */
+  .sp-match-action-zone .sp-button {
+    min-height: var(--sp-touch-min);
+  }
+
+  /* Tabs are frequent navigation on editor screens. Use the full touch target
+     when height allows; the compact 844x390 viewport uses a documented 36px
+     secondary-control target while keeping generous horizontal padding. */
+  .sp-tab {
+    min-height: var(--sp-touch-min);
+    min-width: var(--sp-touch-min);
+    padding-inline: var(--sp-space-12);
+  }
+
+  /* Form controls must expose their target contract even when a screen places a
+     TextField directly in a dense tile row instead of wrapping it in FormField.
+     The previous .sp-field descendant rule missed exactly that case. */
+  .sp-form-control {
+    box-sizing: border-box;
+    min-height: 36px;
+  }
+
+  .sp-text-input,
+  .sp-number-input,
+  .sp-select {
+    padding-block: 5px;
+  }
+
+  .sp-textarea {
+    min-height: 64px;
+    resize: vertical;
+  }
+
+  .sp-color-input {
+    min-width: var(--sp-touch-min);
+    min-height: 36px;
+    padding: 2px;
+  }
+
+  /* The checkbox glyph may remain visually compact because the enclosing label
+     is the pointer target. Keep that label comfortably above WCAG's 24px floor. */
+  .sp-toggle {
+    min-height: 32px;
+    padding: 3px 2px;
+    cursor: pointer;
+  }
+
+  .sp-toggle__input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex: none;
+  }
+
+  /* Keep focused controls from landing flush against a clipped scroll edge. */
+  .sp-screen__col--scroll,
+  .sp-deck-grid,
+  .sp-result-frame,
+  .sp-modal {
+    scroll-padding: 10px;
+    overscroll-behavior: contain;
+  }
+
+  :where(button, input, select, textarea, [tabindex]):focus-visible {
+    scroll-margin: 10px;
+  }
+
+  /* A press should answer immediately even on devices where hover does not
+     exist. Brightness is preferred to large translation/scale motion. */
+  .sp-button:active:not(:disabled),
+  .sp-tab:active,
+  .sp-icon-button:active:not(:disabled),
+  .sp-deck-card:active,
+  .sp-skin-preview:active:not(:disabled) {
+    filter: brightness(0.92);
+  }
+
+  .sp-tile:not(:disabled):not(.sp-tile--dimmed):active {
+    filter: brightness(0.94);
+  }
+
+  .sp-tile--dimmed:not(:disabled):active {
+    filter: brightness(0.66) saturate(0.7);
+  }
+
+  /* Touch browsers can keep :hover latched after a tap. Neutralize hover-only
+     presentation there so the screen does not appear stuck in a fake state.
+     :active is excluded so the visible press response above remains intact. */
+  @media (hover: none), (pointer: coarse) {
+    .sp-button:hover:not(:disabled):not(:active),
+    .sp-icon-button:hover:not(:disabled):not(:active) {
+      filter: none;
+    }
+
+    .sp-deck-select-card:hover,
+    .sp-deck-select-card:focus-visible {
+      transform: none;
+    }
+
+    .sp-deck-loadout__tile-item:hover .sp-tile,
+    .sp-deck-select-card:hover .sp-deck-select-card__preview .sp-tile:nth-child(odd) {
+      transform: none;
+    }
+  }
+
+  /* Hover feedback is useful with a precise pointer, but touch should rely on
+     active/focus states above instead of simulator-like floating effects. */
+  @media (hover: hover) and (pointer: fine) {
+    .sp-tab:hover {
+      color: var(--sp-color-cream);
+      background: color-mix(in srgb, var(--sp-color-cream) 5%, transparent);
+    }
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    /* Secondary controls are deliberately smaller than the 44px gameplay CTA
+       in the constrained landscape viewport. 32-36px remains above WCAG AA's
+       24px minimum and preserves the table as the primary visual surface. */
+    .sp-tab {
+      min-height: 36px;
+      padding: 4px 10px;
+    }
+
+    .sp-match-utility > .sp-button,
+    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
+    #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
+      min-height: 32px;
+    }
+
+    .sp-form-control {
+      min-height: 32px;
+    }
+
+    .sp-text-input,
+    .sp-number-input,
+    .sp-select {
+      padding-block: 3px;
+    }
+
+    .sp-color-input {
+      min-height: 32px;
+    }
+
+    .sp-toggle {
+      min-height: 28px;
+      padding-block: 2px;
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "batch": 13,
+  "recordedAtUtc": "2026-07-27T04:30:25Z",
+  "environment": {
+    "browser": "Safari",
+    "browserVersion": "26.4",
+    "browserChannel": "stable",
+    "os": "macOS",
+    "osVersion": "26.4.1",
+    "sourceShaAtSessionEnd": "8958b2ae03abe97af83fda56e7026c49823909d2",
+    "targetScope": "loopback production build"
+  },
+  "safariCoreFlows": {
+    "result": "PASS",
+    "pathsPassed": 4,
+    "pathsRequired": 4,
+    "paths": [
+      {
+        "skin": "yorunoshirube",
+        "players": 3,
+        "result": "PASS",
+        "evidence": "01-yorunoshirube-3p-result.png"
+      },
+      {
+        "skin": "cute-pop",
+        "players": 4,
+        "result": "PASS",
+        "evidence": "02-cute-pop-4p-result.png"
+      },
+      {
+        "skin": "cute-pop",
+        "players": 3,
+        "result": "PASS",
+        "evidence": "03-cute-pop-3p-result.png"
+      },
+      {
+        "skin": "yorunoshirube",
+        "players": 4,
+        "result": "PASS",
+        "evidence": "04-yorunoshirube-4p-result.png"
+      }
+    ],
+    "controlMethod": "macOS accessibility automation against real Safari",
+    "claimScope": "Both official skins and both player counts reached Result in real stable Safari before the Safari accessibility control channel disappeared.",
+    "notCovered": [
+      "full import and same-ID overwrite traversal in Safari",
+      "storage reload traversal in Safari",
+      "Safari console capture",
+      "Safari page-error capture",
+      "Safari network-error capture"
+    ]
+  },
+  "rotationSoak": {
+    "result": "BLOCKED",
+    "classification": "ENVIRONMENT_BLOCKER",
+    "cyclesPassed": 4,
+    "cyclesRequired": 20,
+    "observedWindowSeconds": 190,
+    "durationRequiredSeconds": 1200,
+    "startedAtUtc": "2026-07-27T04:19:39Z",
+    "lastCompletedAtUtc": "2026-07-27T04:22:49Z",
+    "evidence": "rotation-soak.tsv",
+    "blocker": "System Events lost every Safari accessibility window before cycle 5 while the Safari process and HTTP server remained present.",
+    "claimScope": "Four completed portrait-to-landscape cycles preserved the active game and allowed another discard. The required 20 cycles and 20 minutes were not reached."
+  },
+  "voiceOver": {
+    "result": "BLOCKED",
+    "classification": "ENVIRONMENT_BLOCKER",
+    "actualVoiceOverEnabled": true,
+    "voiceOverProcessObserved": true,
+    "observedItems": [
+      {
+        "result": "VOICEOVER_PASS",
+        "scope": "Safari app web-content recognition",
+        "caption": "soro-pon、Webコンテンツ",
+        "evidence": "06-voiceover-safari-blocked.png"
+      },
+      {
+        "result": "VOICEOVER_PASS",
+        "scope": "TOP static content",
+        "caption": "Vamp Pon 世界の中で流行っている記憶札遊び",
+        "evidence": "07-voiceover-safari-web-content.png"
+      }
+    ],
+    "blocker": "Safari accessibility windows were unavailable to System Events, so the mandatory end-to-end VoiceOver traversal could not be driven or observed.",
+    "claimScope": "Real VoiceOver output was observed for Safari and TOP static content only. Match Setup, import, dialogs, game controls, live regions, Result, and focus return are not claimed.",
+    "restoredAtSessionEnd": {
+      "voiceOverOff": true,
+      "processAbsent": true
+    }
+  },
+  "diagnostics": {
+    "consoleErrors": null,
+    "consoleResult": "NOT TESTED",
+    "pageErrors": null,
+    "pageResult": "NOT TESTED",
+    "networkErrors": null,
+    "networkResult": "NOT TESTED",
+    "reason": "Safari WebDriver and Apple Events JavaScript inspection were unavailable."
+  },
+  "findings": {
+    "productDefectsReproduced": 1,
+    "productDefectsFixed": 1,
+    "openProductDefects": 0,
+    "fixedProductDefect": {
+      "summary": "RotatePrompt unmounted AppRoot and reset an active game to TOP.",
+      "fixCommit": "b9efbe0"
+    },
+    "environmentBlockers": 2
+  },
+  "physicalIphoneSafari": {
+    "result": "KNOWN UNVERIFIED",
+    "gate": "POST-RELEASE DEVICE GATE",
+    "rcBlocker": false,
+    "productionBlocker": false,
+    "nonClaims": [
+      "macOS Safari is not physical iPhone Safari",
+      "Playwright WebKit is not physical iPhone Safari",
+      "Simulator is not physical iPhone Safari"
+    ]
+  }
+}

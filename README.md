@@ -30,6 +30,14 @@ Batch 12 real Safari/device/AT: CONDITIONAL (frozen SHA 555c02d)
   local immutable deploy/rollback rehearsal PASS.
   Full Safari, physical iPhone/iPad/Android, Safari+VoiceOver, NVDA/JAWS,
   and real deploy/rollback remain BLOCKED. RC stays LIMITED READY.
+Batch 13 readable table UI / Safari / Cloudflare: CONDITIONAL
+  shared table-centered 3p/4p UI, both skins, integrity 101/101, unit
+  432/432, skin 18/18, visual 80/80, build, and Python 92/92 PASS.
+  Stable Safari 26.4 reached Result on all four skin/player paths.
+  Safari rotation stopped at 4/20 cycles, the mandatory Safari+VoiceOver
+  flow is BLOCKED, and Cloudflare deploy/rollback awaits account sign-in.
+  Physical iPhone Safari is KNOWN UNVERIFIED / POST-RELEASE DEVICE GATE
+  and does not block RC/publication. RC stays LIMITED READY.
 Post-Batch-10 integrity + residual closure:
   product/test/CI/doc fixes committed
   92 targeted test definitions across 28 Integrity files committed
@@ -49,8 +57,8 @@ docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 ```
 
 Historical Batch 10/11 evidence remains scoped to its recorded artifacts.
-Current Batch 12 evidence and remaining gates are in
-`docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md`.
+Current Batch 13 evidence and remaining gates are in
+`docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md`.
 
 ## Integrity Hardening Result
 
@@ -187,10 +195,12 @@ Batch 10:
 Still open/unclaimed:
 
 ```text
-physical iPhone Safari / iPad / Android
-real hosting deployment
+physical iPhone Safari (KNOWN UNVERIFIED; post-release, non-blocking)
+iPad / Android
+Cloudflare Pages Preview/production until real URLs pass smoke
 rollback of an actually deployed immutable artifact
-Safari + VoiceOver
+full Safari rotation/soak
+Safari + VoiceOver mandatory flow
 NVDA / JAWS
 remaining Batch 8 Result/Cute Pop real-VoiceOver evidence
 validated backup restore/merge UI

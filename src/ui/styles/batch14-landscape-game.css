@@ -1,0 +1,222 @@
+/* Batch 14 compact landscape composition.
+ * 844x390 is a game viewport, not a desktop squeezed smaller. Give vertical
+ * space back to the table and hand; utility/actions become edge controls.
+ */
+@layer layout {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-match-layout {
+      position: relative;
+      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding: 2px 3px max(2px, var(--sp-safe-bottom));
+    }
+
+    .sp-match-utility {
+      position: absolute;
+      top: max(3px, var(--sp-safe-top));
+      left: max(5px, var(--sp-safe-left));
+      right: max(5px, var(--sp-safe-right));
+      z-index: calc(var(--sp-z-status) + 2);
+      min-height: 26px;
+      width: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .sp-match-utility__identity {
+      width: max-content;
+      padding: 2px 6px;
+      border-left: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 56%, transparent);
+      background: color-mix(in srgb, var(--sp-color-night) 64%, transparent);
+      opacity: 0.82;
+    }
+
+    .sp-match-utility > .sp-button {
+      margin-left: auto;
+      min-height: 28px;
+      padding: 1px 7px;
+      background: color-mix(in srgb, var(--sp-color-night) 58%, transparent);
+      pointer-events: auto;
+    }
+
+    .sp-table-stage {
+      grid-row: 1;
+      min-height: 0;
+      margin: 0;
+      padding: 30px 7px 4px;
+      border-radius: 5px;
+    }
+
+    .sp-table-stage::before {
+      inset: 27px 8px 5px;
+    }
+
+    .sp-table-stage--4 {
+      grid-template-columns: minmax(78px, 0.56fr) minmax(250px, 2.05fr) minmax(78px, 0.56fr);
+      grid-template-rows: minmax(42px, 0.62fr) minmax(98px, 1.5fr) minmax(38px, 0.54fr);
+    }
+
+    .sp-table-stage--3 {
+      grid-template-columns: minmax(84px, 0.56fr) minmax(270px, 2.2fr) minmax(84px, 0.56fr);
+      grid-template-rows: minmax(112px, 1.55fr) minmax(38px, 0.5fr);
+    }
+
+    .sp-table-seat .sp-player-panel {
+      min-height: 25px;
+      padding: 1px 3px;
+      border-width: 0;
+      background: color-mix(in srgb, var(--sp-color-night) 48%, transparent);
+    }
+
+    /* The upper-right utility owns the exit control. Reserve a few physical
+       pixels below that control instead of letting the right player identity
+       sit underneath it. The river can still use the full shared table area. */
+    .sp-table-stage [data-seat-position='right'] .sp-player-panel {
+      margin-top: 8px;
+    }
+
+    .sp-table-seat .sp-player-panel--active {
+      box-shadow: inset 2px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 76%, transparent);
+    }
+
+    .sp-table-seat .sp-player-panel__seal {
+      width: 18px;
+      height: 18px;
+    }
+
+    .sp-table-seat .sp-player-panel__name {
+      font-size: 10px;
+      letter-spacing: 0.01em;
+    }
+
+    /* Counts/state are still present in the accessible label. In a tiny game
+       viewport the visible panel only needs identity + active edge; the river
+       itself already communicates discard activity. */
+    .sp-table-seat .sp-player-panel__meta,
+    .sp-table-seat .sp-player-panel__state {
+      display: none;
+    }
+
+    .sp-table-status {
+      min-width: 106px;
+      max-width: 132px;
+      padding: 2px 6px;
+      border-width: 1px;
+      background: color-mix(in srgb, var(--sp-color-night) 62%, transparent);
+    }
+
+    .sp-table-status__phase {
+      opacity: 0.58;
+    }
+
+    .sp-seat-played__head {
+      display: none;
+    }
+
+    .sp-seat-played__empty {
+      opacity: 0.35;
+      font-size: 8px;
+    }
+
+    .sp-self-hand-zone {
+      grid-row: 2;
+      min-height: calc(var(--tile-h, 64px) + 2px);
+      padding: 1px max(128px, calc(var(--sp-safe-right) + 120px)) 1px max(5px, var(--sp-safe-left));
+      border-top-color: color-mix(in srgb, var(--sp-color-cream) 6%, transparent);
+    }
+
+    .sp-self-hand-zone .sp-tile--drawn {
+      margin-left: 7px;
+    }
+
+    .sp-match-action-zone {
+      position: absolute;
+      right: max(5px, var(--sp-safe-right));
+      bottom: max(4px, var(--sp-safe-bottom));
+      z-index: calc(var(--sp-z-status) + 3);
+      width: 118px;
+      padding: 0;
+    }
+
+    .sp-match-action-zone .sp-action-panel {
+      width: 100%;
+      gap: 3px;
+    }
+
+    .sp-match-action-zone .sp-button,
+    .sp-match-action-zone .sp-button--primary {
+      width: 100%;
+      min-width: 0;
+      min-height: 34px;
+      padding: 2px 7px;
+    }
+
+    .sp-match-action-zone .sp-button__sub {
+      display: none;
+    }
+
+    .sp-match-message-zone {
+      left: max(5px, var(--sp-safe-left));
+      bottom: calc(var(--tile-h, 64px) + 5px);
+      max-width: 26ch;
+      font-size: 9px;
+      pointer-events: none;
+    }
+
+    /* Deck editing: on phone-landscape, inspector must not steal a quarter
+       of the canvas while the user is arranging tiles. It becomes a narrow
+       status rail and the actual editor gets the width. */
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+      width: min(164px, 21%);
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--main {
+      min-width: 0;
+    }
+
+    .sp-deck-editor-tile-preview {
+      --tile-w: 34px;
+      --tile-h: 46px;
+      flex: 0 0 42px;
+      min-width: 42px;
+    }
+
+    #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
+      padding: 4px 5px !important;
+    }
+
+    /* Role composer: keep the existing safe-template logic, but read as one
+       game-building bench instead of a stack of independent form controls. */
+    #sp-tabpanel-roles > .sp-paper-panel:first-child {
+      padding: 7px 9px;
+      border-radius: 5px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child > .sp-paper-panel__title {
+      margin-bottom: 4px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child > div {
+      gap: 4px !important;
+      margin-top: 4px !important;
+      padding-top: 4px;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-ink) 10%, transparent);
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink {
+      min-height: 32px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 9px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:nth-child(2) {
+      border-radius: 5px;
+    }
+  }
+}

@@ -1,7 +1,6 @@
 import { ACHIEVEMENTS, titleFor } from '../../app/achievements';
 import type { StoredDeck } from '../../schemas/storageSchema';
 import type { RecordsPayload } from '../../schemas/storageSchema';
-import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { PaperPanel } from '../components/PaperPanel';
 import { RoleCard } from '../components/RoleCard';
@@ -38,24 +37,42 @@ export function CollectionScreen({
   const title = titleFor(unlocked.size);
 
   const topResults = [...records.records]
-    .filter((r) => r.humanWon && r.totalPoints !== undefined)
+    .filter((record) => record.humanWon && record.totalPoints !== undefined)
     .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
     .slice(0, 10);
 
   return (
-    <div className="sp-screen">
+    <div className="sp-screen sp-collection-screen">
       <div className="sp-screen__header">
         <h1 className="sp-screen__title">記憶帳</h1>
-        <Badge variant="info">記憶コイン {records.coins}</Badge>
-        <Badge variant="info">称号: {title}</Badge>
         <div className="sp-screen__spacer" />
         <Button variant="ghost" onClick={onBack}>
           もどる
         </Button>
       </div>
-      <div className="sp-screen__body">
-        <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll">
-          <PaperPanel title={`クリアボード (${unlocked.size} / ${ACHIEVEMENTS.length})`}>
+
+      <dl className="sp-collection-summary" aria-label="記憶帳の概要">
+        <div>
+          <dt>記憶コイン</dt>
+          <dd>{records.coins}</dd>
+        </div>
+        <div>
+          <dt>称号</dt>
+          <dd>{title}</dd>
+        </div>
+        <div>
+          <dt>実績</dt>
+          <dd>{unlocked.size} / {ACHIEVEMENTS.length}</dd>
+        </div>
+        <div>
+          <dt>あがった役</dt>
+          <dd>{collectedRoles.length}</dd>
+        </div>
+      </dl>
+
+      <div className="sp-screen__body sp-collection-screen__body">
+        <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll sp-collection-screen__main">
+          <PaperPanel title="クリアボード">
             <div className="sp-clear-board">
               {ACHIEVEMENTS.map((achievement) => {
                 const done = unlocked.has(achievement.id);
@@ -75,13 +92,12 @@ export function CollectionScreen({
               })}
             </div>
           </PaperPanel>
-          <PaperPanel title={`あがった役 (${collectedRoles.length})`}>
+
+          <PaperPanel title={`あがった役 ${collectedRoles.length}`}>
             {collectedRoles.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 'var(--sp-font-sm)' }}>
-                まだ役であがっていません。最初の記憶を確定させましょう。
-              </p>
+              <p className="sp-collection-empty">まだ役であがっていません。</p>
             ) : (
-              <div className="sp-screen__col" style={{ gap: 'var(--sp-space-6)' }}>
+              <div className="sp-screen__col sp-collection-role-list">
                 {collectedRoles.map(({ key, role, deckName }) => (
                   <div key={key}>
                     <RoleCard
@@ -95,40 +111,45 @@ export function CollectionScreen({
               </div>
             )}
           </PaperPanel>
+
           <PaperPanel variant="aged" title="高得点 Top 10">
             {topResults.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 'var(--sp-font-sm)' }}>勝利記録はまだありません。</p>
+              <p className="sp-collection-empty">勝利記録はまだありません。</p>
             ) : (
-              <ul className="sp-issue-list">
-                {topResults.map((record, i) => (
-                  <li key={`${record.dateMs}-${i}`}>
-                    {i + 1}位 {record.totalPoints}点 「{record.selectedWinRoleName ?? '-'}」
-                    ({record.deckName} / {formatDate(record.dateMs)})
+              <ol className="sp-collection-ranking">
+                {topResults.map((record, index) => (
+                  <li key={`${record.dateMs}-${index}`}>
+                    <strong>{record.totalPoints}点</strong>
+                    <span>{record.selectedWinRoleName ?? '-'}</span>
+                    <small>{record.deckName} / {formatDate(record.dateMs)}</small>
                   </li>
                 ))}
-              </ul>
+              </ol>
             )}
           </PaperPanel>
         </div>
-        <div className="sp-screen__col sp-screen__col--side sp-screen__col--scroll">
+
+        <aside className="sp-screen__col sp-screen__col--side sp-screen__col--scroll sp-collection-screen__recent">
           <PaperPanel variant="ink" title="最近の記録">
             {records.records.length === 0 ? (
-              <span style={{ fontSize: 'var(--sp-font-xs)' }}>まだ対局していません。</span>
+              <span className="sp-collection-empty">まだ対局していません。</span>
             ) : (
-              <ul className="sp-issue-list">
-                {records.records.slice(0, 12).map((record, i) => (
-                  <li key={`${record.dateMs}-${i}`}>
-                    {formatDate(record.dateMs)}{' '}
-                    {record.reason === 'draw'
-                      ? '流局'
-                      : `${record.winnerName}が${record.reason === 'tsumo' ? 'ツモ' : 'ロン'}`}
-                    {record.humanWon ? `(+${record.coinsEarned})` : ''}
+              <ol className="sp-collection-recent-list">
+                {records.records.slice(0, 12).map((record, index) => (
+                  <li key={`${record.dateMs}-${index}`}>
+                    <time>{formatDate(record.dateMs)}</time>
+                    <span>
+                      {record.reason === 'draw'
+                        ? '流局'
+                        : `${record.winnerName} ${record.reason === 'tsumo' ? 'ツモ' : 'ロン'}`}
+                    </span>
+                    {record.humanWon ? <strong>+{record.coinsEarned}</strong> : null}
                   </li>
                 ))}
-              </ul>
+              </ol>
             )}
           </PaperPanel>
-        </div>
+        </aside>
       </div>
     </div>
   );

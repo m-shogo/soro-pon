@@ -3,6 +3,10 @@ import './components.css';
 
 // フォーム部品の共通実装。画面側で生のinput/select/textareaを直接書かない。
 // 見た目はtokens、レイアウトは共通クラスで管理する。
+//
+// All direct form controls expose stable shared classes. Do not depend on raw
+// element selectors or screen-local inline styles for hit-area/accessibility
+// rules; editor density is allowed to change without making controls tiny.
 
 export function FormField({
   label,
@@ -49,6 +53,7 @@ export function TextField({
   if (multiline) {
     return (
       <textarea
+        className="sp-form-control sp-textarea"
         aria-label={label}
         rows={rows}
         {...(maxLength !== undefined ? { maxLength } : {})}
@@ -61,6 +66,7 @@ export function TextField({
   }
   return (
     <input
+      className="sp-form-control sp-text-input"
       type="text"
       aria-label={label}
       {...(maxLength !== undefined ? { maxLength } : {})}
@@ -88,6 +94,7 @@ export function NumberField({
 }) {
   return (
     <input
+      className="sp-form-control sp-number-input"
       type="number"
       aria-label={label}
       min={min}
@@ -117,7 +124,12 @@ export function SelectField({
   placeholder?: string;
 }) {
   return (
-    <select aria-label={label} value={value} onChange={(e) => onChange(e.target.value)}>
+    <select
+      className="sp-form-control sp-select"
+      aria-label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
       {placeholder !== undefined && <option value="">{placeholder}</option>}
       {options.map((option) => (
         <option key={option.value} value={option.value}>
@@ -140,6 +152,7 @@ export function ColorField({
 }) {
   return (
     <input
+      className="sp-form-control sp-color-input"
       type="color"
       aria-label={label}
       value={value}
@@ -160,6 +173,7 @@ export function Toggle({
   return (
     <label className="sp-toggle">
       <input
+        className="sp-toggle__input"
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}

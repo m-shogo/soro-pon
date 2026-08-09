@@ -4,7 +4,21 @@ import './ui/styles/layers.css';
 import './ui/styles/tokens.css';
 import './ui/styles/base.css';
 import './ui/styles/layout.css';
+import './ui/styles/match-polish.css';
+import './ui/styles/match-river-polish.css';
+import './ui/styles/deck-polish.css';
+import './ui/styles/deck-editor-polish.css';
+import './ui/styles/authored-visual-polish.css';
+import './ui/styles/deck-editor-authored-workspace.css';
+import './ui/styles/deck-browser-authored-workspace.css';
+import './ui/styles/result-authored-workspace.css';
+import './ui/styles/match-setup-authored.css';
+import './ui/styles/collection-authored.css';
+import './ui/styles/batch14-landscape-game.css';
+import './ui/styles/deck-role-composer.css';
+import './ui/styles/interaction-ux.css';
 import './ui/styles/screens.css';
+import './ui/styles/desktop-authored-shell.css';
 import './ui/styles/motion.css';
 import { AppRoot } from './app/AppRoot';
 import { AppErrorBoundary } from './ui/components/AppErrorBoundary';
@@ -27,18 +41,19 @@ export function App() {
   const metrics = useResponsiveMetrics();
   const hash = useHashRoute();
 
-  if (metrics.isPortrait) {
-    return <RotatePrompt />;
-  }
-
   return (
     <SkinProvider>
       <div className="sp-game-shell" data-density={metrics.density}>
-        <div className="sp-game-safe-area">
+        <div
+          className="sp-game-safe-area"
+          aria-hidden={metrics.isPortrait || undefined}
+          inert={metrics.isPortrait || undefined}
+        >
           <AppErrorBoundary>
             {hash === '#/gallery' ? <ComponentGallery /> : <AppRoot />}
           </AppErrorBoundary>
         </div>
+        {metrics.isPortrait ? <RotatePrompt /> : null}
       </div>
     </SkinProvider>
   );

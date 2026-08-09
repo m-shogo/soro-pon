@@ -5,6 +5,7 @@ import './components.css';
 // - roving tabindex(activeのみTab順に入る)
 // - Left/Right/Home/Endで移動(移動と同時に選択)
 // - aria-controlsで対応するtabpanel(`sp-tabpanel-{id}`)と関連付ける
+// - tab側に安定IDを持たせ、tabpanelがaria-labelledbyで逆参照できる
 export function Tabs({
   items,
   activeId,
@@ -53,6 +54,7 @@ export function Tabs({
       {items.map((item, index) => (
         <button
           key={item.id}
+          id={`sp-tab-${item.id}`}
           type="button"
           role="tab"
           data-tab-id={item.id}

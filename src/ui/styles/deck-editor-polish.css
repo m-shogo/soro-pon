@@ -1,0 +1,168 @@
+/* Batch 14 deck editor polish.
+ * Keep the proven editor DOM/validation logic and reshape it into a game workspace.
+ */
+@layer layout {
+  .sp-screen:has([id^='sp-tabpanel-']) {
+    gap: clamp(6px, 0.9vw, 10px);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header {
+    align-items: center;
+    min-height: 46px;
+    padding: 4px 8px;
+    border-radius: var(--sp-radius-lg);
+    background: color-mix(in srgb, var(--sp-surface-info) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 11%, transparent);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-button--primary {
+    min-width: 132px;
+    box-shadow: var(--sp-shadow-lantern-soft);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > [role='tablist'] {
+    flex: none;
+    padding: 4px;
+    border-radius: var(--sp-radius-lg);
+    background: color-mix(in srgb, var(--sp-color-night) 58%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body {
+    gap: clamp(8px, 1.2vw, 14px);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] {
+    padding: clamp(8px, 1.2vw, 14px);
+    border-radius: clamp(14px, 2vw, 22px);
+    background:
+      radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--sp-color-lantern-0) 5%, transparent), transparent 32%),
+      color-mix(in srgb, var(--sp-color-night) 48%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 9%, transparent);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] > .sp-paper-panel,
+  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] > .sp-screen__col > .sp-paper-panel {
+    box-shadow: none;
+  }
+
+  /* Validation remains visible as the editor's inspector rather than feeling
+     like a second full page. */
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+    width: min(280px, 29%);
+    position: sticky;
+    top: 0;
+    align-self: stretch;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side .sp-paper-panel {
+    box-shadow: none;
+    border-color: color-mix(in srgb, var(--sp-color-cream) 13%, transparent);
+  }
+
+  /* Tile editor: existing rows become loadout cards. No behavior changes. */
+  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div[style*='border-bottom'] {
+    position: relative;
+    padding: 10px 12px !important;
+    border: 1px solid color-mix(in srgb, var(--sp-color-ink) 18%, transparent) !important;
+    border-radius: var(--sp-radius-lg);
+    background: color-mix(in srgb, var(--sp-color-paper-aged) 88%, transparent);
+    box-shadow: 0 4px 12px color-mix(in srgb, black 10%, transparent);
+  }
+
+  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div[style*='border-bottom']:focus-within {
+    border-color: color-mix(in srgb, var(--sp-color-lantern-0) 58%, var(--sp-color-ink)) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--sp-color-lantern-0) 14%, transparent);
+  }
+
+  #sp-tabpanel-tiles .sp-button--ghost,
+  #sp-tabpanel-categories .sp-button--ghost,
+  #sp-tabpanel-roles .sp-button--ghost,
+  #sp-tabpanel-bonuses .sp-button--ghost {
+    opacity: 0.68;
+  }
+
+  #sp-tabpanel-tiles .sp-button--ghost:hover,
+  #sp-tabpanel-categories .sp-button--ghost:hover,
+  #sp-tabpanel-roles .sp-button--ghost:hover,
+  #sp-tabpanel-bonuses .sp-button--ghost:hover {
+    opacity: 1;
+  }
+
+  /* Template choices should read like selectable game presets, not a toolbar. */
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
+  #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
+    min-height: 48px;
+    padding-inline: 14px;
+    border-radius: var(--sp-radius-lg);
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child,
+  #sp-tabpanel-bonuses > .sp-paper-panel:first-child {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--sp-color-paper-aged) 94%, transparent), color-mix(in srgb, var(--sp-color-lantern-0) 5%, var(--sp-color-paper-aged)));
+  }
+
+  #sp-tabpanel-basic .sp-paper-panel {
+    max-width: 760px;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-screen:has([id^='sp-tabpanel-']) {
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header {
+      min-height: 36px;
+      padding: 2px 5px;
+      border-radius: 10px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-screen__title {
+      font-size: var(--sp-font-lg);
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-button {
+      min-height: 32px;
+      padding: 2px 8px;
+      font-size: 10px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-button--primary {
+      min-width: 94px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > [role='tablist'] {
+      padding: 2px;
+      border-radius: 10px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] {
+      padding: 5px;
+      border-radius: 12px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body {
+      gap: 5px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+      width: min(205px, 25%);
+    }
+
+    #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div[style*='border-bottom'] {
+      padding: 6px 7px !important;
+      border-radius: 10px;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
+    #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
+      min-height: 36px;
+      padding-inline: 8px;
+      font-size: 10px;
+    }
+  }
+}

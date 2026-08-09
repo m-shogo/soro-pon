@@ -9,4 +9,143 @@
   text-align: left;
   padding-left: var(--sp-space-24);
 }
+
+.sp-top-menu__secondary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-space-8);
+}
+
+.sp-top-menu__secondary .sp-button {
+  width: 100%;
+  padding-left: var(--sp-space-12);
+}
+
+.sp-top-tagline {
+  margin: 0;
+}
+
+.sp-data-management {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-space-8);
+}
+
+.sp-data-management__lead {
+  margin: 0 0 var(--sp-space-4);
+  color: var(--sp-color-ink-soft);
+  font-size: var(--sp-font-sm);
+  line-height: var(--sp-line-normal);
+}
+
+.sp-data-management > .sp-form-error,
+.sp-data-management > [role='status'] {
+  margin: 0;
+  font-size: var(--sp-font-xs);
+  line-height: var(--sp-line-normal);
+}
+
+/* Match insight is a quiet table log, not a floating web-notification stack. */
+.sp-match-message-zone {
+  gap: 0;
+}
+
+.sp-match-message {
+  padding: 3px 7px;
+  border: 0;
+  border-left: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 46%, transparent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--sp-color-night) 70%, transparent);
+  box-shadow: none;
+  font-size: var(--sp-font-xs);
+  line-height: 1.25;
+}
+
+.sp-match-message + .sp-match-message {
+  border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+}
+
+.sp-match-message--error {
+  border-left-color: var(--sp-color-danger);
+}
+
+/* Wide monitors should read as an intentional title composition instead of a
+   phone menu pinned to the upper-left corner of an empty desktop canvas. */
+@media (min-width: 1000px) and (min-height: 600px) {
+  .sp-top-screen {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: clamp(24px, 3vw, 48px);
+  }
+
+  .sp-top-screen > .sp-screen__header {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding-top: clamp(8px, 2vh, 20px);
+    text-align: center;
+  }
+
+  .sp-top-screen .sp-screen__title {
+    font-size: clamp(32px, 3vw, 46px);
+    letter-spacing: 0.08em;
+  }
+
+  .sp-top-screen .sp-screen__subtitle {
+    max-width: 52ch;
+    line-height: var(--sp-line-normal);
+  }
+
+  .sp-top-screen > .sp-screen__body {
+    flex: 1;
+    align-items: center !important;
+    justify-content: center;
+    gap: clamp(20px, 3vw, 40px);
+  }
+
+  .sp-top-screen .sp-screen__spacer {
+    display: none;
+  }
+
+  .sp-top-screen .sp-top-menu {
+    width: min(520px, 52vw);
+    gap: var(--sp-space-10, 10px);
+  }
+
+  .sp-top-screen .sp-top-menu > .sp-button {
+    min-height: 58px;
+    padding-block: 9px;
+  }
+
+  .sp-top-screen .sp-top-menu__secondary .sp-button {
+    min-height: 46px;
+  }
+
+  .sp-top-screen .sp-top-tagline {
+    text-align: center;
+  }
+
+  .sp-top-screen .sp-screen__col--side {
+    width: min(340px, 30vw);
+  }
+}
+
+@media (max-width: 899px), (max-height: 430px) {
+  .sp-top-menu__secondary {
+    gap: var(--sp-space-4);
+  }
+
+  .sp-top-menu__secondary .sp-button {
+    padding-inline: var(--sp-space-8);
+  }
+
+  .sp-match-message-zone {
+    max-width: 24ch;
+  }
+
+  .sp-match-message {
+    padding: 2px 5px;
+    font-size: 9px;
+  }
+}
 }

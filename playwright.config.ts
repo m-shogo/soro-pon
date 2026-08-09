@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const visualBaseUrl = process.env['PLAYWRIGHT_BASE_URL'] ?? 'http://localhost:4173';
+
 // visual regression(H9/P1-2)。ADR-014参照。
 // ビルド済みアプリ(vite preview)に対して撮影する。baselineはdarwinローカル。
 export default defineConfig({
@@ -8,7 +10,7 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     ...devices['Desktop Chrome'],
-    baseURL: 'http://localhost:4173',
+    baseURL: visualBaseUrl,
     // motionを止めて決定的にする(reduced-motion対応の検証も兼ねる)
     contextOptions: { reducedMotion: 'reduce' },
     deviceScaleFactor: 1,
@@ -22,7 +24,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'pnpm build && pnpm preview --port 4173 --strictPort',
-    url: 'http://localhost:4173',
+    url: visualBaseUrl,
     reuseExistingServer: true,
     timeout: 120_000,
   },

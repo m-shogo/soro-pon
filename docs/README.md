@@ -18,7 +18,12 @@ Batch 12 real Safari/device/AT: CONDITIONAL on frozen SHA 555c02d
 Batch 12 exact-SHA build/CI/Integrity/Python 3.13: PASS
 Integrity execution: 101/101 across 28 files; unit 425/425; skin 18/18;
   visual 70/70
-Full stable Safari, physical devices, real AT, and deployed rollback: BLOCKED
+Batch 13 readable table UI/Safari/Cloudflare: CONDITIONAL
+  integrity 101/101; unit 432/432; skin 18/18; visual 80/80; Python 92/92
+  stable Safari 26.4 four Result paths PASS
+  rotation 4/20 and mandatory Safari+VoiceOver flow BLOCKED
+  Cloudflare deploy/rollback awaiting account sign-in
+Physical iPhone Safari: KNOWN UNVERIFIED, post-release, non-blocking
 ```
 
 Do not treat historical green commands, old asset checkpoints, or numbered
@@ -39,6 +44,8 @@ docs/qa/POST-BATCH-10-INTEGRITY-DEEP-DIVE.md
 docs/qa/POST-BATCH-10-RESIDUAL-CLOSURE.md
 docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-MATRIX.md
 docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
 ```
 
 ## Canonical Roles
@@ -78,6 +85,13 @@ docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
 
 docs/qa/BATCH-12-MANUAL-SAFARI-DEVICE-AT-CHECKLIST.md
   Redaction-safe human checklist for real Safari, physical devices, and AT.
+
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md
+  Current readable-table implementation, real Safari/VoiceOver evidence,
+  Cloudflare state, exact claims, blockers, and RC decision.
+
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
+  Batch 13 per-gate execution result and unblock path.
 
 docs/IMPLEMENTATION-WORKFLOW.md
   Compact current implementation state and next executable sequence.
@@ -161,6 +175,8 @@ docs/qa/BATCH-11-PRODUCTION-CROSS-BROWSER-REPORT.md
 docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-MATRIX.md
 docs/qa/BATCH-12-REAL-SAFARI-DEVICE-ACCESSIBILITY-REPORT.md
 docs/qa/BATCH-12-MANUAL-SAFARI-DEVICE-AT-CHECKLIST.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-MATRIX.md
+docs/qa/BATCH-13-UI-SAFARI-CLOUDFLARE-REPORT.md
 docs/qa/RELEASE-DEPLOY-ROLLBACK-RUNBOOK.md
 docs/release/CACHE-AND-ROLLBACK-RUNBOOK.md
 docs/release/SOAK-RUNBOOK.md

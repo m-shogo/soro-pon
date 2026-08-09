@@ -1,0 +1,273 @@
+/* Batch 14.1 authored deck-editor workspace pass.
+ *
+ * Keep the proven editor DOM and validation behavior, but make the visual
+ * hierarchy read like a game-building workbench instead of a settings/SaaS
+ * screen. This layer intentionally avoids decorative gradients, glass blur,
+ * floating cards and hover lift. Identity comes from tiles and skin assets;
+ * CSS only supplies structure, focus, state and readable density.
+ */
+@layer layout {
+  .sp-screen:has([id^='sp-tabpanel-']) {
+    gap: clamp(5px, 0.8vw, 9px);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header {
+    min-height: 42px;
+    padding: 3px 0 5px;
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-screen__title {
+    letter-spacing: 0.01em;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-button--primary {
+    min-width: 118px;
+    box-shadow: none;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > [role='tablist'] {
+    gap: 2px;
+    padding: 0 0 4px;
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body {
+    gap: clamp(7px, 1vw, 12px);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] {
+    padding: clamp(7px, 1vw, 11px);
+    border: 0;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--sp-color-night) 18%, transparent);
+    box-shadow: none;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] > .sp-paper-panel,
+  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] > .sp-screen__col > .sp-paper-panel {
+    box-shadow: none;
+  }
+
+  /* The right rail is an inspector, not a second page or floating card. */
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+    width: min(270px, 28%);
+    min-width: 210px;
+    align-self: stretch;
+    padding-left: clamp(6px, 0.8vw, 10px);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side .sp-paper-panel {
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  .sp-deck-editor-inspector {
+    display: grid;
+    gap: 7px;
+  }
+
+  .sp-deck-editor-inspector > .sp-paper-panel {
+    border-width: 0 0 1px;
+    border-radius: 0 !important;
+    background: transparent;
+  }
+
+  .sp-deck-editor-inspector__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 7px;
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-xs);
+  }
+
+  .sp-deck-editor-inspector__summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-editor-inspector__summary > div {
+    min-width: 0;
+    padding: 6px 7px;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-editor-inspector__summary dt {
+    margin: 0;
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-deck-editor-inspector__summary dd {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px;
+    margin: 2px 0 0;
+    color: var(--sp-color-cream);
+    font-family: var(--sp-font-family-num);
+    font-size: var(--sp-font-lg);
+    line-height: 1;
+  }
+
+  .sp-deck-editor-inspector__summary small {
+    color: var(--sp-color-cream-dim);
+    font-family: var(--sp-font-family-body);
+    font-size: 9px;
+  }
+
+  /* Tile rows are the workbench objects. The selector deliberately follows
+     the stable DOM structure instead of matching an inline style string. */
+  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
+    position: relative;
+    padding: 9px 10px !important;
+    border-width: 0 0 1px !important;
+    border-style: solid !important;
+    border-color: color-mix(in srgb, var(--sp-color-ink) 16%, transparent) !important;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div:focus-within {
+    border-color: color-mix(in srgb, var(--sp-color-lantern-0) 54%, var(--sp-color-ink)) !important;
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 50%, transparent);
+  }
+
+  #sp-tabpanel-tiles .sp-deck-editor-tile-preview {
+    margin-right: 2px;
+  }
+
+  #sp-tabpanel-tiles .sp-button--ghost,
+  #sp-tabpanel-categories .sp-button--ghost,
+  #sp-tabpanel-roles .sp-button--ghost,
+  #sp-tabpanel-bonuses .sp-button--ghost {
+    opacity: 0.62;
+  }
+
+  #sp-tabpanel-tiles .sp-button--ghost:hover,
+  #sp-tabpanel-tiles .sp-button--ghost:focus-visible,
+  #sp-tabpanel-categories .sp-button--ghost:hover,
+  #sp-tabpanel-categories .sp-button--ghost:focus-visible,
+  #sp-tabpanel-roles .sp-button--ghost:hover,
+  #sp-tabpanel-roles .sp-button--ghost:focus-visible,
+  #sp-tabpanel-bonuses .sp-button--ghost:hover,
+  #sp-tabpanel-bonuses .sp-button--ghost:focus-visible {
+    opacity: 1;
+  }
+
+  /* Role presets should feel like tools on the bench: compact, stable and
+     explicit. No card lift or glossy promotional treatment. */
+  #sp-tabpanel-roles > .sp-paper-panel:first-child,
+  #sp-tabpanel-bonuses > .sp-paper-panel:first-child {
+    background: var(--sp-color-paper-aged);
+    box-shadow: none;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
+  #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
+    min-height: 42px;
+    padding-inline: 11px;
+    border-radius: 5px;
+    box-shadow: none;
+    transform: none;
+  }
+
+  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink:hover,
+  #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink:hover {
+    transform: none;
+  }
+
+  #sp-tabpanel-basic .sp-paper-panel {
+    width: min(760px, 100%);
+    margin-inline: auto;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-screen:has([id^='sp-tabpanel-']) {
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header {
+      min-height: 34px;
+      padding-block: 1px 3px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-screen__title {
+      font-size: var(--sp-font-lg);
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-button {
+      min-height: 32px;
+      padding: 2px 7px;
+      font-size: 10px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-button--primary {
+      min-width: 90px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > [role='tablist'] {
+      padding-bottom: 2px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] {
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body {
+      gap: 4px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+      width: min(198px, 25%);
+      min-width: 170px;
+      padding-left: 4px;
+    }
+
+    .sp-deck-editor-inspector {
+      gap: 4px;
+    }
+
+    .sp-deck-editor-inspector__status {
+      margin-bottom: 4px;
+      font-size: 9px;
+    }
+
+    .sp-deck-editor-inspector__summary > div {
+      padding: 4px 5px;
+    }
+
+    .sp-deck-editor-inspector__summary dd {
+      font-size: var(--sp-font-md);
+    }
+
+    #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
+      padding: 5px 6px !important;
+    }
+
+    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
+    #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
+      min-height: 34px;
+      padding-inline: 7px;
+      font-size: 10px;
+    }
+  }
+}

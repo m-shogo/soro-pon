@@ -65,6 +65,7 @@ export function TopScreen({
   recentRecords: MatchRecord[];
 }) {
   const [skinModalOpen, setSkinModalOpen] = useState(false);
+  const [dataModalOpen, setDataModalOpen] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
   const [recoveryNotice, setRecoveryNotice] = useState<{
@@ -109,8 +110,19 @@ export function TopScreen({
     });
   };
 
+  const openResetConfirm = () => {
+    setResetError(null);
+    setDataModalOpen(false);
+    setResetConfirmOpen(true);
+  };
+
+  const returnToDataManagement = () => {
+    setResetConfirmOpen(false);
+    setDataModalOpen(true);
+  };
+
   return (
-    <div className="sp-screen">
+    <div className="sp-screen sp-top-screen">
       <div className="sp-screen__header">
         <h1 className="sp-screen__title">soro-pon</h1>
         <span className="sp-screen__subtitle">Vamp Pon 世界の中で流行っている記憶札遊び</span>
@@ -118,12 +130,11 @@ export function TopScreen({
       <div className="sp-screen__body" style={{ alignItems: 'stretch' }}>
         <div className="sp-top-menu sp-screen__col--scroll">
           <Button
-            variant="paper"
-            subLabel="すぐに対戦をはじめます"
-            onClick={onPlayNow}
-            disabled={!hasPlayableDeck}
+            variant="primary"
+            subLabel={hasPlayableDeck ? 'すぐに対戦をはじめます' : '遊べるデッキを作成・読み込みします'}
+            onClick={hasPlayableDeck ? onPlayNow : onDeckList}
           >
-            まず遊ぶ
+            {hasPlayableDeck ? 'まず遊ぶ' : 'デッキを準備'}
           </Button>
           <Button variant="paper" subLabel="保存したデッキを確認・編集します" onClick={onDeckList}>
             デッキ一覧
@@ -138,49 +149,26 @@ export function TopScreen({
           >
             記憶帳
           </Button>
-          <Button
-            variant="ink"
-            subLabel="見た目のスキンを切り替えます"
-            onClick={() => setSkinModalOpen(true)}
-          >
-            きせかえ
-          </Button>
           <InkDivider />
-          <p className="sp-top-tagline">
-            記憶の札を集め、役を作って競う遊びです。
-            <br />
-            夜の帳が下りた、記憶の欠片を集める頃。
-          </p>
-          <Button
-            variant="ghost"
-            subLabel="破損時に退避された元データを、解釈せずJSONへ保存します"
-            onClick={handleRecoveryExport}
-          >
-            退避データを書き出す
-          </Button>
-          {recoveryNotice !== null && (
-            <p
-              role={recoveryNotice.tone === 'error' ? 'alert' : 'status'}
-              className={recoveryNotice.tone === 'error' ? 'sp-form-error' : undefined}
-              style={{ marginTop: 'var(--sp-space-8)' }}
+          <div className="sp-top-menu__secondary">
+            <Button
+              variant="ink"
+              subLabel="見た目を切り替えます"
+              onClick={() => setSkinModalOpen(true)}
             >
-              {recoveryNotice.message}
-            </p>
-          )}
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setResetError(null);
-              setResetConfirmOpen(true);
-            }}
-          >
-            ローカルデータを初期化…
-          </Button>
-          {resetError !== null && (
-            <p role="alert" className="sp-form-error" style={{ marginTop: 'var(--sp-space-8)' }}>
-              {resetError}
-            </p>
-          )}
+              きせかえ
+            </Button>
+            <Button
+              variant="ghost"
+              subLabel="退避・初期化"
+              onClick={() => setDataModalOpen(true)}
+            >
+              データ管理
+            </Button>
+          </div>
+          <p className="sp-top-tagline">
+            記憶の札を集め、役を作って競う。
+          </p>
         </div>
         <div className="sp-screen__spacer" />
         {recentRecords.length > 0 && (
@@ -203,6 +191,47 @@ export function TopScreen({
           </div>
         )}
       </div>
+
+      <Modal open={skinModalOpen} title="きせかえ" onClose={() => setSkinModalOpen(false)}>
+        <SkinSelector />
+        <div style={{ marginTop: 'var(--sp-space-12)' }}>
+          <Button variant="ghost" onClick={() => setSkinModalOpen(false)}>
+            とじる
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal open={dataModalOpen} title="データ管理" onClose={() => setDataModalOpen(false)}>
+        <div className="sp-data-management">
+          <p className="sp-data-management__lead">
+            破損時の退避コピーを書き出すか、この端末のローカルデータを初期化できます。
+          </p>
+          <Button variant="ink" onClick={handleRecoveryExport}>
+            退避データを書き出す
+          </Button>
+          {recoveryNotice !== null && (
+            <p
+              role={recoveryNotice.tone === 'error' ? 'alert' : 'status'}
+              className={recoveryNotice.tone === 'error' ? 'sp-form-error' : undefined}
+            >
+              {recoveryNotice.message}
+            </p>
+          )}
+          <InkDivider />
+          <Button variant="ghost" onClick={openResetConfirm}>
+            ローカルデータを初期化…
+          </Button>
+          {resetError !== null && (
+            <p role="alert" className="sp-form-error">
+              {resetError}
+            </p>
+          )}
+          <Button variant="ghost" onClick={() => setDataModalOpen(false)}>
+            とじる
+          </Button>
+        </div>
+      </Modal>
+
       <Dialog
         open={resetConfirmOpen}
         title="ローカルデータの初期化"
@@ -213,24 +242,16 @@ export function TopScreen({
         onConfirm={() => {
           const result = resetAllLocalData(window.localStorage);
           if (result.failedKeys.length > 0) {
-            setResetConfirmOpen(false);
             setResetError(
               `一部のローカルデータを削除できませんでした（${result.failedKeys.length}件）。ブラウザの保存領域設定を確認して、もう一度お試しください。`,
             );
+            returnToDataManagement();
             return;
           }
           window.location.reload();
         }}
-        onCancel={() => setResetConfirmOpen(false)}
+        onCancel={returnToDataManagement}
       />
-      <Modal open={skinModalOpen} title="きせかえ" onClose={() => setSkinModalOpen(false)}>
-        <SkinSelector />
-        <div style={{ marginTop: 'var(--sp-space-12)' }}>
-          <Button variant="ghost" onClick={() => setSkinModalOpen(false)}>
-            とじる
-          </Button>
-        </div>
-      </Modal>
     </div>
   );
 }

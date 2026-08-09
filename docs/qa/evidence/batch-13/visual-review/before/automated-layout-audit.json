@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 1,
+  "phase": "before",
+  "sourceSha": "37110de0f5dda98411123cf0aed86069e5e97011",
+  "viewports": [
+    [
+      844,
+      390
+    ],
+    [
+      812,
+      375
+    ],
+    [
+      932,
+      430
+    ],
+    [
+      1024,
+      576
+    ],
+    [
+      1280,
+      720
+    ],
+    [
+      1440,
+      900
+    ]
+  ],
+  "results": [
+    {
+      "id": "yorunoshirube-3p-844x390",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            554,
+            47
+          ],
+          "client": [
+            554,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-3p-812x375",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            533,
+            47
+          ],
+          "client": [
+            533,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-3p-932x430",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            612,
+            47
+          ],
+          "client": [
+            612,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-3p-1024x576",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            673,
+            47
+          ],
+          "client": [
+            673,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-3p-1280x720",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            849,
+            52
+          ],
+          "client": [
+            849,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-3p-1440x900",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            960,
+            53
+          ],
+          "client": [
+            960,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-4p-844x390",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            554,
+            47
+          ],
+          "client": [
+            554,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-4p-812x375",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            533,
+            47
+          ],
+          "client": [
+            533,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-4p-932x430",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            612,
+            47
+          ],
+          "client": [
+            612,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-4p-1024x576",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            673,
+            47
+          ],
+          "client": [
+            673,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-4p-1280x720",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            849,
+            52
+          ],
+          "client": [
+            849,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "yorunoshirube-4p-1440x900",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            960,
+            53
+          ],
+          "client": [
+            960,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-3p-844x390",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            554,
+            47
+          ],
+          "client": [
+            554,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-3p-812x375",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            533,
+            47
+          ],
+          "client": [
+            533,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-3p-932x430",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            612,
+            47
+          ],
+          "client": [
+            612,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-3p-1024x576",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            673,
+            47
+          ],
+          "client": [
+            673,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-3p-1280x720",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            849,
+            52
+          ],
+          "client": [
+            849,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-3p-1440x900",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0",
+          "scroll": [
+            960,
+            53
+          ],
+          "client": [
+            960,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-4p-844x390",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            554,
+            47
+          ],
+          "client": [
+            554,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-4p-812x375",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            533,
+            47
+          ],
+          "client": [
+            533,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-4p-932x430",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            612,
+            47
+          ],
+          "client": [
+            612,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-4p-1024x576",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            673,
+            47
+          ],
+          "client": [
+            673,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-4p-1280x720",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            849,
+            52
+          ],
+          "client": [
+            849,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    },
+    {
+      "id": "cute-pop-4p-1440x900",
+      "documentOverflow": false,
+      "overflow": [
+        {
+          "selector": "sp-match-layout__area sp-match-layout__area--top",
+          "text": "灯トモリ手牌 8 / 捨て牌 0灯ナギ手牌 8 / 捨て牌 0灯ミチル手牌 8 / 捨て牌 0",
+          "scroll": [
+            960,
+            53
+          ],
+          "client": [
+            960,
+            44
+          ]
+        }
+      ],
+      "outside": [],
+      "smallTargets": []
+    }
+  ]
+}

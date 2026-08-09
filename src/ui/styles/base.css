@@ -38,8 +38,8 @@
   .sp-game-safe-area {
     position: absolute;
     inset: 0;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right)
-      env(safe-area-inset-bottom) env(safe-area-inset-left);
+    padding: var(--sp-safe-top) var(--sp-safe-right) var(--sp-safe-bottom)
+      var(--sp-safe-left);
     display: flex;
     flex-direction: column;
   }
@@ -59,7 +59,11 @@
   box-shadow: 0 0 0 5px var(--sp-focus-ring-halo);
 }
 
-/* reduced-motionの全体無効化もlayer外: motion層より常に優先する */
+/*
+ * Reduce Motionは「高速で終わらせる」だけでなく、意味を失わない非本質
+ * animationを完全に止める。Apple HIGのReduce Motion guidanceに合わせ、
+ * 牌の入場・勝負ボタンpulse・Result入場・回転ヒントを静止状態へ置換する。
+ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -67,5 +71,12 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .sp-tile--drawn,
+  .sp-button--lantern,
+  .sp-result-enter,
+  .sp-rotate-prompt__icon {
+    animation: none !important;
   }
 }

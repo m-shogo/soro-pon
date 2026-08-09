@@ -16,7 +16,66 @@ docs/release/SOAK-RUNBOOK.md
   rollback検証 の手順。現時点では未実行(下記STATUS参照)。
 ```
 
-## STATUS: NOT YET EXECUTABLE
+## STATUS: CLOUDFLARE PAGES SELECTED — ACCOUNT SIGN-IN REQUIRED
+
+Batch 13で第一候補をCloudflare Pages、Git providerをGitHub、
+repositoryを`m-shogo/soro-pon`、production branchを`main`として確定
+した。repo側の契約は次のとおり。
+
+```text
+build command: pnpm build
+output directory: dist
+Node: 24
+Vite base: /
+SPA: Cloudflare Pagesのunknown path -> index.html fallbackを利用
+environment variables: none
+source maps: 0
+security/cache headers: public/_headers
+preview branch: codex/batch13-preview
+deployed smoke: pnpm qa:batch13:deployed-smoke
+```
+
+Cloudflare account sign-inとGitHub repository連携は所有者の1回の人間
+操作を必要とする。2026-07-27現在、login画面で待機中。Preview URL、
+production URL、deployment ID、formal rollbackは未取得であり、local
+preview/rollback rehearsalをその代用にしない。
+
+### Cloudflare Pages setup
+
+1. Cloudflare Dashboardへsign inする。
+2. Workers & PagesでPages applicationを作成し、GitHub repository
+   `m-shogo/soro-pon`を接続する。
+3. production branchを`main`、build commandを`pnpm build`、output
+   directoryを`dist`にする。
+4. Node 24を選択し、不要なenvironment variable/secretを追加しない。
+5. Preview deploymentを有効にする。
+6. `codex/batch13-preview`のexact SHA deploymentを待ち、URLとdeployment
+   IDを記録する。
+7. 次を実行する。
+
+```bash
+B13_DEPLOY_URL=https://preview.example.pages.dev \
+  pnpm qa:batch13:deployed-smoke
+```
+
+8. Preview PASS後だけ、同じexact SHAを`main`へfast-forward pushする。
+9. production URLに同じsmokeを実行し、HTML/JS/CSS/hash/headerを記録する。
+
+### Cloudflare formal rollback
+
+Cloudflareのdeployment historyにsuccessful productionが2件以上ある場合
+のみ実行する。Preview deploymentへの切替はformal rollbackではない。
+
+1. current production deployment ID、source SHA、HTML/JS/CSS hashを記録。
+2. 直前のknown-good **production** deploymentを選択。
+3. Cloudflare Pagesの正式Rollback操作を実行。
+4. production URLでroot/deep link/asset/header、両skin×3/4人Result、
+   import、same-ID overwrite cancel/confirm、storage reloadをsmokeする。
+5. currentで作成したlocalStorageをpreviousが読めることを確認し、
+   corruption/dead-endを記録する。
+6. deployment historyからcurrent deploymentへ正式に切り戻す。
+7. current hashの復元と同じsmokeを確認する。
+8. rollback開始、previous確認、current復帰のUTC timestampを保存する。
 
 2026-07-24 時点で、このリポジトリには **deploy先が一切存在しない**。
 Batch 10 の実測で確認した事実:

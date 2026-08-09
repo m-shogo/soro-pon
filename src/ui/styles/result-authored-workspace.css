@@ -1,0 +1,96 @@
+/* Batch 14.1 authored result pass.
+ * The result, winning tiles and score are the event. Side information is a
+ * quiet ledger; it must not compete through nested cards, glow or dashboard
+ * treatment. Keep one authored focal light on the winning call only.
+ */
+@layer layout {
+  .sp-result-screen > .sp-screen__header {
+    min-height: 36px;
+    padding: 2px 0 5px;
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 9%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sp-result-screen > .sp-screen__body {
+    gap: clamp(8px, 1.1vw, 13px);
+  }
+
+  .sp-result-screen .sp-result-frame {
+    border-radius: 7px;
+    box-shadow: none;
+  }
+
+  .sp-result-screen .sp-result-frame .sp-paper-panel__title {
+    font-size: clamp(20px, 2.4vw, 32px);
+    letter-spacing: 0.02em;
+  }
+
+  .sp-result-screen__side {
+    width: min(276px, 29%);
+    min-width: 210px;
+    padding-left: clamp(6px, 0.8vw, 10px);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-result-screen__side > .sp-paper-panel {
+    border-width: 0 0 1px;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sp-result-screen__side > .sp-paper-panel[aria-selected='true'],
+  .sp-result-screen__side > .sp-paper-panel[data-selected='true'] {
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 48%, transparent);
+  }
+
+  .sp-result-screen__side .sp-button {
+    width: 100%;
+    transform: none;
+  }
+
+  .sp-result-screen__side .sp-button:hover,
+  .sp-result-screen__side .sp-button:focus-visible {
+    transform: none;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-result-screen {
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .sp-result-screen > .sp-screen__header {
+      min-height: 30px;
+      padding-bottom: 3px;
+    }
+
+    .sp-result-screen > .sp-screen__body {
+      gap: 4px;
+    }
+
+    .sp-result-screen .sp-result-frame {
+      border-radius: 4px;
+    }
+
+    .sp-result-screen__side {
+      width: min(198px, 25%);
+      min-width: 168px;
+      gap: 4px;
+      padding-left: 4px;
+    }
+
+    .sp-result-screen__side > .sp-paper-panel {
+      padding: 5px;
+    }
+
+    .sp-result-screen__side .sp-button {
+      min-height: 32px;
+      padding-block: 2px;
+      font-size: 10px;
+    }
+  }
+}

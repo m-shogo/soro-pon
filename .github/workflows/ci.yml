@@ -35,6 +35,12 @@ jobs:
             src/app/runtimeIds.test.ts \
             src/app/AppRoot.persistence.test.tsx \
             src/engine/validation/validateDeckEntityIds.test.ts
+      - name: Batch 14 visual quality contract
+        run: pnpm qa:batch14:visual-contract
+      - name: Batch 14 visual review hygiene
+        run: pnpm qa:batch14:review-hygiene
+      - name: Interaction UX contract
+        run: pnpm qa:interaction-ux
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm skin:validate

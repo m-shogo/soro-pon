@@ -179,14 +179,14 @@ describe('AppRoot persistence integrity', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /^デッキ一覧/ }));
     fireEvent.click(screen.getByRole('button', { name: /編集対象デッキ/ }));
-    fireEvent.click(screen.getByRole('button', { name: '編集' }));
+    fireEvent.click(screen.getByRole('button', { name: 'デッキを編集' }));
     fireEvent.change(screen.getByLabelText('デッキ名'), { target: { value: '古いdraft' } });
 
     replaceStoredDeck(id, '別タブ更新版', 2);
     fireEvent.click(screen.getByRole('button', { name: '保存する' }));
 
     expect(screen.getByText(/別タブまたは別画面で変更・削除されたため/)).toBeTruthy();
-    expect(screen.getByRole('heading', { name: '記憶札デッキリスト' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'デッキ選択' })).toBeTruthy();
     expect(storedDeckById(id)?.['name']).toBe('別タブ更新版');
   });
 

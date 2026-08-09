@@ -167,6 +167,20 @@ describe('TileCard: 状態のアクセシビリティ(P1-3)', () => {
     render(<TileCard name="コウモリ" fallbackLabel="蝙" emphasis="ron" />);
     expect(screen.getByRole('button', { name: 'コウモリ(ロンできる)' })).toBeTruthy();
   });
+
+  it('表示専用牌は操作不能な画像として伝え、切り替えボタンにしない', () => {
+    render(
+      <TileCard
+        name="ワニ"
+        fallbackLabel="鰐"
+        interactive={false}
+        aria-label="ワニ、最新の捨て牌"
+      />,
+    );
+
+    expect(screen.getByRole('img', { name: 'ワニ、最新の捨て牌' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'ワニ、最新の捨て牌' })).toBeNull();
+  });
 });
 
 describe('skin切り替えとDOM状態(P1-1)', () => {
