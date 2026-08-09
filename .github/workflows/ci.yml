@@ -39,6 +39,8 @@ jobs:
         run: pnpm qa:batch14:visual-contract
       - name: Batch 14 visual review hygiene
         run: pnpm qa:batch14:review-hygiene
+      - name: Batch 15 home/loadout contract
+        run: pnpm qa:batch15:home-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

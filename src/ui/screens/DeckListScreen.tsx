@@ -41,23 +41,25 @@ export function DeckListScreen({
   return (
     <div className="sp-screen sp-deck-select">
       <div className="sp-screen__header sp-deck-select__header">
-        <div>
+        <div className="sp-deck-select__title-block">
           <h1 className="sp-screen__title">デッキ選択</h1>
-        </div>
-        <div className="sp-deck-select__summary" aria-label="デッキ一覧の状態">
-          <span><strong>{decks.length}</strong>デッキ</span>
-          <span><strong>{readyCount}</strong>対局可</span>
+          <div className="sp-deck-select__summary" aria-label="デッキ一覧の状態">
+            <span><strong>{decks.length}</strong>デッキ</span>
+            <span><strong>{readyCount}</strong>対局可</span>
+          </div>
         </div>
         <div className="sp-screen__spacer" />
-        <Button variant="primary" onClick={onCreate}>
-          新しいデッキ
-        </Button>
-        <Button variant="ink" onClick={onImport}>
-          デッキを読み込む
-        </Button>
-        <Button variant="ghost" onClick={onBack}>
-          TOPへ
-        </Button>
+        <div className="sp-deck-select__actions" aria-label="デッキ管理">
+          <Button variant={decks.length === 0 ? 'primary' : 'ink'} onClick={onCreate}>
+            新しいデッキ
+          </Button>
+          <Button variant="ghost" onClick={onImport}>
+            デッキを読み込む
+          </Button>
+          <Button variant="ghost" onClick={onBack}>
+            TOPへ
+          </Button>
+        </div>
       </div>
 
       <div className="sp-deck-grid sp-deck-select__grid">
@@ -66,8 +68,11 @@ export function DeckListScreen({
           const status = validation?.status ?? 'draft';
           const canPlay = status === 'playable' || status === 'playableWithWarnings';
           const totalTiles = stored.deck.tiles.reduce((sum, tile) => sum + tile.count, 0);
-          const previewTiles = stored.deck.tiles.slice(0, 6);
+          const previewTiles = stored.deck.tiles.slice(0, 8);
           const categoryById = new Map(stored.deck.categories.map((category) => [category.id, category]));
+          const activeVariant = stored.deck.variants.find(
+            (variant) => variant.id === stored.deck.activeVariantId,
+          );
 
           return (
             <button
@@ -86,42 +91,59 @@ export function DeckListScreen({
                 <Badge variant={canPlay ? 'info' : 'warning'}>{STATUS_LABEL[status]}</Badge>
               </div>
 
-              <div className="sp-deck-select-card__preview" aria-hidden="true">
-                {previewTiles.map((tile) => {
-                  const category = categoryById.get(tile.primaryCategoryId);
-                  return (
-                    <TileCard
-                      key={tile.id}
-                      name={tile.name}
-                      {...(tile.emoji !== undefined ? { emoji: tile.emoji } : {})}
-                      fallbackLabel={tile.fallbackLabel}
-                      {...(category ? { categoryColor: category.color, categoryName: category.name } : {})}
-                      showName={false}
-                      interactive={false}
-                    />
-                  );
-                })}
-              </div>
+              <div className="sp-deck-select-card__body">
+                <div className="sp-deck-select-card__preview" aria-hidden="true">
+                  {previewTiles.map((tile) => {
+                    const category = categoryById.get(tile.primaryCategoryId);
+                    return (
+                      <TileCard
+                        key={tile.id}
+                        name={tile.name}
+                        {...(tile.emoji !== undefined ? { emoji: tile.emoji } : {})}
+                        fallbackLabel={tile.fallbackLabel}
+                        {...(category ? { categoryColor: category.color, categoryName: category.name } : {})}
+                        showName={false}
+                        interactive={false}
+                      />
+                    );
+                  })}
+                </div>
 
-              <p className="sp-deck-select-card__description">
-                {stored.deck.description || '説明なし'}
-              </p>
+                <div className="sp-deck-select-card__spec">
+                  <p className="sp-deck-select-card__description">
+                    {stored.deck.description || '説明なし'}
+                  </p>
 
-              <div className="sp-deck-select-card__stats">
-                <span><strong>{totalTiles}</strong>枚</span>
-                <span><strong>{stored.deck.tiles.length}</strong>種</span>
-                <span><strong>{stored.deck.categories.length}</strong>カテゴリ</span>
-              </div>
+                  <dl className="sp-deck-select-card__stats" aria-label={`${stored.deck.name}の構成`}>
+                    <div>
+                      <dt>牌</dt>
+                      <dd>{totalTiles}枚</dd>
+                    </div>
+                    <div>
+                      <dt>種類</dt>
+                      <dd>{stored.deck.tiles.length}種</dd>
+                    </div>
+                    <div>
+                      <dt>役</dt>
+                      <dd>{activeVariant?.winRoles.length ?? 0}組</dd>
+                    </div>
+                    <div>
+                      <dt>カテゴリ</dt>
+                      <dd>{stored.deck.categories.length}</dd>
+                    </div>
+                  </dl>
 
-              <div className="sp-deck-select-card__categories">
-                {stored.deck.categories.slice(0, 4).map((category) => (
-                  <CategoryChip
-                    key={category.id}
-                    name={category.name}
-                    color={category.color}
-                    {...(category.icon !== undefined ? { icon: category.icon } : {})}
-                  />
-                ))}
+                  <div className="sp-deck-select-card__categories">
+                    {stored.deck.categories.slice(0, 4).map((category) => (
+                      <CategoryChip
+                        key={category.id}
+                        name={category.name}
+                        color={category.color}
+                        {...(category.icon !== undefined ? { icon: category.icon } : {})}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </button>
           );

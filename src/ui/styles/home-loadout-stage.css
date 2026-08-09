@@ -1,0 +1,643 @@
+/* Batch 15 home/loadout composition.
+ *
+ * TOP and deck selection should read as game spaces led by real tile objects,
+ * not as stacked web menus or marketplace cards. The skin/background retains
+ * authorship; this layer only owns composition, hierarchy and density.
+ */
+@layer screens {
+  .sp-top-screen {
+    gap: clamp(7px, 1vw, 12px);
+  }
+
+  .sp-top-screen__header {
+    min-height: 46px;
+    align-items: baseline;
+    padding: 2px 0 7px;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+  }
+
+  .sp-top-stage {
+    flex: 1;
+    min-height: 0;
+    width: min(1180px, 100%);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.28fr) minmax(290px, 0.72fr);
+    gap: clamp(14px, 2vw, 26px);
+    align-items: stretch;
+  }
+
+  .sp-top-stage__hero {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(9px, 1.2vw, 14px);
+    padding: clamp(16px, 2.2vw, 28px);
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 9%, transparent);
+    border-left: 3px solid color-mix(in srgb, var(--sp-color-lantern-0) 54%, transparent);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--sp-color-night) 22%, transparent);
+    overflow: hidden;
+  }
+
+  .sp-top-stage__hero-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .sp-top-stage__kicker {
+    color: var(--sp-color-cream-dim);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+
+  .sp-top-stage__status {
+    padding-left: 8px;
+    border-left: 2px solid color-mix(in srgb, var(--sp-color-danger) 60%, transparent);
+    color: var(--sp-color-cream-dim);
+    font-size: 10px;
+  }
+
+  .sp-top-stage__status[data-ready='true'] {
+    border-left-color: color-mix(in srgb, var(--sp-color-lantern-0) 72%, transparent);
+    color: var(--sp-color-cream);
+  }
+
+  .sp-top-stage__deck-copy h2 {
+    margin: 0;
+    color: var(--sp-color-cream);
+    font-size: clamp(26px, 3.2vw, 44px);
+    line-height: 1;
+    letter-spacing: 0.025em;
+  }
+
+  .sp-top-stage__deck-copy p {
+    max-width: 46ch;
+    margin: 5px 0 0;
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-sm);
+    line-height: 1.45;
+  }
+
+  .sp-top-stage__rack {
+    --tile-w: clamp(48px, 5.1vw, 70px);
+    --tile-h: clamp(64px, 6.8vw, 94px);
+    min-width: 0;
+    min-height: calc(var(--tile-h) + 7px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 5px 6px 3px;
+    overflow: hidden;
+  }
+
+  .sp-top-stage__rack .sp-tile {
+    flex: none;
+    margin-left: -7px;
+    transform: none;
+    box-shadow: var(--sp-shadow-tile-raised);
+  }
+
+  .sp-top-stage__rack .sp-tile:first-child {
+    margin-left: 0;
+  }
+
+  .sp-top-stage__deck-spec {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-top-stage__deck-spec > div {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 5px;
+    padding: 6px 9px;
+  }
+
+  .sp-top-stage__deck-spec > div + div {
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-top-stage__deck-spec dt,
+  .sp-top-stage__deck-spec dd {
+    margin: 0;
+  }
+
+  .sp-top-stage__deck-spec dt {
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-top-stage__deck-spec dd {
+    color: var(--sp-color-cream);
+    font-family: var(--sp-font-family-num);
+    font-size: var(--sp-font-md);
+  }
+
+  .sp-top-stage__hero > .sp-button--primary {
+    align-self: flex-start;
+    width: min(330px, 58%);
+    min-height: 58px;
+    box-shadow: none;
+  }
+
+  .sp-top-stage__nav {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding-left: clamp(12px, 1.7vw, 22px);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+  }
+
+  .sp-top-stage__nav-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .sp-top-stage__nav-main .sp-button {
+    width: 100%;
+    min-height: 58px;
+    align-items: flex-start;
+    padding-inline: 15px;
+    text-align: left;
+    box-shadow: none;
+  }
+
+  .sp-top-stage__utility {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    padding-top: 9px;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-top-stage__utility .sp-button {
+    min-width: 0;
+    min-height: 34px;
+    padding: 4px 6px;
+    font-size: 10px;
+    box-shadow: none;
+  }
+
+  .sp-top-stage .sp-top-tagline {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    font-size: 10px;
+    opacity: 0.72;
+  }
+
+  .sp-top-stage__recent {
+    margin-top: 3px;
+    padding-top: 9px;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    color: var(--sp-color-cream-dim);
+  }
+
+  .sp-top-stage__recent-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 10px;
+  }
+
+  .sp-top-stage__recent-head strong {
+    color: var(--sp-color-cream);
+    font-size: var(--sp-font-sm);
+  }
+
+  .sp-top-stage__recent ol {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sp-top-stage__recent li {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    font-size: 9px;
+  }
+
+  .sp-top-stage__recent time {
+    opacity: 0.72;
+  }
+
+  .sp-top-stage__recent li > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Deck selection is a loadout stage. A single deck should still occupy the
+     canvas and present its real tile faces before utility actions. */
+  .sp-deck-select__title-block {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .sp-deck-select__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sp-deck-select__actions .sp-button {
+    box-shadow: none;
+  }
+
+  .sp-deck-select__grid {
+    flex: 1;
+    min-height: 0;
+    width: min(1120px, 100%);
+    margin-inline: auto;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+    align-content: center;
+    gap: clamp(9px, 1.2vw, 14px);
+  }
+
+  .sp-deck-select-card {
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: clamp(12px, 1.4vw, 17px);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--sp-color-night) 22%, transparent);
+    overflow: hidden;
+  }
+
+  .sp-deck-select-card__body {
+    min-width: 0;
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(280px, 1.35fr) minmax(190px, 0.65fr);
+    gap: clamp(10px, 1.4vw, 18px);
+    align-items: stretch;
+  }
+
+  .sp-deck-select-card__preview {
+    --tile-w: clamp(44px, 4.5vw, 58px);
+    --tile-h: clamp(59px, 6vw, 78px);
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px 8px 8px 4px;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    overflow: hidden;
+  }
+
+  .sp-deck-select-card__preview .sp-tile,
+  .sp-deck-select-card:hover .sp-deck-select-card__preview .sp-tile:nth-child(odd),
+  .sp-deck-select-card:focus-visible .sp-deck-select-card__preview .sp-tile:nth-child(odd) {
+    flex: none;
+    margin-left: -6px;
+    transform: none;
+    box-shadow: var(--sp-shadow-tile-raised);
+  }
+
+  .sp-deck-select-card__preview .sp-tile:first-child {
+    margin-left: 0;
+  }
+
+  .sp-deck-select-card__spec {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    text-align: left;
+  }
+
+  .sp-deck-select-card__description {
+    min-height: 0;
+    margin: 0;
+    -webkit-line-clamp: 2;
+  }
+
+  .sp-deck-select-card__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-select-card__stats > div {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 5px 6px;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+  }
+
+  .sp-deck-select-card__stats dt,
+  .sp-deck-select-card__stats dd {
+    margin: 0;
+  }
+
+  .sp-deck-select-card__stats dt {
+    color: var(--sp-color-cream-dim);
+    font-size: 9px;
+  }
+
+  .sp-deck-select-card__stats dd {
+    color: var(--sp-color-cream);
+    font-family: var(--sp-font-family-num);
+    font-size: var(--sp-font-sm);
+  }
+
+  .sp-deck-select-card__categories {
+    margin-top: 0;
+  }
+
+  .sp-deck-select-card:hover,
+  .sp-deck-select-card:focus-visible {
+    transform: none;
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 62%, transparent);
+  }
+
+  @media (min-width: 1000px) and (min-height: 600px) {
+    .sp-top-screen {
+      width: min(100%, 1280px);
+      margin-inline: auto;
+      padding-inline: clamp(28px, 4vw, 56px);
+    }
+
+    .sp-top-stage {
+      flex: none;
+      height: min(590px, calc(100vh - 150px));
+      min-height: 420px;
+      margin-block: auto;
+    }
+
+    .sp-deck-select-card:only-child {
+      min-height: clamp(300px, 42vh, 370px);
+      max-width: 980px;
+      width: 100%;
+      justify-self: center;
+    }
+
+    .sp-deck-select-card:only-child .sp-deck-select-card__preview {
+      --tile-w: clamp(54px, 4.9vw, 68px);
+      --tile-h: clamp(72px, 6.5vw, 91px);
+    }
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-top-screen {
+      padding: 4px 6px;
+      gap: 4px;
+    }
+
+    .sp-top-screen__header {
+      min-height: 32px;
+      padding: 0 0 3px;
+      gap: 8px;
+    }
+
+    .sp-top-screen__header .sp-screen__title {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .sp-top-screen__header .sp-screen__subtitle {
+      font-size: 9px;
+    }
+
+    .sp-top-stage {
+      width: 100%;
+      grid-template-columns: minmax(0, 1.18fr) minmax(274px, 0.82fr);
+      gap: 7px;
+    }
+
+    .sp-top-stage__hero {
+      justify-content: space-between;
+      gap: 5px;
+      padding: 7px 9px;
+      border-radius: 5px;
+    }
+
+    .sp-top-stage__kicker,
+    .sp-top-stage__status {
+      font-size: 8px;
+    }
+
+    .sp-top-stage__deck-copy h2 {
+      font-size: 20px;
+    }
+
+    .sp-top-stage__deck-copy p {
+      max-width: none;
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 9px;
+    }
+
+    .sp-top-stage__rack {
+      --tile-w: 40px;
+      --tile-h: 54px;
+      min-height: 56px;
+      padding: 1px 2px;
+    }
+
+    .sp-top-stage__rack .sp-tile {
+      margin-left: -5px;
+    }
+
+    .sp-top-stage__deck-spec > div {
+      padding: 3px 5px;
+    }
+
+    .sp-top-stage__deck-spec dt {
+      font-size: 7px;
+    }
+
+    .sp-top-stage__deck-spec dd {
+      font-size: 10px;
+    }
+
+    .sp-top-stage__hero > .sp-button--primary {
+      align-self: stretch;
+      width: 100%;
+      min-height: 44px;
+      padding-block: 3px;
+      font-size: var(--sp-font-md);
+    }
+
+    .sp-top-stage__hero > .sp-button--primary .sp-button__sub {
+      font-size: 8px;
+    }
+
+    .sp-top-stage__nav {
+      justify-content: space-between;
+      gap: 6px;
+      padding-left: 7px;
+    }
+
+    .sp-top-stage__nav-main {
+      gap: 5px;
+    }
+
+    .sp-top-stage__nav-main .sp-button {
+      min-height: 52px;
+      padding: 4px 9px;
+      font-size: var(--sp-font-sm);
+    }
+
+    .sp-top-stage__nav-main .sp-button__sub {
+      font-size: 8px;
+    }
+
+    .sp-top-stage__utility {
+      gap: 3px;
+      padding-top: 5px;
+    }
+
+    .sp-top-stage__utility .sp-button {
+      min-height: 28px;
+      padding: 2px 3px;
+      font-size: 8px;
+    }
+
+    .sp-top-stage .sp-top-tagline {
+      font-size: 8px;
+    }
+
+    .sp-top-stage__recent {
+      display: none;
+    }
+
+    .sp-deck-select {
+      padding: 4px 6px;
+      gap: 5px;
+    }
+
+    .sp-deck-select__header {
+      min-height: 38px;
+      gap: 7px;
+      padding-block: 1px 4px;
+    }
+
+    .sp-deck-select__title-block {
+      gap: 7px;
+    }
+
+    .sp-deck-select__header .sp-screen__title {
+      font-size: 20px;
+    }
+
+    .sp-deck-select__summary {
+      gap: 5px;
+      font-size: 8px;
+    }
+
+    .sp-deck-select__summary strong {
+      font-size: 10px;
+    }
+
+    .sp-deck-select__actions {
+      gap: 3px;
+    }
+
+    .sp-deck-select__actions .sp-button {
+      min-height: 32px;
+      padding: 2px 6px;
+      font-size: 9px;
+    }
+
+    .sp-deck-select__grid {
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 5px;
+      padding-bottom: 4px;
+    }
+
+    .sp-deck-select-card {
+      min-height: 260px;
+      gap: 5px;
+      padding: 7px 8px;
+      border-radius: 5px;
+    }
+
+    .sp-deck-select-card__title {
+      font-size: 15px;
+    }
+
+    .sp-deck-select-card__body {
+      grid-template-columns: minmax(300px, 1.35fr) minmax(190px, 0.65fr);
+      gap: 7px;
+    }
+
+    .sp-deck-select-card__preview {
+      --tile-w: 44px;
+      --tile-h: 59px;
+      padding: 3px 5px 3px 2px;
+    }
+
+    .sp-deck-select-card__preview .sp-tile,
+    .sp-deck-select-card:hover .sp-deck-select-card__preview .sp-tile:nth-child(odd),
+    .sp-deck-select-card:focus-visible .sp-deck-select-card__preview .sp-tile:nth-child(odd) {
+      margin-left: -5px;
+    }
+
+    .sp-deck-select-card__description {
+      font-size: 8px;
+      line-height: 1.25;
+    }
+
+    .sp-deck-select-card__spec {
+      gap: 5px;
+    }
+
+    .sp-deck-select-card__stats > div {
+      padding: 3px 4px;
+    }
+
+    .sp-deck-select-card__stats dt {
+      font-size: 7px;
+    }
+
+    .sp-deck-select-card__stats dd {
+      font-size: 9px;
+    }
+
+    .sp-deck-select-card__categories {
+      gap: 2px;
+      flex-wrap: nowrap;
+    }
+
+    .sp-deck-select-card__categories .sp-category-chip {
+      min-width: 0;
+      padding-inline: 3px;
+      font-size: 8px;
+    }
+  }
+}
