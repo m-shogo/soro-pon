@@ -69,22 +69,44 @@ async function expectViewportContract(page: Page) {
       return rect.width > 0 && rect.height > 0;
     });
 
+    // Checkbox/radio activation includes the associated <label> area. Measuring
+    // only the native 18px box would report a false WCAG target-size failure even
+    // though the whole visible toggle row is clickable. Other controls keep their
+    // own DOM rectangle as the actual pointer target.
+    const hitRect = (element: HTMLElement): DOMRect => {
+      if (
+        element instanceof HTMLInputElement &&
+        (element.type === 'checkbox' || element.type === 'radio')
+      ) {
+        const label = element.closest('label');
+        if (label !== null) {
+          return label.getBoundingClientRect();
+        }
+      }
+      return element.getBoundingClientRect();
+    };
+    const controlName = (element: HTMLElement): string =>
+      element.getAttribute('aria-label') ??
+      element.closest('label')?.textContent?.trim() ??
+      element.textContent?.trim() ??
+      element.tagName.toLowerCase();
+
     return {
       documentOverflow:
         document.documentElement.scrollWidth > viewport.width + 1 ||
         document.documentElement.scrollHeight > viewport.height + 1,
       smallerThanWcagMinimum: visibleInteractive
         .filter((element) => {
-          const rect = element.getBoundingClientRect();
+          const rect = hitRect(element);
           return rect.width < 24 || rect.height < 24;
         })
-        .map((element) => element.getAttribute('aria-label') ?? element.textContent?.trim()),
+        .map(controlName),
       smallFrequentMatchActions: frequentMatchActions
         .filter((element) => {
           const rect = element.getBoundingClientRect();
           return rect.width < 44 || rect.height < 44;
         })
-        .map((element) => element.getAttribute('aria-label') ?? element.textContent?.trim()),
+        .map(controlName),
     };
   });
 
