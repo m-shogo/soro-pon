@@ -47,6 +47,8 @@ jobs:
         run: pnpm qa:batch17:tile-workbench-contract
       - name: Batch 18 category workbench contract
         run: pnpm qa:batch18:category-workbench-contract
+      - name: Batch 19 bonus workbench contract
+        run: pnpm qa:batch19:bonus-workbench-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
