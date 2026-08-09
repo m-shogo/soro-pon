@@ -18,14 +18,13 @@ import { Button } from '../components/Button';
 import { DeckBonusWorkbench } from '../components/DeckBonusWorkbench';
 import { DeckCategoryWorkbench } from '../components/DeckCategoryWorkbench';
 import { DeckEditorInspector } from '../components/DeckEditorInspector';
+import { DeckRoleWorkbench } from '../components/DeckRoleWorkbench';
 import { DeckTileWorkbench } from '../components/DeckTileWorkbench';
 import { Dialog } from '../components/Dialog';
-import { FormField, NumberField, SelectField, TextField } from '../components/FormField';
+import { FormField, TextField } from '../components/FormField';
 import { PaperPanel } from '../components/PaperPanel';
 import { Tabs } from '../components/Tab';
 
-// 安全テンプレートのみで構造編集する(count-onlyの通常役は作れない)。
-// docs/70 §18 の推奨点数を使う。
 const CATEGORY_COLORS = ['#EF4444', '#3B82F6', '#22C55E', '#F59E0B', '#7C3AED', '#06B6D4', '#EC4899', '#84CC16'];
 
 function nextId(prefix: string, existing: string[]): string {
@@ -48,7 +47,6 @@ export function DeckEditorScreen({
   const [leaveConfirm, setLeaveConfirm] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [templateCategoryId, setTemplateCategoryId] = useState('');
-  const [setTileIds, setSetTileIds] = useState<[string, string, string]>(['', '', '']);
 
   const validation = useMemo(() => validateDeckForUse(draft), [draft]);
   const activeVariant = draft.variants.find((variant) => variant.id === draft.activeVariantId);
@@ -178,17 +176,10 @@ export function DeckEditorScreen({
       winRoles: variant.winRoles.filter((role) => role.id !== roleId),
     }));
   };
-
-  const setTileIdsHaveDuplicate =
-    setTileIds.some((id) => id !== '') &&
-    new Set(setTileIds.filter((id) => id !== '')).size !== setTileIds.filter((id) => id !== '').length;
-  const canAddSpecificSetRole =
-    setTileIds.every((id) => id !== '') && new Set(setTileIds).size === 3 && templateCategoryId !== '';
-
-  const addSpecificSetRole = () => {
-    const category = draft.categories.find((current) => current.id === templateCategoryId);
+  const addSpecificSetRole = (categoryId: string, tileIds: [string, string, string]) => {
+    const category = draft.categories.find((current) => current.id === categoryId);
     if (!category) return;
-    const tiles = setTileIds.map((tileId) => {
+    const tiles = tileIds.map((tileId) => {
       const tile = draft.tiles.find((current) => current.id === tileId);
       return { id: tileId, name: tile?.name ?? tileId };
     });
@@ -348,110 +339,18 @@ export function DeckEditorScreen({
             />
           )}
 
-          {tab === 'roles' && (
-            <>
-              <PaperPanel variant="aged" title="役を追加(安全テンプレート)">
-                <div style={{ display: 'flex', gap: 'var(--sp-space-8)', flexWrap: 'wrap', alignItems: 'center' }}>
-                  <SelectField
-                    label="テンプレート用カテゴリ"
-                    value={templateCategoryId}
-                    onChange={setTemplateCategoryId}
-                    placeholder="カテゴリを選ぶ"
-                    options={draft.categories.map((category) => ({ value: category.id, label: category.name }))}
-                  />
-                  <Button
-                    variant="ink"
-                    disabled={templateCategoryId === ''}
-                    onClick={() => addRoleFromTemplate('threeSameCategory', templateCategoryId)}
-                  >
-                    同カテゴリ3組 (60点)
-                  </Button>
-                  <Button
-                    variant="ink"
-                    disabled={draft.categories.length < 3}
-                    onClick={() => addRoleFromTemplate('threeDifferentCategories')}
-                  >
-                    3カテゴリ1組ずつ (80点)
-                  </Button>
-                  <Button variant="ink" onClick={() => addRoleFromTemplate('threeSameTile')}>
-                    同じ牌3枚×3組 (120点)
-                  </Button>
-                </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: 'var(--sp-space-8)',
-                    flexWrap: 'wrap',
-                    alignItems: 'center',
-                    marginTop: 'var(--sp-space-8)',
-                  }}
-                >
-                  {([0, 1, 2] as const).map((slot) => (
-                    <SelectField
-                      key={slot}
-                      label={`セット牌${slot + 1}`}
-                      value={setTileIds[slot]}
-                      onChange={(tileId) => {
-                        const next: [string, string, string] = [...setTileIds];
-                        next[slot] = tileId;
-                        setSetTileIds(next);
-                      }}
-                      placeholder={`牌${slot + 1}を選ぶ`}
-                      options={draft.tiles.map((tile) => ({ value: tile.id, label: tile.name }))}
-                    />
-                  ))}
-                  <Button
-                    variant="ink"
-                    disabled={!canAddSpecificSetRole}
-                    onClick={addSpecificSetRole}
-                  >
-                    指定3枚+同カテゴリ2組 (100点)
-                  </Button>
-                </div>
-
-                {setTileIdsHaveDuplicate && (
-                  <p style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-danger)', margin: '4px 0 0' }}>
-                    同じ牌が複数のスロットで選ばれています。3枚とも別の牌を選んでください。
-                  </p>
-                )}
-                <p style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', margin: '4px 0 0' }}>
-                  指定セットは上のカテゴリ選択も使います(残り2組のカテゴリ)。
-                </p>
-              </PaperPanel>
-
-              <PaperPanel title="役の一覧">
-                <div className="sp-screen__col" style={{ gap: 'var(--sp-space-8)' }}>
-                  {activeVariant?.winRoles.map((role) => (
-                    <div
-                      key={role.id}
-                      style={{ display: 'flex', gap: 'var(--sp-space-8)', alignItems: 'center', flexWrap: 'wrap' }}
-                    >
-                      <TextField
-                        label="役名"
-                        value={role.name}
-                        maxLength={30}
-                        width="9em"
-                        onChange={(name) => updateRole(role.id, { name })}
-                      />
-                      <NumberField
-                        label="点数"
-                        min={1}
-                        max={999}
-                        value={role.basePoints}
-                        onChange={(basePoints) => updateRole(role.id, { basePoints })}
-                      />
-                      <span style={{ fontSize: 'var(--sp-font-xs)', color: 'var(--sp-color-ink-soft)', flex: 1, minWidth: '10em' }}>
-                        {role.explanation}
-                      </span>
-                      <Button variant="ghost" onClick={() => removeRole(role.id)}>
-                        削除
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </PaperPanel>
-            </>
+          {tab === 'roles' && activeVariant && (
+            <DeckRoleWorkbench
+              categories={draft.categories}
+              tiles={draft.tiles}
+              roles={activeVariant.winRoles}
+              templateCategoryId={templateCategoryId}
+              onTemplateCategoryChange={setTemplateCategoryId}
+              onAddRoleFromTemplate={addRoleFromTemplate}
+              onAddSpecificSetRole={addSpecificSetRole}
+              onUpdateRole={updateRole}
+              onRemoveRole={removeRole}
+            />
           )}
 
           {tab === 'bonuses' && activeVariant && (
