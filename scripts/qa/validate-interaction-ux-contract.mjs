@@ -11,6 +11,7 @@ const REQUIRED_FILES = {
   setup: 'src/ui/screens/MatchSetupScreen.tsx',
   setupCss: 'src/ui/styles/match-setup-authored.css',
   top: 'src/ui/screens/TopScreen.tsx',
+  rotate: 'src/ui/components/RotatePrompt.tsx',
   tabs: 'src/ui/components/Tab.tsx',
   editor: 'src/ui/screens/DeckEditorScreen.tsx',
   collection: 'src/ui/screens/CollectionScreen.tsx',
@@ -94,11 +95,17 @@ requireText('setupCss', '.sp-match-setup__actions', 'setup start action must hav
 forbidText('setupCss', 'radial-gradient(', 'setup lobby must not add decorative AI-style glow fields');
 forbidText('setupCss', 'linear-gradient(', 'setup lobby must not depend on decorative gradients');
 
-requireText('top', 'variant="primary"', 'TOP must retain one clear primary play action');
+requireText('top', 'variant="primary"', 'TOP must retain one clear primary play/setup action');
+requireText('top', "onClick={hasPlayableDeck ? onPlayNow : onDeckList}", 'TOP primary action must remain useful when no playable deck exists');
+requireText('top', "{hasPlayableDeck ? 'まず遊ぶ' : 'デッキを準備'}", 'TOP must explain the onboarding action rather than presenting a dead disabled CTA');
 requireText('top', 'データ管理', 'maintenance controls must stay grouped away from daily play navigation');
 requireText('top', 'setDataModalOpen(false);', 'reset confirmation must close the maintenance modal before opening another modal');
 requireText('top', 'setResetConfirmOpen(true);', 'reset confirmation must remain explicit');
 requireText('top', 'returnToDataManagement', 'cancel/failure should preserve the maintenance context without stacking modals');
+
+requireText('rotate', 'role="status"', 'portrait guidance must be announced when the playable surface becomes inert');
+requireText('rotate', 'aria-live="polite"', 'orientation guidance should not interrupt more urgent announcements');
+requireText('rotate', 'aria-atomic="true"', 'orientation guidance should be announced as one coherent instruction');
 
 requireText('tabs', 'id={`sp-tab-${item.id}`}', 'tabs need stable ids so panels can name their controlling tab');
 requireText('editor', 'aria-labelledby={`sp-tab-${tab}`}', 'active editor panel must be labelled by its active tab');
