@@ -37,15 +37,30 @@ describe('TopScreen interaction hierarchy', () => {
     expect(screen.getByRole('button', { name: 'ローカルデータを初期化…' })).toBeTruthy();
   });
 
-  it('初期化はデータ管理からさらに不可逆操作の確認へ進む', async () => {
+  it('初期化確認中はデータ管理を閉じ、aria-modal/focus trapを重ねない', async () => {
     const user = userEvent.setup();
     renderTop();
 
     await user.click(screen.getByRole('button', { name: /データ管理/ }));
     await user.click(screen.getByRole('button', { name: 'ローカルデータを初期化…' }));
 
+    expect(screen.queryByRole('dialog', { name: 'データ管理' })).toBeNull();
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(screen.getByRole('dialog', { name: 'ローカルデータの初期化' })).toBeTruthy();
     expect(screen.getByRole('button', { name: '全て削除して初期化する' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'やめる' })).toBeTruthy();
+  });
+
+  it('初期化をやめるとデータ管理へ戻り、保守コンテキストを失わない', async () => {
+    const user = userEvent.setup();
+    renderTop();
+
+    await user.click(screen.getByRole('button', { name: /データ管理/ }));
+    await user.click(screen.getByRole('button', { name: 'ローカルデータを初期化…' }));
+    await user.click(screen.getByRole('button', { name: 'やめる' }));
+
+    expect(screen.queryByRole('dialog', { name: 'ローカルデータの初期化' })).toBeNull();
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(screen.getByRole('dialog', { name: 'データ管理' })).toBeTruthy();
   });
 });
