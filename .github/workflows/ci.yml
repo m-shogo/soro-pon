@@ -59,6 +59,8 @@ jobs:
         run: pnpm qa:batch23:result-evidence-contract
       - name: Batch 24 editor cleanup contract
         run: pnpm qa:batch24:editor-cleanup-contract
+      - name: Batch 25 result determinism contract
+        run: pnpm qa:batch25:result-determinism-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
