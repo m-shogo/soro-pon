@@ -86,6 +86,83 @@ async function expectViewportContract(page: Page) {
   expect(result.smallFrequentMatchActions).toEqual([]);
 }
 
+async function expectMatchGeometry(page: Page) {
+  const result = await page.evaluate(() => {
+    const viewport = {
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+    };
+    const geometrySelectors = [
+      '.sp-match-utility',
+      '.sp-table-stage',
+      '.sp-table-seat',
+      '.sp-table-center',
+      '.sp-self-hand-zone',
+      '.sp-match-action-zone',
+      '.sp-player-panel',
+      '.sp-seat-played',
+      '.sp-tile',
+    ];
+    const elements = [
+      ...document.querySelectorAll<HTMLElement>(geometrySelectors.join(',')),
+    ].filter((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
+    });
+    const collisionElements = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.sp-match-utility, .sp-table-seat, .sp-table-center, .sp-self-hand-zone, .sp-match-action-zone',
+      ),
+    ].filter((element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+    const collisions: string[] = [];
+
+    for (let leftIndex = 0; leftIndex < collisionElements.length; leftIndex += 1) {
+      for (let rightIndex = leftIndex + 1; rightIndex < collisionElements.length; rightIndex += 1) {
+        const left = collisionElements[leftIndex]!;
+        const right = collisionElements[rightIndex]!;
+        if (left.contains(right) || right.contains(left)) continue;
+        const a = left.getBoundingClientRect();
+        const b = right.getBoundingClientRect();
+        const overlapWidth = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+        const overlapHeight = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        if (overlapWidth > 1 && overlapHeight > 1) {
+          collisions.push(`${left.className} <> ${right.className}`);
+        }
+      }
+    }
+
+    return {
+      overflow: elements
+        .filter(
+          (element) =>
+            element.scrollWidth > element.clientWidth + 1 ||
+            element.scrollHeight > element.clientHeight + 1,
+        )
+        .map((element) => element.className),
+      outside: elements
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
+          return (
+            rect.left < -0.5 ||
+            rect.top < -0.5 ||
+            rect.right > viewport.width + 0.5 ||
+            rect.bottom > viewport.height + 0.5
+          );
+        })
+        .map((element) => element.className),
+      collisions,
+    };
+  });
+
+  expect(result.overflow).toEqual([]);
+  expect(result.outside).toEqual([]);
+  expect(result.collisions).toEqual([]);
+}
+
 for (const skin of SKINS) {
   for (const size of SIZES) {
     test(`${skin} ${size.label} shell flow review capture`, async ({ page }) => {
@@ -120,7 +197,7 @@ for (const skin of SKINS) {
 
         await page.getByRole('button', { name: /まず遊ぶ/ }).click();
         await expect(page.getByRole('heading', { name: '対局設定' })).toBeVisible();
-        await page.getByRole('button', { name: `${playerCount}人戦` }).click();
+        await page.getByRole('button', { name: `${playerCount}人戦`, exact: true }).click();
         await capture(page, `match-setup-${skin}-${playerCount}p-${size.label}`);
         await expectViewportContract(page);
 
@@ -130,6 +207,7 @@ for (const skin of SKINS) {
         ).toBeVisible();
         await capture(page, `match-${skin}-${playerCount}p-${size.label}`);
         await expectViewportContract(page);
+        await expectMatchGeometry(page);
 
         if (size.label === 'compact' && playerCount === 4) {
           const firstTile = page.locator('.sp-self-hand-zone .sp-tile').first();
@@ -138,6 +216,7 @@ for (const skin of SKINS) {
           await expect(firstTile).toHaveAttribute('aria-pressed', 'true');
           await capture(page, `match-action-${skin}-4p-compact`);
           await expectViewportContract(page);
+          await expectMatchGeometry(page);
         }
       });
     }
