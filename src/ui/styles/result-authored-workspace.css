@@ -1,4 +1,4 @@
-/* Batch 14.1 authored result pass.
+/* Batch 14.1 / Batch 23 authored result pass.
  * The result, winning tiles and score are the event. Side information is a
  * quiet ledger; it must not compete through nested cards, glow or dashboard
  * treatment. Keep one authored focal light on the winning call only.
@@ -14,46 +14,115 @@
     box-shadow: none;
   }
 
-  .sp-result-screen > .sp-screen__body {
+  .sp-result-screen__stage {
+    flex: 0 1 690px;
+    width: min(1240px, 100%);
+    max-height: min(690px, calc(100vh - 112px));
+    margin: auto;
     gap: clamp(8px, 1.1vw, 13px);
+    align-items: stretch;
+  }
+
+  .sp-result-screen__main {
+    justify-content: center;
   }
 
   .sp-result-screen .sp-result-frame {
+    width: 100%;
+    min-height: min(440px, 58vh);
+    padding: clamp(12px, 1.5vw, 22px);
     border-radius: 7px;
     box-shadow: none;
   }
 
   .sp-result-screen .sp-result-frame .sp-paper-panel__title {
-    font-size: clamp(20px, 2.4vw, 32px);
+    margin-bottom: clamp(10px, 1.2vw, 16px);
+    font-size: clamp(22px, 2.5vw, 34px);
     letter-spacing: 0.02em;
   }
 
+  .sp-result-screen__winning-groups {
+    display: grid;
+    gap: clamp(8px, 1.1vh, 13px);
+  }
+
+  .sp-result-screen__winning-group {
+    display: flex;
+    align-items: center;
+    gap: clamp(6px, 0.65vw, 10px);
+  }
+
+  .sp-result-screen__winning-group > span {
+    flex: 0 0 4.5em;
+    color: var(--sp-color-ink-soft);
+    font-size: var(--sp-font-xs);
+  }
+
+  .sp-result-screen__warning-copy,
+  .sp-result-screen__draw-copy {
+    color: var(--sp-color-ink-soft);
+    font-size: var(--sp-font-sm);
+  }
+
+  .sp-result-screen__draw-copy {
+    display: grid;
+    place-items: center;
+    min-height: 220px;
+    margin: 0;
+    font-size: clamp(var(--sp-font-md), 2vw, var(--sp-font-xl));
+  }
+
   .sp-result-screen__side {
-    width: min(276px, 29%);
-    min-width: 210px;
+    width: min(268px, 27%);
+    min-width: 214px;
+    justify-content: space-between;
     padding-left: clamp(6px, 0.8vw, 10px);
     border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
   }
 
-  .sp-result-screen__side > .sp-paper-panel {
+  .sp-result-screen__ledger,
+  .sp-result-screen__actions {
+    display: grid;
+    gap: var(--sp-space-8);
+  }
+
+  .sp-result-screen__ledger > .sp-paper-panel {
     border-width: 0 0 1px;
     border-radius: 0;
     background: transparent;
     box-shadow: none;
   }
 
-  .sp-result-screen__side > .sp-paper-panel[aria-selected='true'],
-  .sp-result-screen__side > .sp-paper-panel[data-selected='true'] {
+  .sp-result-screen__ledger > .sp-paper-panel[aria-selected='true'],
+  .sp-result-screen__ledger > .sp-paper-panel[data-selected='true'] {
     box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 48%, transparent);
   }
 
-  .sp-result-screen__side .sp-button {
+  .sp-result-screen__achievement-list {
+    gap: 3px;
+  }
+
+  .sp-result-screen__more-achievements,
+  .sp-result-screen__coin-note {
+    margin: 5px 0 0;
+    color: var(--sp-color-ink-soft);
+    font-size: var(--sp-font-xs);
+  }
+
+  .sp-result-screen__coin-value {
+    display: block;
+    font-family: var(--sp-font-family-num);
+    font-size: clamp(24px, 2.5vw, 38px);
+    line-height: 1;
+  }
+
+  .sp-result-screen__actions .sp-button {
     width: 100%;
     transform: none;
   }
 
-  .sp-result-screen__side .sp-button:hover,
-  .sp-result-screen__side .sp-button:focus-visible {
+  .sp-result-screen__actions .sp-button:hover,
+  .sp-result-screen__actions .sp-button:focus-visible {
     transform: none;
   }
 
@@ -68,26 +137,89 @@
       padding-bottom: 3px;
     }
 
-    .sp-result-screen > .sp-screen__body {
+    .sp-result-screen__stage {
+      flex: 1 1 auto;
+      width: 100%;
+      max-height: none;
+      margin: 0;
       gap: 4px;
     }
 
+    .sp-result-screen__main {
+      justify-content: flex-start;
+    }
+
     .sp-result-screen .sp-result-frame {
+      min-height: 0;
+      padding: 6px;
       border-radius: 4px;
     }
 
+    .sp-result-screen .sp-result-frame .sp-paper-panel__title {
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .sp-result-screen__winning-groups {
+      gap: 4px;
+    }
+
+    .sp-result-screen__winning-group {
+      gap: 4px;
+    }
+
+    .sp-result-screen__winning-group > span {
+      flex-basis: 3.5em;
+      font-size: 9px;
+    }
+
+    .sp-result-screen__draw-copy {
+      min-height: 110px;
+      font-size: var(--sp-font-sm);
+    }
+
     .sp-result-screen__side {
-      width: min(198px, 25%);
-      min-width: 168px;
+      width: min(190px, 24%);
+      min-width: 164px;
       gap: 4px;
       padding-left: 4px;
     }
 
-    .sp-result-screen__side > .sp-paper-panel {
-      padding: 5px;
+    .sp-result-screen__ledger,
+    .sp-result-screen__actions {
+      gap: 4px;
     }
 
-    .sp-result-screen__side .sp-button {
+    .sp-result-screen__ledger > .sp-paper-panel {
+      padding: 4px 5px;
+    }
+
+    .sp-result-screen__ledger .sp-paper-panel__title {
+      margin-bottom: 3px;
+      padding-bottom: 2px;
+      font-size: 10px;
+    }
+
+    .sp-result-screen__ledger .sp-issue-list {
+      gap: 1px;
+      font-size: 9px;
+    }
+
+    .sp-result-screen__achievement-list li:nth-child(n + 3) {
+      display: none;
+    }
+
+    .sp-result-screen__more-achievements,
+    .sp-result-screen__coin-note {
+      margin-top: 2px;
+      font-size: 8px;
+    }
+
+    .sp-result-screen__coin-value {
+      font-size: 20px;
+    }
+
+    .sp-result-screen__actions .sp-button {
       min-height: 32px;
       padding-block: 2px;
       font-size: 10px;
