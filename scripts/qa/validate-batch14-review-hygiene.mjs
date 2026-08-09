@@ -51,13 +51,15 @@ for (const needle of [
   'const PLAYER_COUNTS = [3, 4] as const;',
   "const CAPTURE_DIR = 'test-results/batch14-review';",
   'page.screenshot({',
+  'document.documentElement.dataset.skin',
+  '.toBe(skin)',
   'smallerThanWcagMinimum',
   'smallFrequentMatchActions',
   'deck-editor-tiles-${skin}-${size.label}',
   'deck-editor-roles-${skin}-${size.label}',
   'match-action-${skin}-4p-compact',
 ]) {
-  requireText('capture', needle, 'the visual review matrix and usability probes must stay complete');
+  requireText('capture', needle, 'the visual review matrix, skin-ready boundary and usability probes must stay complete');
 }
 forbidText(
   'capture',
