@@ -28,6 +28,13 @@ async function boot(page: Page, skin: SkinId, size: CaptureSize, seedOffset = 0)
   );
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'soro-pon' })).toBeVisible();
+  // SkinProvider loads registry/tokens/assets asynchronously. A visible heading
+  // only proves React mounted; it does not prove the requested skin was applied.
+  // Wait for applyDocumentSkin's canonical marker so the first TOP capture does
+  // not accidentally record the bundled/default fallback skin.
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.dataset.skin))
+    .toBe(skin);
 }
 
 async function capture(page: Page, name: string) {
@@ -62,37 +69,16 @@ async function expectViewportContract(page: Page) {
       return rect.width > 0 && rect.height > 0;
     });
 
-    const pointerTarget = (element: HTMLElement): HTMLElement => {
-      if (
-        element instanceof HTMLInputElement &&
-        (element.type === 'checkbox' || element.type === 'radio')
-      ) {
-        const label = element.closest('label');
-        if (label instanceof HTMLElement) {
-          return label;
-        }
-      }
-      return element;
-    };
-
-    const targetName = (element: HTMLElement, target: HTMLElement): string =>
-      element.getAttribute('aria-label') ??
-      target.getAttribute('aria-label') ??
-      target.textContent?.trim() ??
-      element.textContent?.trim() ??
-      element.tagName.toLowerCase();
-
     return {
       documentOverflow:
         document.documentElement.scrollWidth > viewport.width + 1 ||
         document.documentElement.scrollHeight > viewport.height + 1,
       smallerThanWcagMinimum: visibleInteractive
-        .map((element) => ({ element, target: pointerTarget(element) }))
-        .filter(({ target }) => {
-          const rect = target.getBoundingClientRect();
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
           return rect.width < 24 || rect.height < 24;
         })
-        .map(({ element, target }) => targetName(element, target)),
+        .map((element) => element.getAttribute('aria-label') ?? element.textContent?.trim()),
       smallFrequentMatchActions: frequentMatchActions
         .filter((element) => {
           const rect = element.getBoundingClientRect();
