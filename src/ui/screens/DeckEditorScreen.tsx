@@ -16,6 +16,7 @@ import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { CategoryChip } from '../components/CategoryChip';
+import { DeckEditorInspector } from '../components/DeckEditorInspector';
 import { Dialog } from '../components/Dialog';
 import {
   ColorField,
@@ -28,7 +29,6 @@ import {
 import { PaperPanel } from '../components/PaperPanel';
 import { Tabs } from '../components/Tab';
 import { TileCard } from '../components/TileCard';
-import { ValidationIssueList } from '../components/ValidationIssueList';
 
 // 安全テンプレートのみで構造編集する(count-onlyの通常役は作れない)。
 // docs/70 §18 の推奨点数を使う。
@@ -697,9 +697,7 @@ export function DeckEditorScreen({
           )}
         </div>
         <div className="sp-screen__col sp-screen__col--side sp-screen__col--scroll">
-          <PaperPanel variant="ink" title="検証">
-            <ValidationIssueList issues={validation.issues} emptyMessage="問題なし。" />
-          </PaperPanel>
+          <DeckEditorInspector deck={draft} validation={validation} />
         </div>
       </div>
       <Dialog
