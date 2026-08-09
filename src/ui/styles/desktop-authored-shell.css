@@ -16,7 +16,7 @@
 
     .sp-deck-select__grid {
       grid-template-columns: repeat(auto-fit, minmax(320px, 380px));
-      justify-content: start;
+      justify-content: center;
       align-content: start;
       gap: clamp(12px, 1.3vw, 18px);
     }
