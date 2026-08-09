@@ -10,9 +10,11 @@ const REQUIRED_FILES = {
   authoredCss: 'src/ui/styles/authored-visual-polish.css',
   workspaceCss: 'src/ui/styles/deck-editor-authored-workspace.css',
   deckBrowserCss: 'src/ui/styles/deck-browser-authored-workspace.css',
+  resultCss: 'src/ui/styles/result-authored-workspace.css',
   matchRiverCss: 'src/ui/styles/match-river-polish.css',
   landscapeCss: 'src/ui/styles/batch14-landscape-game.css',
   match: 'src/ui/screens/MatchScreen.tsx',
+  result: 'src/ui/screens/ResultScreen.tsx',
   deckList: 'src/ui/screens/DeckListScreen.tsx',
   editor: 'src/ui/screens/DeckEditorScreen.tsx',
 };
@@ -69,6 +71,7 @@ requireText('request018', 'rainbow or aurora gradients', 'Cute Pop anti-pattern 
 requireText('app', "import './ui/styles/authored-visual-polish.css';", 'authored anti-AI override must stay loaded');
 requireText('app', "import './ui/styles/deck-editor-authored-workspace.css';", 'authored editor workspace pass must stay loaded');
 requireText('app', "import './ui/styles/deck-browser-authored-workspace.css';", 'authored deck browsing pass must stay loaded');
+requireText('app', "import './ui/styles/result-authored-workspace.css';", 'outcome-first result pass must stay loaded');
 requireText('app', "import './ui/styles/batch14-landscape-game.css';", 'compact landscape composition must stay loaded after authored polish');
 requireText('authoredCss', 'generic AI/SaaS treatments', 'file purpose must remain explicit');
 requireText('authoredCss', '.sp-deck-select-card', 'deck selection must retain non-marketplace treatment');
@@ -93,6 +96,13 @@ requireText('deckBrowserCss', 'background: transparent', 'count/stat chrome must
 forbidText('deckBrowserCss', 'radial-gradient(', 'deck browse/detail pass must not use decorative radial gradients');
 forbidText('deckBrowserCss', 'linear-gradient(', 'deck browse/detail pass must not use decorative linear gradients');
 forbidText('deckBrowserCss', 'translateY(', 'deck browse/detail pass must not reintroduce hover lift');
+
+requireText('resultCss', 'The result, winning tiles and score are the event', 'result hierarchy must stay outcome-first');
+requireText('resultCss', '.sp-result-screen__side > .sp-paper-panel', 'result side information must remain a quiet ledger');
+requireText('resultCss', 'transform: none', 'result actions must not regain hover lift');
+forbidText('resultCss', 'radial-gradient(', 'result pass must not use decorative radial gradients');
+forbidText('resultCss', 'linear-gradient(', 'result pass must not use decorative linear gradients');
+forbidText('resultCss', 'backdrop-filter:', 'result pass must not use glass blur');
 
 requireText('matchRiverCss', 'regular blocks are easier to scan', 'discard rivers must stay grid-led and mahjong-readable');
 requireText('matchRiverCss', 'physical edge rather than an ornamental glow/fog composition', 'self hand must keep authored physical grounding');
@@ -120,6 +130,14 @@ requireText('match', "turnStart: '準備'", 'phase language should stay compact 
 requireText('match', "discardSelect: '打牌'", 'discard phase should use compact game vocabulary');
 requireText('match', 'aria-hidden="true">—</span>', 'empty river marker must stay visual-only');
 requireText('match', '<strong>そろぽん</strong>', 'utility identity should stay compact');
+
+requireText('result', 'className="sp-screen sp-result-screen"', 'result must keep its authored screen hook');
+requireText('result', '<h1 className="sp-screen__title">対戦結果</h1>', 'result screen heading must stay direct');
+requireText('result', '山が尽きました。', 'draw copy should stay concise');
+requireText('result', '記録用。対局性能には影響しません。', 'coin semantics must remain clear without assistant-like narration');
+forbidText('result', '夜の帳が下りた', 'poetic narration must not compete with the outcome');
+forbidText('result', '今宵の勝者', 'poetic narration must not compete with the outcome');
+forbidText('result', '同じメンバーで再戦する', 'rematch action must not carry redundant explanatory subcopy');
 
 requireText('deckList', "playable: '対局可'", 'deck list must use compact game-state language');
 requireText('deckList', "created: '自作'", 'deck source copy must stay native and match the storage contract');
