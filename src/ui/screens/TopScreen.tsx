@@ -110,6 +110,17 @@ export function TopScreen({
     });
   };
 
+  const openResetConfirm = () => {
+    setResetError(null);
+    setDataModalOpen(false);
+    setResetConfirmOpen(true);
+  };
+
+  const returnToDataManagement = () => {
+    setResetConfirmOpen(false);
+    setDataModalOpen(true);
+  };
+
   return (
     <div className="sp-screen sp-top-screen">
       <div className="sp-screen__header">
@@ -208,13 +219,7 @@ export function TopScreen({
             </p>
           )}
           <InkDivider />
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setResetError(null);
-              setResetConfirmOpen(true);
-            }}
-          >
+          <Button variant="ghost" onClick={openResetConfirm}>
             ローカルデータを初期化…
           </Button>
           {resetError !== null && (
@@ -238,15 +243,15 @@ export function TopScreen({
         onConfirm={() => {
           const result = resetAllLocalData(window.localStorage);
           if (result.failedKeys.length > 0) {
-            setResetConfirmOpen(false);
             setResetError(
               `一部のローカルデータを削除できませんでした（${result.failedKeys.length}件）。ブラウザの保存領域設定を確認して、もう一度お試しください。`,
             );
+            returnToDataManagement();
             return;
           }
           window.location.reload();
         }}
-        onCancel={() => setResetConfirmOpen(false)}
+        onCancel={returnToDataManagement}
       />
     </div>
   );
