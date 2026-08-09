@@ -206,6 +206,16 @@ for (const skin of SKINS) {
       await expect(page.getByRole('heading', { name: 'デッキ編集' })).toBeVisible();
       await capture(page, `deck-editor-${skin}-${size.label}`);
       await expectViewportContract(page);
+
+      await page.getByRole('tab', { name: /^牌/ }).click();
+      await expect(page.getByRole('tabpanel')).toHaveAttribute('id', 'sp-tabpanel-tiles');
+      await capture(page, `deck-editor-tiles-${skin}-${size.label}`);
+      await expectViewportContract(page);
+
+      await page.getByRole('tab', { name: /^役/ }).click();
+      await expect(page.getByRole('tabpanel')).toHaveAttribute('id', 'sp-tabpanel-roles');
+      await capture(page, `deck-editor-roles-${skin}-${size.label}`);
+      await expectViewportContract(page);
     });
   }
 
