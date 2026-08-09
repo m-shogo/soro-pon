@@ -3,7 +3,10 @@
  * 後のlayerほど優先される。skinはtoken値しか変更できないため、
  * layout層の配置・寸法をスキンが上書きすることはできない。
  *
+ * interaction層は入力方式に依存する操作フィードバック・hit target・
+ * focus/scroll affordanceだけを担当する。画面固有レイアウトは置かない。
+ *
  * 例外: :focus-visibleリング(base.css)はlayer外に置き、
  * どの層のbox-shadowにも常に勝つ。
  */
-@layer foundations, layout, components, screens, motion;
+@layer foundations, layout, components, interaction, screens, motion;
