@@ -1,10 +1,8 @@
 /* Batch 14.1 authored deck-editor workspace pass.
  *
- * Keep the proven editor DOM and validation behavior, but make the visual
- * hierarchy read like a game-building workbench instead of a settings/SaaS
- * screen. This layer intentionally avoids decorative gradients, glass blur,
- * floating cards and hover lift. Identity comes from tiles and skin assets;
- * CSS only supplies structure, focus, state and readable density.
+ * The editor shell and global inspector live here. Category/tile/role/bonus
+ * tab visuals belong to their dedicated current workbench layers. Do not add
+ * selectors for repeated legacy form rows or old PaperPanel preset DOM.
  */
 @layer layout {
   .sp-screen:has([id^='sp-tabpanel-']) {
@@ -52,15 +50,13 @@
     box-shadow: none;
   }
 
-  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] > .sp-paper-panel,
-  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] > .sp-screen__col > .sp-paper-panel {
+  .sp-screen:has([id^='sp-tabpanel-']) [role='tabpanel'] > .sp-paper-panel {
     box-shadow: none;
   }
 
-  /* The right rail is an inspector, not a second page or floating card. */
+  /* The right rail is an inspector, not a second page or floating card.
+   * Width is owned by deck-editor-adaptive-inspector.css (Batch 21). */
   .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
-    width: min(270px, 28%);
-    min-width: 210px;
     align-self: stretch;
     padding-left: clamp(6px, 0.8vw, 10px);
     border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
@@ -131,28 +127,8 @@
     font-size: 9px;
   }
 
-  /* Tile rows are the workbench objects. The selector deliberately follows
-     the stable DOM structure instead of matching an inline style string. */
-  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
-    position: relative;
-    padding: 9px 10px !important;
-    border-width: 0 0 1px !important;
-    border-style: solid !important;
-    border-color: color-mix(in srgb, var(--sp-color-ink) 16%, transparent) !important;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div:focus-within {
-    border-color: color-mix(in srgb, var(--sp-color-lantern-0) 54%, var(--sp-color-ink)) !important;
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 50%, transparent);
-  }
-
-  #sp-tabpanel-tiles .sp-deck-editor-tile-preview {
-    margin-right: 2px;
-  }
-
+  /* Destructive actions remain visually secondary across all current
+   * workbenches. These selectors still match live ghost delete buttons. */
   #sp-tabpanel-tiles .sp-button--ghost,
   #sp-tabpanel-categories .sp-button--ghost,
   #sp-tabpanel-roles .sp-button--ghost,
@@ -169,28 +145,6 @@
   #sp-tabpanel-bonuses .sp-button--ghost:hover,
   #sp-tabpanel-bonuses .sp-button--ghost:focus-visible {
     opacity: 1;
-  }
-
-  /* Role presets should feel like tools on the bench: compact, stable and
-     explicit. No card lift or glossy promotional treatment. */
-  #sp-tabpanel-roles > .sp-paper-panel:first-child,
-  #sp-tabpanel-bonuses > .sp-paper-panel:first-child {
-    background: var(--sp-color-paper-aged);
-    box-shadow: none;
-  }
-
-  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
-  #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
-    min-height: 42px;
-    padding-inline: 11px;
-    border-radius: 5px;
-    box-shadow: none;
-    transform: none;
-  }
-
-  #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink:hover,
-  #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink:hover {
-    transform: none;
   }
 
   #sp-tabpanel-basic .sp-paper-panel {
@@ -237,8 +191,6 @@
     }
 
     .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
-      width: min(198px, 25%);
-      min-width: 170px;
       padding-left: 4px;
     }
 
@@ -257,17 +209,6 @@
 
     .sp-deck-editor-inspector__summary dd {
       font-size: var(--sp-font-md);
-    }
-
-    #sp-tabpanel-tiles > .sp-paper-panel > .sp-screen__col > div {
-      padding: 5px 6px !important;
-    }
-
-    #sp-tabpanel-roles > .sp-paper-panel:first-child .sp-button--ink,
-    #sp-tabpanel-bonuses > .sp-paper-panel .sp-button--ink {
-      min-height: 34px;
-      padding-inline: 7px;
-      font-size: 10px;
     }
   }
 }
