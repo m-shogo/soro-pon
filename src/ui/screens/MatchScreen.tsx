@@ -46,7 +46,7 @@ function TileView({
 const PHASE_LABEL: Record<string, string> = {
   turnStart: '準備',
   draw: '引く',
-  afterDrawAction: '選択',
+  afterDrawAction: '選ぶ',
   discardSelect: '打牌',
   reactionRon: 'ロン',
   turnEnd: '進行',
@@ -135,6 +135,7 @@ export function MatchScreen({
     controller.isHumanTurn &&
     state.phase === 'discardSelect' &&
     state.selectedTileInstanceId !== undefined;
+  const discardActionLabel = canDiscard ? '捨てる' : canSelect ? '牌を選ぶ' : '待機';
   const ronTileId =
     controller.humanRonPending && state.reaction
       ? state.reaction.discardedTile.instanceId
@@ -247,11 +248,10 @@ export function MatchScreen({
             {!controller.humanRonPending && (
               <Button
                 variant="primary"
-                {...(!canDiscard ? { subLabel: '牌を選択' } : {})}
                 disabled={!canDiscard}
                 onClick={controller.discardSelected}
               >
-                捨てる
+                {discardActionLabel}
               </Button>
             )}
           </ActionPanel>
