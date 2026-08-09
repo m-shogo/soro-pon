@@ -52,6 +52,12 @@ describe('DeckDetailScreen deletion safety', () => {
     expect(screen.getByRole('region', { name: `牌 ${deck.tiles.length}種` })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'このデッキで対局' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'デッキを編集' })).toBeTruthy();
+    expect(screen.getAllByText('対局可').length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { name: '牌セット' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '役' })).toBeTruthy();
+    expect(screen.queryByText('TILE SET')).toBeNull();
+    expect(screen.queryByText('WIN ROLES')).toBeNull();
+    expect(screen.queryByText('対局できます')).toBeNull();
   });
 
   it('削除ボタンだけでは削除せず、不可逆性を確認後に実行する', () => {
