@@ -62,16 +62,37 @@ async function expectViewportContract(page: Page) {
       return rect.width > 0 && rect.height > 0;
     });
 
+    const pointerTarget = (element: HTMLElement): HTMLElement => {
+      if (
+        element instanceof HTMLInputElement &&
+        (element.type === 'checkbox' || element.type === 'radio')
+      ) {
+        const label = element.closest('label');
+        if (label instanceof HTMLElement) {
+          return label;
+        }
+      }
+      return element;
+    };
+
+    const targetName = (element: HTMLElement, target: HTMLElement): string =>
+      element.getAttribute('aria-label') ??
+      target.getAttribute('aria-label') ??
+      target.textContent?.trim() ??
+      element.textContent?.trim() ??
+      element.tagName.toLowerCase();
+
     return {
       documentOverflow:
         document.documentElement.scrollWidth > viewport.width + 1 ||
         document.documentElement.scrollHeight > viewport.height + 1,
       smallerThanWcagMinimum: visibleInteractive
-        .filter((element) => {
-          const rect = element.getBoundingClientRect();
+        .map((element) => ({ element, target: pointerTarget(element) }))
+        .filter(({ target }) => {
+          const rect = target.getBoundingClientRect();
           return rect.width < 24 || rect.height < 24;
         })
-        .map((element) => element.getAttribute('aria-label') ?? element.textContent?.trim()),
+        .map(({ element, target }) => targetName(element, target)),
       smallFrequentMatchActions: frequentMatchActions
         .filter((element) => {
           const rect = element.getBoundingClientRect();
