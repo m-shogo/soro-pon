@@ -5,6 +5,7 @@ export const FIXED_EVIDENCE_NOW_MS = 1_700_000_230_000;
 export type EvidenceSkinId = 'yorunoshirube' | 'cute-pop';
 export type EvidenceSize = { width: number; height: number; label: 'compact' | 'desktop' };
 export type ReadyAction = 'result' | 'tsumo' | 'ron' | 'discard' | 'tile';
+export type MidgameReadyAction = 'result' | 'pass' | 'discard' | 'tile';
 export type ResultSignature = {
   title: string;
   scoreRole: string | null;
@@ -97,6 +98,36 @@ export async function waitForReadyAction(page: Page): Promise<ReadyAction> {
   return (await handle.jsonValue()) as ReadyAction;
 }
 
+export async function waitForMidgameReadyAction(page: Page): Promise<MidgameReadyAction> {
+  const handle = await page.waitForFunction(() => {
+    const isVisible = (element: Element | null): element is HTMLElement => {
+      if (!(element instanceof HTMLElement)) return false;
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
+    };
+    const enabledButtons = [...document.querySelectorAll<HTMLButtonElement>('button:not([disabled])')];
+    const hasButton = (label: string) =>
+      enabledButtons.some((button) => button.textContent?.trim() === label && isVisible(button));
+
+    if (
+      [...document.querySelectorAll('h1')].some(
+        (heading) => heading.textContent?.trim() === '対戦結果' && isVisible(heading),
+      )
+    ) {
+      return 'result';
+    }
+    // Midgame evidence intentionally declines optional wins so the same real
+    // match can continue until the rivers contain enough tiles to audit.
+    if (hasButton('パス')) return 'pass';
+    if (hasButton('捨てる')) return 'discard';
+    if (isVisible(document.querySelector('.sp-self-hand-zone .sp-tile:not([disabled])'))) return 'tile';
+    return null;
+  }, undefined, { timeout: 5_000 });
+
+  return (await handle.jsonValue()) as MidgameReadyAction;
+}
+
 export async function startRealMatch(page: Page, playerCount: 3 | 4) {
   await page.getByRole('button', { name: /まず遊ぶ/ }).click();
   await expect(page.getByRole('heading', { name: '対局設定' })).toBeVisible();
@@ -114,6 +145,21 @@ export async function performReadyAction(page: Page): Promise<ReadyAction> {
   }
   if (action === 'ron') {
     await page.getByRole('button', { name: 'ロン', exact: true }).click();
+    return action;
+  }
+  if (action === 'discard') {
+    await page.getByRole('button', { name: '捨てる', exact: true }).click();
+    return action;
+  }
+  await page.locator('.sp-self-hand-zone .sp-tile:not([disabled])').first().click();
+  return action;
+}
+
+export async function performMidgameReadyAction(page: Page): Promise<MidgameReadyAction> {
+  const action = await waitForMidgameReadyAction(page);
+  if (action === 'result') return action;
+  if (action === 'pass') {
+    await page.getByRole('button', { name: 'パス', exact: true }).click();
     return action;
   }
   if (action === 'discard') {
@@ -145,7 +191,7 @@ export async function playRealMatchToDiscardCount(
   for (let step = 0; step < 180; step += 1) {
     const discardCount = await countVisibleDiscards(page);
     if (discardCount >= targetDiscards) return discardCount;
-    if ((await performReadyAction(page)) === 'result') {
+    if ((await performMidgameReadyAction(page)) === 'result') {
       throw new Error(`中盤capture前にResultへ到達しました: ${discardCount}/${targetDiscards}捨て牌`);
     }
   }
