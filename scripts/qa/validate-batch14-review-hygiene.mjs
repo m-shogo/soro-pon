@@ -5,6 +5,7 @@ const REQUIRED_FILES = {
   capture: 'tests/visual/batch14-review-capture.spec.ts',
   collectionCapture: 'tests/visual/batch22-collection-review.spec.ts',
   resultCapture: 'tests/visual/batch23-result-review.spec.ts',
+  midgameCapture: 'tests/visual/batch26-midgame-review.spec.ts',
   workflow: '.github/workflows/batch14-visual-review.yml',
   roleWorkbenchCss: 'src/ui/styles/deck-role-workbench.css',
   reviewDoc: 'docs/qa/BATCH-14-VISUAL-REVIEW.md',
@@ -31,9 +32,9 @@ function forbidText(fileKey, needle, reason) {
 }
 
 const visualCommand =
-  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts';
-requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection and Result evidence');
-requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include Result evidence');
+  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts tests/visual/batch26-midgame-review.spec.ts';
+requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection, Result and midgame evidence');
+requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include Result and midgame evidence');
 forbidText('packageJson', '"test:visual:update"', 'current visual review must not encourage refreshing a stale committed baseline');
 
 for (const needle of [
@@ -89,6 +90,19 @@ for (const forbidden of [
   forbidText('resultCapture', forbidden, 'visual evidence must not inject or synthesize Result state');
 }
 forbidText('resultCapture', 'toHaveScreenshot(', 'Result evidence must stay current-head artifact based');
+
+for (const needle of [
+  "const PLAYER_COUNTS = [3, 4] as const",
+  'const TARGET_DISCARDS = 10',
+  'playRealMatchToDiscardCount',
+  'expect(geometry.outside).toEqual([])',
+  'expect(geometry.riversNeedingScroll).toEqual([])',
+  'match-midgame-${skin}-${playerCount}p-${size.label}.png',
+]) {
+  requireText('midgameCapture', needle, 'midgame evidence must stay in the canonical current-head matrix for both player counts and viewports');
+}
+forbidText('midgameCapture', 'toHaveScreenshot(', 'midgame evidence must stay current-head artifact based');
+forbidText('midgameCapture', 'force: true', 'midgame evidence must use real pointer actions');
 
 requireText('workflow', 'name: Batch 14 Visual Review', 'artifact review needs a dedicated workflow');
 requireText('workflow', "- 'tests/visual/**'", 'every visual-test change must refresh current-head review evidence');
