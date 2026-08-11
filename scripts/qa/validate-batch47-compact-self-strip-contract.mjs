@@ -29,27 +29,29 @@ for (const needle of [
 }
 
 for (const needle of [
-  'Batch 47 final ownership lives in screens',
+  'Batch 47: the bottom hand already establishes self ownership visually',
   ".sp-table-stage [data-seat-position='self'] .sp-player-panel {",
-  'min-height: 18px;',
-  'height: 18px;',
-  ".sp-table-stage [data-seat-position='self'] .sp-player-panel__seal {",
-  'width: 14px;',
-  'height: 14px;',
-  ".sp-table-stage [data-seat-position='self'] .sp-player-panel__name {",
+  'position: absolute;',
+  'width: 1px;',
+  'min-width: 1px;',
+  'height: 1px;',
+  'min-height: 1px;',
+  'clip: rect(0 0 0 0);',
+  'clip-path: inset(50%);',
+  'white-space: nowrap;',
   'Compact rivers are tile geometry, not a mini table report',
   '.sp-match-screen .sp-seat-played__head {',
   'display: none;',
 ]) {
-  requireText('screenCss', needle, 'screen layer must own final compact self sizing and keep river report chrome hidden');
+  requireText('screenCss', needle, 'compact must visually retire redundant self chrome while keeping river report chrome hidden');
 }
 
-for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:']) {
-  const start = files.screenCss.indexOf('/* Batch 47 final ownership lives in screens');
-  const end = files.screenCss.indexOf('/* Batch 42:', start);
-  const block = start >= 0 && end > start ? files.screenCss.slice(start, end) : '';
-  if (block.includes(forbidden)) {
-    failures.push(`${REQUIRED_FILES.screenCss}: Batch 47 ownership block contains forbidden ${JSON.stringify(forbidden)}`);
+const selfStart = files.screenCss.indexOf('/* Batch 47: the bottom hand already establishes self ownership visually.');
+const riverStart = files.screenCss.indexOf('/* Compact rivers are tile geometry', selfStart);
+const selfBlock = selfStart >= 0 && riverStart > selfStart ? files.screenCss.slice(selfStart, riverStart) : '';
+for (const forbidden of ['display: none', 'visibility: hidden', '!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:']) {
+  if (selfBlock.includes(forbidden)) {
+    failures.push(`${REQUIRED_FILES.screenCss}: Batch 47 self semantic block contains forbidden ${JSON.stringify(forbidden)}`);
   }
 }
 
@@ -64,20 +66,25 @@ for (const needle of [
 }
 
 for (const needle of [
+  'selfPanelWidth',
   'selfPanelHeight',
-  'selfSealHeight',
-  'selfNameVisible',
-  'selfRiverTileCollisions',
-  ".sp-seat-played__tiles .sp-tile",
-  'expect(geometry.selfPanelHeight).not.toBeNull();',
-  'toBeLessThanOrEqual(20);',
-  'toBeLessThanOrEqual(14.5);',
-  'expect(geometry.selfRiverTileCollisions).toEqual([]);',
+  'selfPanelDisplay',
+  'selfPanelVisibility',
+  'selfPanelClipPath',
+  'selfPanelAriaLabel',
+  'selfNameInDom',
+  'expect(geometry.selfPanelAriaLabel).toBeTruthy();',
+  'expect(geometry.selfNameInDom).toBe(true);',
+  'toBeLessThanOrEqual(2);',
+  "expect(geometry.selfPanelDisplay).not.toBe('none');",
+  "expect(geometry.selfPanelVisibility).not.toBe('hidden');",
+  "expect(geometry.selfPanelClipPath).not.toBe('none');",
   "if (size.label === 'desktop')",
+  'toBeGreaterThanOrEqual(100);',
   'toBeGreaterThanOrEqual(30);',
   'expect(geometry.seatRiverCollisions).toEqual([]);',
 ]) {
-  requireText('visual', needle, 'compact must protect visible river tiles while desktop retains full river-container collision protection');
+  requireText('visual', needle, 'real 3p/4p midgame evidence must prove compact visual retirement with semantic preservation and desktop non-regression');
 }
 
 requireText(
