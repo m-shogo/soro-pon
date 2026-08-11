@@ -1,7 +1,7 @@
 {
   "id": "yorunoshirube",
   "label": "ヨルノシルベ",
-  "version": 4,
+  "version": 5,
   "skinContractVersion": 1,
   "origin": "official",
   "author": "soro-pon",
@@ -39,8 +39,8 @@
       "minRenderSize": { "width": 96, "height": 96 }
     },
     "button.primary.background": {
-      "file": "button-primary-background.png",
-      "status": "final",
+      "file": null,
+      "status": "placeholder",
       "renderMode": "nine-slice",
       "intrinsicSize": { "width": 240, "height": 72 },
       "transparent": true,

@@ -45,6 +45,20 @@ async function inspectTopRack(page: Page) {
   });
 }
 
+async function inspectPrimarySurface(page: Page) {
+  return page.evaluate(() => {
+    const primary = document.querySelector<HTMLElement>('.sp-top-stage__hero > .sp-button--primary');
+    if (!primary) return null;
+    const skinLayers = [...primary.querySelectorAll<HTMLElement>(':scope > .sp-skin-layer')];
+    const style = getComputedStyle(primary);
+    return {
+      skinLayerCount: skinLayers.length,
+      backgroundImage: style.backgroundImage,
+      minHeight: primary.getBoundingClientRect().height,
+    };
+  });
+}
+
 for (const skin of SKINS) {
   for (const size of SIZES) {
     test(`${skin} ${size.label} TOP starter rack is tile-led`, async ({ page }) => {
@@ -57,6 +71,16 @@ for (const skin of SKINS) {
       expect(rack?.maxTileBottom).toBeLessThanOrEqual(rack?.rackBottom ?? 0);
       if (size.label === 'compact') {
         expect(rack?.minTileWidth).toBeGreaterThanOrEqual(44);
+      }
+
+      const primary = await inspectPrimarySurface(page);
+      expect(primary).not.toBeNull();
+      expect(primary?.backgroundImage).not.toBe('none');
+      expect(primary?.minHeight).toBeGreaterThanOrEqual(44);
+      if (skin === 'yorunoshirube') {
+        expect(primary?.skinLayerCount).toBe(0);
+      } else {
+        expect(primary?.skinLayerCount).toBe(1);
       }
     });
   }
