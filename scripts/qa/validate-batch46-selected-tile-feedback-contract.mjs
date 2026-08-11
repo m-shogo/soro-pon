@@ -43,21 +43,26 @@ for (const needle of [
 for (const needle of [
   '.sp-tile--selected {',
   'transform: translateY(calc(var(--tile-h, 64px) * -0.18));',
+  'transform var(--sp-motion-tile) var(--sp-ease-out)',
 ]) {
-  requireText('components', needle, 'generic TileCard selected behavior must remain unchanged outside the match screen');
+  requireText('components', needle, 'generic TileCard selected behavior and its intentional transition must remain unchanged outside the match screen');
 }
 
 for (const needle of [
+  'async function inspectSelectedTileFeedback(page: Page)',
   'async function expectSelectedTileFeedback(page: Page)',
   '.sp-self-hand-zone .sp-tile:not(.sp-tile--selected):not(.sp-tile--drawn)',
-  'expect(geometry?.lift ?? 0).toBeGreaterThanOrEqual(3);',
+  'await expect',
+  '.poll(async () => (await inspectSelectedTileFeedback(page))?.lift ?? 0',
+  'timeout: 1_000',
+  '.toBeGreaterThanOrEqual(3);',
   'toBeLessThanOrEqual(6);',
   'expect(geometry?.outlineWidth ?? 0).toBeGreaterThanOrEqual(2.5);',
   "expect(geometry?.boxShadow).not.toBe('none');",
   'expect(geometry?.coachOverlapArea).toBe(0);',
   "getByRole('button', { name: '捨てる', exact: true })).toBeEnabled();",
 ]) {
-  requireText('capture', needle, 'compact 4p real action capture must prove clear selection against stable non-drawn peers');
+  requireText('capture', needle, 'compact 4p real action capture must wait for the intentional transform transition and prove final selected geometry against stable peers');
 }
 
 requireText(
