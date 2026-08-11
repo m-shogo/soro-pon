@@ -99,6 +99,8 @@ jobs:
         run: pnpm qa:batch43:yorunoshirube-primary-fallback-contract
       - name: Batch 44 clean MatchSetup rack contract
         run: pnpm qa:batch44:match-setup-clean-rack-contract
+      - name: Batch 45 match taxonomy marker contract
+        run: pnpm qa:batch45:match-taxonomy-marker-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
