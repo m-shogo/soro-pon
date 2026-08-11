@@ -194,39 +194,28 @@
     font-size: 9px;
   }
 
-  /* Batch 47 final ownership lives in screens, after generic PlayerPanel
-     components. This prevents the component min-height from expanding the
-     compact self ownership strip back to a 36px player card. */
+  /* Batch 47: the bottom hand already establishes self ownership visually.
+     Retire the duplicate self player card in compact play while preserving the
+     same role/aria-labelled PlayerPanel in the accessibility tree. This also
+     gives the centered self river an unobstructed lane as discards accumulate. */
   .sp-table-stage [data-seat-position='self'] .sp-player-panel {
-    min-height: 18px;
-    height: 18px;
-    padding: 0 4px;
-    gap: 3px;
-    border-radius: 3px;
-    background: color-mix(in srgb, var(--sp-color-night) 38%, transparent);
+    position: absolute;
+    width: 1px;
+    min-width: 1px;
+    max-width: 1px;
+    height: 1px;
+    min-height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
     overflow: hidden;
-  }
-
-  .sp-table-stage [data-seat-position='self'] .sp-player-panel__seal {
-    width: 14px;
-    height: 14px;
-    font-size: 8px;
-    border-width: 1px;
-  }
-
-  .sp-table-stage [data-seat-position='self'] .sp-player-panel__info {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .sp-table-stage [data-seat-position='self'] .sp-player-panel__name {
-    font-size: 9px;
-    line-height: 1;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* Compact rivers are tile geometry, not a mini table report. Own the final
-     hide here so the generic component `display:flex` cannot reintroduce
-     "捨て牌 N枚" behind the self ownership strip. */
+     hide here so generic component chrome cannot reintroduce "捨て牌 N枚". */
   .sp-match-screen .sp-seat-played__head {
     display: none;
   }
