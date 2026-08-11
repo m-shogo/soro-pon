@@ -62,11 +62,76 @@
     width: 100%;
   }
 
+  /* Batch 37: the empty middle of setup becomes the face of the deck that is
+   * actually entering the table. It is presentation only; rules stay below. */
+  .sp-match-setup__deck-face {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(6px, 1vh, 10px);
+    padding-block: 5px;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 6%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 6%, transparent);
+  }
+
+  .sp-match-setup__deck-face-head {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .sp-match-setup__deck-face-head span,
+  .sp-match-setup__deck-meta {
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-xs);
+  }
+
+  .sp-match-setup__deck-face-head strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--sp-color-cream);
+    font-size: var(--sp-font-sm);
+  }
+
+  .sp-match-setup__deck-rack {
+    --tile-w: clamp(38px, 3.8vw, 50px);
+    --tile-h: clamp(51px, 5.1vw, 67px);
+    min-width: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 3px 5px;
+    overflow: hidden;
+  }
+
+  .sp-match-setup__deck-rack .sp-tile {
+    flex: none;
+    margin-left: -5px;
+    transform: none;
+    box-shadow: var(--sp-shadow-tile-raised);
+  }
+
+  .sp-match-setup__deck-rack .sp-tile:first-child {
+    margin-left: 0;
+  }
+
+  .sp-match-setup__deck-meta {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
   .sp-match-setup__rule-rail {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
-    margin: auto 0 0;
+    margin: 0;
     padding: var(--sp-space-6) 0;
     border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
     border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
@@ -220,7 +285,7 @@
     }
 
     .sp-match-setup__config {
-      gap: 6px;
+      gap: 5px;
     }
 
     .sp-match-setup__players {
@@ -237,6 +302,36 @@
 
     .sp-match-setup__count-options {
       gap: 5px;
+    }
+
+    .sp-match-setup__deck-face {
+      gap: 2px;
+      padding-block: 2px;
+    }
+
+    .sp-match-setup__deck-face-head span,
+    .sp-match-setup__deck-meta {
+      font-size: 8px;
+    }
+
+    .sp-match-setup__deck-face-head strong {
+      font-size: 10px;
+    }
+
+    .sp-match-setup__deck-rack {
+      --tile-w: 30px;
+      --tile-h: 40px;
+      justify-content: flex-start;
+      padding: 1px 3px;
+    }
+
+    .sp-match-setup__deck-rack .sp-tile {
+      margin-left: -4px;
+    }
+
+    .sp-match-setup__deck-meta {
+      justify-content: flex-start;
+      gap: 8px;
     }
 
     .sp-match-setup__rule-rail {
