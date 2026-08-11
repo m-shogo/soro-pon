@@ -64,6 +64,24 @@ for (const skin of SKINS) {
           const selfPanel = selfSeat?.querySelector<HTMLElement>('.sp-player-panel') ?? null;
           const selfSeal = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
           const selfName = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
+          const selfRiverTiles = selfSeat === null
+            ? []
+            : [...selfSeat.querySelectorAll<HTMLElement>('.sp-seat-played__tiles .sp-tile')].filter((tile) => {
+                const rect = tile.getBoundingClientRect();
+                const style = getComputedStyle(tile);
+                return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
+              });
+          const selfRiverTileCollisions = selfPanel === null
+            ? []
+            : selfRiverTiles
+                .filter((tile) => {
+                  const panelRect = selfPanel.getBoundingClientRect();
+                  const tileRect = tile.getBoundingClientRect();
+                  const overlapWidth = Math.min(panelRect.right, tileRect.right) - Math.max(panelRect.left, tileRect.left);
+                  const overlapHeight = Math.min(panelRect.bottom, tileRect.bottom) - Math.max(panelRect.top, tileRect.top);
+                  return overlapWidth > 1 && overlapHeight > 1;
+                })
+                .map((tile) => tile.getAttribute('aria-label') ?? tile.className);
           const coach = document.querySelector<HTMLElement>('.sp-match-coach');
           const coachOverlaps = coach === null
             ? []
@@ -119,6 +137,7 @@ for (const skin of SKINS) {
               )
               .map((element) => element.className),
             seatRiverCollisions,
+            selfRiverTileCollisions,
             selfPanelHeight: selfPanel?.getBoundingClientRect().height ?? null,
             selfSealHeight: selfSeal?.getBoundingClientRect().height ?? null,
             selfNameVisible:
@@ -158,7 +177,7 @@ for (const skin of SKINS) {
         if (size.label === 'compact') {
           expect(geometry.selfPanelHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(20);
           expect(geometry.selfSealHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(14.5);
-          expect(geometry.seatRiverCollisions).not.toContain('self');
+          expect(geometry.selfRiverTileCollisions).toEqual([]);
         }
         if (size.label === 'desktop') {
           expect(geometry.selfPanelHeight ?? 0).toBeGreaterThanOrEqual(30);
