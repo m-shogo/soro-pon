@@ -65,6 +65,8 @@ jobs:
         run: pnpm qa:batch26:midgame-evidence-contract
       - name: Batch 27 desktop table density contract
         run: pnpm qa:batch27:desktop-table-density-contract
+      - name: Batch 28 match coach contract
+        run: pnpm qa:batch28:match-coach-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

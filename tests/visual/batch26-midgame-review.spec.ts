@@ -39,7 +39,7 @@ for (const skin of SKINS) {
           };
           const elements = [
             ...document.querySelectorAll<HTMLElement>(
-              '.sp-seat-played, .sp-seat-played__tiles, .sp-table-center, .sp-self-hand-zone, .sp-match-action-zone',
+              '.sp-seat-played, .sp-seat-played__tiles, .sp-table-center, .sp-self-hand-zone, .sp-match-action-zone, .sp-match-coach',
             ),
           ].filter((element) => {
             const rect = element.getBoundingClientRect();
@@ -60,6 +60,18 @@ for (const skin of SKINS) {
               ? [seat.dataset.seatPosition ?? 'unknown']
               : [];
           });
+          const coach = document.querySelector<HTMLElement>('.sp-match-coach');
+          const coachOverlaps = coach === null
+            ? []
+            : [...document.querySelectorAll<HTMLElement>('.sp-self-hand-zone, .sp-match-action-zone')]
+                .filter((target) => {
+                  const coachRect = coach.getBoundingClientRect();
+                  const targetRect = target.getBoundingClientRect();
+                  const overlapWidth = Math.min(coachRect.right, targetRect.right) - Math.max(coachRect.left, targetRect.left);
+                  const overlapHeight = Math.min(coachRect.bottom, targetRect.bottom) - Math.max(coachRect.top, targetRect.top);
+                  return overlapWidth > 1 && overlapHeight > 1;
+                })
+                .map((target) => target.className);
           return {
             outside: elements
               .filter((element) => {
@@ -82,11 +94,16 @@ for (const skin of SKINS) {
               )
               .map((element) => element.className),
             seatRiverCollisions,
+            coachOverlaps,
+            coachWidth: coach?.getBoundingClientRect().width ?? null,
           };
         });
 
         expect(geometry.outside).toEqual([]);
         expect(geometry.riversNeedingScroll).toEqual([]);
+        expect(geometry.coachOverlaps).toEqual([]);
+        expect(geometry.coachWidth).not.toBeNull();
+        expect(geometry.coachWidth ?? 0).toBeGreaterThanOrEqual(size.label === 'compact' ? 200 : 300);
         if (size.label === 'desktop') {
           expect(geometry.seatRiverCollisions).toEqual([]);
         }
