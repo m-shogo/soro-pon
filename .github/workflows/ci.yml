@@ -50,7 +50,7 @@ jobs:
       - name: Batch 19 bonus workbench contract
         run: pnpm qa:batch19:bonus-workbench-contract
       - name: Batch 20 role workbench contract
-        run: pnpm qa:batch20:role-workbench-contract
+        run: pnpm qa:batch20-role-workbench-contract
       - name: Batch 21 adaptive inspector contract
         run: pnpm qa:batch21:adaptive-inspector-contract
       - name: Batch 22 collection ledger contract
@@ -85,6 +85,8 @@ jobs:
         run: pnpm qa:batch36:role-recipe-density-contract
       - name: Batch 37 match setup deck face contract
         run: pnpm qa:batch37:match-setup-deck-face-contract
+      - name: Batch 38 result group row contract
+        run: pnpm qa:batch38:result-group-row-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
