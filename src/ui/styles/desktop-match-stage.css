@@ -1,0 +1,123 @@
+/* Batch 27: desktop match composition.
+ * The compact 844x390 composition remains owned by batch14-landscape-game.css.
+ * On roomy desktop viewports, keep the physical table and hand in one bounded
+ * play cluster so rivers do not read as tiny HUD islands floating in wallpaper.
+ */
+@layer layout {
+  @media (min-width: 1200px) and (min-height: 640px) {
+    .sp-match-layout {
+      gap: 8px;
+      padding: 8px 12px 10px;
+    }
+
+    .sp-match-utility,
+    .sp-table-stage,
+    .sp-self-hand-zone,
+    .sp-match-action-zone {
+      width: min(100%, 1120px);
+      justify-self: center;
+    }
+
+    .sp-table-stage {
+      width: min(100%, 1080px);
+      max-height: 610px;
+      align-self: center;
+      padding: 18px 24px;
+      border-radius: 30px;
+    }
+
+    .sp-table-stage::before {
+      inset: 16px;
+    }
+
+    .sp-table-stage::after {
+      inset: 17% 22%;
+    }
+
+    .sp-table-stage--4 {
+      grid-template-columns: minmax(185px, 0.8fr) minmax(420px, 1.75fr) minmax(185px, 0.8fr);
+      grid-template-rows: minmax(92px, 0.78fr) minmax(250px, 1.55fr) minmax(92px, 0.78fr);
+    }
+
+    .sp-table-stage--3 {
+      grid-template-columns: minmax(200px, 0.82fr) minmax(460px, 1.9fr) minmax(200px, 0.82fr);
+      grid-template-rows: minmax(330px, 1fr) minmax(92px, auto);
+    }
+
+    .sp-table-seat .sp-player-panel {
+      min-height: 42px;
+    }
+
+    .sp-table-stage [data-seat-position='left'] .sp-player-panel,
+    .sp-table-stage [data-seat-position='right'] .sp-player-panel {
+      width: min(190px, 100%);
+    }
+
+    .sp-table-stage [data-seat-position='top'] .sp-player-panel {
+      width: min(250px, 90%);
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-player-panel {
+      width: min(210px, 82%);
+    }
+
+    /* River tiles are deliberately larger than the generic 0.48 hand scale on
+     * desktop. The nearest custom property wins over the inline wrapper value,
+     * while compact viewports keep the original inherited dimensions. */
+    .sp-table-stage .sp-seat-played {
+      --tile-w: clamp(38px, 2.85vw, 42px);
+      --tile-h: clamp(50px, 3.8vw, 56px);
+      max-width: 286px;
+    }
+
+    .sp-table-stage [data-seat-position='top'] .sp-seat-played {
+      top: 52px;
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-seat-played {
+      bottom: 50px;
+    }
+
+    .sp-table-stage [data-seat-position='left'] .sp-seat-played {
+      right: -74px;
+      max-width: 132px;
+    }
+
+    .sp-table-stage [data-seat-position='right'] .sp-seat-played {
+      left: -74px;
+      max-width: 132px;
+    }
+
+    .sp-table-status {
+      min-width: 152px;
+      max-width: 204px;
+      padding: 7px 14px;
+    }
+
+    .sp-table-status__turn {
+      font-size: var(--sp-font-md);
+    }
+
+    .sp-self-hand-zone,
+    .sp-match-action-zone {
+      width: min(100%, 980px);
+    }
+
+    .sp-self-hand-zone {
+      padding-inline: 16px;
+    }
+
+    .sp-match-action-zone {
+      padding-inline: 0;
+    }
+
+    .sp-match-action-zone .sp-button--primary {
+      min-width: 142px;
+    }
+
+    .sp-match-message-zone {
+      left: max(18px, calc((100% - 1080px) / 2 + 18px));
+      max-width: 36ch;
+    }
+  }
+}
