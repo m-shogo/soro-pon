@@ -11,6 +11,7 @@ import {
   type TableSeat,
   type TableSeatPosition,
 } from '../components/GameTableLayout';
+import { MatchCoach } from '../components/MatchCoach';
 import { PlayerPanel } from '../components/PlayerPanel';
 import { TileCard } from '../components/TileCard';
 import { useResponsiveMetrics } from '../layout/useResponsiveMetrics';
@@ -256,20 +257,7 @@ export function MatchScreen({
             )}
           </ActionPanel>
         }
-        messages={
-          <>
-            {controller.insights.map((insight, index) => (
-              <span key={`${insight.kind}-${index}`} className="sp-match-message">
-                {insight.message}
-              </span>
-            ))}
-            {controller.lastError !== null && (
-              <span className="sp-match-message sp-match-message--error" role="alert">
-                {controller.lastError}
-              </span>
-            )}
-          </>
-        }
+        messages={<MatchCoach insights={controller.insights} error={controller.lastError} />}
       />
       <Dialog
         open={exitConfirm}
