@@ -44,17 +44,90 @@
   }
 
   @media (max-width: 899px), (max-height: 430px) {
-    .sp-collection-screen__recent {
-      width: min(190px, 24%);
-      min-width: 160px;
-    }
-
     .sp-collection-screen__main > .sp-paper-panel:first-child {
-      min-height: 68px;
+      min-height: 60px;
     }
 
     .sp-collection-screen__main > .sp-paper-panel:first-child .sp-collection-empty {
-      padding-block: 7px;
+      padding-block: 4px;
+    }
+  }
+}
+
+/* Compact collection is a landscape index: the clear board owns the width and
+ * chronology becomes a low bottom rail. This screen-specific placement lives
+ * after component/interaction layers so the old side-column width cannot
+ * silently return. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-collection-screen__body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 4px;
+      min-height: 0;
+    }
+
+    .sp-collection-screen__main {
+      width: 100%;
+      min-width: 0;
+      padding-right: 0;
+      overflow: hidden auto;
+    }
+
+    .sp-collection-screen__recent {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      max-height: 58px;
+      padding: 3px 0 0;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-left: 0;
+      overflow: hidden;
+      scrollbar-gutter: auto;
+    }
+
+    .sp-collection-screen__recent > .sp-paper-panel {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 7px;
+      padding: 3px 6px;
+    }
+
+    .sp-collection-screen__recent .sp-paper-panel__title {
+      margin: 0;
+      padding: 0 7px 0 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-bottom: 0;
+      white-space: nowrap;
+      font-size: 10px;
+    }
+
+    .sp-collection-screen__recent .sp-collection-empty {
+      margin: 0;
+      padding: 0;
+      font-size: 9px;
+      line-height: 1.2;
+    }
+
+    .sp-collection-screen__recent .sp-collection-recent-list {
+      min-width: 0;
+      display: flex;
+      gap: 0;
+      overflow: hidden auto;
+      overscroll-behavior-inline: contain;
+    }
+
+    .sp-collection-screen__recent .sp-collection-recent-list > li {
+      flex: 0 0 min(190px, 32vw);
+      min-width: 0;
+      padding: 1px 7px;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-bottom: 0;
+      font-size: 8px;
+      line-height: 1.1;
     }
   }
 }
