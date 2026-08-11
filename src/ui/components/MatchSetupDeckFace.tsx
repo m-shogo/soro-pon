@@ -2,9 +2,11 @@ import type { DeckProject } from '../../domain/deck';
 import { TileCard } from './TileCard';
 
 export function MatchSetupDeckFace({ deck }: { deck: DeckProject }) {
-  const categoryById = new Map(deck.categories.map((category) => [category.id, category]));
-  const previewTiles = deck.tiles.slice(0, 8);
-  const totalTiles = deck.tiles.reduce((sum, tile) => sum + tile.count, 0);
+  const categories = deck.categories ?? [];
+  const tiles = deck.tiles ?? [];
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const previewTiles = tiles.slice(0, 8);
+  const totalTiles = tiles.reduce((sum, tile) => sum + tile.count, 0);
 
   return (
     <section className="sp-match-setup__deck-face" aria-label="使用デッキ">
@@ -32,8 +34,8 @@ export function MatchSetupDeckFace({ deck }: { deck: DeckProject }) {
       </div>
       <div className="sp-match-setup__deck-meta">
         <span>{totalTiles}枚</span>
-        <span>{deck.tiles.length}種</span>
-        <span>{deck.categories.length}カテゴリ</span>
+        <span>{tiles.length}種</span>
+        <span>{categories.length}カテゴリ</span>
       </div>
     </section>
   );
