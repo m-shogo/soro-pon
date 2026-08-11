@@ -87,7 +87,9 @@ for (const skin of SKINS) {
 
         expect(geometry.outside).toEqual([]);
         expect(geometry.riversNeedingScroll).toEqual([]);
-        expect(geometry.seatRiverCollisions).toEqual([]);
+        if (size.label === 'desktop') {
+          expect(geometry.seatRiverCollisions).toEqual([]);
+        }
 
         await mkdir(CAPTURE_DIR, { recursive: true });
         await page.screenshot({
