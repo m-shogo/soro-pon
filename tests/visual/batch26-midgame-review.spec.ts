@@ -72,6 +72,27 @@ for (const skin of SKINS) {
                   return overlapWidth > 1 && overlapHeight > 1;
                 })
                 .map((target) => target.className);
+          const taxonomyBands = [
+            ...document.querySelectorAll<HTMLElement>('.sp-match-screen .sp-tile__band'),
+          ].filter((band) => {
+            const rect = band.getBoundingClientRect();
+            const style = getComputedStyle(band);
+            return rect.width > 0 && rect.height > 0 && style.display !== 'none';
+          });
+          const taxonomyBandsOutsideTiles = taxonomyBands
+            .filter((band) => {
+              const tile = band.closest<HTMLElement>('.sp-tile');
+              if (tile === null) return true;
+              const bandRect = band.getBoundingClientRect();
+              const tileRect = tile.getBoundingClientRect();
+              return (
+                bandRect.left < tileRect.left - 0.5 ||
+                bandRect.top < tileRect.top - 0.5 ||
+                bandRect.right > tileRect.right + 0.5 ||
+                bandRect.bottom > tileRect.bottom + 0.5
+              );
+            })
+            .map((band) => band.className);
           return {
             outside: elements
               .filter((element) => {
@@ -96,6 +117,16 @@ for (const skin of SKINS) {
             seatRiverCollisions,
             coachOverlaps,
             coachWidth: coach?.getBoundingClientRect().width ?? null,
+            taxonomyBandCount: taxonomyBands.length,
+            taxonomyBandMaxHeight:
+              taxonomyBands.length === 0
+                ? null
+                : Math.max(...taxonomyBands.map((band) => band.getBoundingClientRect().height)),
+            taxonomyBandMaxFontSize:
+              taxonomyBands.length === 0
+                ? null
+                : Math.max(...taxonomyBands.map((band) => Number.parseFloat(getComputedStyle(band).fontSize))),
+            taxonomyBandsOutsideTiles,
           };
         });
 
@@ -104,6 +135,12 @@ for (const skin of SKINS) {
         expect(geometry.coachOverlaps).toEqual([]);
         expect(geometry.coachWidth).not.toBeNull();
         expect(geometry.coachWidth ?? 0).toBeGreaterThanOrEqual(size.label === 'compact' ? 200 : 300);
+        expect(geometry.taxonomyBandCount).toBeGreaterThan(0);
+        expect(geometry.taxonomyBandMaxHeight).not.toBeNull();
+        expect(geometry.taxonomyBandMaxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4.5);
+        expect(geometry.taxonomyBandMaxFontSize).not.toBeNull();
+        expect(geometry.taxonomyBandMaxFontSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(0.5);
+        expect(geometry.taxonomyBandsOutsideTiles).toEqual([]);
         if (size.label === 'desktop') {
           expect(geometry.seatRiverCollisions).toEqual([]);
         }
