@@ -6,6 +6,7 @@ const REQUIRED_FILES = {
   collectionCapture: 'tests/visual/batch22-collection-review.spec.ts',
   resultCapture: 'tests/visual/batch23-result-review.spec.ts',
   midgameCapture: 'tests/visual/batch26-midgame-review.spec.ts',
+  topRackCapture: 'tests/visual/batch42-top-rack-review.spec.ts',
   workflow: '.github/workflows/batch14-visual-review.yml',
   roleWorkbenchCss: 'src/ui/styles/deck-role-workbench.css',
   reviewDoc: 'docs/qa/BATCH-14-VISUAL-REVIEW.md',
@@ -32,9 +33,9 @@ function forbidText(fileKey, needle, reason) {
 }
 
 const visualCommand =
-  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts tests/visual/batch26-midgame-review.spec.ts';
-requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection, Result and midgame evidence');
-requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include Result and midgame evidence');
+  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts tests/visual/batch26-midgame-review.spec.ts tests/visual/batch42-top-rack-review.spec.ts';
+requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection, Result, midgame and TOP rack evidence');
+requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include Result, midgame and TOP rack evidence');
 forbidText('packageJson', '"test:visual:update"', 'current visual review must not encourage refreshing a stale committed baseline');
 
 for (const needle of [
@@ -103,6 +104,19 @@ for (const needle of [
 }
 forbidText('midgameCapture', 'toHaveScreenshot(', 'midgame evidence must stay current-head artifact based');
 forbidText('midgameCapture', 'force: true', 'midgame evidence must use real pointer actions');
+
+for (const needle of [
+  "const SKINS = ['yorunoshirube', 'cute-pop'] as const;",
+  "{ width: 844, height: 390, label: 'compact' }",
+  "{ width: 1440, height: 900, label: 'desktop' }",
+  'expect(rack?.tileCount).toBe(8);',
+  'expect(rack?.visibleBands).toBe(0);',
+  'expect(rack?.rowSpread).toBeLessThanOrEqual(1);',
+  'expect(rack?.minTileWidth).toBeGreaterThanOrEqual(44);',
+]) {
+  requireText('topRackCapture', needle, 'TOP starter rack must remain measured current-head evidence for both skins and viewports');
+}
+forbidText('topRackCapture', 'toHaveScreenshot(', 'TOP rack evidence should measure current geometry without adding stale pixel baselines');
 
 requireText('workflow', 'name: Batch 14 Visual Review', 'artifact review needs a dedicated workflow');
 requireText('workflow', "- 'tests/visual/**'", 'every visual-test change must refresh current-head review evidence');
