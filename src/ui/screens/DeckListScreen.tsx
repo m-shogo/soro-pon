@@ -62,7 +62,11 @@ export function DeckListScreen({
         </div>
       </div>
 
-      <div className="sp-deck-grid sp-deck-select__grid">
+      <div
+        className="sp-deck-grid sp-deck-select__grid"
+        data-deck-count={decks.length}
+        aria-label="デッキのロードアウト一覧"
+      >
         {decks.map((stored) => {
           const validation = validations.get(stored.deck.id);
           const status = validation?.status ?? 'draft';
