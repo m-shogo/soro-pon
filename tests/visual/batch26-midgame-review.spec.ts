@@ -62,26 +62,8 @@ for (const skin of SKINS) {
           });
           const selfSeat = document.querySelector<HTMLElement>(".sp-table-seat[data-seat-position='self']");
           const selfPanel = selfSeat?.querySelector<HTMLElement>('.sp-player-panel') ?? null;
-          const selfSeal = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
           const selfName = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
-          const selfRiverTiles = selfSeat === null
-            ? []
-            : [...selfSeat.querySelectorAll<HTMLElement>('.sp-seat-played__tiles .sp-tile')].filter((tile) => {
-                const rect = tile.getBoundingClientRect();
-                const style = getComputedStyle(tile);
-                return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
-              });
-          const selfRiverTileCollisions = selfPanel === null
-            ? []
-            : selfRiverTiles
-                .filter((tile) => {
-                  const panelRect = selfPanel.getBoundingClientRect();
-                  const tileRect = tile.getBoundingClientRect();
-                  const overlapWidth = Math.min(panelRect.right, tileRect.right) - Math.max(panelRect.left, tileRect.left);
-                  const overlapHeight = Math.min(panelRect.bottom, tileRect.bottom) - Math.max(panelRect.top, tileRect.top);
-                  return overlapWidth > 1 && overlapHeight > 1;
-                })
-                .map((tile) => tile.getAttribute('aria-label') ?? tile.className);
+          const selfPanelStyle = selfPanel === null ? null : getComputedStyle(selfPanel);
           const coach = document.querySelector<HTMLElement>('.sp-match-coach');
           const coachOverlaps = coach === null
             ? []
@@ -137,14 +119,13 @@ for (const skin of SKINS) {
               )
               .map((element) => element.className),
             seatRiverCollisions,
-            selfRiverTileCollisions,
+            selfPanelWidth: selfPanel?.getBoundingClientRect().width ?? null,
             selfPanelHeight: selfPanel?.getBoundingClientRect().height ?? null,
-            selfSealHeight: selfSeal?.getBoundingClientRect().height ?? null,
-            selfNameVisible:
-              selfName !== null &&
-              selfName.getBoundingClientRect().width > 0 &&
-              selfName.getBoundingClientRect().height > 0 &&
-              getComputedStyle(selfName).visibility !== 'hidden',
+            selfPanelDisplay: selfPanelStyle?.display ?? null,
+            selfPanelVisibility: selfPanelStyle?.visibility ?? null,
+            selfPanelClipPath: selfPanelStyle?.clipPath ?? null,
+            selfPanelAriaLabel: selfPanel?.getAttribute('aria-label') ?? null,
+            selfNameInDom: selfName !== null,
             coachOverlaps,
             coachWidth: coach?.getBoundingClientRect().width ?? null,
             taxonomyBandCount: taxonomyBands.length,
@@ -171,15 +152,19 @@ for (const skin of SKINS) {
         expect(geometry.taxonomyBandMaxFontSize).not.toBeNull();
         expect(geometry.taxonomyBandMaxFontSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(0.5);
         expect(geometry.taxonomyBandsOutsideTiles).toEqual([]);
+        expect(geometry.selfPanelWidth).not.toBeNull();
         expect(geometry.selfPanelHeight).not.toBeNull();
-        expect(geometry.selfSealHeight).not.toBeNull();
-        expect(geometry.selfNameVisible).toBe(true);
+        expect(geometry.selfPanelAriaLabel).toBeTruthy();
+        expect(geometry.selfNameInDom).toBe(true);
         if (size.label === 'compact') {
-          expect(geometry.selfPanelHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(20);
-          expect(geometry.selfSealHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(14.5);
-          expect(geometry.selfRiverTileCollisions).toEqual([]);
+          expect(geometry.selfPanelWidth ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
+          expect(geometry.selfPanelHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
+          expect(geometry.selfPanelDisplay).not.toBe('none');
+          expect(geometry.selfPanelVisibility).not.toBe('hidden');
+          expect(geometry.selfPanelClipPath).not.toBe('none');
         }
         if (size.label === 'desktop') {
+          expect(geometry.selfPanelWidth ?? 0).toBeGreaterThanOrEqual(100);
           expect(geometry.selfPanelHeight ?? 0).toBeGreaterThanOrEqual(30);
           expect(geometry.seatRiverCollisions).toEqual([]);
         }
