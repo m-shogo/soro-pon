@@ -50,13 +50,17 @@ requireText('match', 'messages={<MatchCoach insights={controller.insights} error
 forbidText('match', 'controller.insights.map(', 'MatchScreen must not reintroduce stacked insight prose');
 
 for (const needle of [
+  '.sp-match-layout .sp-match-message-zone',
+  '.sp-match-message-zone > .sp-match-coach',
+  'width: 100%;',
   '.sp-match-coach--expandable > summary',
   'pointer-events: auto;',
   'bottom: calc(var(--tile-h) + 7px);',
   'width: min(250px, 31vw);',
+  'min-width: min(220px, calc(100vw - 188px));',
   '-webkit-line-clamp: 2;',
 ]) {
-  requireText('css', needle, 'compact coach must stay short, operable and clear of the hand');
+  requireText('css', needle, 'compact coach must retain readable width, stay operable and remain clear of the hand');
 }
 
 for (const needle of [
