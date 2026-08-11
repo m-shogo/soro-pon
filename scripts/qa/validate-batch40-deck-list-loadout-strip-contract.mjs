@@ -39,8 +39,11 @@ for (const forbidden of ['decks[0]', 'onSelect(decks', 'Math.random']) {
 for (const needle of [
   '@media (max-width: 899px), (max-height: 430px)',
   ".sp-deck-select__grid[data-deck-count='1']",
+  'grid-auto-rows: 166px;',
   'align-content: center;',
-  'max-height: 190px;',
+  'height: 166px;',
+  'min-height: 166px;',
+  'max-height: 166px;',
   'grid-template-columns: minmax(380px, 1.15fr) minmax(270px, 0.85fr);',
   '--tile-w: 48px;',
   '--tile-h: 64px;',
@@ -49,7 +52,7 @@ for (const needle of [
   'font-size: 11px;',
   'max-height: 30px;',
 ]) {
-  requireText('css', needle, 'one-deck compact mode must be a bounded readable loadout strip without internal dead space');
+  requireText('css', needle, 'one-deck compact mode must be a hard-bounded readable loadout strip without internal dead space');
 }
 for (const forbidden of ['radial-gradient(', 'linear-gradient(', 'translateY(-', '!important']) {
   forbidText('css', forbidden, 'compact loadout strip must remain authored game UI without promo-card effects or force overrides');
@@ -60,8 +63,14 @@ for (const needle of [
   "{ width: 844, height: 390, label: 'compact' }",
   "{ width: 1440, height: 900, label: 'desktop' }",
   "getByRole('heading', { name: 'デッキ選択' })",
+  'async function expectCompactSingleDeckGeometry',
+  "expect(geometry?.deckCount).toBe('1');",
+  'expect(geometry?.cardHeight).toBeLessThanOrEqual(170);',
+  'expect(geometry?.previewTopGap).toBeLessThanOrEqual(70);',
+  'expect(geometry?.minTileWidth).toBeGreaterThanOrEqual(47);',
+  "if (size.label === 'compact') await expectCompactSingleDeckGeometry(page);",
 ]) {
-  requireText('visual', needle, 'canonical deck-list evidence must stay current for both skins and target viewports');
+  requireText('visual', needle, 'canonical deck-list evidence must include a measured compact geometry gate, not screenshot presence alone');
 }
 
 requireText('packageJson', '"qa:batch40:deck-list-loadout-strip-contract": "node scripts/qa/validate-batch40-deck-list-loadout-strip-contract.mjs"', 'Batch 40 contract must be runnable directly');
