@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 const REQUIRED_FILES = {
   face: 'src/ui/components/MatchSetupDeckFace.tsx',
   css: 'src/ui/styles/match-setup-authored.css',
+  screenCss: 'src/ui/styles/screens.css',
   visual: 'tests/visual/batch44-match-setup-rack-review.spec.ts',
   packageJson: 'package.json',
   workflow: '.github/workflows/ci.yml',
@@ -43,10 +44,25 @@ for (const needle of [
   '--tile-h: 46px;',
   'margin-left: -3px;',
 ]) {
-  requireText('css', needle, 'compact preview must remain a readable one-row tile rack');
+  requireText('css', needle, 'layout layer must express the clean one-row MatchSetup rack');
 }
 for (const forbidden of ['linear-gradient(', 'radial-gradient(', 'backdrop-filter:', '!important', 'position: fixed']) {
-  forbidText('css', forbidden, 'Batch 44 must not introduce generic decoration or layout escape hatches');
+  forbidText('css', forbidden, 'Batch 44 authored rack must not introduce generic decoration or layout escape hatches');
+}
+
+for (const needle of [
+  'Batch 44: MatchSetup is also a showcase',
+  '.sp-match-setup__deck-rack {',
+  '--tile-w: 34px;',
+  '--tile-h: 46px;',
+  '.sp-match-setup__deck-rack .sp-tile {',
+  'inline-size: 34px;',
+  'min-inline-size: 34px;',
+  'max-inline-size: 34px;',
+  'block-size: 46px;',
+  'flex: 0 0 34px;',
+]) {
+  requireText('screenCss', needle, 'screen layer must own the final compact 34x46 MatchSetup tile geometry');
 }
 
 for (const needle of [
