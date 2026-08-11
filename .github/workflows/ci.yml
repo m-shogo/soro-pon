@@ -89,6 +89,8 @@ jobs:
         run: pnpm qa:batch38:result-group-row-contract
       - name: Batch 39 deck detail compact rail contract
         run: pnpm qa:batch39:deck-detail-compact-rail-contract
+      - name: Batch 40 deck list loadout strip contract
+        run: pnpm qa:batch40:deck-list-loadout-strip-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
