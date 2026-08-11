@@ -147,5 +147,21 @@
     padding: 2px 5px;
     font-size: 9px;
   }
+
+  /* Batch 40: this is a one-deck selection-screen geometry decision. Keep the
+     eight real tile faces readable even after the card is compressed into a
+     166px loadout strip. */
+  .sp-deck-select__grid[data-deck-count='1'] .sp-deck-select-card__preview {
+    --tile-w: 48px;
+    --tile-h: 64px;
+  }
+
+  .sp-deck-select__grid[data-deck-count='1'] .sp-deck-select-card__preview .sp-tile {
+    inline-size: 48px;
+    min-inline-size: 48px;
+    max-inline-size: 48px;
+    block-size: 64px;
+    flex: 0 0 48px;
+  }
 }
 }

@@ -43,11 +43,15 @@ for (const needle of [
   '--tile-w: clamp(48px, 4.5vw, 62px);',
   '--tile-h: clamp(64px, 6vw, 82px);',
   "grid-template-columns: repeat(4, minmax(0, 1fr));",
-  'grid-template-columns: minmax(300px, 1.2fr) minmax(210px, 0.8fr);',
-  '--tile-w: 40px;',
-  '--tile-h: 54px;',
+  'grid-auto-rows: 166px;',
+  'grid-template-columns: minmax(380px, 1.15fr) minmax(270px, 0.85fr);',
+  '--tile-w: 48px;',
+  '--tile-h: 64px;',
+  'height: 166px;',
+  'max-height: 166px;',
+  'height: 76px;',
 ]) {
-  requireText('css', needle, 'one-deck libraries must become a wide loadout while compact stays bounded');
+  requireText('css', needle, 'one-deck libraries must become a wide loadout while compact stays hard-bounded and readable');
 }
 for (const forbidden of ['radial-gradient(', 'linear-gradient(', 'translateY(-', '!important']) {
   forbidText('css', forbidden, 'Batch 31 authored layer must not add promo-card glow, lift, or forceful overrides');
@@ -58,8 +62,11 @@ for (const needle of [
   "capture(page, `deck-list-${skin}-${size.label}`)",
   "{ width: 844, height: 390, label: 'compact' }",
   "{ width: 1440, height: 900, label: 'desktop' }",
+  'expectCompactSingleDeckGeometry',
+  'toBeLessThanOrEqual(170)',
+  'toBeGreaterThanOrEqual(47)',
 ]) {
-  requireText('visual', needle, 'canonical shell flow must keep deck selection evidence at both target viewports');
+  requireText('visual', needle, 'canonical shell flow must keep deck selection evidence and measured compact loadout geometry');
 }
 
 requireText('packageJson', '"qa:batch31:featured-deck-select-contract": "node scripts/qa/validate-batch31-featured-deck-select-contract.mjs"', 'Batch 31 contract must be runnable directly');
