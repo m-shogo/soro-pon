@@ -67,6 +67,8 @@ jobs:
         run: pnpm qa:batch27:desktop-table-density-contract
       - name: Batch 28 match coach contract
         run: pnpm qa:batch28:match-coach-contract
+      - name: Batch 29 match setup lobby contract
+        run: pnpm qa:batch29:match-setup-lobby-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

@@ -4,6 +4,8 @@ import type { DeckVariant } from '../../domain/variant';
 import { Button } from '../components/Button';
 import { PlayerPanel } from '../components/PlayerPanel';
 
+type LobbySeatPosition = 'self' | 'left' | 'top' | 'right';
+
 export function MatchSetupScreen({
   deck,
   variant,
@@ -17,9 +19,19 @@ export function MatchSetupScreen({
 }) {
   const supported = variant.ruleConfig.supportedPlayerCounts;
   const [playerCount, setPlayerCount] = useState<3 | 4>(supported[0] ?? 3);
-  const cpuNames = ['トモリ', 'ナギ', 'ミチル'].slice(0, playerCount - 1);
   const totalTiles = deck.tiles.reduce((sum, tile) => sum + tile.count, 0);
   const drawPileCount = totalTiles - playerCount * 8;
+  const cpuSeats: Array<{ name: string; position: LobbySeatPosition }> =
+    playerCount === 3
+      ? [
+          { name: 'トモリ', position: 'left' },
+          { name: 'ナギ', position: 'right' },
+        ]
+      : [
+          { name: 'トモリ', position: 'left' },
+          { name: 'ナギ', position: 'top' },
+          { name: 'ミチル', position: 'right' },
+        ];
 
   return (
     <div className="sp-screen sp-match-setup">
@@ -74,10 +86,25 @@ export function MatchSetupScreen({
             <h2 id="sp-match-setup-members-title">面子</h2>
             <span>{playerCount}席</span>
           </div>
-          <div className="sp-match-setup__player-grid">
-            <PlayerPanel name="あなた" kind="human" handCount={8} discardCount={0} active />
-            {cpuNames.map((name) => (
-              <PlayerPanel key={name} name={name} kind="cpu" handCount={8} discardCount={0} />
+
+          <div
+            className="sp-match-setup__lobby"
+            data-player-count={playerCount}
+            aria-label={`${playerCount}人戦の卓プレビュー`}
+          >
+            <div className="sp-match-setup__lobby-center" aria-label="卓の準備状況">
+              <span>対局卓</span>
+              <strong>{playerCount}人戦</strong>
+              <small>山 {drawPileCount}枚</small>
+            </div>
+
+            <div className="sp-match-setup__lobby-seat" data-lobby-seat="self">
+              <PlayerPanel name="あなた" kind="human" handCount={8} discardCount={0} active />
+            </div>
+            {cpuSeats.map(({ name, position }) => (
+              <div key={name} className="sp-match-setup__lobby-seat" data-lobby-seat={position}>
+                <PlayerPanel name={name} kind="cpu" handCount={8} discardCount={0} />
+              </div>
             ))}
           </div>
         </section>
