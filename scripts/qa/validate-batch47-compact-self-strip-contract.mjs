@@ -23,9 +23,9 @@ function requireText(fileKey, needle, reason) {
 for (const needle of [
   'Batch 47: center status already communicates whose turn it is',
   ".sp-table-stage [data-seat-position='self'] .sp-seat-played {",
-  'bottom: 22px;',
+  'bottom: 35px;',
 ]) {
-  requireText('compactCss', needle, 'layout layer must reserve the compact self river position');
+  requireText('compactCss', needle, 'layout layer must retain the proven safe compact self river offset');
 }
 
 for (const needle of [
