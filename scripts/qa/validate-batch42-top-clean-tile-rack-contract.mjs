@@ -16,9 +16,6 @@ const failures = [];
 function requireText(fileKey, needle, reason) {
   if (!files[fileKey].includes(needle)) failures.push(`${REQUIRED_FILES[fileKey]}: missing ${JSON.stringify(needle)} — ${reason}`);
 }
-function forbidText(fileKey, needle, reason) {
-  if (files[fileKey].includes(needle)) failures.push(`${REQUIRED_FILES[fileKey]}: found forbidden ${JSON.stringify(needle)} — ${reason}`);
-}
 
 for (const needle of [
   'const previewTiles = FEATURED_DECK.tiles.slice(0, 8);',
@@ -49,8 +46,25 @@ for (const needle of [
 ]) {
   requireText('screenCss', needle, 'TOP rack must suppress repeated category bands and preserve readable compact tile geometry');
 }
+
+const showcaseStart = files.screenCss.indexOf('/* TOP is a showcase rack.');
+const showcaseEnd = files.screenCss.indexOf('/* Match insight is a quiet table log', showcaseStart);
+const showcaseCss = showcaseStart >= 0 && showcaseEnd > showcaseStart
+  ? files.screenCss.slice(showcaseStart, showcaseEnd)
+  : '';
+const compactStart = files.screenCss.indexOf('/* Batch 42: keep the starter rack visual-first');
+const compactEnd = files.screenCss.indexOf('/* Batch 40:', compactStart);
+const compactRackCss = compactStart >= 0 && compactEnd > compactStart
+  ? files.screenCss.slice(compactStart, compactEnd)
+  : '';
+const batch42Css = `${showcaseCss}\n${compactRackCss}`;
+if (showcaseCss === '' || compactRackCss === '') {
+  failures.push('src/ui/styles/screens.css: could not isolate Batch 42 rack rule blocks');
+}
 for (const forbidden of ['linear-gradient(', 'radial-gradient(', 'backdrop-filter:', '!important']) {
-  forbidText('screenCss', forbidden, 'Batch 42 must not introduce generic decoration or forceful overrides');
+  if (batch42Css.includes(forbidden)) {
+    failures.push(`src/ui/styles/screens.css: Batch 42 rack rules contain forbidden ${JSON.stringify(forbidden)}`);
+  }
 }
 
 for (const needle of [
