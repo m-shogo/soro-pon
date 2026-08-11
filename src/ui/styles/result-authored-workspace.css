@@ -1,4 +1,4 @@
-/* Batch 14.1 / Batch 23 authored result pass.
+/* Batch 14.1 / Batch 23 / Batch 30 authored result pass.
  * The result, winning tiles and score are the event. Side information is a
  * quiet ledger; it must not compete through nested cards, glow or dashboard
  * treatment. Keep one authored focal light on the winning call only.
@@ -41,6 +41,80 @@
     letter-spacing: 0.02em;
   }
 
+  .sp-result-screen__outcome {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.8fr) minmax(300px, 1.2fr);
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: clamp(12px, 1.5vw, 18px);
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-ink-0) 16%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-ink-0) 16%, transparent);
+  }
+
+  .sp-result-screen__outcome-identity {
+    min-width: 0;
+    display: grid;
+    align-content: center;
+    gap: 2px;
+    padding: clamp(10px, 1.2vw, 16px) clamp(8px, 1vw, 14px) clamp(10px, 1.2vw, 16px) 0;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-ink-0) 12%, transparent);
+  }
+
+  .sp-result-screen__outcome-identity > span,
+  .sp-result-screen__outcome-identity > small {
+    color: var(--sp-color-ink-soft);
+    font-size: var(--sp-font-xs);
+  }
+
+  .sp-result-screen__outcome-identity > strong {
+    overflow: hidden;
+    color: var(--sp-color-ink-0);
+    font-size: clamp(22px, 2.7vw, 38px);
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sp-result-screen__outcome-facts {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+  }
+
+  .sp-result-screen__outcome-facts > div {
+    min-width: 0;
+    display: grid;
+    place-content: center;
+    gap: 2px;
+    padding: clamp(8px, 1vw, 14px);
+    text-align: center;
+  }
+
+  .sp-result-screen__outcome-facts > div + div {
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-ink-0) 10%, transparent);
+  }
+
+  .sp-result-screen__outcome-facts dt,
+  .sp-result-screen__outcome-facts dd {
+    margin: 0;
+  }
+
+  .sp-result-screen__outcome-facts dt {
+    color: var(--sp-color-ink-soft);
+    font-size: var(--sp-font-xs);
+  }
+
+  .sp-result-screen__outcome-facts dd {
+    overflow: hidden;
+    color: var(--sp-color-ink-0);
+    font-family: var(--sp-font-family-num);
+    font-size: clamp(16px, 1.8vw, 24px);
+    font-weight: var(--sp-weight-strong);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .sp-result-screen__winning-groups {
     display: grid;
     gap: clamp(8px, 1.1vh, 13px);
@@ -67,9 +141,9 @@
   .sp-result-screen__draw-copy {
     display: grid;
     place-items: center;
-    min-height: 220px;
+    min-height: 72px;
     margin: 0;
-    font-size: clamp(var(--sp-font-md), 2vw, var(--sp-font-xl));
+    font-size: clamp(var(--sp-font-md), 1.6vw, var(--sp-font-lg));
   }
 
   .sp-result-screen__side {
@@ -86,8 +160,6 @@
     gap: var(--sp-space-8);
   }
 
-  /* Keep all side panels flat, but only the ink ranking panel becomes
-   * transparent. Reward/coin paper stays opaque enough on the dark skin. */
   .sp-result-screen__side > .sp-paper-panel,
   .sp-result-screen__ledger > .sp-paper-panel {
     border-radius: 0;
@@ -161,8 +233,38 @@
     }
 
     .sp-result-screen .sp-result-frame .sp-paper-panel__title {
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       font-size: 16px;
+    }
+
+    .sp-result-screen__outcome {
+      grid-template-columns: minmax(118px, 0.72fr) minmax(230px, 1.28fr);
+      margin-bottom: 5px;
+    }
+
+    .sp-result-screen__outcome-identity {
+      gap: 0;
+      padding: 4px 6px 4px 0;
+    }
+
+    .sp-result-screen__outcome-identity > span,
+    .sp-result-screen__outcome-identity > small,
+    .sp-result-screen__outcome-facts dt {
+      font-size: 8px;
+      line-height: 1.1;
+    }
+
+    .sp-result-screen__outcome-identity > strong {
+      font-size: 17px;
+    }
+
+    .sp-result-screen__outcome-facts > div {
+      gap: 0;
+      padding: 3px 5px;
+    }
+
+    .sp-result-screen__outcome-facts dd {
+      font-size: 12px;
     }
 
     .sp-result-screen__winning-groups {
@@ -179,8 +281,8 @@
     }
 
     .sp-result-screen__draw-copy {
-      min-height: 110px;
-      font-size: var(--sp-font-sm);
+      min-height: 34px;
+      font-size: 10px;
     }
 
     .sp-result-screen__side {
