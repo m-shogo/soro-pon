@@ -65,6 +65,7 @@ for (const skin of SKINS) {
           const selfName = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
           const selfPanelStyle = selfPanel === null ? null : getComputedStyle(selfPanel);
           const coach = document.querySelector<HTMLElement>('.sp-match-coach');
+          const hand = document.querySelector<HTMLElement>('.sp-self-hand-zone');
           const coachOverlaps = coach === null
             ? []
             : [...document.querySelectorAll<HTMLElement>('.sp-self-hand-zone, .sp-match-action-zone')]
@@ -76,6 +77,9 @@ for (const skin of SKINS) {
                   return overlapWidth > 1 && overlapHeight > 1;
                 })
                 .map((target) => target.className);
+          const coachHandGap = coach === null || hand === null
+            ? null
+            : hand.getBoundingClientRect().top - coach.getBoundingClientRect().bottom;
           const taxonomyBands = [
             ...document.querySelectorAll<HTMLElement>('.sp-match-screen .sp-tile__band'),
           ].filter((band) => {
@@ -128,6 +132,7 @@ for (const skin of SKINS) {
             selfNameInDom: selfName !== null,
             coachOverlaps,
             coachWidth: coach?.getBoundingClientRect().width ?? null,
+            coachHandGap,
             taxonomyBandCount: taxonomyBands.length,
             taxonomyBandMaxHeight:
               taxonomyBands.length === 0
@@ -167,6 +172,8 @@ for (const skin of SKINS) {
           expect(geometry.selfPanelWidth ?? 0).toBeGreaterThanOrEqual(100);
           expect(geometry.selfPanelHeight ?? 0).toBeGreaterThanOrEqual(30);
           expect(geometry.seatRiverCollisions).toEqual([]);
+          expect(geometry.coachHandGap).not.toBeNull();
+          expect(geometry.coachHandGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(10);
         }
 
         await mkdir(CAPTURE_DIR, { recursive: true });
