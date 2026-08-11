@@ -95,12 +95,15 @@ for (const skin of SKINS) {
               .map((element) => element.className),
             seatRiverCollisions,
             coachOverlaps,
+            coachWidth: coach?.getBoundingClientRect().width ?? null,
           };
         });
 
         expect(geometry.outside).toEqual([]);
         expect(geometry.riversNeedingScroll).toEqual([]);
         expect(geometry.coachOverlaps).toEqual([]);
+        expect(geometry.coachWidth).not.toBeNull();
+        expect(geometry.coachWidth ?? 0).toBeGreaterThanOrEqual(size.label === 'compact' ? 200 : 300);
         if (size.label === 'desktop') {
           expect(geometry.seatRiverCollisions).toEqual([]);
         }
