@@ -224,6 +224,13 @@
     line-height: 1;
   }
 
+  /* Compact rivers are tile geometry, not a mini table report. Own the final
+     hide here so the generic component `display:flex` cannot reintroduce
+     "捨て牌 N枚" behind the self ownership strip. */
+  .sp-match-screen .sp-seat-played__head {
+    display: none;
+  }
+
   /* Batch 42: keep the starter rack visual-first and large enough to read as
      game pieces rather than tiny taxonomy cards. */
   .sp-top-stage__rack {
