@@ -1,4 +1,4 @@
-/* Batch 14.1 / Batch 23 / Batch 30 authored result pass.
+/* Batch 14.1 / Batch 23 / Batch 30 / Batch 38 authored result pass.
  * The result, winning tiles and score are the event. Side information is a
  * quiet ledger; it must not compete through nested cards, glow or dashboard
  * treatment. Keep one authored focal light on the winning call only.
@@ -115,21 +115,32 @@
     white-space: nowrap;
   }
 
+  /* Batch 38: a completed hand is three peer groups, not a vertical form.
+   * Reflow only; Result data and TileCard DOM remain untouched. */
   .sp-result-screen__winning-groups {
     display: grid;
-    gap: clamp(8px, 1.1vh, 13px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(8px, 1vw, 14px);
+    align-items: start;
   }
 
   .sp-result-screen__winning-group {
+    min-width: 0;
     display: flex;
-    align-items: center;
-    gap: clamp(6px, 0.65vw, 10px);
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: flex-end;
+    justify-content: center;
+    gap: clamp(5px, 0.55vw, 8px);
+    padding: 5px 4px 8px;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-ink-0) 10%, transparent);
   }
 
   .sp-result-screen__winning-group > span {
-    flex: 0 0 4.5em;
+    flex: 0 0 100%;
     color: var(--sp-color-ink-soft);
     font-size: var(--sp-font-xs);
+    text-align: center;
   }
 
   .sp-result-screen__warning-copy,
@@ -268,16 +279,18 @@
     }
 
     .sp-result-screen__winning-groups {
-      gap: 4px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 3px;
     }
 
     .sp-result-screen__winning-group {
-      gap: 4px;
+      gap: 3px;
+      padding: 1px 2px 4px;
     }
 
     .sp-result-screen__winning-group > span {
-      flex-basis: 3.5em;
-      font-size: 9px;
+      font-size: 8px;
+      line-height: 1;
     }
 
     .sp-result-screen__draw-copy {

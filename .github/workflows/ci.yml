@@ -85,6 +85,8 @@ jobs:
         run: pnpm qa:batch36:role-recipe-density-contract
       - name: Batch 37 match setup deck face contract
         run: pnpm qa:batch37:match-setup-deck-face-contract
+      - name: Batch 38 result group row contract
+        run: pnpm qa:batch38:result-group-row-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
