@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 const REQUIRED_FILES = {
   screenCss: 'src/ui/styles/screens.css',
+  motionCss: 'src/ui/styles/motion.css',
   components: 'src/ui/components/components.css',
   capture: 'tests/visual/batch14-review-capture.spec.ts',
   packageJson: 'package.json',
@@ -29,6 +30,14 @@ for (const needle of [
   'var(--sp-shadow-tile-raised)',
 ]) {
   requireText('screenCss', needle, 'MatchScreen selection needs a restrained lift plus strong visual state');
+}
+
+for (const needle of [
+  'Batch 46: direct user intent outranks the transient arrival motion',
+  '.sp-match-screen .sp-self-hand-zone .sp-tile--drawn.sp-tile--selected {',
+  'animation: none;',
+]) {
+  requireText('motionCss', needle, 'selected state must immediately override a just-drawn tile animation');
 }
 
 for (const needle of [
