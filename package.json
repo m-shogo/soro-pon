@@ -36,6 +36,7 @@
     "qa:batch24:editor-cleanup-contract": "node scripts/qa/validate-batch24-editor-cleanup-contract.mjs",
     "qa:batch25:result-determinism-contract": "node scripts/qa/validate-batch25-result-determinism-contract.mjs",
     "qa:batch26:midgame-evidence-contract": "node scripts/qa/validate-batch26-midgame-evidence-contract.mjs",
+    "qa:batch27:desktop-table-density-contract": "node scripts/qa/validate-batch27-desktop-table-density-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
