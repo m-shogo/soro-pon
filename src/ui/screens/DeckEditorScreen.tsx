@@ -15,16 +15,14 @@ import { validateDeckForUse } from '../../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
+import { DeckBasicLedger } from '../components/DeckBasicLedger';
 import { DeckBonusWorkbench } from '../components/DeckBonusWorkbench';
 import { DeckCategoryWorkbench } from '../components/DeckCategoryWorkbench';
 import { DeckEditorInspector } from '../components/DeckEditorInspector';
 import { DeckRoleWorkbench } from '../components/DeckRoleWorkbench';
 import { DeckTileWorkbench } from '../components/DeckTileWorkbench';
 import { Dialog } from '../components/Dialog';
-import { FormField, TextField } from '../components/FormField';
-import { PaperPanel } from '../components/PaperPanel';
 import { Tabs } from '../components/Tab';
-import { TileCard } from '../components/TileCard';
 
 const CATEGORY_COLORS = ['#EF4444', '#3B82F6', '#22C55E', '#F59E0B', '#7C3AED', '#06B6D4', '#EC4899', '#84CC16'];
 
@@ -52,9 +50,6 @@ export function DeckEditorScreen({
   const validation = useMemo(() => validateDeckForUse(draft), [draft]);
   const activeVariant = draft.variants.find((variant) => variant.id === draft.activeVariantId);
   const isDirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(deck), [draft, deck]);
-  const categoryById = new Map(draft.categories.map((category) => [category.id, category]));
-  const previewTiles = draft.tiles.slice(0, 8);
-  const totalTiles = draft.tiles.reduce((sum, tile) => sum + tile.count, 0);
   const bonusCount =
     (activeVariant?.specialBonuses.length ?? 0) + (activeVariant?.scoreBonuses.length ?? 0);
 
@@ -299,64 +294,7 @@ export function DeckEditorScreen({
           id={`sp-tabpanel-${tab}`}
           aria-labelledby={`sp-tab-${tab}`}
         >
-          {tab === 'basic' && (
-            <PaperPanel title="デッキ台帳">
-              <div className="sp-deck-basic-ledger">
-                <div className="sp-deck-basic-ledger__form">
-                  <FormField label="デッキ名">
-                    <TextField
-                      label="デッキ名"
-                      value={draft.name}
-                      maxLength={80}
-                      onChange={(name) => setDraft({ ...draft, name })}
-                    />
-                  </FormField>
-                  <FormField label="説明">
-                    <TextField
-                      label="説明"
-                      multiline
-                      rows={2}
-                      maxLength={500}
-                      value={draft.description ?? ''}
-                      onChange={(description) => setDraft({ ...draft, description })}
-                    />
-                  </FormField>
-                </div>
-
-                <section className="sp-deck-basic-ledger__identity" aria-label="現在のデッキ構成">
-                  <div className="sp-deck-basic-ledger__identity-head">
-                    <span>DECK FACE</span>
-                    <strong>{draft.name || '名称未設定'}</strong>
-                  </div>
-                  <div className="sp-deck-basic-ledger__rack" aria-hidden="true">
-                    {previewTiles.map((tile) => {
-                      const category = categoryById.get(tile.primaryCategoryId);
-                      return (
-                        <TileCard
-                          key={tile.id}
-                          name={tile.name}
-                          {...(tile.emoji !== undefined ? { emoji: tile.emoji } : {})}
-                          fallbackLabel={tile.fallbackLabel}
-                          {...(category
-                            ? { categoryColor: category.color, categoryName: category.name }
-                            : {})}
-                          showName={false}
-                          interactive={false}
-                        />
-                      );
-                    })}
-                  </div>
-                  <dl className="sp-deck-basic-ledger__metrics">
-                    <div><dt>牌</dt><dd>{totalTiles}</dd></div>
-                    <div><dt>種類</dt><dd>{draft.tiles.length}</dd></div>
-                    <div><dt>カテゴリ</dt><dd>{draft.categories.length}</dd></div>
-                    <div><dt>役</dt><dd>{activeVariant?.winRoles.length ?? 0}</dd></div>
-                    <div><dt>ボーナス</dt><dd>{bonusCount}</dd></div>
-                  </dl>
-                </section>
-              </div>
-            </PaperPanel>
-          )}
+          {tab === 'basic' && <DeckBasicLedger deck={draft} onChange={setDraft} />}
 
           {tab === 'categories' && (
             <DeckCategoryWorkbench
