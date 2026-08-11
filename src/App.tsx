@@ -15,6 +15,7 @@ import './ui/styles/result-authored-workspace.css';
 import './ui/styles/match-setup-authored.css';
 import './ui/styles/collection-authored.css';
 import './ui/styles/batch14-landscape-game.css';
+import './ui/styles/desktop-match-stage.css';
 import './ui/styles/deck-role-workbench.css';
 import './ui/styles/interaction-ux.css';
 import './ui/styles/screens.css';
