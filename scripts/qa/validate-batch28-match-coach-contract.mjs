@@ -65,11 +65,14 @@ for (const needle of [
 
 for (const needle of [
   'coachOverlaps',
+  'coachWidth',
   "document.querySelector<HTMLElement>('.sp-match-coach')",
   "document.querySelectorAll<HTMLElement>('.sp-self-hand-zone, .sp-match-action-zone')",
   'expect(geometry.coachOverlaps).toEqual([])',
+  'expect(geometry.coachWidth).not.toBeNull()',
+  "size.label === 'compact' ? 200 : 300",
 ]) {
-  requireText('visual', needle, 'current-head evidence must reject coach collisions with hand or actions');
+  requireText('visual', needle, 'current-head evidence must reject coach collisions and unreadably narrow coach strips');
 }
 
 for (const needle of [
