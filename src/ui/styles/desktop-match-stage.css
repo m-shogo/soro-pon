@@ -61,9 +61,6 @@
       width: min(210px, 82%);
     }
 
-    /* River tiles are deliberately larger than the generic 0.48 hand scale on
-     * desktop. The nearest custom property wins over the inline wrapper value,
-     * while compact viewports keep the original inherited dimensions. */
     .sp-table-stage .sp-seat-played {
       --tile-w: clamp(38px, 2.85vw, 42px);
       --tile-h: clamp(50px, 3.8vw, 56px);
@@ -76,6 +73,10 @@
 
     .sp-table-stage [data-seat-position='self'] .sp-seat-played {
       bottom: 72px;
+    }
+
+    .sp-table-stage--4 [data-seat-position='self'] .sp-seat-played {
+      bottom: 96px;
     }
 
     .sp-table-stage [data-seat-position='left'] .sp-seat-played {
