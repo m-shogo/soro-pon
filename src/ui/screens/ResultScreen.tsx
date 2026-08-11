@@ -54,6 +54,10 @@ export function ResultScreen({
   );
   const achievementPreview = newlyUnlocked.slice(0, 3);
   const hiddenAchievementCount = Math.max(0, newlyUnlocked.length - achievementPreview.length);
+  const isDraw = result?.reason === 'draw';
+  const methodLabel = isDraw ? '流局' : result?.reason === 'tsumo' ? 'ツモ' : 'ロン';
+  const outcomeName = isDraw ? '勝負つかず' : winner?.name ?? '—';
+  const outcomeNote = isDraw ? '山が尽きました' : `${methodLabel}で決着`;
 
   return (
     <div className="sp-screen sp-result-screen">
@@ -73,7 +77,29 @@ export function ResultScreen({
               )
             }
           >
-            {result?.reason === 'draw' ? (
+            <div className="sp-result-screen__outcome" data-reason={result?.reason ?? 'unknown'}>
+              <div className="sp-result-screen__outcome-identity">
+                <span>{isDraw ? '結果' : '勝者'}</span>
+                <strong>{outcomeName}</strong>
+                <small>{outcomeNote}</small>
+              </div>
+              <dl className="sp-result-screen__outcome-facts" aria-label="対局結果の要約">
+                <div>
+                  <dt>決着</dt>
+                  <dd>{methodLabel}</dd>
+                </div>
+                <div>
+                  <dt>手数</dt>
+                  <dd>{state.turnCount + 1}手</dd>
+                </div>
+                <div>
+                  <dt>得点</dt>
+                  <dd>{breakdown ? `${breakdown.totalPoints}点` : '—'}</dd>
+                </div>
+              </dl>
+            </div>
+
+            {isDraw ? (
               <p className="sp-result-screen__draw-copy">山が尽きました。</p>
             ) : (
               breakdown && (
