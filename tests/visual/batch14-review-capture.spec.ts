@@ -215,7 +215,11 @@ async function expectMatchGeometry(page: Page) {
 async function expectSelectedTileFeedback(page: Page) {
   const geometry = await page.evaluate(() => {
     const selected = document.querySelector<HTMLElement>('.sp-self-hand-zone .sp-tile--selected');
-    const peers = [...document.querySelectorAll<HTMLElement>('.sp-self-hand-zone .sp-tile:not(.sp-tile--selected)')];
+    const peers = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.sp-self-hand-zone .sp-tile:not(.sp-tile--selected):not(.sp-tile--drawn)',
+      ),
+    ];
     const coach = document.querySelector<HTMLElement>('.sp-match-coach');
     if (selected === null || peers.length === 0) return null;
 
