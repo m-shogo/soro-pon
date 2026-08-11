@@ -49,6 +49,7 @@ for (const needle of [
 
 for (const needle of [
   'async function expectSelectedTileFeedback(page: Page)',
+  '.sp-self-hand-zone .sp-tile:not(.sp-tile--selected):not(.sp-tile--drawn)',
   'expect(geometry?.lift ?? 0).toBeGreaterThanOrEqual(3);',
   'toBeLessThanOrEqual(6);',
   'expect(geometry?.outlineWidth ?? 0).toBeGreaterThanOrEqual(2.5);',
@@ -56,7 +57,7 @@ for (const needle of [
   'expect(geometry?.coachOverlapArea).toBe(0);',
   "getByRole('button', { name: '捨てる', exact: true })).toBeEnabled();",
 ]) {
-  requireText('capture', needle, 'compact 4p real action capture must prove clear selection without coach collision');
+  requireText('capture', needle, 'compact 4p real action capture must prove clear selection against stable non-drawn peers');
 }
 
 requireText(
