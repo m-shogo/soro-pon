@@ -67,14 +67,17 @@ for (const needle of [
   'selfPanelHeight',
   'selfSealHeight',
   'selfNameVisible',
+  'selfRiverTileCollisions',
+  ".sp-seat-played__tiles .sp-tile",
   'expect(geometry.selfPanelHeight).not.toBeNull();',
   'toBeLessThanOrEqual(20);',
   'toBeLessThanOrEqual(14.5);',
-  "expect(geometry.seatRiverCollisions).not.toContain('self');",
+  'expect(geometry.selfRiverTileCollisions).toEqual([]);',
   "if (size.label === 'desktop')",
   'toBeGreaterThanOrEqual(30);',
+  'expect(geometry.seatRiverCollisions).toEqual([]);',
 ]) {
-  requireText('visual', needle, 'real 3p/4p midgame evidence must prove compact-only compression and desktop preservation');
+  requireText('visual', needle, 'compact must protect visible river tiles while desktop retains full river-container collision protection');
 }
 
 requireText(
