@@ -81,6 +81,8 @@ jobs:
         run: pnpm qa:batch34:basic-deck-ledger-contract
       - name: Batch 35 bonus recipe shelf contract
         run: pnpm qa:batch35:bonus-recipe-shelf-contract
+      - name: Batch 36 role recipe density contract
+        run: pnpm qa:batch36:role-recipe-density-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
