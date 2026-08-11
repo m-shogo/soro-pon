@@ -45,6 +45,12 @@
   line-height: var(--sp-line-normal);
 }
 
+/* TOP is a showcase rack. Category bands remain useful in editing and match
+   contexts, but repeating taxonomy eight times here competes with the tile art. */
+.sp-top-stage__rack .sp-tile__band {
+  display: none;
+}
+
 /* Match insight is a quiet table log, not a floating web-notification stack. */
 .sp-match-message-zone {
   gap: 0;
@@ -146,6 +152,22 @@
   .sp-match-message {
     padding: 2px 5px;
     font-size: 9px;
+  }
+
+  /* Batch 42: keep the starter rack visual-first and large enough to read as
+     game pieces rather than tiny taxonomy cards. */
+  .sp-top-stage__rack {
+    --tile-w: 44px;
+    --tile-h: 59px;
+    min-height: 61px;
+  }
+
+  .sp-top-stage__rack .sp-tile {
+    inline-size: 44px;
+    min-inline-size: 44px;
+    max-inline-size: 44px;
+    block-size: 59px;
+    flex: 0 0 44px;
   }
 
   /* Batch 40: this is a one-deck selection-screen geometry decision. Keep the
