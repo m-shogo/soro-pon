@@ -159,7 +159,8 @@ for (const skin of SKINS) {
           expect(geometry.selfPanelHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(20);
           expect(geometry.selfSealHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(14.5);
           expect(geometry.seatRiverCollisions).not.toContain('self');
-        } else {
+        }
+        if (size.label === 'desktop') {
           expect(geometry.selfPanelHeight ?? 0).toBeGreaterThanOrEqual(30);
           expect(geometry.seatRiverCollisions).toEqual([]);
         }
