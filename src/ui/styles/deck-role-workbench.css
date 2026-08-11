@@ -268,7 +268,10 @@
     gap: 1px 5px;
   }
 
-  .sp-role-workbench__selected-head p,
+  .sp-role-workbench__selected-head p {
+    display: none;
+  }
+
   .sp-role-workbench__locked-note {
     font-size: 8px;
   }
