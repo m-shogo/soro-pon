@@ -46,6 +46,20 @@ for (const skin of SKINS) {
             const style = getComputedStyle(element);
             return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
           });
+          const seatRiverCollisions = [
+            ...document.querySelectorAll<HTMLElement>('.sp-table-seat'),
+          ].flatMap((seat) => {
+            const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
+            const river = seat.querySelector<HTMLElement>('.sp-seat-played');
+            if (panel === null || river === null) return [];
+            const panelRect = panel.getBoundingClientRect();
+            const riverRect = river.getBoundingClientRect();
+            const overlapWidth = Math.min(panelRect.right, riverRect.right) - Math.max(panelRect.left, riverRect.left);
+            const overlapHeight = Math.min(panelRect.bottom, riverRect.bottom) - Math.max(panelRect.top, riverRect.top);
+            return overlapWidth > 1 && overlapHeight > 1
+              ? [seat.dataset.seatPosition ?? 'unknown']
+              : [];
+          });
           return {
             outside: elements
               .filter((element) => {
@@ -67,11 +81,13 @@ for (const skin of SKINS) {
                   element.scrollHeight > element.clientHeight + 1,
               )
               .map((element) => element.className),
+            seatRiverCollisions,
           };
         });
 
         expect(geometry.outside).toEqual([]);
         expect(geometry.riversNeedingScroll).toEqual([]);
+        expect(geometry.seatRiverCollisions).toEqual([]);
 
         await mkdir(CAPTURE_DIR, { recursive: true });
         await page.screenshot({
