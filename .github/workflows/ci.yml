@@ -79,6 +79,8 @@ jobs:
         run: pnpm qa:batch33:collection-stamp-index-contract
       - name: Batch 34 basic deck ledger contract
         run: pnpm qa:batch34:basic-deck-ledger-contract
+      - name: Batch 35 bonus recipe shelf contract
+        run: pnpm qa:batch35:bonus-recipe-shelf-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
