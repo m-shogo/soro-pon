@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { DeckProject } from '../../domain/deck';
 import type { DeckVariant } from '../../domain/variant';
 import { Button } from '../components/Button';
+import { MatchSetupDeckFace } from '../components/MatchSetupDeckFace';
 import { PlayerPanel } from '../components/PlayerPanel';
 
 type LobbySeatPosition = 'self' | 'left' | 'top' | 'right';
@@ -64,6 +65,8 @@ export function MatchSetupScreen({
               </Button>
             ))}
           </div>
+
+          <MatchSetupDeckFace deck={deck} />
 
           <dl className="sp-match-setup__rule-rail" aria-label="対局ルール概要">
             <div>
