@@ -1,0 +1,113 @@
+/* Batch 32: desktop-only TOP composition.
+ * Compact landscape remains owned by home-loadout-stage.css. Wide screens should
+ * use their canvas for the game entrance instead of centering a phone-sized card.
+ */
+@layer screens {
+  @media (min-width: 1000px) and (min-height: 600px) {
+    .sp-top-screen {
+      width: min(100%, 1400px);
+      margin-inline: auto;
+      padding-inline: clamp(22px, 2.5vw, 40px);
+    }
+
+    .sp-top-screen__header {
+      width: min(1260px, 100%);
+      margin-inline: auto;
+      min-height: 50px;
+      padding-bottom: 9px;
+    }
+
+    .sp-top-stage {
+      width: min(1260px, 100%);
+      height: min(700px, calc(100vh - 100px));
+      min-height: 560px;
+      margin-block: auto;
+      grid-template-columns: minmax(0, 1.38fr) minmax(300px, 0.62fr);
+      gap: clamp(22px, 2.4vw, 34px);
+    }
+
+    .sp-top-stage__hero {
+      justify-content: flex-start;
+      gap: clamp(14px, 1.6vh, 20px);
+      padding: clamp(26px, 3vw, 40px);
+    }
+
+    .sp-top-stage__deck-copy h2 {
+      font-size: clamp(38px, 3.8vw, 54px);
+    }
+
+    .sp-top-stage__deck-copy p {
+      max-width: 58ch;
+      font-size: clamp(14px, 1.05vw, 16px);
+      line-height: 1.55;
+    }
+
+    .sp-top-stage__rack {
+      --tile-w: clamp(60px, 5.3vw, 78px);
+      --tile-h: clamp(80px, 7vw, 104px);
+      flex: 1 1 150px;
+      min-height: 150px;
+      align-items: center;
+      padding: 10px 8px;
+    }
+
+    .sp-top-stage__rack .sp-tile {
+      margin-left: -8px;
+    }
+
+    .sp-top-stage__rack .sp-tile:first-child {
+      margin-left: 0;
+    }
+
+    .sp-top-stage__deck-spec > div {
+      padding: 9px 12px;
+    }
+
+    .sp-top-stage__deck-spec dt {
+      font-size: 10px;
+    }
+
+    .sp-top-stage__deck-spec dd {
+      font-size: clamp(17px, 1.45vw, 21px);
+    }
+
+    .sp-top-stage__hero > .sp-button--primary {
+      width: min(440px, 68%);
+      min-height: 68px;
+    }
+
+    .sp-top-stage__nav {
+      justify-content: flex-start;
+      gap: 14px;
+      padding: 24px 0 18px clamp(18px, 2vw, 28px);
+    }
+
+    .sp-top-stage__nav-main {
+      gap: 9px;
+    }
+
+    .sp-top-stage__nav-main .sp-button {
+      min-height: 70px;
+      padding-inline: 18px;
+    }
+
+    .sp-top-stage__utility {
+      gap: 6px;
+      padding-top: 12px;
+    }
+
+    .sp-top-stage__utility .sp-button {
+      min-height: 38px;
+    }
+
+    .sp-top-stage .sp-top-tagline {
+      margin-top: auto;
+      font-size: 11px;
+    }
+
+    .sp-top-stage__recent {
+      margin-top: 0;
+      padding-top: 12px;
+    }
+  }
+}
