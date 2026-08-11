@@ -55,6 +55,32 @@ async function expectViewportContract(page: Page) {
   expect(result.tooSmall).toEqual([]);
 }
 
+async function expectCompactCollectionGeometry(page: Page) {
+  const geometry = await page.evaluate(() => {
+    const body = document.querySelector<HTMLElement>('.sp-collection-screen__body');
+    const main = document.querySelector<HTMLElement>('.sp-collection-screen__main');
+    const recent = document.querySelector<HTMLElement>('.sp-collection-screen__recent');
+    if (!body || !main || !recent) return null;
+
+    const bodyRect = body.getBoundingClientRect();
+    const mainRect = main.getBoundingClientRect();
+    const recentRect = recent.getBoundingClientRect();
+    return {
+      bodyWidth: bodyRect.width,
+      mainWidth: mainRect.width,
+      recentWidth: recentRect.width,
+      recentHeight: recentRect.height,
+      recentBelowMain: recentRect.top >= mainRect.bottom - 1,
+    };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect((geometry?.mainWidth ?? 0) / (geometry?.bodyWidth ?? 1)).toBeGreaterThanOrEqual(0.95);
+  expect((geometry?.recentWidth ?? 0) / (geometry?.bodyWidth ?? 1)).toBeGreaterThanOrEqual(0.95);
+  expect(geometry?.recentHeight).toBeLessThanOrEqual(64);
+  expect(geometry?.recentBelowMain).toBe(true);
+}
+
 for (const skin of SKINS) {
   for (const size of SIZES) {
     test(`${skin} ${size.label} collection ledger review`, async ({ page }) => {
@@ -62,6 +88,7 @@ for (const skin of SKINS) {
       await page.getByRole('button', { name: /記憶帳/ }).click();
       await expect(page.getByRole('heading', { name: '記憶帳' })).toBeVisible();
       await expectViewportContract(page);
+      if (size.label === 'compact') await expectCompactCollectionGeometry(page);
 
       await mkdir(CAPTURE_DIR, { recursive: true });
       await page.screenshot({
