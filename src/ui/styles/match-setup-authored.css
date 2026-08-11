@@ -2,7 +2,7 @@
 @layer layout {
   .sp-match-setup__body {
     display: grid;
-    grid-template-columns: minmax(250px, 0.76fr) minmax(360px, 1.24fr);
+    grid-template-columns: minmax(250px, 0.82fr) minmax(300px, 1.18fr);
     grid-template-rows: minmax(0, 1fr) auto;
     gap: clamp(8px, 1.2vw, 14px);
     align-items: stretch;
