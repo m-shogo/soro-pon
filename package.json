@@ -41,6 +41,7 @@
     "qa:batch29:match-setup-lobby-contract": "node scripts/qa/validate-batch29-match-setup-lobby-contract.mjs",
     "qa:batch30:result-outcome-board-contract": "node scripts/qa/validate-batch30-result-outcome-board-contract.mjs",
     "qa:batch31:featured-deck-select-contract": "node scripts/qa/validate-batch31-featured-deck-select-contract.mjs",
+    "qa:batch32:desktop-top-stage-contract": "node scripts/qa/validate-batch32-desktop-top-stage-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
