@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 const REQUIRED_FILES = {
   compactCss: 'src/ui/styles/batch14-landscape-game.css',
+  screenCss: 'src/ui/styles/screens.css',
   playerPanel: 'src/ui/components/PlayerPanel.tsx',
   visual: 'tests/visual/batch26-midgame-review.spec.ts',
   packageJson: 'package.json',
@@ -21,6 +22,14 @@ function requireText(fileKey, needle, reason) {
 
 for (const needle of [
   'Batch 47: center status already communicates whose turn it is',
+  ".sp-table-stage [data-seat-position='self'] .sp-seat-played {",
+  'bottom: 22px;',
+]) {
+  requireText('compactCss', needle, 'layout layer must reserve the compact self river position');
+}
+
+for (const needle of [
+  'Batch 47 final ownership lives in screens',
   ".sp-table-stage [data-seat-position='self'] .sp-player-panel {",
   'min-height: 18px;',
   'height: 18px;',
@@ -28,10 +37,17 @@ for (const needle of [
   'width: 14px;',
   'height: 14px;',
   ".sp-table-stage [data-seat-position='self'] .sp-player-panel__name {",
-  "[data-seat-position='self'] .sp-seat-played {",
-  'bottom: 22px;',
 ]) {
-  requireText('compactCss', needle, 'compact self identity must be a thin ownership strip with its river repositioned safely');
+  requireText('screenCss', needle, 'screen layer must own final compact self panel sizing after generic components');
+}
+
+for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:']) {
+  const start = files.screenCss.indexOf('/* Batch 47 final ownership lives in screens');
+  const end = files.screenCss.indexOf('/* Batch 42:', start);
+  const block = start >= 0 && end > start ? files.screenCss.slice(start, end) : '';
+  if (block.includes(forbidden)) {
+    failures.push(`${REQUIRED_FILES.screenCss}: Batch 47 ownership block contains forbidden ${JSON.stringify(forbidden)}`);
+  }
 }
 
 for (const needle of [
@@ -52,6 +68,7 @@ for (const needle of [
   'toBeLessThanOrEqual(20);',
   'toBeLessThanOrEqual(14.5);',
   "expect(geometry.seatRiverCollisions).not.toContain('self');",
+  "if (size.label === 'desktop')",
   'toBeGreaterThanOrEqual(30);',
 ]) {
   requireText('visual', needle, 'real 3p/4p midgame evidence must prove compact-only compression and desktop preservation');
