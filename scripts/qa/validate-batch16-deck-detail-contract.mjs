@@ -60,10 +60,12 @@ for (const needle of [
   '.sp-deck-detail-stage__validation summary {',
   '.sp-deck-detail-stage__utility {',
   'height: min(630px, calc(100vh - 150px));',
-  'grid-template-columns: minmax(0, 1fr) minmax(210px, 25%);',
+  'grid-template-columns: minmax(0, 1fr);',
+  'grid-template-rows: minmax(0, 1fr) auto;',
+  'grid-template-columns: repeat(4, minmax(0, 1fr));',
   'min-height: 44px;',
 ]) {
-  requireText('css', needle, 'deck detail must keep object-led desktop and compact spatial hierarchy');
+  requireText('css', needle, 'deck detail must keep object-led desktop and landscape compact spatial hierarchy');
 }
 
 for (const forbidden of ['radial-gradient(', 'linear-gradient(', 'backdrop-filter:', 'translateY(']) {
