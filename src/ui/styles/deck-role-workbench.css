@@ -39,16 +39,20 @@
   padding: var(--sp-space-8);
 }
 
-.sp-role-workbench__preset-main,
-.sp-role-workbench__specific {
+/* Batch 36: give recipe actions the width they need so their rule/score labels
+ * compare horizontally instead of breaking into stacked form-like blocks. */
+.sp-role-workbench__preset-main {
   display: grid;
-  grid-template-columns: minmax(150px, 0.8fr) repeat(3, minmax(130px, 1fr));
+  grid-template-columns: minmax(158px, 0.72fr) repeat(3, minmax(172px, 1fr));
   gap: 6px;
   align-items: stretch;
 }
 
 .sp-role-workbench__specific {
-  grid-template-columns: repeat(3, minmax(120px, 1fr)) minmax(180px, 1.2fr);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 0.82fr)) minmax(240px, 1.54fr);
+  gap: 6px;
+  align-items: stretch;
   padding-top: 6px;
   border-top: var(--sp-border-divider-ink);
 }
@@ -60,8 +64,10 @@
 .sp-role-workbench__presets .sp-button--ink {
   min-height: 44px;
   width: 100%;
-  white-space: normal;
-  line-height: 1.2;
+  padding-inline: 7px;
+  white-space: nowrap;
+  line-height: 1.1;
+  font-size: clamp(11px, 0.95vw, 13px);
   transform: none;
 }
 
@@ -70,6 +76,7 @@
   grid-template-columns: minmax(180px, 0.82fr) minmax(250px, 1.18fr);
   gap: var(--sp-space-8);
   min-height: 0;
+  align-items: start;
 }
 
 .sp-role-workbench__list {
@@ -194,11 +201,11 @@
 
 @media (max-width: 900px) and (max-height: 500px) {
   .sp-role-workbench {
-    gap: 5px;
+    gap: 4px;
   }
 
   .sp-role-workbench__header {
-    padding: 4px 7px;
+    padding: 3px 7px;
   }
 
   .sp-role-workbench__header h2 {
@@ -206,20 +213,25 @@
   }
 
   .sp-role-workbench__presets {
-    gap: 4px;
-    padding: 5px;
+    gap: 3px;
+    padding: 4px 5px;
   }
 
   .sp-role-workbench__preset-main,
   .sp-role-workbench__specific {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 4px;
+    gap: 3px;
+  }
+
+  .sp-role-workbench__specific {
+    padding-top: 3px;
   }
 
   .sp-role-workbench__presets .sp-button--ink {
-    min-height: 36px;
-    padding: 4px 6px;
-    font-size: 10px;
+    min-height: 32px;
+    padding: 2px 4px;
+    font-size: 9px;
+    white-space: nowrap;
   }
 
   .sp-role-workbench__body {
@@ -228,17 +240,21 @@
   }
 
   .sp-role-workbench__choice {
-    min-height: 36px;
-    padding: 3px 6px;
+    min-height: 34px;
+    padding: 2px 6px;
   }
 
   .sp-role-workbench__choice small {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .sp-role-workbench__editor {
-    gap: 5px;
-    padding: 6px;
+    gap: 4px;
+    padding: 5px 6px;
+  }
+
+  .sp-role-workbench__selected-head {
+    gap: 2px 5px;
   }
 
   .sp-role-workbench__fields {
@@ -247,6 +263,11 @@
   }
 
   .sp-role-workbench__rule-ledger > div {
-    padding: 3px 4px;
+    padding: 2px 4px;
+  }
+
+  .sp-role-workbench__editor > .sp-button {
+    min-height: 30px;
+    padding-block: 2px;
   }
 }
