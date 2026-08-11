@@ -45,6 +45,7 @@
     "qa:batch33:collection-stamp-index-contract": "node scripts/qa/validate-batch33-collection-stamp-index-contract.mjs",
     "qa:batch34:basic-deck-ledger-contract": "node scripts/qa/validate-batch34-basic-deck-ledger-contract.mjs",
     "qa:batch35:bonus-recipe-shelf-contract": "node scripts/qa/validate-batch35-bonus-recipe-shelf-contract.mjs",
+    "qa:batch36:role-recipe-density-contract": "node scripts/qa/validate-batch36-role-recipe-density-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
