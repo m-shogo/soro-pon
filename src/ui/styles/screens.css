@@ -51,6 +51,13 @@
   display: none;
 }
 
+/* MatchSetup is another preview-only showcase. TileCard intentionally renders
+   the band element even without category text, so suppress that empty strip
+   only in this rack; Editor/Match/Result category bands stay untouched. */
+.sp-match-setup__deck-rack .sp-tile__band {
+  display: none;
+}
+
 /* Match insight is a quiet table log, not a floating web-notification stack. */
 .sp-match-message-zone {
   gap: 0;
