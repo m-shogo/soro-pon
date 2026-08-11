@@ -170,6 +170,22 @@
     flex: 0 0 44px;
   }
 
+  /* Batch 44: MatchSetup is also a showcase, but on a denser two-column
+     landscape. Own final tile geometry here so later component layers cannot
+     shrink the clean rack below the measured 34x46 target. */
+  .sp-match-setup__deck-rack {
+    --tile-w: 34px;
+    --tile-h: 46px;
+  }
+
+  .sp-match-setup__deck-rack .sp-tile {
+    inline-size: 34px;
+    min-inline-size: 34px;
+    max-inline-size: 34px;
+    block-size: 46px;
+    flex: 0 0 34px;
+  }
+
   /* Batch 40: this is a one-deck selection-screen geometry decision. Keep the
      eight real tile faces readable even after the card is compressed into a
      166px loadout strip. */
