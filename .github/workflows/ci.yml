@@ -95,6 +95,8 @@ jobs:
         run: pnpm qa:batch41:collection-bottom-rail-contract
       - name: Batch 42 clean TOP tile rack contract
         run: pnpm qa:batch42:top-clean-tile-rack-contract
+      - name: Batch 43 Yorunoshirube primary fallback contract
+        run: pnpm qa:batch43:yorunoshirube-primary-fallback-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
