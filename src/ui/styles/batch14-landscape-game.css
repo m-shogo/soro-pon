@@ -72,8 +72,8 @@
     }
 
     /* Batch 47: center status already communicates whose turn it is. Keep the
-       self seat as a tiny ownership strip so the river can sit closer to the
-       hand without repeating a full player card. PlayerPanel semantics stay. */
+       self seat as a tiny ownership strip instead of repeating a full player
+       card. PlayerPanel semantics stay; river keeps its proven safe offset. */
     .sp-table-stage [data-seat-position='self'] .sp-player-panel {
       min-height: 18px;
       height: 18px;
@@ -102,7 +102,7 @@
     }
 
     .sp-table-stage [data-seat-position='self'] .sp-seat-played {
-      bottom: 22px;
+      bottom: 35px;
     }
 
     .sp-table-stage [data-seat-position='right'] .sp-player-panel {
