@@ -5,6 +5,7 @@ const REQUIRED_FILES = {
   screenCss: 'src/ui/styles/screens.css',
   playerPanel: 'src/ui/components/PlayerPanel.tsx',
   visual: 'tests/visual/batch26-midgame-review.spec.ts',
+  shellVisual: 'tests/visual/batch14-review-capture.spec.ts',
   packageJson: 'package.json',
   workflow: '.github/workflows/ci.yml',
 };
@@ -85,6 +86,18 @@ for (const needle of [
   'expect(geometry.seatRiverCollisions).toEqual([]);',
 ]) {
   requireText('visual', needle, 'real 3p/4p midgame evidence must prove compact visual retirement with semantic preservation and desktop non-regression');
+}
+
+for (const needle of [
+  'const isVisuallyHidden = (element: HTMLElement): boolean => {',
+  'rect.width <= 2',
+  'rect.height <= 2',
+  "style.clipPath !== 'none'",
+  "style.display !== 'none'",
+  "style.visibility !== 'hidden'",
+  '!isVisuallyHidden(element)',
+]) {
+  requireText('shellVisual', needle, 'visible overflow detection must ignore only clipped accessibility-only geometry, not real UI overflow');
 }
 
 requireText(
