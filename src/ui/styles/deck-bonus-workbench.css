@@ -28,7 +28,7 @@
 }
 
 .sp-bonus-workbench__header span,
-.sp-bonus-workbench__preset > span,
+.sp-bonus-workbench__preset-copy > span,
 .sp-bonus-workbench__selected-head > span,
 .sp-bonus-workbench__meta,
 .sp-bonus-workbench__description {
@@ -36,23 +36,62 @@
   font-size: var(--sp-font-xs);
 }
 
+/* Batch 35: presets are two authored recipes. Copy gets its own row so the
+ * recipe name never collapses into a vertical label beside the controls. */
 .sp-bonus-workbench__presets {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(180px, 0.65fr);
-  gap: var(--sp-space-8);
+  grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.65fr);
+  gap: 7px;
 }
 
 .sp-bonus-workbench__preset {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-space-8);
   min-width: 0;
-  padding: var(--sp-space-8);
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 6px;
+  padding: 7px 8px;
 }
 
-.sp-bonus-workbench__preset > span {
-  flex: 1;
-  min-width: 8em;
+.sp-bonus-workbench__preset-copy {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--sp-color-ink) 11%, transparent);
+}
+
+.sp-bonus-workbench__preset-copy > strong {
+  flex: none;
+  white-space: nowrap;
+  font-size: var(--sp-font-sm);
+}
+
+.sp-bonus-workbench__preset-copy > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-bonus-workbench__preset-action {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(128px, 0.82fr) minmax(170px, 1.18fr);
+  gap: 6px;
+  align-items: stretch;
+}
+
+.sp-bonus-workbench__preset-action--single {
+  grid-template-columns: 1fr;
+}
+
+.sp-bonus-workbench__preset-action .sp-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding-inline: 8px;
+  transform: none;
 }
 
 .sp-bonus-workbench__body {
@@ -60,6 +99,7 @@
   grid-template-columns: minmax(170px, 0.82fr) minmax(250px, 1.18fr);
   gap: var(--sp-space-8);
   min-height: 0;
+  align-items: start;
 }
 
 .sp-bonus-workbench__list {
@@ -166,11 +206,11 @@
 
 @media (max-width: 900px) and (max-height: 500px) {
   .sp-bonus-workbench {
-    gap: 5px;
+    gap: 4px;
   }
 
   .sp-bonus-workbench__header {
-    padding: 4px 7px;
+    padding: 3px 7px;
   }
 
   .sp-bonus-workbench__header h2 {
@@ -178,17 +218,42 @@
   }
 
   .sp-bonus-workbench__presets {
-    grid-template-columns: minmax(0, 1.2fr) minmax(150px, 0.8fr);
-    gap: 5px;
+    grid-template-columns: minmax(0, 1.28fr) minmax(185px, 0.72fr);
+    gap: 4px;
   }
 
   .sp-bonus-workbench__preset {
-    gap: 5px;
-    padding: 5px;
+    gap: 3px;
+    padding: 4px 5px;
   }
 
-  .sp-bonus-workbench__preset > span {
+  .sp-bonus-workbench__preset-copy {
+    gap: 5px;
+    padding-bottom: 2px;
+  }
+
+  .sp-bonus-workbench__preset-copy > strong {
+    font-size: 10px;
+  }
+
+  .sp-bonus-workbench__preset-copy > span {
     display: none;
+  }
+
+  .sp-bonus-workbench__preset-action {
+    grid-template-columns: minmax(105px, 0.8fr) minmax(145px, 1.2fr);
+    gap: 4px;
+  }
+
+  .sp-bonus-workbench__preset-action--single {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-bonus-workbench__preset-action .sp-button {
+    min-height: 32px;
+    padding: 2px 5px;
+    font-size: 10px;
+    line-height: 1.1;
   }
 
   .sp-bonus-workbench__body {
@@ -206,12 +271,21 @@
   }
 
   .sp-bonus-workbench__editor {
-    gap: 5px;
-    padding: 6px;
+    gap: 4px;
+    padding: 5px 6px;
+  }
+
+  .sp-bonus-workbench__selected-head {
+    gap: 2px 5px;
   }
 
   .sp-bonus-workbench__fields {
     grid-template-columns: minmax(110px, 1fr) 82px 82px;
     gap: 5px;
+  }
+
+  .sp-bonus-workbench__editor > .sp-button {
+    min-height: 30px;
+    padding-block: 2px;
   }
 }
