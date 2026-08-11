@@ -100,6 +100,34 @@ async function expectViewportContract(page: Page) {
   expect(result.smallFrequentMatchActions).toEqual([]);
 }
 
+async function expectCompactSingleDeckGeometry(page: Page) {
+  const geometry = await page.evaluate(() => {
+    const grid = document.querySelector<HTMLElement>('.sp-deck-select__grid');
+    const card = document.querySelector<HTMLElement>('.sp-deck-select-card');
+    const preview = document.querySelector<HTMLElement>('.sp-deck-select-card__preview');
+    const tiles = [...document.querySelectorAll<HTMLElement>('.sp-deck-select-card__preview .sp-tile')];
+    if (!grid || !card || !preview || tiles.length === 0) return null;
+
+    const cardRect = card.getBoundingClientRect();
+    const previewRect = preview.getBoundingClientRect();
+    return {
+      deckCount: grid.dataset.deckCount,
+      cardHeight: cardRect.height,
+      previewTopGap: previewRect.top - cardRect.top,
+      minTileWidth: Math.min(...tiles.map((tile) => tile.getBoundingClientRect().width)),
+      maxTileBottom: Math.max(...tiles.map((tile) => tile.getBoundingClientRect().bottom)),
+      cardBottom: cardRect.bottom,
+    };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect(geometry?.deckCount).toBe('1');
+  expect(geometry?.cardHeight).toBeLessThanOrEqual(170);
+  expect(geometry?.previewTopGap).toBeLessThanOrEqual(70);
+  expect(geometry?.minTileWidth).toBeGreaterThanOrEqual(47);
+  expect(geometry?.maxTileBottom).toBeLessThanOrEqual(geometry?.cardBottom ?? 0);
+}
+
 async function expectMatchGeometry(page: Page) {
   const result = await page.evaluate(() => {
     const viewport = {
@@ -196,6 +224,7 @@ for (const skin of SKINS) {
       await expect(page.getByRole('heading', { name: 'デッキ選択' })).toBeVisible();
       await capture(page, `deck-list-${skin}-${size.label}`);
       await expectViewportContract(page);
+      if (size.label === 'compact') await expectCompactSingleDeckGeometry(page);
 
       const firstDeck = page.locator('.sp-deck-select-card').first();
       await expect(firstDeck).toBeVisible();
