@@ -38,6 +38,7 @@
     "qa:batch26:midgame-evidence-contract": "node scripts/qa/validate-batch26-midgame-evidence-contract.mjs",
     "qa:batch27:desktop-table-density-contract": "node scripts/qa/validate-batch27-desktop-table-density-contract.mjs",
     "qa:batch28:match-coach-contract": "node scripts/qa/validate-batch28-match-coach-contract.mjs",
+    "qa:batch29:match-setup-lobby-contract": "node scripts/qa/validate-batch29-match-setup-lobby-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
