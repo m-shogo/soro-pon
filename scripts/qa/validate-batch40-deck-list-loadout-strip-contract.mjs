@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 const REQUIRED_FILES = {
   screen: 'src/ui/screens/DeckListScreen.tsx',
   css: 'src/ui/styles/deck-browser-authored-workspace.css',
+  screenCss: 'src/ui/styles/screens.css',
   visual: 'tests/visual/batch14-review-capture.spec.ts',
   packageJson: 'package.json',
   workflow: '.github/workflows/ci.yml',
@@ -51,11 +52,27 @@ for (const needle of [
   'font-size: 10px;',
   'font-size: 11px;',
   'max-height: 30px;',
+  '@layer screens',
+  'block-size: 166px;',
+  'min-block-size: 166px;',
+  'max-block-size: 166px;',
 ]) {
-  requireText('css', needle, 'one-deck compact mode must be a hard-bounded readable loadout strip without internal dead space');
+  requireText('css', needle, 'one-deck compact mode must stay a hard-bounded readable loadout strip and own final screen geometry');
 }
 for (const forbidden of ['radial-gradient(', 'linear-gradient(', 'translateY(-', '!important']) {
   forbidText('css', forbidden, 'compact loadout strip must remain authored game UI without promo-card effects or force overrides');
+}
+
+for (const needle of [
+  'Batch 40: this is a one-deck selection-screen geometry decision',
+  ".sp-deck-select__grid[data-deck-count='1'] .sp-deck-select-card__preview",
+  'inline-size: 48px;',
+  'min-inline-size: 48px;',
+  'max-inline-size: 48px;',
+  'block-size: 64px;',
+  'flex: 0 0 48px;',
+]) {
+  requireText('screenCss', needle, 'screen layer must preserve the measured compact tile size after card compression');
 }
 
 for (const needle of [
