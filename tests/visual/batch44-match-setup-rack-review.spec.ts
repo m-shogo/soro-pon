@@ -1,3 +1,5 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 
 const SKINS = ['yorunoshirube', 'cute-pop'] as const;
@@ -6,6 +8,7 @@ const SIZES = [
   { width: 844, height: 390, label: 'compact' },
   { width: 1440, height: 900, label: 'desktop' },
 ] as const;
+const CAPTURE_DIR = 'test-results/batch14-review';
 
 type SkinId = (typeof SKINS)[number];
 type CaptureSize = (typeof SIZES)[number];
@@ -46,6 +49,20 @@ async function inspectDeckRack(page: Page) {
   });
 }
 
+async function persistGeometry(
+  skin: SkinId,
+  playerCount: (typeof PLAYER_COUNTS)[number],
+  size: CaptureSize,
+  rack: Awaited<ReturnType<typeof inspectDeckRack>>,
+) {
+  await mkdir(CAPTURE_DIR, { recursive: true });
+  await writeFile(
+    join(CAPTURE_DIR, `match-setup-rack-geometry-${skin}-${playerCount}p-${size.label}.json`),
+    `${JSON.stringify({ skin, playerCount, viewport: size, rack }, null, 2)}\n`,
+    'utf8',
+  );
+}
+
 for (const skin of SKINS) {
   for (const playerCount of PLAYER_COUNTS) {
     for (const size of SIZES) {
@@ -56,6 +73,7 @@ for (const skin of SKINS) {
         await page.getByRole('button', { name: `${playerCount}人戦`, exact: true }).click();
 
         const rack = await inspectDeckRack(page);
+        await persistGeometry(skin, playerCount, size, rack);
         expect(rack).not.toBeNull();
         expect(rack?.tileCount).toBe(8);
         expect(rack?.visibleBands).toBe(0);
