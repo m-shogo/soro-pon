@@ -91,29 +91,37 @@ export function DeckBonusWorkbench({
 
       <div className="sp-bonus-workbench__presets" aria-label="ボーナスプリセット">
         <div className="sp-bonus-workbench__preset">
-          <strong>カテゴリ加点</strong>
-          <span>単体ではあがれない特別ボーナス</span>
-          <SelectField
-            label="ボーナス用カテゴリ"
-            value={templateCategoryId}
-            onChange={onTemplateCategoryChange}
-            placeholder="カテゴリを選ぶ"
-            options={categories.map((category) => ({ value: category.id, label: category.name }))}
-          />
-          <Button
-            variant="ink"
-            disabled={templateCategoryId === ''}
-            onClick={() => onAddSpecialBonus(templateCategoryId)}
-          >
-            カテゴリ3枚以上 +20点
-          </Button>
+          <div className="sp-bonus-workbench__preset-copy">
+            <strong>カテゴリ加点</strong>
+            <span>単体ではあがれない特別ボーナス</span>
+          </div>
+          <div className="sp-bonus-workbench__preset-action">
+            <SelectField
+              label="ボーナス用カテゴリ"
+              value={templateCategoryId}
+              onChange={onTemplateCategoryChange}
+              placeholder="カテゴリを選ぶ"
+              options={categories.map((category) => ({ value: category.id, label: category.name }))}
+            />
+            <Button
+              variant="ink"
+              disabled={templateCategoryId === ''}
+              onClick={() => onAddSpecialBonus(templateCategoryId)}
+            >
+              カテゴリ3枚以上 +20点
+            </Button>
+          </div>
         </div>
         <div className="sp-bonus-workbench__preset">
-          <strong>同牌加点</strong>
-          <span>同じ牌3枚を見つけて機械的に加点</span>
-          <Button variant="ink" onClick={onAddScoreBonus}>
-            同じ牌3枚 +15点
-          </Button>
+          <div className="sp-bonus-workbench__preset-copy">
+            <strong>同牌加点</strong>
+            <span>同じ牌3枚を見つけて機械的に加点</span>
+          </div>
+          <div className="sp-bonus-workbench__preset-action sp-bonus-workbench__preset-action--single">
+            <Button variant="ink" onClick={onAddScoreBonus}>
+              同じ牌3枚 +15点
+            </Button>
+          </div>
         </div>
       </div>
 
