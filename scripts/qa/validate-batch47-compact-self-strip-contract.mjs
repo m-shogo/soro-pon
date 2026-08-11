@@ -37,8 +37,11 @@ for (const needle of [
   'width: 14px;',
   'height: 14px;',
   ".sp-table-stage [data-seat-position='self'] .sp-player-panel__name {",
+  'Compact rivers are tile geometry, not a mini table report',
+  '.sp-match-screen .sp-seat-played__head {',
+  'display: none;',
 ]) {
-  requireText('screenCss', needle, 'screen layer must own final compact self panel sizing after generic components');
+  requireText('screenCss', needle, 'screen layer must own final compact self sizing and keep river report chrome hidden');
 }
 
 for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:']) {
