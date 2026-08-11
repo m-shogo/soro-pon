@@ -105,6 +105,8 @@ jobs:
         run: pnpm qa:batch46:selected-tile-feedback-contract
       - name: Batch 47 compact self strip contract
         run: pnpm qa:batch47:compact-self-strip-contract
+      - name: Batch 48 desktop coach clearance contract
+        run: pnpm qa:batch48:desktop-coach-clearance-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
