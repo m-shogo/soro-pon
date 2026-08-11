@@ -71,6 +71,22 @@ describe('公式skinパッケージ(実ファイル)', () => {
     }
   });
 
+  it('primary CTAはyorunoshirubeだけCSS fallback、cute-popはfinal assetを使う', async () => {
+    const loader = createSkinLoader(createFsSkinIo());
+    const yorunoshirube = await loader.loadResolvedSkin('yorunoshirube');
+    const cutePop = await loader.loadResolvedSkin('cute-pop');
+
+    expect(yorunoshirube.issues).toEqual([]);
+    expect(yorunoshirube.resolved.slots['button.primary.background']?.sourceSkinId).toBe('yorunoshirube');
+    expect(yorunoshirube.resolved.slots['button.primary.background']?.def.status).toBe('placeholder');
+    expect(yorunoshirube.resolved.slots['button.primary.background']?.def.file).toBeNull();
+
+    expect(cutePop.issues).toEqual([]);
+    expect(cutePop.resolved.slots['button.primary.background']?.sourceSkinId).toBe('cute-pop');
+    expect(cutePop.resolved.slots['button.primary.background']?.def.status).toBe('final');
+    expect(cutePop.resolved.slots['button.primary.background']?.def.file).toBe('button-primary-background-2x.png');
+  });
+
   it('cute-popは明るい配色・丸ゴシックへ切り替わる', async () => {
     const loader = createSkinLoader(createFsSkinIo());
     const { resolved } = await loader.loadResolvedSkin('cute-pop');
