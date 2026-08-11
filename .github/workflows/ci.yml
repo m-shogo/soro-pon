@@ -73,6 +73,8 @@ jobs:
         run: pnpm qa:batch30:result-outcome-board-contract
       - name: Batch 31 featured deck selection contract
         run: pnpm qa:batch31:featured-deck-select-contract
+      - name: Batch 32 desktop TOP stage contract
+        run: pnpm qa:batch32:desktop-top-stage-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
