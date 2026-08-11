@@ -319,14 +319,14 @@
     }
 
     .sp-match-setup__deck-rack {
-      --tile-w: 30px;
-      --tile-h: 40px;
+      --tile-w: 34px;
+      --tile-h: 46px;
       justify-content: flex-start;
       padding: 1px 3px;
     }
 
     .sp-match-setup__deck-rack .sp-tile {
-      margin-left: -4px;
+      margin-left: -3px;
     }
 
     .sp-match-setup__deck-meta {
