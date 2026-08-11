@@ -40,7 +40,7 @@ for (const needle of [
 
 for (const needle of [
   'async function inspectPrimarySurface',
-  "document.querySelector<HTMLElement>('.sp-top-stage__primary .sp-button--primary')",
+  "document.querySelector<HTMLElement>('.sp-top-stage__hero > .sp-button--primary')",
   "primary.querySelectorAll<HTMLElement>(':scope > .sp-skin-layer')",
   "if (skin === 'yorunoshirube')",
   'expect(primary?.skinLayerCount).toBe(0);',
