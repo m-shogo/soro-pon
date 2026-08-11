@@ -15,14 +15,13 @@ import { validateDeckForUse } from '../../engine/validation/validateDeckForUse';
 import { deckProjectSchema } from '../../schemas/deckProjectSchema';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
+import { DeckBasicLedger } from '../components/DeckBasicLedger';
 import { DeckBonusWorkbench } from '../components/DeckBonusWorkbench';
 import { DeckCategoryWorkbench } from '../components/DeckCategoryWorkbench';
 import { DeckEditorInspector } from '../components/DeckEditorInspector';
 import { DeckRoleWorkbench } from '../components/DeckRoleWorkbench';
 import { DeckTileWorkbench } from '../components/DeckTileWorkbench';
 import { Dialog } from '../components/Dialog';
-import { FormField, TextField } from '../components/FormField';
-import { PaperPanel } from '../components/PaperPanel';
 import { Tabs } from '../components/Tab';
 
 const CATEGORY_COLORS = ['#EF4444', '#3B82F6', '#22C55E', '#F59E0B', '#7C3AED', '#06B6D4', '#EC4899', '#84CC16'];
@@ -51,6 +50,8 @@ export function DeckEditorScreen({
   const validation = useMemo(() => validateDeckForUse(draft), [draft]);
   const activeVariant = draft.variants.find((variant) => variant.id === draft.activeVariantId);
   const isDirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(deck), [draft, deck]);
+  const bonusCount =
+    (activeVariant?.specialBonuses.length ?? 0) + (activeVariant?.scoreBonuses.length ?? 0);
 
   const handleSave = () => {
     const parsed = deckProjectSchema.safeParse(draft);
@@ -279,7 +280,7 @@ export function DeckEditorScreen({
           { id: 'roles', label: `役 (${activeVariant?.winRoles.length ?? 0})` },
           {
             id: 'bonuses',
-            label: `ボーナス (${(activeVariant?.specialBonuses.length ?? 0) + (activeVariant?.scoreBonuses.length ?? 0)})`,
+            label: `ボーナス (${bonusCount})`,
           },
         ]}
         activeId={tab}
@@ -293,30 +294,7 @@ export function DeckEditorScreen({
           id={`sp-tabpanel-${tab}`}
           aria-labelledby={`sp-tab-${tab}`}
         >
-          {tab === 'basic' && (
-            <PaperPanel title="基本情報">
-              <FormField label="デッキ名">
-                <TextField
-                  label="デッキ名"
-                  value={draft.name}
-                  maxLength={80}
-                  onChange={(name) => setDraft({ ...draft, name })}
-                />
-              </FormField>
-              <div style={{ marginTop: 'var(--sp-space-8)' }}>
-                <FormField label="説明">
-                  <TextField
-                    label="説明"
-                    multiline
-                    rows={2}
-                    maxLength={500}
-                    value={draft.description ?? ''}
-                    onChange={(description) => setDraft({ ...draft, description })}
-                  />
-                </FormField>
-              </div>
-            </PaperPanel>
-          )}
+          {tab === 'basic' && <DeckBasicLedger deck={draft} onChange={setDraft} />}
 
           {tab === 'categories' && (
             <DeckCategoryWorkbench
