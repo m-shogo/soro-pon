@@ -28,6 +28,7 @@ import './ui/styles/deck-tile-workbench.css';
 import './ui/styles/deck-category-workbench.css';
 import './ui/styles/deck-bonus-workbench.css';
 import './ui/styles/deck-editor-adaptive-inspector.css';
+import './ui/styles/deck-basic-ledger.css';
 import './ui/styles/collection-ledger-stage.css';
 import './ui/styles/collection-stamp-index.css';
 import './ui/styles/motion.css';
