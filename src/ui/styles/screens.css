@@ -77,6 +77,20 @@
   );
 }
 
+/* Batch 46: selected discard intent must read immediately without lifting a
+   tile into the coach strip. Keep movement small and let outline + shadow carry
+   the state difference. Generic TileCard selection remains unchanged elsewhere. */
+.sp-match-screen .sp-self-hand-zone .sp-tile--selected {
+  transform: translateY(-4px);
+  z-index: 4;
+  outline: 3px solid color-mix(in srgb, var(--sp-color-lantern-0) 88%, white);
+  outline-offset: -1px;
+  box-shadow:
+    var(--sp-shadow-tile-raised),
+    0 0 0 2px color-mix(in srgb, var(--sp-color-lantern-0) 34%, transparent),
+    0 -6px 14px color-mix(in srgb, var(--sp-color-lantern-0) 22%, transparent);
+}
+
 /* Match insight is a quiet table log, not a floating web-notification stack. */
 .sp-match-message-zone {
   gap: 0;

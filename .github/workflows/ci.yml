@@ -101,6 +101,8 @@ jobs:
         run: pnpm qa:batch44:match-setup-clean-rack-contract
       - name: Batch 45 match taxonomy marker contract
         run: pnpm qa:batch45:match-taxonomy-marker-contract
+      - name: Batch 46 selected tile feedback contract
+        run: pnpm qa:batch46:selected-tile-feedback-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

@@ -10,6 +10,13 @@
   animation: sp-tile-drawn var(--sp-motion-tile) var(--sp-ease-out);
 }
 
+/* Batch 46: direct user intent outranks the transient arrival motion. Without
+   this guard a just-drawn tile can keep animation ownership of `transform`
+   for the first interaction frame and visually cancel the selected lift. */
+.sp-match-screen .sp-self-hand-zone .sp-tile--drawn.sp-tile--selected {
+  animation: none;
+}
+
 @keyframes sp-tile-drawn {
   from {
     transform: translateY(-6px);

@@ -55,6 +55,7 @@
     "qa:batch43:yorunoshirube-primary-fallback-contract": "node scripts/qa/validate-batch43-yorunoshirube-primary-fallback-contract.mjs",
     "qa:batch44:match-setup-clean-rack-contract": "node scripts/qa/validate-batch44-match-setup-clean-rack-contract.mjs",
     "qa:batch45:match-taxonomy-marker-contract": "node scripts/qa/validate-batch45-match-taxonomy-marker-contract.mjs",
+    "qa:batch46:selected-tile-feedback-contract": "node scripts/qa/validate-batch46-selected-tile-feedback-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",

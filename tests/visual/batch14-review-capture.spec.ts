@@ -212,6 +212,56 @@ async function expectMatchGeometry(page: Page) {
   expect(result.collisions).toEqual([]);
 }
 
+async function inspectSelectedTileFeedback(page: Page) {
+  return page.evaluate(() => {
+    const selected = document.querySelector<HTMLElement>('.sp-self-hand-zone .sp-tile--selected');
+    const peers = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.sp-self-hand-zone .sp-tile:not(.sp-tile--selected):not(.sp-tile--drawn)',
+      ),
+    ];
+    const coach = document.querySelector<HTMLElement>('.sp-match-coach');
+    if (selected === null || peers.length === 0) return null;
+
+    const selectedRect = selected.getBoundingClientRect();
+    const peerTop = Math.min(...peers.map((tile) => tile.getBoundingClientRect().top));
+    const selectedStyle = getComputedStyle(selected);
+    const coachRect = coach?.getBoundingClientRect() ?? null;
+    const overlapWidth = coachRect === null
+      ? 0
+      : Math.min(selectedRect.right, coachRect.right) - Math.max(selectedRect.left, coachRect.left);
+    const overlapHeight = coachRect === null
+      ? 0
+      : Math.min(selectedRect.bottom, coachRect.bottom) - Math.max(selectedRect.top, coachRect.top);
+
+    return {
+      lift: peerTop - selectedRect.top,
+      outlineWidth: Number.parseFloat(selectedStyle.outlineWidth),
+      boxShadow: selectedStyle.boxShadow,
+      zIndex: Number.parseInt(selectedStyle.zIndex, 10),
+      coachOverlapArea:
+        overlapWidth > 1 && overlapHeight > 1 ? overlapWidth * overlapHeight : 0,
+    };
+  });
+}
+
+async function expectSelectedTileFeedback(page: Page) {
+  await expect
+    .poll(async () => (await inspectSelectedTileFeedback(page))?.lift ?? 0, {
+      timeout: 1_000,
+      intervals: [16, 32, 64, 100],
+    })
+    .toBeGreaterThanOrEqual(3);
+
+  const geometry = await inspectSelectedTileFeedback(page);
+  expect(geometry).not.toBeNull();
+  expect(geometry?.lift ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(6);
+  expect(geometry?.outlineWidth ?? 0).toBeGreaterThanOrEqual(2.5);
+  expect(geometry?.boxShadow).not.toBe('none');
+  expect(geometry?.zIndex ?? 0).toBeGreaterThanOrEqual(4);
+  expect(geometry?.coachOverlapArea).toBe(0);
+}
+
 for (const skin of SKINS) {
   for (const size of SIZES) {
     test(`${skin} ${size.label} shell flow review capture`, async ({ page }) => {
@@ -282,6 +332,8 @@ for (const skin of SKINS) {
           await expect(firstTile).toBeVisible();
           await firstTile.click();
           await expect(firstTile).toHaveAttribute('aria-pressed', 'true');
+          await expect(page.getByRole('button', { name: '捨てる', exact: true })).toBeEnabled();
+          await expectSelectedTileFeedback(page);
           await capture(page, `match-action-${skin}-4p-compact`);
           await expectViewportContract(page);
           await expectMatchGeometry(page);
