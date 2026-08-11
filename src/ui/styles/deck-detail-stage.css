@@ -343,23 +343,24 @@
     }
 
     .sp-deck-detail-stage__body {
-      grid-template-columns: minmax(0, 1fr) minmax(210px, 25%);
-      gap: 5px;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 4px;
     }
 
     .sp-deck-detail-stage__main {
-      gap: 5px;
-      padding-right: 1px;
+      gap: 4px;
+      padding-right: 0;
     }
 
     .sp-deck-detail-stage .sp-deck-loadout__tiles,
     .sp-deck-detail-stage .sp-deck-loadout__roles {
-      padding: 5px 6px 6px;
+      padding: 4px 6px 5px;
       border-radius: 4px;
     }
 
     .sp-deck-detail-stage .sp-deck-loadout__section-head {
-      min-height: 23px;
+      min-height: 22px;
       margin-bottom: 3px;
       padding-bottom: 3px;
     }
@@ -369,90 +370,128 @@
     }
 
     .sp-deck-detail-stage .sp-deck-loadout__section-head > span {
-      font-size: 7px;
+      font-size: 8px;
     }
 
     .sp-deck-detail-stage .sp-deck-loadout__tile-grid {
       --tile-w: 40px;
       --tile-h: 54px;
-      grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
       gap: 2px;
     }
 
     .sp-deck-detail-stage .sp-deck-loadout__tile-item > span {
-      font-size: 7px;
+      font-size: 8px;
     }
 
     .sp-deck-detail-stage .sp-deck-loadout__role-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 3px;
     }
 
     .sp-deck-detail-stage__side {
-      gap: 5px;
-      padding-left: 5px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0 0;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-left: 0;
+      overflow: hidden;
     }
 
     .sp-deck-detail-stage__summary {
-      gap: 5px;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(104px, auto) minmax(0, 1fr);
+      align-items: center;
+      gap: 3px 7px;
     }
 
     .sp-deck-detail-stage__status-line {
-      gap: 4px;
-      padding-bottom: 4px;
+      min-width: 0;
+      display: grid;
+      justify-content: start;
+      gap: 0;
+      padding: 0 7px 0 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-bottom: 0;
     }
 
     .sp-deck-detail-stage__status-line strong {
-      font-size: 11px;
+      font-size: 12px;
+      line-height: 1.1;
     }
 
     .sp-deck-detail-stage__status-line span {
-      font-size: 7px;
+      font-size: 8px;
+      line-height: 1.1;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .sp-deck-detail-stage__spec {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 0;
+      border-left: 0;
     }
 
     .sp-deck-detail-stage__spec > div {
-      padding: 3px 4px;
+      padding: 1px 6px;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
+      border-bottom: 0;
+      text-align: center;
     }
 
     .sp-deck-detail-stage__spec dt,
     .sp-deck-detail-stage__spec small {
-      font-size: 7px;
+      font-size: 8px;
     }
 
     .sp-deck-detail-stage__spec dd {
-      font-size: 11px;
+      justify-content: center;
+      gap: 3px;
+      margin-top: 0;
+      font-size: 13px;
+      line-height: 1.05;
     }
 
     .sp-deck-detail-stage__categories {
-      max-height: 46px;
-      overflow: hidden;
-    }
-
-    .sp-deck-detail-stage__categories .sp-category-chip {
-      min-width: 0;
-      padding: 1px 3px;
-      font-size: 7px;
+      display: none;
     }
 
     .sp-deck-detail-stage__validation {
-      padding-top: 4px;
+      grid-column: 1 / -1;
+      max-height: 66px;
+      overflow: hidden auto;
+      padding-top: 3px;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 7%, transparent);
       font-size: 8px;
     }
 
     .sp-deck-detail-stage__validation summary {
-      min-height: 28px;
+      min-height: 24px;
       font-size: 8px;
+    }
+
+    .sp-deck-detail-stage__validation .sp-issue-list {
+      margin-top: 2px;
+      padding-top: 2px;
     }
 
     .sp-deck-detail-stage__utility {
-      gap: 2px;
-      padding-top: 4px;
+      margin: 0;
+      grid-template-columns: repeat(3, minmax(64px, 1fr));
+      gap: 3px;
+      padding: 0 0 0 6px;
+      border-top: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
     }
 
     .sp-deck-detail-stage__utility .sp-button {
-      min-height: 28px;
-      padding: 2px 3px;
-      font-size: 8px;
+      min-height: 30px;
+      padding: 2px 5px;
+      font-size: 9px;
     }
   }
 }
