@@ -45,11 +45,12 @@ for (const needle of [
   'font-size: clamp(11px, 0.95vw, 13px);',
   'align-items: start;',
   '@media (max-width: 900px) and (max-height: 500px)',
-  'grid-template-columns: repeat(2, minmax(0, 1fr));',
-  'min-height: 32px;',
-  'font-size: 9px;',
+  'grid-template-columns: minmax(118px, 0.82fr) repeat(3, minmax(118px, 1fr));',
+  'grid-template-columns: repeat(3, minmax(105px, 0.88fr)) minmax(158px, 1.36fr);',
+  'min-height: 30px;',
+  'font-size: 8px;',
 ]) {
-  requireText('css', needle, 'role recipes must stay one-line on desktop and compact without growing the workbench');
+  requireText('css', needle, 'role recipes must stay one-line on desktop and fit each compact recipe section into one row');
 }
 for (const forbidden of ['linear-gradient(', 'radial-gradient(', 'translateY(', '!important']) {
   forbidText('css', forbidden, 'role recipe density must remain flat authored game UI');
