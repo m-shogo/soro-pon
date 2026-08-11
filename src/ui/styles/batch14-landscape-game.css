@@ -71,6 +71,40 @@
       background: color-mix(in srgb, var(--sp-color-night) 48%, transparent);
     }
 
+    /* Batch 47: center status already communicates whose turn it is. Keep the
+       self seat as a tiny ownership strip so the river can sit closer to the
+       hand without repeating a full player card. PlayerPanel semantics stay. */
+    .sp-table-stage [data-seat-position='self'] .sp-player-panel {
+      min-height: 18px;
+      height: 18px;
+      padding: 0 4px;
+      gap: 3px;
+      border-radius: 3px;
+      background: color-mix(in srgb, var(--sp-color-night) 38%, transparent);
+      overflow: hidden;
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-player-panel__seal {
+      width: 14px;
+      height: 14px;
+      font-size: 8px;
+      border-width: 1px;
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-player-panel__info {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-player-panel__name {
+      font-size: 9px;
+      line-height: 1;
+    }
+
+    .sp-table-stage [data-seat-position='self'] .sp-seat-played {
+      bottom: 22px;
+    }
+
     .sp-table-stage [data-seat-position='right'] .sp-player-panel {
       margin-top: 8px;
     }
