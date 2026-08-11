@@ -43,11 +43,17 @@ for (const needle of [
   'const totalTiles = tiles.reduce((sum, tile) => sum + tile.count, 0);',
   'className="sp-match-setup__deck-face"',
   'className="sp-match-setup__deck-rack"',
+  'fallbackLabel={tile.fallbackLabel}',
+  'showName={false}',
+  'interactive={false}',
   '{totalTiles}枚',
   '{tiles.length}種',
   '{categories.length}カテゴリ',
 ]) {
   requireText('face', needle, 'deck face must render real deck identity while remaining safe for lightweight presentation fixtures');
+}
+for (const forbidden of ['categoryById', 'categoryName=', 'categoryColor=']) {
+  forbidText('face', forbidden, 'match setup deck face is a clean visual rack; taxonomy remains in the compact meta line');
 }
 
 for (const needle of [
@@ -57,10 +63,10 @@ for (const needle of [
   '--tile-w: clamp(38px, 3.8vw, 50px);',
   '.sp-match-setup__deck-meta {',
   'margin: 0;',
-  '--tile-w: 30px;',
-  '--tile-h: 40px;',
+  '--tile-w: 34px;',
+  '--tile-h: 46px;',
 ]) {
-  requireText('css', needle, 'the previous setup whitespace must become a bounded real-tile rack without moving the rule rail');
+  requireText('css', needle, 'setup whitespace must stay a bounded real-tile rack without moving the rule rail');
 }
 for (const forbidden of ['linear-gradient(', 'radial-gradient(', '!important', 'position: fixed']) {
   forbidText('css', forbidden, 'deck face must not introduce decorative or forceful web-layout escape hatches');
