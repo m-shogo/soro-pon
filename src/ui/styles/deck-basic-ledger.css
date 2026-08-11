@@ -1,0 +1,185 @@
+/* Batch 34: make the Basic editor tab read as a deck ledger, not an isolated form. */
+@layer screens {
+  .sp-deck-basic-ledger {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.88fr) minmax(330px, 1.12fr);
+    gap: clamp(12px, 1.5vw, 20px);
+    align-items: stretch;
+  }
+
+  .sp-deck-basic-ledger__form {
+    min-width: 0;
+    display: grid;
+    align-content: start;
+    gap: var(--sp-space-10);
+    padding-right: clamp(10px, 1.2vw, 16px);
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-ink) 13%, transparent);
+  }
+
+  .sp-deck-basic-ledger__identity {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(10px, 1.2vw, 15px);
+  }
+
+  .sp-deck-basic-ledger__identity-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-ink) 13%, transparent);
+  }
+
+  .sp-deck-basic-ledger__identity-head > span {
+    color: var(--sp-color-ink-soft);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+
+  .sp-deck-basic-ledger__identity-head > strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--sp-color-ink);
+    font-size: clamp(15px, 1.5vw, 21px);
+  }
+
+  .sp-deck-basic-ledger__rack {
+    --tile-w: clamp(40px, 4vw, 54px);
+    --tile-h: clamp(53px, 5.3vw, 72px);
+    min-width: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 8px 7px 4px;
+    overflow: hidden;
+  }
+
+  .sp-deck-basic-ledger__rack .sp-tile {
+    flex: none;
+    margin-left: -6px;
+    transform: none;
+    box-shadow: var(--sp-shadow-tile-raised);
+  }
+
+  .sp-deck-basic-ledger__rack .sp-tile:first-child {
+    margin-left: 0;
+  }
+
+  .sp-deck-basic-ledger__metrics {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-ink) 13%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-ink) 13%, transparent);
+  }
+
+  .sp-deck-basic-ledger__metrics > div {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 6px 7px;
+  }
+
+  .sp-deck-basic-ledger__metrics > div + div {
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-ink) 12%, transparent);
+  }
+
+  .sp-deck-basic-ledger__metrics dt,
+  .sp-deck-basic-ledger__metrics dd {
+    margin: 0;
+  }
+
+  .sp-deck-basic-ledger__metrics dt {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--sp-color-ink-soft);
+    font-size: 9px;
+  }
+
+  .sp-deck-basic-ledger__metrics dd {
+    color: var(--sp-color-ink);
+    font-family: var(--sp-font-family-num);
+    font-size: var(--sp-font-sm);
+    font-weight: var(--sp-weight-strong);
+  }
+
+  @media (min-width: 1000px) and (min-height: 600px) {
+    #sp-tabpanel-basic > .sp-paper-panel {
+      min-height: clamp(330px, 45vh, 430px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    #sp-tabpanel-basic .sp-deck-basic-ledger {
+      min-height: 250px;
+    }
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    #sp-tabpanel-basic > .sp-paper-panel {
+      padding: 6px 7px;
+    }
+
+    .sp-deck-basic-ledger {
+      grid-template-columns: minmax(245px, 0.92fr) minmax(250px, 1.08fr);
+      gap: 7px;
+    }
+
+    .sp-deck-basic-ledger__form {
+      gap: 5px;
+      padding-right: 7px;
+    }
+
+    .sp-deck-basic-ledger__identity {
+      gap: 5px;
+    }
+
+    .sp-deck-basic-ledger__identity-head {
+      gap: 6px;
+      padding-bottom: 3px;
+    }
+
+    .sp-deck-basic-ledger__identity-head > span {
+      font-size: 7px;
+    }
+
+    .sp-deck-basic-ledger__identity-head > strong {
+      font-size: 12px;
+    }
+
+    .sp-deck-basic-ledger__rack {
+      --tile-w: 34px;
+      --tile-h: 46px;
+      justify-content: flex-start;
+      padding: 3px 4px 2px;
+    }
+
+    .sp-deck-basic-ledger__rack .sp-tile {
+      margin-left: -5px;
+    }
+
+    .sp-deck-basic-ledger__metrics > div {
+      padding: 3px 4px;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .sp-deck-basic-ledger__metrics dt {
+      font-size: 7px;
+    }
+
+    .sp-deck-basic-ledger__metrics dd {
+      font-size: 10px;
+    }
+  }
+}
