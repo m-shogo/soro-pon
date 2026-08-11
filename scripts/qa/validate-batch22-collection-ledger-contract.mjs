@@ -28,12 +28,27 @@ requireText('screen', 'className="sp-screen sp-collection-screen"', 'collection 
 requireText('screen', 'title="高得点 Top 10"', 'match records must stay first in the main ledger');
 requireText('screen', 'title="クリアボード"', 'achievement history must remain available after match records');
 requireText('screen', 'title={`あがった役 ${collectedRoles.length}`}', 'role collection must remain available');
-requireText('screen', 'title="最近の記録"', 'recent match ledger must remain visible as the side chronology');
+requireText('screen', 'title="最近の記録"', 'recent match chronology must remain in the DOM');
 
 requireText('authoredCss', 'game ledger, not a KPI dashboard', 'anti-dashboard thesis must remain explicit');
 requireText('stageCss', 'match ledger, not a dashboard', 'Batch22 stage thesis must remain explicit');
 requireText('stageCss', 'width: min(1180px, 100%);', 'desktop collection should read as a centered ledger stage');
-requireText('stageCss', 'width: min(190px, 24%);', 'compact recent rail must leave the main match ledger dominant');
+requireText('stageCss', 'width: min(260px, 28%);', 'desktop recent chronology must remain a quiet side rail');
+for (const needle of [
+  '@layer screens',
+  'grid-template-columns: minmax(0, 1fr);',
+  'grid-template-rows: minmax(0, 1fr) auto;',
+  '.sp-collection-screen__recent {',
+  'width: 100%;',
+  'max-height: 58px;',
+  'border-left: 0;',
+  'grid-template-columns: auto minmax(0, 1fr);',
+  'display: flex;',
+  'overflow: hidden auto;',
+]) {
+  requireText('stageCss', needle, 'compact collection must promote the main ledger to full width and move chronology below it');
+}
+forbidText('stageCss', 'width: min(190px, 24%);', 'the obsolete compact right chronology rail must not return');
 forbidText('stageCss', 'linear-gradient(', 'collection ledger must not use decorative gradients');
 forbidText('stageCss', 'radial-gradient(', 'collection ledger must not use decorative gradients');
 forbidText('stageCss', 'backdrop-filter:', 'collection ledger must not add glass blur');
@@ -45,8 +60,12 @@ for (const needle of [
   "const SKINS = ['yorunoshirube', 'cute-pop'] as const;",
   "{ width: 844, height: 390, label: 'compact' }",
   "{ width: 1440, height: 900, label: 'desktop' }",
+  'async function expectCompactCollectionGeometry',
+  'toBeGreaterThanOrEqual(0.95)',
+  'toBeLessThanOrEqual(64)',
+  'recentBelowMain',
 ]) {
-  requireText('visual', needle, 'collection must stay in real-route both-skin current-head evidence');
+  requireText('visual', needle, 'collection must stay in both-skin evidence and compact chronology geometry must be measured');
 }
 requireText('packageJson', 'tests/visual/batch22-collection-review.spec.ts', 'canonical visual command must include the collection review');
 
