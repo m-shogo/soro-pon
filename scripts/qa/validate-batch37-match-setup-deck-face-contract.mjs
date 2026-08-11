@@ -37,15 +37,17 @@ for (const forbidden of ['TileCard', 'Math.random', 'createInitialMatchState', '
 
 for (const needle of [
   "import { TileCard } from './TileCard';",
-  'const previewTiles = deck.tiles.slice(0, 8);',
-  'const totalTiles = deck.tiles.reduce((sum, tile) => sum + tile.count, 0);',
+  'const categories = deck.categories ?? [];',
+  'const tiles = deck.tiles ?? [];',
+  'const previewTiles = tiles.slice(0, 8);',
+  'const totalTiles = tiles.reduce((sum, tile) => sum + tile.count, 0);',
   'className="sp-match-setup__deck-face"',
   'className="sp-match-setup__deck-rack"',
   '{totalTiles}枚',
-  '{deck.tiles.length}種',
-  '{deck.categories.length}カテゴリ',
+  '{tiles.length}種',
+  '{categories.length}カテゴリ',
 ]) {
-  requireText('face', needle, 'deck face must render real deck identity through the existing TileCard primitive');
+  requireText('face', needle, 'deck face must render real deck identity while remaining safe for lightweight presentation fixtures');
 }
 
 for (const needle of [
