@@ -292,3 +292,24 @@
     }
   }
 }
+
+/* The one-deck compact geometry is a screen-specific placement decision, not a
+ * reusable deck-card primitive. Resolve it in the screens layer so later
+ * component/input layers cannot stretch the loadout strip back into a tall
+ * marketplace card. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-deck-select__grid[data-deck-count='1'] {
+      grid-auto-rows: 166px;
+      align-content: center;
+      align-items: center;
+    }
+
+    .sp-deck-select__grid[data-deck-count='1'] > .sp-deck-select-card {
+      align-self: center;
+      block-size: 166px;
+      min-block-size: 166px;
+      max-block-size: 166px;
+    }
+  }
+}
