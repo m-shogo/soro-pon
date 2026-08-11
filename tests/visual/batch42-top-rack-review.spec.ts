@@ -47,7 +47,7 @@ async function inspectTopRack(page: Page) {
 
 async function inspectPrimarySurface(page: Page) {
   return page.evaluate(() => {
-    const primary = document.querySelector<HTMLElement>('.sp-top-stage__primary .sp-button--primary');
+    const primary = document.querySelector<HTMLElement>('.sp-top-stage__hero > .sp-button--primary');
     if (!primary) return null;
     const skinLayers = [...primary.querySelectorAll<HTMLElement>(':scope > .sp-skin-layer')];
     const style = getComputedStyle(primary);
