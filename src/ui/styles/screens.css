@@ -58,6 +58,25 @@
   display: none;
 }
 
+/* Batch 45: during play, taxonomy is supporting information. Keep category
+   color as a thin marker while giving tile art, names and river geometry the
+   visual weight. Editor/DeckDetail continue to use the full text band. */
+.sp-match-screen .sp-tile__band {
+  height: 4px;
+  min-height: 4px;
+  flex: 0 0 4px;
+  padding: 0;
+  font-size: 0;
+  line-height: 0;
+  color: transparent;
+  text-overflow: clip;
+  background: color-mix(
+    in srgb,
+    var(--tile-category-color, var(--sp-color-chip-fallback)) 86%,
+    black
+  );
+}
+
 /* Match insight is a quiet table log, not a floating web-notification stack. */
 .sp-match-message-zone {
   gap: 0;
