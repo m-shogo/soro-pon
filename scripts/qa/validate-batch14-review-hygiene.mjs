@@ -7,6 +7,7 @@ const REQUIRED_FILES = {
   resultCapture: 'tests/visual/batch23-result-review.spec.ts',
   midgameCapture: 'tests/visual/batch26-midgame-review.spec.ts',
   topRackCapture: 'tests/visual/batch42-top-rack-review.spec.ts',
+  matchSetupRackCapture: 'tests/visual/batch44-match-setup-rack-review.spec.ts',
   workflow: '.github/workflows/batch14-visual-review.yml',
   roleWorkbenchCss: 'src/ui/styles/deck-role-workbench.css',
   reviewDoc: 'docs/qa/BATCH-14-VISUAL-REVIEW.md',
@@ -33,9 +34,9 @@ function forbidText(fileKey, needle, reason) {
 }
 
 const visualCommand =
-  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts tests/visual/batch26-midgame-review.spec.ts tests/visual/batch42-top-rack-review.spec.ts';
-requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection, Result, midgame and TOP rack evidence');
-requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include Result, midgame and TOP rack evidence');
+  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts tests/visual/batch26-midgame-review.spec.ts tests/visual/batch42-top-rack-review.spec.ts tests/visual/batch44-match-setup-rack-review.spec.ts';
+requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection, Result, midgame, TOP rack and MatchSetup rack evidence');
+requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include Result, midgame, TOP rack and MatchSetup rack evidence');
 forbidText('packageJson', '"test:visual:update"', 'current visual review must not encourage refreshing a stale committed baseline');
 
 for (const needle of [
@@ -117,6 +118,18 @@ for (const needle of [
   requireText('topRackCapture', needle, 'TOP starter rack must remain measured current-head evidence for both skins and viewports');
 }
 forbidText('topRackCapture', 'toHaveScreenshot(', 'TOP rack evidence should measure current geometry without adding stale pixel baselines');
+
+for (const needle of [
+  "const PLAYER_COUNTS = [3, 4] as const;",
+  "getByRole('heading', { name: '対局設定' })",
+  'expect(rack?.tileCount).toBe(8);',
+  'expect(rack?.visibleBands).toBe(0);',
+  'expect(rack?.rowSpread).toBeLessThanOrEqual(1);',
+  'expect(rack?.minTileWidth).toBeGreaterThanOrEqual(34);',
+]) {
+  requireText('matchSetupRackCapture', needle, 'MatchSetup deck rack must remain tile-led measured evidence for both player counts, skins and viewports');
+}
+forbidText('matchSetupRackCapture', 'toHaveScreenshot(', 'MatchSetup rack evidence should measure current geometry without stale pixel baselines');
 
 requireText('workflow', 'name: Batch 14 Visual Review', 'artifact review needs a dedicated workflow');
 requireText('workflow', "- 'tests/visual/**'", 'every visual-test change must refresh current-head review evidence');
