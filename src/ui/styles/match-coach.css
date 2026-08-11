@@ -95,6 +95,20 @@
     border-color: color-mix(in srgb, var(--sp-color-danger, #b94a3c) 58%, transparent);
   }
 
+  /* Batch 48: desktop guidance must sit apart from the direct manipulation
+     surface. Reserve explicit clearance instead of letting the 3p reflow place
+     coach and hand on the same sub-pixel boundary. Compact keeps its tuned
+     landscape position below. */
+  @media (min-width: 900px) and (min-height: 431px) {
+    .sp-match-layout .sp-match-message-zone {
+      bottom: calc(
+        var(--tile-h, 64px) +
+        var(--sp-touch-primary) +
+        var(--sp-space-24)
+      );
+    }
+  }
+
   @media (max-width: 899px), (max-height: 430px) {
     .sp-match-layout .sp-match-message-zone {
       left: 6px;
