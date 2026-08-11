@@ -212,8 +212,8 @@ async function expectMatchGeometry(page: Page) {
   expect(result.collisions).toEqual([]);
 }
 
-async function expectSelectedTileFeedback(page: Page) {
-  const geometry = await page.evaluate(() => {
+async function inspectSelectedTileFeedback(page: Page) {
+  return page.evaluate(() => {
     const selected = document.querySelector<HTMLElement>('.sp-self-hand-zone .sp-tile--selected');
     const peers = [
       ...document.querySelectorAll<HTMLElement>(
@@ -243,9 +243,18 @@ async function expectSelectedTileFeedback(page: Page) {
         overlapWidth > 1 && overlapHeight > 1 ? overlapWidth * overlapHeight : 0,
     };
   });
+}
 
+async function expectSelectedTileFeedback(page: Page) {
+  await expect
+    .poll(async () => (await inspectSelectedTileFeedback(page))?.lift ?? 0, {
+      timeout: 1_000,
+      intervals: [16, 32, 64, 100],
+    })
+    .toBeGreaterThanOrEqual(3);
+
+  const geometry = await inspectSelectedTileFeedback(page);
   expect(geometry).not.toBeNull();
-  expect(geometry?.lift ?? 0).toBeGreaterThanOrEqual(3);
   expect(geometry?.lift ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(6);
   expect(geometry?.outlineWidth ?? 0).toBeGreaterThanOrEqual(2.5);
   expect(geometry?.boxShadow).not.toBe('none');
