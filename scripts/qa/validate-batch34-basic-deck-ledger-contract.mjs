@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 const REQUIRED_FILES = {
   app: 'src/App.tsx',
   screen: 'src/ui/screens/DeckEditorScreen.tsx',
+  ledger: 'src/ui/components/DeckBasicLedger.tsx',
   css: 'src/ui/styles/deck-basic-ledger.css',
   visual: 'tests/visual/batch14-review-capture.spec.ts',
   packageJson: 'package.json',
@@ -23,16 +24,24 @@ function forbidText(fileKey, needle, reason) {
 
 requireText('app', "import './ui/styles/deck-basic-ledger.css';", 'basic ledger styles must load after editor composition');
 for (const needle of [
-  "import { TileCard } from '../components/TileCard';",
-  "const previewTiles = draft.tiles.slice(0, 8);",
-  'const totalTiles = draft.tiles.reduce((sum, tile) => sum + tile.count, 0);',
+  "import { DeckBasicLedger } from '../components/DeckBasicLedger';",
+  "{tab === 'basic' && <DeckBasicLedger deck={draft} onChange={setDraft} />}",
+]) {
+  requireText('screen', needle, 'DeckEditorScreen must delegate Basic rendering and keep screen-level orchestration only');
+}
+forbidText('screen', "import { TileCard } from '../components/TileCard';", 'production tile rendering must stay outside DeckEditorScreen');
+
+for (const needle of [
+  "import { TileCard } from './TileCard';",
+  'const previewTiles = deck.tiles.slice(0, 8);',
+  'const totalTiles = deck.tiles.reduce((sum, tile) => sum + tile.count, 0);',
   'className="sp-deck-basic-ledger"',
   'className="sp-deck-basic-ledger__rack"',
   'className="sp-deck-basic-ledger__metrics"',
-  'onChange={(name) => setDraft({ ...draft, name })}',
-  'onChange={(description) => setDraft({ ...draft, description })}',
+  'onChange={(name) => onChange({ ...deck, name })}',
+  'onChange={(description) => onChange({ ...deck, description })}',
 ]) {
-  requireText('screen', needle, 'Batch 34 must preserve basic editing while exposing real deck identity');
+  requireText('ledger', needle, 'Batch 34 ledger must preserve basic editing while exposing real deck identity');
 }
 
 for (const needle of [
