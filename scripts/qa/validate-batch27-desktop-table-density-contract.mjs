@@ -38,6 +38,8 @@ for (const needle of [
   '--tile-h: clamp(50px, 3.8vw, 56px);',
   "[data-seat-position='left'] .sp-seat-played",
   "[data-seat-position='right'] .sp-seat-played",
+  "[data-seat-position='self'] .sp-seat-played",
+  'bottom: 72px;',
   'width: min(100%, 980px);',
 ]) {
   requireText('css', needle, 'desktop table must stay bounded and rivers/hand must remain legible');
@@ -66,10 +68,12 @@ for (const needle of [
   'const PLAYER_COUNTS = [3, 4] as const;',
   "{ width: 844, height: 390, label: 'compact' }",
   "{ width: 1440, height: 900, label: 'desktop' }",
+  'seatRiverCollisions',
   'expect(geometry.outside).toEqual([])',
   'expect(geometry.riversNeedingScroll).toEqual([])',
+  'expect(geometry.seatRiverCollisions).toEqual([])',
 ]) {
-  requireText('visual', needle, 'canonical midgame evidence must continue covering compact and desktop geometry');
+  requireText('visual', needle, 'canonical midgame evidence must cover viewport, river scrolling and seat/river separation');
 }
 
 if (failures.length > 0) {
