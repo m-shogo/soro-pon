@@ -60,6 +60,10 @@ for (const skin of SKINS) {
               ? [seat.dataset.seatPosition ?? 'unknown']
               : [];
           });
+          const selfSeat = document.querySelector<HTMLElement>(".sp-table-seat[data-seat-position='self']");
+          const selfPanel = selfSeat?.querySelector<HTMLElement>('.sp-player-panel') ?? null;
+          const selfSeal = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
+          const selfName = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
           const coach = document.querySelector<HTMLElement>('.sp-match-coach');
           const coachOverlaps = coach === null
             ? []
@@ -115,6 +119,13 @@ for (const skin of SKINS) {
               )
               .map((element) => element.className),
             seatRiverCollisions,
+            selfPanelHeight: selfPanel?.getBoundingClientRect().height ?? null,
+            selfSealHeight: selfSeal?.getBoundingClientRect().height ?? null,
+            selfNameVisible:
+              selfName !== null &&
+              selfName.getBoundingClientRect().width > 0 &&
+              selfName.getBoundingClientRect().height > 0 &&
+              getComputedStyle(selfName).visibility !== 'hidden',
             coachOverlaps,
             coachWidth: coach?.getBoundingClientRect().width ?? null,
             taxonomyBandCount: taxonomyBands.length,
@@ -141,7 +152,15 @@ for (const skin of SKINS) {
         expect(geometry.taxonomyBandMaxFontSize).not.toBeNull();
         expect(geometry.taxonomyBandMaxFontSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(0.5);
         expect(geometry.taxonomyBandsOutsideTiles).toEqual([]);
-        if (size.label === 'desktop') {
+        expect(geometry.selfPanelHeight).not.toBeNull();
+        expect(geometry.selfSealHeight).not.toBeNull();
+        expect(geometry.selfNameVisible).toBe(true);
+        if (size.label === 'compact') {
+          expect(geometry.selfPanelHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(20);
+          expect(geometry.selfSealHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(14.5);
+          expect(geometry.seatRiverCollisions).not.toContain('self');
+        } else {
+          expect(geometry.selfPanelHeight ?? 0).toBeGreaterThanOrEqual(30);
           expect(geometry.seatRiverCollisions).toEqual([]);
         }
 
