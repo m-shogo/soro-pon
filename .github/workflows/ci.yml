@@ -111,6 +111,8 @@ jobs:
         run: pnpm qa:batch49:compact-opponent-seat-tags-contract
       - name: Batch 50 TOP menu rail contract
         run: pnpm qa:batch50:top-menu-rail-contract
+      - name: Batch 51 desktop TOP index contract
+        run: pnpm qa:batch51:desktop-top-index-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
