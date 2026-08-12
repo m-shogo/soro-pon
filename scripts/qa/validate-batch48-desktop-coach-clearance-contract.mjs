@@ -21,9 +21,10 @@ for (const needle of [
   '@media (min-width: 900px) and (min-height: 431px)',
   '.sp-match-layout .sp-match-message-zone {',
   'var(--sp-touch-primary) +',
-  'var(--sp-space-24)',
+  'var(--sp-space-24) +',
+  'var(--sp-space-8)',
 ]) {
-  requireText('coachCss', needle, 'desktop coach must reserve explicit space above the hand');
+  requireText('coachCss', needle, 'desktop coach must reserve explicit space plus measured safety buffer above the hand');
 }
 
 const start = files.coachCss.indexOf('/* Batch 48: desktop guidance must sit apart');
