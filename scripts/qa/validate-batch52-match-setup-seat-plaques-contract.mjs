@@ -73,9 +73,11 @@ for (const needle of [
 
 for (const needle of [
   'inspectLobbySeats',
-  'visibleCenterParts',
-  'visibleCenterPartCount',
-  'visibleCenterCollisions',
+  'visibleCenterTextRects',
+  'document.createRange()',
+  'range.selectNodeContents(element);',
+  'visibleCenterTextRectCount',
+  'visibleCenterTextCollisions',
   'visibleNameCount',
   'ariaLabelCount',
   'activeSemanticsValid',
@@ -83,10 +85,10 @@ for (const needle of [
   'allShadowless',
   'maxSealSize',
   'expect(seats?.count).toBe(playerCount);',
-  'expect(seats?.visibleCenterPartCount).toBe(3);',
+  'expect(seats?.visibleCenterTextRectCount).toBe(3);',
   'expect(seats?.visibleNameCount).toBe(playerCount);',
   'expect(seats?.ariaLabelCount).toBe(playerCount);',
-  'expect(seats?.visibleCenterCollisions).toEqual([]);',
+  'expect(seats?.visibleCenterTextCollisions).toEqual([]);',
   'expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);',
   'expect(seats?.allShadowless).toBe(true);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(30);',
@@ -94,7 +96,7 @@ for (const needle of [
   'expect(seats?.minHeight ?? 0).toBeGreaterThanOrEqual(32);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(40);',
 ]) {
-  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry against visible center content across skins/player counts/viewports');
+  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry against rendered center text across skins/player counts/viewports');
 }
 
 requireText(
