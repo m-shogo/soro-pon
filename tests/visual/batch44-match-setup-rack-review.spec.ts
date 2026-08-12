@@ -31,7 +31,6 @@ async function inspectDeckRack(page: Page) {
     const tiles = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__deck-rack .sp-tile')];
     const bands = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__deck-rack .sp-tile__band')];
     if (!rack || tiles.length === 0) return null;
-
     const rackRect = rack.getBoundingClientRect();
     const rects = tiles.map((tile) => tile.getBoundingClientRect());
     return {
@@ -57,10 +56,6 @@ async function inspectLobbySeats(page: Page) {
     const seats = [...lobby.querySelectorAll<HTMLElement>(':scope > .sp-match-setup__lobby-seat')];
     if (seats.length === 0) return null;
 
-    /* The center uses left/top:50% + translate(-50%,-50%). Reconstruct its
-     * rendered box from the untransformed layout size and the owning lobby
-     * midpoint so transform-specific DOMRect/Range behavior cannot create
-     * false collision evidence. */
     const lobbyRect = lobby.getBoundingClientRect();
     const centerWidth = center.offsetWidth;
     const centerHeight = center.offsetHeight;
@@ -78,19 +73,30 @@ async function inspectLobbySeats(page: Page) {
       const seal = panel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
       const name = panel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
       if (panel === null || seal === null || name === null) return [];
-      const rect = panel.getBoundingClientRect();
+      const seatRect = seat.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
       const sealRect = seal.getBoundingClientRect();
       const style = getComputedStyle(panel);
+      const seatStyle = getComputedStyle(seat);
       const nameStyle = getComputedStyle(name);
-      const overlapWidth = Math.min(rect.right, centerRect.right) - Math.max(rect.left, centerRect.left);
-      const overlapHeight = Math.min(rect.bottom, centerRect.bottom) - Math.max(rect.top, centerRect.top);
+      const overlapWidth = Math.min(panelRect.right, centerRect.right) - Math.max(panelRect.left, centerRect.left);
+      const overlapHeight = Math.min(panelRect.bottom, centerRect.bottom) - Math.max(panelRect.top, centerRect.top);
       return [{
         position: seat.dataset.lobbySeat ?? 'unknown',
-        left: rect.left,
-        right: rect.right,
-        top: rect.top,
-        bottom: rect.bottom,
-        height: rect.height,
+        seatTop: seatRect.top,
+        seatBottom: seatRect.bottom,
+        seatLeft: seatRect.left,
+        seatRight: seatRect.right,
+        seatCssTop: seatStyle.top,
+        seatCssRight: seatStyle.right,
+        seatCssBottom: seatStyle.bottom,
+        seatCssLeft: seatStyle.left,
+        seatTransform: seatStyle.transform,
+        panelTop: panelRect.top,
+        panelBottom: panelRect.bottom,
+        panelLeft: panelRect.left,
+        panelRight: panelRect.right,
+        height: panelRect.height,
         radius: Number.parseFloat(style.borderTopLeftRadius) || 0,
         shadow: style.boxShadow,
         sealSize: Math.max(sealRect.width, sealRect.height),
@@ -108,6 +114,7 @@ async function inspectLobbySeats(page: Page) {
     const topMetric = metrics.find((metric) => metric.position === 'top') ?? null;
     return {
       count: metrics.length,
+      seatRects: metrics,
       lobbyTop: lobbyRect.top,
       lobbyBottom: lobbyRect.bottom,
       lobbyWidth: lobbyRect.width,
@@ -118,10 +125,11 @@ async function inspectLobbySeats(page: Page) {
       centerBottom: centerRect.bottom,
       centerWidth: centerRect.width,
       centerHeight: centerRect.height,
-      topPanelTop: topMetric?.top ?? null,
-      topPanelBottom: topMetric?.bottom ?? null,
-      topToCenterPanelGap:
-        topMetric === null ? null : centerRect.top - topMetric.bottom,
+      topSeatTop: topMetric?.seatTop ?? null,
+      topSeatBottom: topMetric?.seatBottom ?? null,
+      topPanelTop: topMetric?.panelTop ?? null,
+      topPanelBottom: topMetric?.panelBottom ?? null,
+      topToCenterPanelGap: topMetric === null ? null : centerRect.top - topMetric.panelBottom,
       minHeight: Math.min(...metrics.map((metric) => metric.height)),
       maxHeight: Math.max(...metrics.map((metric) => metric.height)),
       maxRadius: Math.max(...metrics.map((metric) => metric.radius)),
@@ -130,9 +138,7 @@ async function inspectLobbySeats(page: Page) {
       visibleNameCount: metrics.filter((metric) => metric.nameVisible).length,
       ariaLabelCount: metrics.filter((metric) => Boolean(metric.ariaLabel)).length,
       activeSemanticsValid: metrics.filter((metric) => metric.active).every((metric) => metric.ariaCurrent === 'true'),
-      centerPanelCollisions: metrics
-        .filter((metric) => metric.overlapsCenterPanel)
-        .map((metric) => metric.position),
+      centerPanelCollisions: metrics.filter((metric) => metric.overlapsCenterPanel).map((metric) => metric.position),
     };
   });
 }
@@ -169,9 +175,7 @@ for (const skin of SKINS) {
         expect(rack?.visibleBands).toBe(0);
         expect(rack?.rowSpread).toBeLessThanOrEqual(1);
         expect(rack?.maxTileBottom).toBeLessThanOrEqual(rack?.rackBottom ?? 0);
-        if (size.label === 'compact') {
-          expect(rack?.minTileWidth).toBeGreaterThanOrEqual(34);
-        }
+        if (size.label === 'compact') expect(rack?.minTileWidth).toBeGreaterThanOrEqual(34);
 
         expect(seats).not.toBeNull();
         expect(seats?.count).toBe(playerCount);
