@@ -84,9 +84,11 @@ for (const needle of [
   'expect(geometry?.issueVisibleCount).toBe(3);',
   'expect(geometry?.validationVisible).toBe(true);',
   'expect(geometry?.sideRightOfMain).toBe(true);',
-  'expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(190);',
+  'const sideRatio = (geometry?.sideWidth ?? 0) / (geometry?.bodyWidth ?? 1);',
+  'expect(sideRatio).toBeGreaterThanOrEqual(0.22);',
+  'expect(sideRatio).toBeLessThanOrEqual(0.28);',
   'deck-editor-inspector-${skin}-${tab.id}-${size.label}.png',
-]) requireText('visual', needle, 'canonical evidence must measure all five tabs, both skins, and compact/desktop inspector compositions');
+]) requireText('visual', needle, 'canonical evidence must measure all five tabs, both skins, compact rail geometry and the existing desktop rail proportion');
 forbidText('visual', 'toHaveScreenshot(', 'Batch 54 remains current-head artifact evidence rather than a stale pixel baseline');
 
 requireText('packageJson', 'tests/visual/batch54-deck-editor-inspector-rail-review.spec.ts', 'canonical visual review command must execute Batch 54 geometry');
