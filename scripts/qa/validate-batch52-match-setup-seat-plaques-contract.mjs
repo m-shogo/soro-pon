@@ -76,7 +76,8 @@ for (const needle of [
 
 for (const needle of [
   'inspectLobbySeats',
-  "document.querySelector<HTMLElement>('.sp-match-setup__lobby')",
+  "const lobby = center?.closest<HTMLElement>('.sp-match-setup__lobby') ?? null;",
+  "lobby.querySelectorAll<HTMLElement>(':scope > .sp-match-setup__lobby-seat')",
   'const centerWidth = center.offsetWidth;',
   'const centerHeight = center.offsetHeight;',
   'lobbyRect.left + (lobbyRect.width - centerWidth) / 2',
@@ -103,7 +104,7 @@ for (const needle of [
   'expect(seats?.minHeight ?? 0).toBeGreaterThanOrEqual(32);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(40);',
 ]) {
-  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry against the reconstructed rendered center box');
+  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry within one owning lobby and against its reconstructed center box');
 }
 
 requireText(
