@@ -59,42 +59,48 @@ async function inspectPrimarySurface(page: Page) {
   });
 }
 
-async function inspectSecondaryNav(page: Page) {
+async function inspectTopNavigation(page: Page) {
   return page.evaluate(() => {
-    const nav = document.querySelector<HTMLElement>('.sp-top-stage__nav-main');
-    const buttons = [...document.querySelectorAll<HTMLElement>('.sp-top-stage__nav-main .sp-button')];
-    if (nav === null || buttons.length === 0) return null;
-    const navRect = nav.getBoundingClientRect();
-    const buttonMetrics = buttons.map((button) => {
-      const rect = button.getBoundingClientRect();
-      const style = getComputedStyle(button);
-      const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
+    const inspectButtonGroup = (selector: string) => {
+      const group = document.querySelector<HTMLElement>(selector);
+      const buttons = [...document.querySelectorAll<HTMLElement>(`${selector} .sp-button`)];
+      if (group === null || buttons.length === 0) return null;
+      const groupRect = group.getBoundingClientRect();
+      const buttonMetrics = buttons.map((button) => {
+        const rect = button.getBoundingClientRect();
+        const style = getComputedStyle(button);
+        const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
+        return {
+          height: rect.height,
+          radius,
+          boxShadow: style.boxShadow,
+          left: rect.left,
+          right: rect.right,
+          top: rect.top,
+          bottom: rect.bottom,
+        };
+      });
       return {
-        height: rect.height,
-        radius,
-        boxShadow: style.boxShadow,
-        backgroundColor: style.backgroundColor,
-        left: rect.left,
-        right: rect.right,
-        top: rect.top,
-        bottom: rect.bottom,
+        count: buttons.length,
+        minHeight: Math.min(...buttonMetrics.map((metric) => metric.height)),
+        maxRadius: Math.max(...buttonMetrics.map((metric) => metric.radius)),
+        allShadowless: buttonMetrics.every((metric) => metric.boxShadow === 'none'),
+        allWithinGroup: buttonMetrics.every(
+          (metric) =>
+            metric.left >= groupRect.left - 0.5 &&
+            metric.right <= groupRect.right + 0.5 &&
+            metric.top >= groupRect.top - 0.5 &&
+            metric.bottom <= groupRect.bottom + 0.5,
+        ),
+        groupNeedsScroll:
+          group.scrollWidth > group.clientWidth + 1 ||
+          group.scrollHeight > group.clientHeight + 1,
       };
-    });
+    };
+
     return {
-      count: buttons.length,
-      minHeight: Math.min(...buttonMetrics.map((metric) => metric.height)),
-      maxRadius: Math.max(...buttonMetrics.map((metric) => metric.radius)),
-      allShadowless: buttonMetrics.every((metric) => metric.boxShadow === 'none'),
-      allWithinNav: buttonMetrics.every(
-        (metric) =>
-          metric.left >= navRect.left - 0.5 &&
-          metric.right <= navRect.right + 0.5 &&
-          metric.top >= navRect.top - 0.5 &&
-          metric.bottom <= navRect.bottom + 0.5,
-      ),
-      navNeedsScroll:
-        nav.scrollWidth > nav.clientWidth + 1 ||
-        nav.scrollHeight > nav.clientHeight + 1,
+      secondary: inspectButtonGroup('.sp-top-stage__nav-main'),
+      utility: inspectButtonGroup('.sp-top-stage__utility'),
     };
   });
 }
@@ -123,17 +129,28 @@ for (const skin of SKINS) {
         expect(primary?.skinLayerCount).toBe(1);
       }
 
-      const secondaryNav = await inspectSecondaryNav(page);
+      const navigation = await inspectTopNavigation(page);
+      const secondaryNav = navigation.secondary;
+      const utilityNav = navigation.utility;
       expect(secondaryNav).not.toBeNull();
       expect(secondaryNav?.count).toBe(2);
-      expect(secondaryNav?.navNeedsScroll).toBe(false);
-      expect(secondaryNav?.allWithinNav).toBe(true);
+      expect(secondaryNav?.groupNeedsScroll).toBe(false);
+      expect(secondaryNav?.allWithinGroup).toBe(true);
+      expect(utilityNav).not.toBeNull();
+      expect(utilityNav?.count).toBe(3);
+      expect(utilityNav?.groupNeedsScroll).toBe(false);
+      expect(utilityNav?.allWithinGroup).toBe(true);
       if (size.label === 'compact') {
         expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(44);
         expect(secondaryNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
         expect(secondaryNav?.allShadowless).toBe(true);
       } else {
-        expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(50);
+        expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(64);
+        expect(secondaryNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
+        expect(secondaryNav?.allShadowless).toBe(true);
+        expect(utilityNav?.minHeight ?? 0).toBeGreaterThanOrEqual(40);
+        expect(utilityNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
+        expect(utilityNav?.allShadowless).toBe(true);
       }
     });
   }

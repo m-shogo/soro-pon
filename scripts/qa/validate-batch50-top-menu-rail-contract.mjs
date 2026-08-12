@@ -59,21 +59,22 @@ for (const needle of [
 }
 
 for (const needle of [
-  'inspectSecondaryNav',
+  'inspectTopNavigation',
+  "secondary: inspectButtonGroup('.sp-top-stage__nav-main')",
   'minHeight',
   'maxRadius',
   'allShadowless',
-  'allWithinNav',
-  'navNeedsScroll',
+  'allWithinGroup',
+  'groupNeedsScroll',
   'expect(secondaryNav?.count).toBe(2);',
-  'expect(secondaryNav?.navNeedsScroll).toBe(false);',
-  'expect(secondaryNav?.allWithinNav).toBe(true);',
+  'expect(secondaryNav?.groupNeedsScroll).toBe(false);',
+  'expect(secondaryNav?.allWithinGroup).toBe(true);',
   'expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(44);',
   'expect(secondaryNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);',
   'expect(secondaryNav?.allShadowless).toBe(true);',
-  'expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(50);',
+  'expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(64);',
 ]) {
-  requireText('visual', needle, 'TOP evidence must prove compact rail geometry and desktop non-regression');
+  requireText('visual', needle, 'TOP evidence must preserve Batch 50 compact rail geometry while allowing the stronger Batch 51 desktop bound');
 }
 
 requireText(

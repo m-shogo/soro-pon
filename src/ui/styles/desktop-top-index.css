@@ -1,0 +1,65 @@
+/* Batch 51: the wide TOP side column is a game index, not a dashboard stack.
+ * Preserve deliberate negative space while anchoring navigation and utility
+ * commands to a single authored rail. Compact remains owned by Batch 50. */
+@layer screens {
+  @media (min-width: 1000px) and (min-height: 600px) {
+    .sp-top-stage__nav-main {
+      gap: 0;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    }
+
+    .sp-top-stage__nav-main .sp-button {
+      min-height: 72px;
+      padding: 10px 12px 10px 18px;
+      border: 0;
+      border-left: 3px solid color-mix(in srgb, var(--sp-color-lantern-0) 36%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: left;
+    }
+
+    .sp-top-stage__nav-main .sp-button:hover,
+    .sp-top-stage__nav-main .sp-button:focus-visible {
+      border-left-color: color-mix(in srgb, var(--sp-color-lantern-0) 82%, transparent);
+      background: color-mix(in srgb, var(--sp-color-lantern-0) 7%, transparent);
+      filter: none;
+    }
+
+    .sp-top-stage__nav-main .sp-button__label {
+      font-size: 20px;
+      line-height: 1.05;
+      letter-spacing: 0.03em;
+    }
+
+    .sp-top-stage__nav-main .sp-button__sub {
+      margin-top: 4px;
+      font-size: 11px;
+      line-height: 1.25;
+      opacity: 0.72;
+    }
+
+    .sp-top-stage__utility {
+      gap: 0;
+      padding-top: 0;
+      border-top: 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 9%, transparent);
+    }
+
+    .sp-top-stage__utility .sp-button {
+      min-height: 44px;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 9%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .sp-top-stage__utility .sp-button:last-child {
+      border-right: 0;
+    }
+  }
+}
