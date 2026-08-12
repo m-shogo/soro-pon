@@ -119,6 +119,8 @@ jobs:
         run: pnpm qa:batch53:collection-empty-score-ledger-contract
       - name: Batch 54 editor compact inspector rail contract
         run: pnpm qa:batch54:editor-compact-inspector-rail-contract
+      - name: Batch 55 Result compact scoreboard strip contract
+        run: pnpm qa:batch55:result-compact-scoreboard-strip-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
