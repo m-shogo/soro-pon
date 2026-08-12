@@ -36,7 +36,7 @@ for (const needle of [
   'grid-template-columns: auto minmax(0, 1fr);',
   'border-radius: 2px;',
   'box-shadow: none;',
-  '.sp-collection-scoreboard--empty .sp-paper__title {',
+  '.sp-collection-scoreboard--empty .sp-paper-panel__title {',
   '.sp-collection-scoreboard--empty .sp-collection-empty {',
 ]) requireText('css', needle, 'compact empty scoreboard must collapse to one quiet ledger row');
 
