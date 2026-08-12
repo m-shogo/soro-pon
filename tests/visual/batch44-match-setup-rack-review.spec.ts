@@ -51,24 +51,27 @@ async function inspectDeckRack(page: Page) {
 
 async function inspectLobbySeats(page: Page) {
   return page.evaluate(() => {
+    const lobby = document.querySelector<HTMLElement>('.sp-match-setup__lobby');
     const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
     const seats = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__lobby-seat')];
-    if (center === null || seats.length === 0) return null;
-    const visibleCenterTextRects = [
-      ...center.querySelectorAll<HTMLElement>(':scope > span, :scope > strong, :scope > small'),
-    ].flatMap((element) => {
-      const style = getComputedStyle(element);
-      if (style.display === 'none' || style.visibility === 'hidden' || !element.textContent?.trim()) return [];
-      const range = document.createRange();
-      range.selectNodeContents(element);
-      const rect = range.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0
-        ? [{ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }]
-        : [];
-    });
-    const centerTextTop = visibleCenterTextRects.length === 0
-      ? null
-      : Math.min(...visibleCenterTextRects.map((rect) => rect.top));
+    if (lobby === null || center === null || seats.length === 0) return null;
+
+    /* The center uses left/top:50% + translate(-50%,-50%). Reconstruct its
+     * rendered box from the untransformed layout size and the lobby midpoint
+     * so transform-specific DOMRect/Range behavior cannot create false
+     * collision evidence. */
+    const lobbyRect = lobby.getBoundingClientRect();
+    const centerWidth = center.offsetWidth;
+    const centerHeight = center.offsetHeight;
+    const centerRect = {
+      left: lobbyRect.left + (lobbyRect.width - centerWidth) / 2,
+      right: lobbyRect.left + (lobbyRect.width + centerWidth) / 2,
+      top: lobbyRect.top + (lobbyRect.height - centerHeight) / 2,
+      bottom: lobbyRect.top + (lobbyRect.height + centerHeight) / 2,
+      width: centerWidth,
+      height: centerHeight,
+    };
+
     const metrics = seats.flatMap((seat) => {
       const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
       const seal = panel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
@@ -78,11 +81,8 @@ async function inspectLobbySeats(page: Page) {
       const sealRect = seal.getBoundingClientRect();
       const style = getComputedStyle(panel);
       const nameStyle = getComputedStyle(name);
-      const overlapsVisibleCenterText = visibleCenterTextRects.some((partRect) => {
-        const overlapWidth = Math.min(rect.right, partRect.right) - Math.max(rect.left, partRect.left);
-        const overlapHeight = Math.min(rect.bottom, partRect.bottom) - Math.max(rect.top, partRect.top);
-        return overlapWidth > 1 && overlapHeight > 1;
-      });
+      const overlapWidth = Math.min(rect.right, centerRect.right) - Math.max(rect.left, centerRect.left);
+      const overlapHeight = Math.min(rect.bottom, centerRect.bottom) - Math.max(rect.top, centerRect.top);
       return [{
         position: seat.dataset.lobbySeat ?? 'unknown',
         top: rect.top,
@@ -99,15 +99,16 @@ async function inspectLobbySeats(page: Page) {
         ariaLabel: panel.getAttribute('aria-label'),
         active: panel.classList.contains('sp-player-panel--active'),
         ariaCurrent: panel.getAttribute('aria-current'),
-        overlapsVisibleCenterText,
+        overlapsCenterPanel: overlapWidth > 1 && overlapHeight > 1,
       }];
     });
     const topMetric = metrics.find((metric) => metric.position === 'top') ?? null;
     return {
       count: metrics.length,
-      visibleCenterTextRectCount: visibleCenterTextRects.length,
-      topToCenterTextGap:
-        topMetric === null || centerTextTop === null ? null : centerTextTop - topMetric.bottom,
+      centerWidth: centerRect.width,
+      centerHeight: centerRect.height,
+      topToCenterPanelGap:
+        topMetric === null ? null : centerRect.top - topMetric.bottom,
       minHeight: Math.min(...metrics.map((metric) => metric.height)),
       maxHeight: Math.max(...metrics.map((metric) => metric.height)),
       maxRadius: Math.max(...metrics.map((metric) => metric.radius)),
@@ -116,8 +117,8 @@ async function inspectLobbySeats(page: Page) {
       visibleNameCount: metrics.filter((metric) => metric.nameVisible).length,
       ariaLabelCount: metrics.filter((metric) => Boolean(metric.ariaLabel)).length,
       activeSemanticsValid: metrics.filter((metric) => metric.active).every((metric) => metric.ariaCurrent === 'true'),
-      visibleCenterTextCollisions: metrics
-        .filter((metric) => metric.overlapsVisibleCenterText)
+      centerPanelCollisions: metrics
+        .filter((metric) => metric.overlapsCenterPanel)
         .map((metric) => metric.position),
     };
   });
@@ -161,16 +162,17 @@ for (const skin of SKINS) {
 
         expect(seats).not.toBeNull();
         expect(seats?.count).toBe(playerCount);
-        expect(seats?.visibleCenterTextRectCount).toBe(3);
+        expect(seats?.centerWidth ?? 0).toBeGreaterThan(0);
+        expect(seats?.centerHeight ?? 0).toBeGreaterThan(0);
         expect(seats?.visibleNameCount).toBe(playerCount);
         expect(seats?.ariaLabelCount).toBe(playerCount);
         expect(seats?.activeSemanticsValid).toBe(true);
-        expect(seats?.visibleCenterTextCollisions).toEqual([]);
+        expect(seats?.centerPanelCollisions).toEqual([]);
         if (playerCount === 4) {
-          expect(seats?.topToCenterTextGap).not.toBeNull();
-          expect(seats?.topToCenterTextGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(4);
+          expect(seats?.topToCenterPanelGap).not.toBeNull();
+          expect(seats?.topToCenterPanelGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(4);
         } else {
-          expect(seats?.topToCenterTextGap).toBeNull();
+          expect(seats?.topToCenterPanelGap).toBeNull();
         }
         expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);
         expect(seats?.allShadowless).toBe(true);
