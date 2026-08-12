@@ -64,6 +64,7 @@
     "qa:batch52:match-setup-seat-plaques-contract": "node scripts/qa/validate-batch52-match-setup-seat-plaques-contract.mjs",
     "qa:batch53:collection-empty-score-ledger-contract": "node scripts/qa/validate-batch53-collection-empty-score-ledger-contract.mjs",
     "qa:batch54:editor-compact-inspector-rail-contract": "node scripts/qa/validate-batch54-editor-compact-inspector-rail-contract.mjs",
+    "qa:batch55:result-compact-scoreboard-strip-contract": "node scripts/qa/validate-batch55-result-compact-scoreboard-strip-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
