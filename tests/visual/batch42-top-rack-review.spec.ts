@@ -59,48 +59,50 @@ async function inspectPrimarySurface(page: Page) {
   });
 }
 
-function inspectButtonGroup(selector: string) {
-  const group = document.querySelector<HTMLElement>(selector);
-  const buttons = [...document.querySelectorAll<HTMLElement>(`${selector} .sp-button`)];
-  if (group === null || buttons.length === 0) return null;
-  const groupRect = group.getBoundingClientRect();
-  const buttonMetrics = buttons.map((button) => {
-    const rect = button.getBoundingClientRect();
-    const style = getComputedStyle(button);
-    const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
+async function inspectTopNavigation(page: Page) {
+  return page.evaluate(() => {
+    const inspectButtonGroup = (selector: string) => {
+      const group = document.querySelector<HTMLElement>(selector);
+      const buttons = [...document.querySelectorAll<HTMLElement>(`${selector} .sp-button`)];
+      if (group === null || buttons.length === 0) return null;
+      const groupRect = group.getBoundingClientRect();
+      const buttonMetrics = buttons.map((button) => {
+        const rect = button.getBoundingClientRect();
+        const style = getComputedStyle(button);
+        const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
+        return {
+          height: rect.height,
+          radius,
+          boxShadow: style.boxShadow,
+          left: rect.left,
+          right: rect.right,
+          top: rect.top,
+          bottom: rect.bottom,
+        };
+      });
+      return {
+        count: buttons.length,
+        minHeight: Math.min(...buttonMetrics.map((metric) => metric.height)),
+        maxRadius: Math.max(...buttonMetrics.map((metric) => metric.radius)),
+        allShadowless: buttonMetrics.every((metric) => metric.boxShadow === 'none'),
+        allWithinGroup: buttonMetrics.every(
+          (metric) =>
+            metric.left >= groupRect.left - 0.5 &&
+            metric.right <= groupRect.right + 0.5 &&
+            metric.top >= groupRect.top - 0.5 &&
+            metric.bottom <= groupRect.bottom + 0.5,
+        ),
+        groupNeedsScroll:
+          group.scrollWidth > group.clientWidth + 1 ||
+          group.scrollHeight > group.clientHeight + 1,
+      };
+    };
+
     return {
-      height: rect.height,
-      radius,
-      boxShadow: style.boxShadow,
-      left: rect.left,
-      right: rect.right,
-      top: rect.top,
-      bottom: rect.bottom,
+      secondary: inspectButtonGroup('.sp-top-stage__nav-main'),
+      utility: inspectButtonGroup('.sp-top-stage__utility'),
     };
   });
-  return {
-    count: buttons.length,
-    minHeight: Math.min(...buttonMetrics.map((metric) => metric.height)),
-    maxRadius: Math.max(...buttonMetrics.map((metric) => metric.radius)),
-    allShadowless: buttonMetrics.every((metric) => metric.boxShadow === 'none'),
-    allWithinGroup: buttonMetrics.every(
-      (metric) =>
-        metric.left >= groupRect.left - 0.5 &&
-        metric.right <= groupRect.right + 0.5 &&
-        metric.top >= groupRect.top - 0.5 &&
-        metric.bottom <= groupRect.bottom + 0.5,
-    ),
-    groupNeedsScroll:
-      group.scrollWidth > group.clientWidth + 1 ||
-      group.scrollHeight > group.clientHeight + 1,
-  };
-}
-
-async function inspectTopNavigation(page: Page) {
-  return page.evaluate(() => ({
-    secondary: inspectButtonGroup('.sp-top-stage__nav-main'),
-    utility: inspectButtonGroup('.sp-top-stage__utility'),
-  }));
 }
 
 for (const skin of SKINS) {
