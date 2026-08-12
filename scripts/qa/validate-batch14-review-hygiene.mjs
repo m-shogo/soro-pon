@@ -8,6 +8,7 @@ const REQUIRED_FILES = {
   midgameCapture: 'tests/visual/batch26-midgame-review.spec.ts',
   topRackCapture: 'tests/visual/batch42-top-rack-review.spec.ts',
   matchSetupRackCapture: 'tests/visual/batch44-match-setup-rack-review.spec.ts',
+  editorInspectorCapture: 'tests/visual/batch54-deck-editor-inspector-rail-review.spec.ts',
   workflow: '.github/workflows/batch14-visual-review.yml',
   roleWorkbenchCss: 'src/ui/styles/deck-role-workbench.css',
   reviewDoc: 'docs/qa/BATCH-14-VISUAL-REVIEW.md',
@@ -34,9 +35,9 @@ function forbidText(fileKey, needle, reason) {
 }
 
 const visualCommand =
-  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts tests/visual/batch26-midgame-review.spec.ts tests/visual/batch42-top-rack-review.spec.ts tests/visual/batch44-match-setup-rack-review.spec.ts';
-requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection, Result, midgame, TOP rack and MatchSetup rack evidence');
-requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include Result, midgame, TOP rack and MatchSetup rack evidence');
+  'playwright test tests/visual/batch14-review-capture.spec.ts tests/visual/batch22-collection-review.spec.ts tests/visual/batch23-result-review.spec.ts tests/visual/batch26-midgame-review.spec.ts tests/visual/batch42-top-rack-review.spec.ts tests/visual/batch44-match-setup-rack-review.spec.ts tests/visual/batch54-deck-editor-inspector-rail-review.spec.ts';
+requireText('packageJson', `"test:visual": "${visualCommand}"`, 'default visual QA must include shell/editor/match, collection, Result, midgame, TOP rack, MatchSetup rack and editor inspector evidence');
+requireText('packageJson', `"qa:batch14:review-capture": "${visualCommand}"`, 'current-head review command must include all seven canonical visual specs');
 forbidText('packageJson', '"test:visual:update"', 'current visual review must not encourage refreshing a stale committed baseline');
 
 for (const needle of [
@@ -130,6 +131,25 @@ for (const needle of [
   requireText('matchSetupRackCapture', needle, 'MatchSetup deck rack must remain tile-led measured evidence for both player counts, skins and viewports');
 }
 forbidText('matchSetupRackCapture', 'toHaveScreenshot(', 'MatchSetup rack evidence should measure current geometry without stale pixel baselines');
+
+for (const needle of [
+  "const SKINS = ['yorunoshirube', 'cute-pop'] as const;",
+  "{ width: 844, height: 390, label: 'compact' }",
+  "{ width: 1440, height: 900, label: 'desktop' }",
+  "{ name: /^基本/, id: 'basic' }",
+  "{ name: /^カテゴリ/, id: 'categories' }",
+  "{ name: /^牌/, id: 'tiles' }",
+  "{ name: /^役/, id: 'roles' }",
+  "{ name: /^ボーナス/, id: 'bonuses' }",
+  'inspectEditorGeometry',
+  'toBeGreaterThanOrEqual(0.98)',
+  'expect(geometry?.sideBelowMain).toBe(true);',
+  'expect(geometry?.sideRightOfMain).toBe(true);',
+  'deck-editor-inspector-${skin}-${tab.id}-${size.label}.png',
+]) {
+  requireText('editorInspectorCapture', needle, 'Deck editor inspector must stay measured on all five tabs, both skins and both canonical viewports');
+}
+forbidText('editorInspectorCapture', 'toHaveScreenshot(', 'Deck editor inspector evidence must stay current-head artifact based');
 
 requireText('workflow', 'name: Batch 14 Visual Review', 'artifact review needs a dedicated workflow');
 requireText('workflow', "- 'tests/visual/**'", 'every visual-test change must refresh current-head review evidence');
