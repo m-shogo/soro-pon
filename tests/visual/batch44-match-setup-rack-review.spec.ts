@@ -66,6 +66,9 @@ async function inspectLobbySeats(page: Page) {
         ? [{ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }]
         : [];
     });
+    const centerTextTop = visibleCenterTextRects.length === 0
+      ? null
+      : Math.min(...visibleCenterTextRects.map((rect) => rect.top));
     const metrics = seats.flatMap((seat) => {
       const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
       const seal = panel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
@@ -82,6 +85,8 @@ async function inspectLobbySeats(page: Page) {
       });
       return [{
         position: seat.dataset.lobbySeat ?? 'unknown',
+        top: rect.top,
+        bottom: rect.bottom,
         height: rect.height,
         radius: Number.parseFloat(style.borderTopLeftRadius) || 0,
         shadow: style.boxShadow,
@@ -97,9 +102,12 @@ async function inspectLobbySeats(page: Page) {
         overlapsVisibleCenterText,
       }];
     });
+    const topMetric = metrics.find((metric) => metric.position === 'top') ?? null;
     return {
       count: metrics.length,
       visibleCenterTextRectCount: visibleCenterTextRects.length,
+      topToCenterTextGap:
+        topMetric === null || centerTextTop === null ? null : centerTextTop - topMetric.bottom,
       minHeight: Math.min(...metrics.map((metric) => metric.height)),
       maxHeight: Math.max(...metrics.map((metric) => metric.height)),
       maxRadius: Math.max(...metrics.map((metric) => metric.radius)),
@@ -158,6 +166,12 @@ for (const skin of SKINS) {
         expect(seats?.ariaLabelCount).toBe(playerCount);
         expect(seats?.activeSemanticsValid).toBe(true);
         expect(seats?.visibleCenterTextCollisions).toEqual([]);
+        if (playerCount === 4) {
+          expect(seats?.topToCenterTextGap).not.toBeNull();
+          expect(seats?.topToCenterTextGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(4);
+        } else {
+          expect(seats?.topToCenterTextGap).toBeNull();
+        }
         expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);
         expect(seats?.allShadowless).toBe(true);
         if (size.label === 'compact') {
