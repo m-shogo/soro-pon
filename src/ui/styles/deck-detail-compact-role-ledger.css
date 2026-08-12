@@ -1,0 +1,80 @@
+/* Batch 57: compact DeckDetail roles read as one recipe ledger, not four
+ * dashboard cards. RoleCard DOM/semantics stay untouched; this file only
+ * retires card chrome inside the compact DeckDetail inspection stage. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-deck-detail-stage .sp-deck-loadout__roles {
+      border-radius: 1px;
+    }
+
+    .sp-deck-detail-stage .sp-deck-loadout__role-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      overflow: hidden;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+    }
+
+    .sp-deck-detail-stage .sp-deck-loadout__role-grid .sp-role-card {
+      min-width: 0;
+      min-height: 0;
+      gap: 2px;
+      padding: 4px 5px;
+      overflow: hidden;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-radius: 0;
+      background: transparent;
+      color: var(--sp-color-cream);
+      box-shadow: none;
+      filter: none;
+    }
+
+    .sp-deck-detail-stage .sp-deck-loadout__role-grid .sp-role-card--completed {
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      box-shadow: none;
+    }
+
+    .sp-deck-detail-stage .sp-role-card__head {
+      min-width: 0;
+      gap: 4px;
+    }
+
+    .sp-deck-detail-stage .sp-role-card__name {
+      min-width: 0;
+      overflow: hidden;
+      font-size: 10px;
+      line-height: 1.15;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sp-deck-detail-stage .sp-role-card__points {
+      flex: none;
+      color: var(--sp-color-lantern-0);
+      font-size: 9px;
+      line-height: 1.15;
+    }
+
+    .sp-deck-detail-stage .sp-role-card__state {
+      align-self: flex-start;
+      max-width: 100%;
+      padding: 0 3px;
+      border-radius: 1px;
+      font-size: 8px;
+      line-height: 1.15;
+    }
+
+    .sp-deck-detail-stage .sp-role-card__explanation {
+      display: block;
+      min-width: 0;
+      overflow: visible;
+      color: var(--sp-color-cream-dim);
+      font-size: 8px;
+      line-height: 1.2;
+      -webkit-line-clamp: unset;
+    }
+  }
+}
