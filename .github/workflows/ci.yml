@@ -117,6 +117,8 @@ jobs:
         run: pnpm qa:batch52:match-setup-seat-plaques-contract
       - name: Batch 53 Collection empty score ledger contract
         run: pnpm qa:batch53:collection-empty-score-ledger-contract
+      - name: Batch 54 editor compact inspector rail contract
+        run: pnpm qa:batch54:editor-compact-inspector-rail-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

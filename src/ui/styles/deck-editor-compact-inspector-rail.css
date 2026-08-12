@@ -1,0 +1,175 @@
+/* Batch 54: compact deck editing is a workbench, not a form with a fixed
+ * admin sidebar. Keep the desktop inspector rail intact, but on landscape
+ * compact screens move the same inspector below the active workbench as one
+ * shallow status ledger. No editor data or validation semantics are removed. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) 54px;
+      gap: 4px;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > [role='tabpanel'] {
+      grid-column: 1;
+      grid-row: 1;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__body > .sp-screen__col--side {
+      grid-column: 1;
+      grid-row: 2;
+      width: 100%;
+      min-width: 0;
+      height: 54px;
+      max-height: 54px;
+      padding: 3px 0 0;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 9%, transparent);
+      border-left: 0;
+      overflow: hidden;
+    }
+
+    .sp-deck-editor-inspector {
+      height: 100%;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 5px;
+      align-items: stretch;
+    }
+
+    .sp-deck-editor-inspector > .sp-paper-panel {
+      min-width: 0;
+      height: 100%;
+      display: grid;
+      grid-template-columns: auto auto minmax(250px, 1fr) auto;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 5px;
+      border: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .sp-deck-editor-inspector > .sp-paper-panel > .sp-paper-panel__title {
+      margin: 0;
+      padding: 0 6px 0 0;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      color: var(--sp-color-cream-dim);
+      font-size: 9px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__status {
+      justify-content: flex-start;
+      gap: 4px;
+      margin: 0;
+      font-size: 8px;
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__status .sp-badge {
+      padding: 1px 4px;
+      font-size: 8px;
+    }
+
+    .sp-deck-editor-inspector__summary {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 0;
+      border: 0;
+    }
+
+    .sp-deck-editor-inspector__summary > div {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 3px;
+      padding: 1px 5px;
+      border: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__summary dt {
+      font-size: 8px;
+    }
+
+    .sp-deck-editor-inspector__summary dd {
+      justify-content: flex-start;
+      gap: 2px;
+      margin: 0;
+      font-size: 11px;
+    }
+
+    .sp-deck-editor-inspector__summary small {
+      font-size: 7px;
+    }
+
+    .sp-deck-editor-inspector__issue-counts {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 0;
+      margin: 0;
+      border: 0;
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__issue-counts span {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      padding: 1px 4px;
+      border: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      font-size: 7px;
+    }
+
+    .sp-deck-editor-inspector__issue-counts strong {
+      display: inline;
+      margin: 0;
+      font-size: 9px;
+    }
+
+    .sp-deck-editor-inspector__validation,
+    .sp-deck-editor-inspector__validation-clear {
+      min-width: 88px;
+      max-width: 132px;
+      height: 100%;
+      margin: 0;
+      padding: 0 5px;
+      border: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 9%, transparent);
+      color: var(--sp-color-cream-dim);
+      font-size: 8px;
+    }
+
+    .sp-deck-editor-inspector__validation-clear {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__validation {
+      overflow: hidden auto;
+    }
+
+    .sp-deck-editor-inspector__validation summary {
+      min-height: 24px;
+      height: 24px;
+      padding: 0;
+      font-size: 8px;
+    }
+
+    .sp-deck-editor-inspector__validation-body {
+      padding: 0 0 3px;
+      font-size: 8px;
+    }
+  }
+}
