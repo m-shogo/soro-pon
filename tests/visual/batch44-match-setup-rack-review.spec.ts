@@ -49,16 +49,66 @@ async function inspectDeckRack(page: Page) {
   });
 }
 
+async function inspectLobbySeats(page: Page) {
+  return page.evaluate(() => {
+    const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
+    const seats = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__lobby-seat')];
+    if (center === null || seats.length === 0) return null;
+    const centerRect = center.getBoundingClientRect();
+    const metrics = seats.flatMap((seat) => {
+      const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
+      const seal = panel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
+      const name = panel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
+      if (panel === null || seal === null || name === null) return [];
+      const rect = panel.getBoundingClientRect();
+      const sealRect = seal.getBoundingClientRect();
+      const style = getComputedStyle(panel);
+      const nameStyle = getComputedStyle(name);
+      const overlapWidth = Math.min(rect.right, centerRect.right) - Math.max(rect.left, centerRect.left);
+      const overlapHeight = Math.min(rect.bottom, centerRect.bottom) - Math.max(rect.top, centerRect.top);
+      return [{
+        position: seat.dataset.lobbySeat ?? 'unknown',
+        height: rect.height,
+        radius: Number.parseFloat(style.borderTopLeftRadius) || 0,
+        shadow: style.boxShadow,
+        sealSize: Math.max(sealRect.width, sealRect.height),
+        nameVisible:
+          name.getBoundingClientRect().width > 0 &&
+          name.getBoundingClientRect().height > 0 &&
+          nameStyle.display !== 'none' &&
+          nameStyle.visibility !== 'hidden',
+        ariaLabel: panel.getAttribute('aria-label'),
+        active: panel.classList.contains('sp-player-panel--active'),
+        ariaCurrent: panel.getAttribute('aria-current'),
+        overlapsCenter: overlapWidth > 1 && overlapHeight > 1,
+      }];
+    });
+    return {
+      count: metrics.length,
+      minHeight: Math.min(...metrics.map((metric) => metric.height)),
+      maxHeight: Math.max(...metrics.map((metric) => metric.height)),
+      maxRadius: Math.max(...metrics.map((metric) => metric.radius)),
+      maxSealSize: Math.max(...metrics.map((metric) => metric.sealSize)),
+      allShadowless: metrics.every((metric) => metric.shadow === 'none'),
+      visibleNameCount: metrics.filter((metric) => metric.nameVisible).length,
+      ariaLabelCount: metrics.filter((metric) => Boolean(metric.ariaLabel)).length,
+      activeSemanticsValid: metrics.filter((metric) => metric.active).every((metric) => metric.ariaCurrent === 'true'),
+      centerCollisions: metrics.filter((metric) => metric.overlapsCenter).map((metric) => metric.position),
+    };
+  });
+}
+
 async function persistGeometry(
   skin: SkinId,
   playerCount: (typeof PLAYER_COUNTS)[number],
   size: CaptureSize,
   rack: Awaited<ReturnType<typeof inspectDeckRack>>,
+  seats: Awaited<ReturnType<typeof inspectLobbySeats>>,
 ) {
   await mkdir(CAPTURE_DIR, { recursive: true });
   await writeFile(
     join(CAPTURE_DIR, `match-setup-rack-geometry-${skin}-${playerCount}p-${size.label}.json`),
-    `${JSON.stringify({ skin, playerCount, viewport: size, rack }, null, 2)}\n`,
+    `${JSON.stringify({ skin, playerCount, viewport: size, rack, seats }, null, 2)}\n`,
     'utf8',
   );
 }
@@ -73,7 +123,8 @@ for (const skin of SKINS) {
         await page.getByRole('button', { name: `${playerCount}人戦`, exact: true }).click();
 
         const rack = await inspectDeckRack(page);
-        await persistGeometry(skin, playerCount, size, rack);
+        const seats = await inspectLobbySeats(page);
+        await persistGeometry(skin, playerCount, size, rack, seats);
         expect(rack).not.toBeNull();
         expect(rack?.tileCount).toBe(8);
         expect(rack?.visibleBands).toBe(0);
@@ -81,6 +132,23 @@ for (const skin of SKINS) {
         expect(rack?.maxTileBottom).toBeLessThanOrEqual(rack?.rackBottom ?? 0);
         if (size.label === 'compact') {
           expect(rack?.minTileWidth).toBeGreaterThanOrEqual(34);
+        }
+
+        expect(seats).not.toBeNull();
+        expect(seats?.count).toBe(playerCount);
+        expect(seats?.visibleNameCount).toBe(playerCount);
+        expect(seats?.ariaLabelCount).toBe(playerCount);
+        expect(seats?.activeSemanticsValid).toBe(true);
+        expect(seats?.centerCollisions).toEqual([]);
+        expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);
+        expect(seats?.allShadowless).toBe(true);
+        if (size.label === 'compact') {
+          expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(30);
+          expect(seats?.maxSealSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(16);
+        } else {
+          expect(seats?.minHeight ?? 0).toBeGreaterThanOrEqual(32);
+          expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(40);
+          expect(seats?.maxSealSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(24);
         }
       });
     }
