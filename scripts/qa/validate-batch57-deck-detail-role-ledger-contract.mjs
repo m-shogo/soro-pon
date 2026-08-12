@@ -6,6 +6,7 @@ const REQUIRED_FILES = {
   deckDetail: 'src/ui/styles/deck-detail-stage.css',
   compactCss: 'src/ui/styles/deck-detail-compact-role-ledger.css',
   visual: 'tests/visual/batch57-deck-detail-role-ledger-review.spec.ts',
+  visualWorkflow: '.github/workflows/batch14-visual-review.yml',
   packageJson: 'package.json',
   workflow: '.github/workflows/ci.yml',
 };
@@ -90,18 +91,23 @@ for (const needle of [
   "expect(geometry?.columnCount).toBe(2);",
   'deck-detail-role-ledger-${skin}-${size.label}.png',
 ]) {
-  requireText('visual', needle, 'canonical evidence must prove both skins, compact ledger geometry, and preserved desktop two-column layout');
+  requireText('visual', needle, 'Batch 57 evidence must prove both skins, compact ledger geometry, and preserved desktop two-column layout');
 }
 
+requireText(
+  'visualWorkflow',
+  'pnpm qa:batch14:review-capture',
+  'the canonical review capture must remain intact',
+);
+requireText(
+  'visualWorkflow',
+  'pnpm exec playwright test tests/visual/batch57-deck-detail-role-ledger-review.spec.ts',
+  'Batch 57 geometry proof must run in the canonical Visual Review workflow without mutating the Batch 14 command contract',
+);
 requireText(
   'packageJson',
   '"qa:batch57:deck-detail-role-ledger-contract": "node scripts/qa/validate-batch57-deck-detail-role-ledger-contract.mjs"',
   'Batch 57 contract must be runnable',
-);
-requireText(
-  'packageJson',
-  'tests/visual/batch57-deck-detail-role-ledger-review.spec.ts',
-  'Batch 57 visual evidence must be included in the canonical review command',
 );
 requireText(
   'workflow',
