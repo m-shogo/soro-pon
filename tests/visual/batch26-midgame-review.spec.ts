@@ -46,9 +46,8 @@ for (const skin of SKINS) {
             const style = getComputedStyle(element);
             return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
           });
-          const seatRiverCollisions = [
-            ...document.querySelectorAll<HTMLElement>('.sp-table-seat'),
-          ].flatMap((seat) => {
+          const seats = [...document.querySelectorAll<HTMLElement>('.sp-table-seat')];
+          const seatRiverCollisions = seats.flatMap((seat) => {
             const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
             const river = seat.querySelector<HTMLElement>('.sp-seat-played');
             if (panel === null || river === null) return [];
@@ -64,6 +63,42 @@ for (const skin of SKINS) {
           const selfPanel = selfSeat?.querySelector<HTMLElement>('.sp-player-panel') ?? null;
           const selfName = selfPanel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
           const selfPanelStyle = selfPanel === null ? null : getComputedStyle(selfPanel);
+          const opponentSeats = seats.filter((seat) => seat.dataset.seatPosition !== 'self');
+          const opponentPanels = opponentSeats.flatMap((seat) => {
+            const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
+            const seal = panel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
+            const name = panel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
+            if (panel === null || seal === null || name === null) return [];
+            const panelRect = panel.getBoundingClientRect();
+            const sealRect = seal.getBoundingClientRect();
+            const nameRect = name.getBoundingClientRect();
+            const panelStyle = getComputedStyle(panel);
+            const nameStyle = getComputedStyle(name);
+            return [{
+              position: seat.dataset.seatPosition ?? 'unknown',
+              height: panelRect.height,
+              sealSize: Math.max(sealRect.width, sealRect.height),
+              nameVisible: nameRect.width > 0 && nameRect.height > 0 && nameStyle.visibility !== 'hidden' && nameStyle.display !== 'none',
+              ariaLabel: panel.getAttribute('aria-label'),
+              active: panel.classList.contains('sp-player-panel--active'),
+              ariaCurrent: panel.getAttribute('aria-current'),
+              boxShadow: panelStyle.boxShadow,
+            }];
+          });
+          const opponentVisibleTileCollisions = opponentSeats.flatMap((seat) => {
+            const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
+            if (panel === null) return [];
+            const panelRect = panel.getBoundingClientRect();
+            return [...seat.querySelectorAll<HTMLElement>('.sp-seat-played__tiles .sp-tile')]
+              .filter((tile) => {
+                const tileRect = tile.getBoundingClientRect();
+                if (tileRect.width <= 0 || tileRect.height <= 0) return false;
+                const overlapWidth = Math.min(panelRect.right, tileRect.right) - Math.max(panelRect.left, tileRect.left);
+                const overlapHeight = Math.min(panelRect.bottom, tileRect.bottom) - Math.max(panelRect.top, tileRect.top);
+                return overlapWidth > 1 && overlapHeight > 1;
+              })
+              .map(() => seat.dataset.seatPosition ?? 'unknown');
+          });
           const coach = document.querySelector<HTMLElement>('.sp-match-coach');
           const hand = document.querySelector<HTMLElement>('.sp-self-hand-zone');
           const coachOverlaps = coach === null
@@ -130,6 +165,15 @@ for (const skin of SKINS) {
             selfPanelClipPath: selfPanelStyle?.clipPath ?? null,
             selfPanelAriaLabel: selfPanel?.getAttribute('aria-label') ?? null,
             selfNameInDom: selfName !== null,
+            opponentPanelCount: opponentPanels.length,
+            opponentPanelMaxHeight: opponentPanels.length === 0 ? null : Math.max(...opponentPanels.map((panel) => panel.height)),
+            opponentPanelMinHeight: opponentPanels.length === 0 ? null : Math.min(...opponentPanels.map((panel) => panel.height)),
+            opponentSealMaxSize: opponentPanels.length === 0 ? null : Math.max(...opponentPanels.map((panel) => panel.sealSize)),
+            opponentVisibleNameCount: opponentPanels.filter((panel) => panel.nameVisible).length,
+            opponentAriaLabelCount: opponentPanels.filter((panel) => Boolean(panel.ariaLabel)).length,
+            activeOpponentSemanticsValid: opponentPanels.filter((panel) => panel.active).every((panel) => panel.ariaCurrent === 'true'),
+            activeOpponentVisualValid: opponentPanels.filter((panel) => panel.active).every((panel) => panel.boxShadow !== 'none'),
+            opponentVisibleTileCollisions,
             coachOverlaps,
             coachWidth: coach?.getBoundingClientRect().width ?? null,
             coachHandGap,
@@ -161,16 +205,28 @@ for (const skin of SKINS) {
         expect(geometry.selfPanelHeight).not.toBeNull();
         expect(geometry.selfPanelAriaLabel).toBeTruthy();
         expect(geometry.selfNameInDom).toBe(true);
+        expect(geometry.opponentPanelCount).toBe(playerCount - 1);
+        expect(geometry.opponentVisibleNameCount).toBe(playerCount - 1);
+        expect(geometry.opponentAriaLabelCount).toBe(playerCount - 1);
+        expect(geometry.activeOpponentSemanticsValid).toBe(true);
+        expect(geometry.activeOpponentVisualValid).toBe(true);
+        expect(geometry.opponentVisibleTileCollisions).toEqual([]);
         if (size.label === 'compact') {
           expect(geometry.selfPanelWidth ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
           expect(geometry.selfPanelHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
           expect(geometry.selfPanelDisplay).not.toBe('none');
           expect(geometry.selfPanelVisibility).not.toBe('hidden');
           expect(geometry.selfPanelClipPath).not.toBe('none');
+          expect(geometry.opponentPanelMaxHeight).not.toBeNull();
+          expect(geometry.opponentPanelMaxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(24);
+          expect(geometry.opponentSealMaxSize).not.toBeNull();
+          expect(geometry.opponentSealMaxSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(16);
         }
         if (size.label === 'desktop') {
           expect(geometry.selfPanelWidth ?? 0).toBeGreaterThanOrEqual(100);
           expect(geometry.selfPanelHeight ?? 0).toBeGreaterThanOrEqual(30);
+          expect(geometry.opponentPanelMinHeight).not.toBeNull();
+          expect(geometry.opponentPanelMinHeight ?? 0).toBeGreaterThanOrEqual(30);
           expect(geometry.seatRiverCollisions).toEqual([]);
           expect(geometry.coachHandGap).not.toBeNull();
           expect(geometry.coachHandGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(10);
