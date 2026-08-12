@@ -17,7 +17,7 @@
       overflow: hidden;
     }
 
-    .sp-collection-scoreboard--empty .sp-paper__title {
+    .sp-collection-scoreboard--empty .sp-paper-panel__title {
       margin: 0;
       padding: 0 8px 0 0;
       border-bottom: 0;
