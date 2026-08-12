@@ -114,10 +114,11 @@ async function expectEditorGeometry(page: Page, size: CaptureSize) {
     expect(geometry?.sideHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(58);
     expect(geometry?.inspectorHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(55);
   } else {
+    const sideRatio = (geometry?.sideWidth ?? 0) / (geometry?.bodyWidth ?? 1);
     expect(geometry?.sideRightOfMain).toBe(true);
     expect(geometry?.sideTopAlignedWithMain).toBe(true);
-    expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(190);
-    expect(geometry?.sideWidth ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(250);
+    expect(sideRatio).toBeGreaterThanOrEqual(0.22);
+    expect(sideRatio).toBeLessThanOrEqual(0.28);
   }
 }
 
