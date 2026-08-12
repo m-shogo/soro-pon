@@ -65,7 +65,8 @@ for (const needle of [
   'role="group"',
   'aria-label={label}',
   "{...(active ? { 'aria-current': 'true' as const } : {})}",
-  '<span className="sp-player-panel__meta">手牌 {handCount} / 捨て牌 {discardCount}</span>',
+  '<span className="sp-player-panel__meta">',
+  '手牌 {handCount} / 捨て牌 {discardCount}',
 ]) {
   requireText('playerPanel', needle, 'shared PlayerPanel identity and accessibility semantics must remain unchanged');
 }
