@@ -25,13 +25,25 @@ async function boot(page: Page, skin: SkinId, size: CaptureSize) {
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.skin)).toBe(skin);
 }
 
+async function waitForLobbySeatLayout(page: Page, size: CaptureSize) {
+  await expect.poll(
+    () => page.evaluate(() => {
+      const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
+      const lobby = center?.closest<HTMLElement>('.sp-match-setup__lobby') ?? null;
+      const topSeat = lobby?.querySelector<HTMLElement>(":scope > .sp-match-setup__lobby-seat[data-lobby-seat='top']") ?? null;
+      if (lobby === null || topSeat === null) return Number.POSITIVE_INFINITY;
+      return topSeat.getBoundingClientRect().top - lobby.getBoundingClientRect().top;
+    }),
+    { timeout: 2_000 },
+  ).toBeLessThanOrEqual(size.label === 'compact' ? 4 : 10);
+}
+
 async function inspectDeckRack(page: Page) {
   return page.evaluate(() => {
     const rack = document.querySelector<HTMLElement>('.sp-match-setup__deck-rack');
     const tiles = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__deck-rack .sp-tile')];
     const bands = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__deck-rack .sp-tile__band')];
     if (!rack || tiles.length === 0) return null;
-
     const rackRect = rack.getBoundingClientRect();
     const rects = tiles.map((tile) => tile.getBoundingClientRect());
     return {
@@ -49,16 +61,85 @@ async function inspectDeckRack(page: Page) {
   });
 }
 
+async function inspectLobbySeats(page: Page) {
+  return page.evaluate(() => {
+    const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
+    const lobby = center?.closest<HTMLElement>('.sp-match-setup__lobby') ?? null;
+    if (lobby === null || center === null) return null;
+    const seats = [...lobby.querySelectorAll<HTMLElement>(':scope > .sp-match-setup__lobby-seat')];
+    if (seats.length === 0) return null;
+
+    const lobbyRect = lobby.getBoundingClientRect();
+    const centerWidth = center.offsetWidth;
+    const centerHeight = center.offsetHeight;
+    const centerRect = {
+      left: lobbyRect.left + (lobbyRect.width - centerWidth) / 2,
+      right: lobbyRect.left + (lobbyRect.width + centerWidth) / 2,
+      top: lobbyRect.top + (lobbyRect.height - centerHeight) / 2,
+      bottom: lobbyRect.top + (lobbyRect.height + centerHeight) / 2,
+      width: centerWidth,
+      height: centerHeight,
+    };
+
+    const metrics = seats.flatMap((seat) => {
+      const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
+      const seal = panel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
+      const name = panel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
+      if (panel === null || seal === null || name === null) return [];
+      const panelRect = panel.getBoundingClientRect();
+      const sealRect = seal.getBoundingClientRect();
+      const style = getComputedStyle(panel);
+      const nameStyle = getComputedStyle(name);
+      const overlapWidth = Math.min(panelRect.right, centerRect.right) - Math.max(panelRect.left, centerRect.left);
+      const overlapHeight = Math.min(panelRect.bottom, centerRect.bottom) - Math.max(panelRect.top, centerRect.top);
+      return [{
+        position: seat.dataset.lobbySeat ?? 'unknown',
+        panelBottom: panelRect.bottom,
+        height: panelRect.height,
+        radius: Number.parseFloat(style.borderTopLeftRadius) || 0,
+        shadow: style.boxShadow,
+        sealSize: Math.max(sealRect.width, sealRect.height),
+        nameVisible:
+          name.getBoundingClientRect().width > 0 &&
+          name.getBoundingClientRect().height > 0 &&
+          nameStyle.display !== 'none' &&
+          nameStyle.visibility !== 'hidden',
+        ariaLabel: panel.getAttribute('aria-label'),
+        active: panel.classList.contains('sp-player-panel--active'),
+        ariaCurrent: panel.getAttribute('aria-current'),
+        overlapsCenterPanel: overlapWidth > 1 && overlapHeight > 1,
+      }];
+    });
+    const topMetric = metrics.find((metric) => metric.position === 'top') ?? null;
+    return {
+      count: metrics.length,
+      centerWidth: centerRect.width,
+      centerHeight: centerRect.height,
+      topToCenterPanelGap: topMetric === null ? null : centerRect.top - topMetric.panelBottom,
+      minHeight: Math.min(...metrics.map((metric) => metric.height)),
+      maxHeight: Math.max(...metrics.map((metric) => metric.height)),
+      maxRadius: Math.max(...metrics.map((metric) => metric.radius)),
+      maxSealSize: Math.max(...metrics.map((metric) => metric.sealSize)),
+      allShadowless: metrics.every((metric) => metric.shadow === 'none'),
+      visibleNameCount: metrics.filter((metric) => metric.nameVisible).length,
+      ariaLabelCount: metrics.filter((metric) => Boolean(metric.ariaLabel)).length,
+      activeSemanticsValid: metrics.filter((metric) => metric.active).every((metric) => metric.ariaCurrent === 'true'),
+      centerPanelCollisions: metrics.filter((metric) => metric.overlapsCenterPanel).map((metric) => metric.position),
+    };
+  });
+}
+
 async function persistGeometry(
   skin: SkinId,
   playerCount: (typeof PLAYER_COUNTS)[number],
   size: CaptureSize,
   rack: Awaited<ReturnType<typeof inspectDeckRack>>,
+  seats: Awaited<ReturnType<typeof inspectLobbySeats>>,
 ) {
   await mkdir(CAPTURE_DIR, { recursive: true });
   await writeFile(
     join(CAPTURE_DIR, `match-setup-rack-geometry-${skin}-${playerCount}p-${size.label}.json`),
-    `${JSON.stringify({ skin, playerCount, viewport: size, rack }, null, 2)}\n`,
+    `${JSON.stringify({ skin, playerCount, viewport: size, rack, seats }, null, 2)}\n`,
     'utf8',
   );
 }
@@ -71,16 +152,41 @@ for (const skin of SKINS) {
         await page.getByRole('button', { name: /まず遊ぶ/ }).click();
         await expect(page.getByRole('heading', { name: '対局設定' })).toBeVisible();
         await page.getByRole('button', { name: `${playerCount}人戦`, exact: true }).click();
+        if (playerCount === 4) await waitForLobbySeatLayout(page, size);
 
         const rack = await inspectDeckRack(page);
-        await persistGeometry(skin, playerCount, size, rack);
+        const seats = await inspectLobbySeats(page);
+        await persistGeometry(skin, playerCount, size, rack, seats);
         expect(rack).not.toBeNull();
         expect(rack?.tileCount).toBe(8);
         expect(rack?.visibleBands).toBe(0);
         expect(rack?.rowSpread).toBeLessThanOrEqual(1);
         expect(rack?.maxTileBottom).toBeLessThanOrEqual(rack?.rackBottom ?? 0);
+        if (size.label === 'compact') expect(rack?.minTileWidth).toBeGreaterThanOrEqual(34);
+
+        expect(seats).not.toBeNull();
+        expect(seats?.count).toBe(playerCount);
+        expect(seats?.centerWidth ?? 0).toBeGreaterThan(0);
+        expect(seats?.centerHeight ?? 0).toBeGreaterThan(0);
+        expect(seats?.visibleNameCount).toBe(playerCount);
+        expect(seats?.ariaLabelCount).toBe(playerCount);
+        expect(seats?.activeSemanticsValid).toBe(true);
+        expect(seats?.centerPanelCollisions).toEqual([]);
+        if (playerCount === 4) {
+          expect(seats?.topToCenterPanelGap).not.toBeNull();
+          expect(seats?.topToCenterPanelGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(4);
+        } else {
+          expect(seats?.topToCenterPanelGap).toBeNull();
+        }
+        expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);
+        expect(seats?.allShadowless).toBe(true);
         if (size.label === 'compact') {
-          expect(rack?.minTileWidth).toBeGreaterThanOrEqual(34);
+          expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(30);
+          expect(seats?.maxSealSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(16);
+        } else {
+          expect(seats?.minHeight ?? 0).toBeGreaterThanOrEqual(32);
+          expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(40);
+          expect(seats?.maxSealSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(24);
         }
       });
     }

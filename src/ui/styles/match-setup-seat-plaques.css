@@ -1,0 +1,84 @@
+/* Batch 52: setup needs visible member identity, but the table owns the visual.
+ * Present PlayerPanel as a seat plaque in this screen only; preserve its DOM,
+ * name/meta and aria semantics while removing floating-card chrome. */
+@layer screens {
+  .sp-match-setup__lobby-seat .sp-player-panel {
+    min-height: 36px;
+    height: 36px;
+    padding: 3px 7px;
+    gap: 6px;
+    border: 0;
+    border-left: 2px solid color-mix(in srgb, var(--sp-color-cream) 18%, transparent);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--sp-color-night) 28%, transparent);
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  .sp-match-setup__lobby-seat .sp-player-panel--active {
+    border-left-color: color-mix(in srgb, var(--sp-color-lantern-0) 86%, transparent);
+    background: color-mix(in srgb, var(--sp-color-night) 34%, var(--sp-color-lantern-0) 8%);
+    box-shadow: none;
+  }
+
+  .sp-match-setup__lobby-seat .sp-player-panel__seal {
+    width: 22px;
+    height: 22px;
+    border-width: 1px;
+    font-size: 10px;
+  }
+
+  .sp-match-setup__lobby-seat .sp-player-panel__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sp-match-setup__lobby-seat .sp-player-panel__name {
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .sp-match-setup__lobby-seat .sp-player-panel__meta {
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .sp-match-setup__lobby-seat .sp-player-panel__state {
+    display: none;
+  }
+
+  /* The fourth-seat plaque needs positive clearance from the rendered center
+   * labels at every tested viewport. Keep it inside the table while using the
+   * otherwise empty upper gutter rather than shrinking readable content. */
+  .sp-match-setup__lobby-seat[data-lobby-seat='top'] {
+    top: 8px;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-match-setup__lobby-seat .sp-player-panel {
+      min-height: 28px;
+      height: 28px;
+      padding: 2px 5px;
+      gap: 4px;
+      border-radius: 3px;
+    }
+
+    .sp-match-setup__lobby-seat .sp-player-panel__seal {
+      width: 16px;
+      height: 16px;
+      font-size: 8px;
+    }
+
+    .sp-match-setup__lobby-seat .sp-player-panel__name {
+      font-size: 9px;
+    }
+
+    .sp-match-setup__lobby-seat .sp-player-panel__meta {
+      font-size: 8px;
+    }
+
+    .sp-match-setup__lobby-seat[data-lobby-seat='top'] {
+      top: 2px;
+    }
+  }
+}
