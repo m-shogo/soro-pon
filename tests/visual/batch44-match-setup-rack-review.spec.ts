@@ -25,6 +25,19 @@ async function boot(page: Page, skin: SkinId, size: CaptureSize) {
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.skin)).toBe(skin);
 }
 
+async function waitForLobbySeatLayout(page: Page, size: CaptureSize) {
+  await expect.poll(
+    () => page.evaluate(() => {
+      const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
+      const lobby = center?.closest<HTMLElement>('.sp-match-setup__lobby') ?? null;
+      const topSeat = lobby?.querySelector<HTMLElement>(":scope > .sp-match-setup__lobby-seat[data-lobby-seat='top']") ?? null;
+      if (lobby === null || topSeat === null) return Number.POSITIVE_INFINITY;
+      return topSeat.getBoundingClientRect().top - lobby.getBoundingClientRect().top;
+    }),
+    { timeout: 2_000 },
+  ).toBeLessThanOrEqual(size.label === 'compact' ? 4 : 10);
+}
+
 async function inspectDeckRack(page: Page) {
   return page.evaluate(() => {
     const rack = document.querySelector<HTMLElement>('.sp-match-setup__deck-rack');
@@ -73,29 +86,15 @@ async function inspectLobbySeats(page: Page) {
       const seal = panel?.querySelector<HTMLElement>('.sp-player-panel__seal') ?? null;
       const name = panel?.querySelector<HTMLElement>('.sp-player-panel__name') ?? null;
       if (panel === null || seal === null || name === null) return [];
-      const seatRect = seat.getBoundingClientRect();
       const panelRect = panel.getBoundingClientRect();
       const sealRect = seal.getBoundingClientRect();
       const style = getComputedStyle(panel);
-      const seatStyle = getComputedStyle(seat);
       const nameStyle = getComputedStyle(name);
       const overlapWidth = Math.min(panelRect.right, centerRect.right) - Math.max(panelRect.left, centerRect.left);
       const overlapHeight = Math.min(panelRect.bottom, centerRect.bottom) - Math.max(panelRect.top, centerRect.top);
       return [{
         position: seat.dataset.lobbySeat ?? 'unknown',
-        seatTop: seatRect.top,
-        seatBottom: seatRect.bottom,
-        seatLeft: seatRect.left,
-        seatRight: seatRect.right,
-        seatCssTop: seatStyle.top,
-        seatCssRight: seatStyle.right,
-        seatCssBottom: seatStyle.bottom,
-        seatCssLeft: seatStyle.left,
-        seatTransform: seatStyle.transform,
-        panelTop: panelRect.top,
         panelBottom: panelRect.bottom,
-        panelLeft: panelRect.left,
-        panelRight: panelRect.right,
         height: panelRect.height,
         radius: Number.parseFloat(style.borderTopLeftRadius) || 0,
         shadow: style.boxShadow,
@@ -114,21 +113,8 @@ async function inspectLobbySeats(page: Page) {
     const topMetric = metrics.find((metric) => metric.position === 'top') ?? null;
     return {
       count: metrics.length,
-      seatRects: metrics,
-      lobbyTop: lobbyRect.top,
-      lobbyBottom: lobbyRect.bottom,
-      lobbyWidth: lobbyRect.width,
-      lobbyHeight: lobbyRect.height,
-      centerLeft: centerRect.left,
-      centerRight: centerRect.right,
-      centerTop: centerRect.top,
-      centerBottom: centerRect.bottom,
       centerWidth: centerRect.width,
       centerHeight: centerRect.height,
-      topSeatTop: topMetric?.seatTop ?? null,
-      topSeatBottom: topMetric?.seatBottom ?? null,
-      topPanelTop: topMetric?.panelTop ?? null,
-      topPanelBottom: topMetric?.panelBottom ?? null,
       topToCenterPanelGap: topMetric === null ? null : centerRect.top - topMetric.panelBottom,
       minHeight: Math.min(...metrics.map((metric) => metric.height)),
       maxHeight: Math.max(...metrics.map((metric) => metric.height)),
@@ -166,6 +152,7 @@ for (const skin of SKINS) {
         await page.getByRole('button', { name: /まず遊ぶ/ }).click();
         await expect(page.getByRole('heading', { name: '対局設定' })).toBeVisible();
         await page.getByRole('button', { name: `${playerCount}人戦`, exact: true }).click();
+        if (playerCount === 4) await waitForLobbySeatLayout(page, size);
 
         const rack = await inspectDeckRack(page);
         const seats = await inspectLobbySeats(page);
