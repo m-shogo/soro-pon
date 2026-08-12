@@ -46,7 +46,7 @@ for (const needle of [
   'font-size: 8px;',
   'top: 2px;',
 ]) {
-  requireText('css', needle, 'MatchSetup seat plaques must stay thin, readable and explicitly clear the center text');
+  requireText('css', needle, 'MatchSetup seat plaques must stay thin, readable and explicitly clear the center panel');
 }
 
 for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:', 'position: fixed']) {
@@ -76,12 +76,13 @@ for (const needle of [
 
 for (const needle of [
   'inspectLobbySeats',
-  'visibleCenterTextRects',
-  'document.createRange()',
-  'range.selectNodeContents(element);',
-  'visibleCenterTextRectCount',
-  'visibleCenterTextCollisions',
-  'topToCenterTextGap',
+  "document.querySelector<HTMLElement>('.sp-match-setup__lobby')",
+  'const centerWidth = center.offsetWidth;',
+  'const centerHeight = center.offsetHeight;',
+  'lobbyRect.left + (lobbyRect.width - centerWidth) / 2',
+  'lobbyRect.top + (lobbyRect.height - centerHeight) / 2',
+  'centerPanelCollisions',
+  'topToCenterPanelGap',
   'visibleNameCount',
   'ariaLabelCount',
   'activeSemanticsValid',
@@ -89,11 +90,12 @@ for (const needle of [
   'allShadowless',
   'maxSealSize',
   'expect(seats?.count).toBe(playerCount);',
-  'expect(seats?.visibleCenterTextRectCount).toBe(3);',
+  'expect(seats?.centerWidth ?? 0).toBeGreaterThan(0);',
+  'expect(seats?.centerHeight ?? 0).toBeGreaterThan(0);',
   'expect(seats?.visibleNameCount).toBe(playerCount);',
   'expect(seats?.ariaLabelCount).toBe(playerCount);',
-  'expect(seats?.visibleCenterTextCollisions).toEqual([]);',
-  'expect(seats?.topToCenterTextGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(4);',
+  'expect(seats?.centerPanelCollisions).toEqual([]);',
+  'expect(seats?.topToCenterPanelGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(4);',
   'expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);',
   'expect(seats?.allShadowless).toBe(true);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(30);',
@@ -101,7 +103,7 @@ for (const needle of [
   'expect(seats?.minHeight ?? 0).toBeGreaterThanOrEqual(32);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(40);',
 ]) {
-  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry and positive rendered-text clearance across skins/player counts/viewports');
+  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry against the reconstructed rendered center box');
 }
 
 requireText(
