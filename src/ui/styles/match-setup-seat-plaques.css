@@ -47,6 +47,13 @@
     display: none;
   }
 
+  /* The fourth-seat plaque needs positive clearance from the rendered center
+   * labels at every tested viewport. Keep it inside the table while using the
+   * otherwise empty upper gutter rather than shrinking readable content. */
+  .sp-match-setup__lobby-seat[data-lobby-seat='top'] {
+    top: 8px;
+  }
+
   @media (max-width: 899px), (max-height: 430px) {
     .sp-match-setup__lobby-seat .sp-player-panel {
       min-height: 28px;
@@ -68,6 +75,10 @@
 
     .sp-match-setup__lobby-seat .sp-player-panel__meta {
       font-size: 8px;
+    }
+
+    .sp-match-setup__lobby-seat[data-lobby-seat='top'] {
+      top: 2px;
     }
   }
 }
