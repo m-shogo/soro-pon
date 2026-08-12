@@ -51,15 +51,15 @@ async function inspectDeckRack(page: Page) {
 
 async function inspectLobbySeats(page: Page) {
   return page.evaluate(() => {
-    const lobby = document.querySelector<HTMLElement>('.sp-match-setup__lobby');
     const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
+    const lobby = center?.closest<HTMLElement>('.sp-match-setup__lobby') ?? null;
     const seats = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__lobby-seat')];
     if (lobby === null || center === null || seats.length === 0) return null;
 
     /* The center uses left/top:50% + translate(-50%,-50%). Reconstruct its
-     * rendered box from the untransformed layout size and the lobby midpoint
-     * so transform-specific DOMRect/Range behavior cannot create false
-     * collision evidence. */
+     * rendered box from the untransformed layout size and the owning lobby
+     * midpoint so transform-specific DOMRect/Range behavior cannot create
+     * false collision evidence. */
     const lobbyRect = lobby.getBoundingClientRect();
     const centerWidth = center.offsetWidth;
     const centerHeight = center.offsetHeight;
@@ -85,6 +85,8 @@ async function inspectLobbySeats(page: Page) {
       const overlapHeight = Math.min(rect.bottom, centerRect.bottom) - Math.max(rect.top, centerRect.top);
       return [{
         position: seat.dataset.lobbySeat ?? 'unknown',
+        left: rect.left,
+        right: rect.right,
         top: rect.top,
         bottom: rect.bottom,
         height: rect.height,
@@ -105,8 +107,18 @@ async function inspectLobbySeats(page: Page) {
     const topMetric = metrics.find((metric) => metric.position === 'top') ?? null;
     return {
       count: metrics.length,
+      lobbyTop: lobbyRect.top,
+      lobbyBottom: lobbyRect.bottom,
+      lobbyWidth: lobbyRect.width,
+      lobbyHeight: lobbyRect.height,
+      centerLeft: centerRect.left,
+      centerRight: centerRect.right,
+      centerTop: centerRect.top,
+      centerBottom: centerRect.bottom,
       centerWidth: centerRect.width,
       centerHeight: centerRect.height,
+      topPanelTop: topMetric?.top ?? null,
+      topPanelBottom: topMetric?.bottom ?? null,
       topToCenterPanelGap:
         topMetric === null ? null : centerRect.top - topMetric.bottom,
       minHeight: Math.min(...metrics.map((metric) => metric.height)),
