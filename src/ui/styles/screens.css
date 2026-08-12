@@ -194,6 +194,32 @@
     font-size: 9px;
   }
 
+  /* Batch 47: the bottom hand already establishes self ownership visually.
+     Retire the duplicate self player card in compact play while preserving the
+     same role/aria-labelled PlayerPanel in the accessibility tree. This also
+     gives the centered self river an unobstructed lane as discards accumulate. */
+  .sp-table-stage [data-seat-position='self'] .sp-player-panel {
+    position: absolute;
+    width: 1px;
+    min-width: 1px;
+    max-width: 1px;
+    height: 1px;
+    min-height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Compact rivers are tile geometry, not a mini table report. Own the final
+     hide here so generic component chrome cannot reintroduce "捨て牌 N枚". */
+  .sp-match-screen .sp-seat-played__head {
+    display: none;
+  }
+
   /* Batch 42: keep the starter rack visual-first and large enough to read as
      game pieces rather than tiny taxonomy cards. */
   .sp-top-stage__rack {

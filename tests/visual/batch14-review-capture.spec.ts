@@ -134,6 +134,17 @@ async function expectMatchGeometry(page: Page) {
       width: document.documentElement.clientWidth,
       height: document.documentElement.clientHeight,
     };
+    const isVisuallyHidden = (element: HTMLElement): boolean => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return (
+        rect.width <= 2 &&
+        rect.height <= 2 &&
+        style.clipPath !== 'none' &&
+        style.display !== 'none' &&
+        style.visibility !== 'hidden'
+      );
+    };
     const geometrySelectors = [
       '.sp-match-utility',
       '.sp-table-stage',
@@ -158,7 +169,7 @@ async function expectMatchGeometry(page: Page) {
       ),
     ].filter((element) => {
       const rect = element.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
+      return rect.width > 0 && rect.height > 0 && !isVisuallyHidden(element);
     });
     const collisionElements = [
       ...document.querySelectorAll<HTMLElement>(
