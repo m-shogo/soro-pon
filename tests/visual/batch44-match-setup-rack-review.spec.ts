@@ -54,12 +54,17 @@ async function inspectLobbySeats(page: Page) {
     const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
     const seats = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__lobby-seat')];
     if (center === null || seats.length === 0) return null;
-    const visibleCenterParts = [
+    const visibleCenterTextRects = [
       ...center.querySelectorAll<HTMLElement>(':scope > span, :scope > strong, :scope > small'),
-    ].filter((element) => {
-      const rect = element.getBoundingClientRect();
+    ].flatMap((element) => {
       const style = getComputedStyle(element);
-      return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      if (style.display === 'none' || style.visibility === 'hidden' || !element.textContent?.trim()) return [];
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const rect = range.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0
+        ? [{ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }]
+        : [];
     });
     const metrics = seats.flatMap((seat) => {
       const panel = seat.querySelector<HTMLElement>('.sp-player-panel');
@@ -70,8 +75,7 @@ async function inspectLobbySeats(page: Page) {
       const sealRect = seal.getBoundingClientRect();
       const style = getComputedStyle(panel);
       const nameStyle = getComputedStyle(name);
-      const overlapsVisibleCenter = visibleCenterParts.some((part) => {
-        const partRect = part.getBoundingClientRect();
+      const overlapsVisibleCenterText = visibleCenterTextRects.some((partRect) => {
         const overlapWidth = Math.min(rect.right, partRect.right) - Math.max(rect.left, partRect.left);
         const overlapHeight = Math.min(rect.bottom, partRect.bottom) - Math.max(rect.top, partRect.top);
         return overlapWidth > 1 && overlapHeight > 1;
@@ -90,12 +94,12 @@ async function inspectLobbySeats(page: Page) {
         ariaLabel: panel.getAttribute('aria-label'),
         active: panel.classList.contains('sp-player-panel--active'),
         ariaCurrent: panel.getAttribute('aria-current'),
-        overlapsVisibleCenter,
+        overlapsVisibleCenterText,
       }];
     });
     return {
       count: metrics.length,
-      visibleCenterPartCount: visibleCenterParts.length,
+      visibleCenterTextRectCount: visibleCenterTextRects.length,
       minHeight: Math.min(...metrics.map((metric) => metric.height)),
       maxHeight: Math.max(...metrics.map((metric) => metric.height)),
       maxRadius: Math.max(...metrics.map((metric) => metric.radius)),
@@ -104,7 +108,9 @@ async function inspectLobbySeats(page: Page) {
       visibleNameCount: metrics.filter((metric) => metric.nameVisible).length,
       ariaLabelCount: metrics.filter((metric) => Boolean(metric.ariaLabel)).length,
       activeSemanticsValid: metrics.filter((metric) => metric.active).every((metric) => metric.ariaCurrent === 'true'),
-      visibleCenterCollisions: metrics.filter((metric) => metric.overlapsVisibleCenter).map((metric) => metric.position),
+      visibleCenterTextCollisions: metrics
+        .filter((metric) => metric.overlapsVisibleCenterText)
+        .map((metric) => metric.position),
     };
   });
 }
@@ -147,11 +153,11 @@ for (const skin of SKINS) {
 
         expect(seats).not.toBeNull();
         expect(seats?.count).toBe(playerCount);
-        expect(seats?.visibleCenterPartCount).toBe(3);
+        expect(seats?.visibleCenterTextRectCount).toBe(3);
         expect(seats?.visibleNameCount).toBe(playerCount);
         expect(seats?.ariaLabelCount).toBe(playerCount);
         expect(seats?.activeSemanticsValid).toBe(true);
-        expect(seats?.visibleCenterCollisions).toEqual([]);
+        expect(seats?.visibleCenterTextCollisions).toEqual([]);
         expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);
         expect(seats?.allShadowless).toBe(true);
         if (size.label === 'compact') {
