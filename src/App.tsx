@@ -24,6 +24,7 @@ import './ui/styles/compact-opponent-seat-tags.css';
 import './ui/styles/desktop-authored-shell.css';
 import './ui/styles/home-loadout-stage.css';
 import './ui/styles/desktop-top-stage.css';
+import './ui/styles/top-menu-rail.css';
 import './ui/styles/deck-detail-stage.css';
 import './ui/styles/deck-tile-workbench.css';
 import './ui/styles/deck-category-workbench.css';

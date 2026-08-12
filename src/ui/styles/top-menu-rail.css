@@ -1,0 +1,45 @@
+/* Batch 50: compact TOP secondary navigation should read as a game menu rail,
+ * not two dashboard cards. Keep full button semantics and touch area while
+ * removing boxed ink-button chrome from this one navigation context. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-top-stage__nav-main {
+      gap: 0;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 11%, transparent);
+    }
+
+    .sp-top-stage__nav-main .sp-button {
+      min-height: 48px;
+      padding: 5px 9px 5px 12px;
+      border: 0;
+      border-left: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 36%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 11%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: left;
+    }
+
+    .sp-top-stage__nav-main .sp-button:hover,
+    .sp-top-stage__nav-main .sp-button:focus-visible {
+      border-left-color: color-mix(in srgb, var(--sp-color-lantern-0) 76%, transparent);
+      background: color-mix(in srgb, var(--sp-color-lantern-0) 7%, transparent);
+      filter: none;
+    }
+
+    .sp-top-stage__nav-main .sp-button__label {
+      font-size: 12px;
+      line-height: 1.1;
+      letter-spacing: 0.025em;
+    }
+
+    .sp-top-stage__nav-main .sp-button__sub {
+      margin-top: 2px;
+      font-size: 8px;
+      line-height: 1.15;
+      opacity: 0.72;
+    }
+  }
+}

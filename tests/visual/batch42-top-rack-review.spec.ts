@@ -59,6 +59,46 @@ async function inspectPrimarySurface(page: Page) {
   });
 }
 
+async function inspectSecondaryNav(page: Page) {
+  return page.evaluate(() => {
+    const nav = document.querySelector<HTMLElement>('.sp-top-stage__nav-main');
+    const buttons = [...document.querySelectorAll<HTMLElement>('.sp-top-stage__nav-main .sp-button')];
+    if (nav === null || buttons.length === 0) return null;
+    const navRect = nav.getBoundingClientRect();
+    const buttonMetrics = buttons.map((button) => {
+      const rect = button.getBoundingClientRect();
+      const style = getComputedStyle(button);
+      const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
+      return {
+        height: rect.height,
+        radius,
+        boxShadow: style.boxShadow,
+        backgroundColor: style.backgroundColor,
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+      };
+    });
+    return {
+      count: buttons.length,
+      minHeight: Math.min(...buttonMetrics.map((metric) => metric.height)),
+      maxRadius: Math.max(...buttonMetrics.map((metric) => metric.radius)),
+      allShadowless: buttonMetrics.every((metric) => metric.boxShadow === 'none'),
+      allWithinNav: buttonMetrics.every(
+        (metric) =>
+          metric.left >= navRect.left - 0.5 &&
+          metric.right <= navRect.right + 0.5 &&
+          metric.top >= navRect.top - 0.5 &&
+          metric.bottom <= navRect.bottom + 0.5,
+      ),
+      navNeedsScroll:
+        nav.scrollWidth > nav.clientWidth + 1 ||
+        nav.scrollHeight > nav.clientHeight + 1,
+    };
+  });
+}
+
 for (const skin of SKINS) {
   for (const size of SIZES) {
     test(`${skin} ${size.label} TOP starter rack is tile-led`, async ({ page }) => {
@@ -81,6 +121,19 @@ for (const skin of SKINS) {
         expect(primary?.skinLayerCount).toBe(0);
       } else {
         expect(primary?.skinLayerCount).toBe(1);
+      }
+
+      const secondaryNav = await inspectSecondaryNav(page);
+      expect(secondaryNav).not.toBeNull();
+      expect(secondaryNav?.count).toBe(2);
+      expect(secondaryNav?.navNeedsScroll).toBe(false);
+      expect(secondaryNav?.allWithinNav).toBe(true);
+      if (size.label === 'compact') {
+        expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(44);
+        expect(secondaryNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
+        expect(secondaryNav?.allShadowless).toBe(true);
+      } else {
+        expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(50);
       }
     });
   }
