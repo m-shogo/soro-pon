@@ -35,6 +35,7 @@ import './ui/styles/deck-editor-adaptive-inspector.css';
 import './ui/styles/deck-basic-ledger.css';
 import './ui/styles/collection-ledger-stage.css';
 import './ui/styles/collection-stamp-index.css';
+import './ui/styles/collection-empty-score-ledger.css';
 import './ui/styles/motion.css';
 import { AppRoot } from './app/AppRoot';
 import { AppErrorBoundary } from './ui/components/AppErrorBoundary';

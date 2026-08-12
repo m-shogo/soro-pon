@@ -60,17 +60,31 @@ async function expectCompactCollectionGeometry(page: Page) {
     const body = document.querySelector<HTMLElement>('.sp-collection-screen__body');
     const main = document.querySelector<HTMLElement>('.sp-collection-screen__main');
     const recent = document.querySelector<HTMLElement>('.sp-collection-screen__recent');
-    if (!body || !main || !recent) return null;
+    const emptyScoreboard = document.querySelector<HTMLElement>('.sp-collection-scoreboard--empty');
+    const emptyMessage = emptyScoreboard?.querySelector<HTMLElement>('.sp-collection-empty') ?? null;
+    const clearBoard = document.querySelector<HTMLElement>('.sp-clear-board');
+    const clearCells = [...document.querySelectorAll<HTMLElement>('.sp-clear-board__cell')];
+    if (!body || !main || !recent || !emptyScoreboard || !emptyMessage || !clearBoard) return null;
 
     const bodyRect = body.getBoundingClientRect();
     const mainRect = main.getBoundingClientRect();
     const recentRect = recent.getBoundingClientRect();
+    const scoreboardRect = emptyScoreboard.getBoundingClientRect();
+    const messageRect = emptyMessage.getBoundingClientRect();
+    const clearStyle = getComputedStyle(clearBoard);
     return {
       bodyWidth: bodyRect.width,
       mainWidth: mainRect.width,
       recentWidth: recentRect.width,
       recentHeight: recentRect.height,
       recentBelowMain: recentRect.top >= mainRect.bottom - 1,
+      emptyScoreboardHeight: scoreboardRect.height,
+      emptyScoreboardNeedsScroll:
+        emptyScoreboard.scrollWidth > emptyScoreboard.clientWidth + 1 ||
+        emptyScoreboard.scrollHeight > emptyScoreboard.clientHeight + 1,
+      emptyMessageVisible: messageRect.width > 0 && messageRect.height > 0,
+      clearCellCount: clearCells.length,
+      clearBoardColumnCount: clearStyle.gridTemplateColumns.split(' ').filter(Boolean).length,
     };
   });
 
@@ -79,6 +93,11 @@ async function expectCompactCollectionGeometry(page: Page) {
   expect((geometry?.recentWidth ?? 0) / (geometry?.bodyWidth ?? 1)).toBeGreaterThanOrEqual(0.95);
   expect(geometry?.recentHeight).toBeLessThanOrEqual(64);
   expect(geometry?.recentBelowMain).toBe(true);
+  expect(geometry?.emptyScoreboardHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(38);
+  expect(geometry?.emptyScoreboardNeedsScroll).toBe(false);
+  expect(geometry?.emptyMessageVisible).toBe(true);
+  expect(geometry?.clearCellCount).toBe(25);
+  expect(geometry?.clearBoardColumnCount).toBe(5);
 }
 
 for (const skin of SKINS) {
