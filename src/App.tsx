@@ -20,6 +20,7 @@ import './ui/styles/match-coach.css';
 import './ui/styles/deck-role-workbench.css';
 import './ui/styles/interaction-ux.css';
 import './ui/styles/screens.css';
+import './ui/styles/compact-opponent-seat-tags.css';
 import './ui/styles/desktop-authored-shell.css';
 import './ui/styles/home-loadout-stage.css';
 import './ui/styles/desktop-top-stage.css';

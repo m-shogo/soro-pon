@@ -107,6 +107,8 @@ jobs:
         run: pnpm qa:batch47:compact-self-strip-contract
       - name: Batch 48 desktop coach clearance contract
         run: pnpm qa:batch48:desktop-coach-clearance-contract
+      - name: Batch 49 compact opponent seat tags contract
+        run: pnpm qa:batch49:compact-opponent-seat-tags-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
