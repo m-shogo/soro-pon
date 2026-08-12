@@ -37,6 +37,7 @@ export function CollectionScreen({
     .filter((record) => record.humanWon && record.totalPoints !== undefined)
     .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
     .slice(0, 10);
+  const hasTopResults = topResults.length > 0;
 
   return (
     <div className="sp-screen sp-collection-screen">
@@ -71,10 +72,12 @@ export function CollectionScreen({
 
       <div className="sp-screen__body sp-collection-screen__body">
         <div className="sp-screen__col sp-screen__col--main sp-screen__col--scroll sp-collection-screen__main">
-          <PaperPanel variant="aged" title="高得点 Top 10">
-            {topResults.length === 0 ? (
-              <p className="sp-collection-empty">勝利記録はまだありません。</p>
-            ) : (
+          <PaperPanel
+            variant="aged"
+            title="高得点 Top 10"
+            className={`sp-collection-scoreboard${hasTopResults ? '' : ' sp-collection-scoreboard--empty'}`}
+          >
+            {hasTopResults ? (
               <ol className="sp-collection-ranking">
                 {topResults.map((record, index) => (
                   <li key={`${record.dateMs}-${index}`}>
@@ -86,6 +89,8 @@ export function CollectionScreen({
                   </li>
                 ))}
               </ol>
+            ) : (
+              <p className="sp-collection-empty">勝利記録はまだありません。</p>
             )}
           </PaperPanel>
 
