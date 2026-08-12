@@ -1,0 +1,45 @@
+/* Batch 49: compact opponents read as seat labels, not dashboard cards.
+ * Keep identity and active-turn affordance visible while returning table area
+ * to rivers and tile faces. Desktop keeps the full PlayerPanel component. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel {
+      height: 22px;
+      min-height: 22px;
+      padding: 0 4px;
+      gap: 3px;
+      border-radius: 3px;
+      background: color-mix(in srgb, var(--sp-color-night) 42%, transparent);
+      overflow: hidden;
+    }
+
+    .sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel__seal {
+      width: 14px;
+      height: 14px;
+      font-size: 8px;
+      border-width: 1px;
+    }
+
+    .sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel__info {
+      flex: 1;
+      flex-direction: row;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel__name {
+      font-size: 9px;
+      line-height: 1;
+    }
+
+    .sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel__meta,
+    .sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel__state {
+      display: none;
+    }
+
+    .sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel--active {
+      box-shadow: inset 2px 0 0 color-mix(in srgb, var(--sp-color-lantern-0) 82%, transparent);
+      background: color-mix(in srgb, var(--sp-color-night) 50%, var(--sp-color-lantern-0) 10%);
+    }
+  }
+}
