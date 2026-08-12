@@ -36,14 +36,17 @@ for (const needle of [
   'height: 22px;',
   '.sp-match-setup__lobby-seat .sp-player-panel__meta {',
   'font-size: 9px;',
+  ".sp-match-setup__lobby-seat[data-lobby-seat='top'] {",
+  'top: 8px;',
   '@media (max-width: 899px), (max-height: 430px)',
   'min-height: 28px;',
   'height: 28px;',
   'width: 16px;',
   'height: 16px;',
   'font-size: 8px;',
+  'top: 2px;',
 ]) {
-  requireText('css', needle, 'MatchSetup seat plaques must stay thin, readable and context-local');
+  requireText('css', needle, 'MatchSetup seat plaques must stay thin, readable and explicitly clear the center text');
 }
 
 for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:', 'position: fixed']) {
@@ -78,6 +81,7 @@ for (const needle of [
   'range.selectNodeContents(element);',
   'visibleCenterTextRectCount',
   'visibleCenterTextCollisions',
+  'topToCenterTextGap',
   'visibleNameCount',
   'ariaLabelCount',
   'activeSemanticsValid',
@@ -89,6 +93,7 @@ for (const needle of [
   'expect(seats?.visibleNameCount).toBe(playerCount);',
   'expect(seats?.ariaLabelCount).toBe(playerCount);',
   'expect(seats?.visibleCenterTextCollisions).toEqual([]);',
+  'expect(seats?.topToCenterTextGap ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(4);',
   'expect(seats?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(4);',
   'expect(seats?.allShadowless).toBe(true);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(30);',
@@ -96,7 +101,7 @@ for (const needle of [
   'expect(seats?.minHeight ?? 0).toBeGreaterThanOrEqual(32);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(40);',
 ]) {
-  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry against rendered center text across skins/player counts/viewports');
+  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry and positive rendered-text clearance across skins/player counts/viewports');
 }
 
 requireText(
