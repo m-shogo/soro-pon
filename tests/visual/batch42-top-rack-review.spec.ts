@@ -66,6 +66,7 @@ async function inspectTopNavigation(page: Page) {
       const buttons = [...document.querySelectorAll<HTMLElement>(`${selector} .sp-button`)];
       if (group === null || buttons.length === 0) return null;
       const groupRect = group.getBoundingClientRect();
+      const groupStyle = getComputedStyle(group);
       const buttonMetrics = buttons.map((button) => {
         const rect = button.getBoundingClientRect();
         const style = getComputedStyle(button);
@@ -95,6 +96,10 @@ async function inspectTopNavigation(page: Page) {
         groupNeedsScroll:
           group.scrollWidth > group.clientWidth + 1 ||
           group.scrollHeight > group.clientHeight + 1,
+        columnGap: Number.parseFloat(groupStyle.columnGap) || 0,
+        rowSpread:
+          Math.max(...buttonMetrics.map((metric) => metric.top)) -
+          Math.min(...buttonMetrics.map((metric) => metric.top)),
       };
     };
 
@@ -144,6 +149,11 @@ for (const skin of SKINS) {
         expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(44);
         expect(secondaryNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
         expect(secondaryNav?.allShadowless).toBe(true);
+        expect(utilityNav?.minHeight ?? 0).toBeGreaterThanOrEqual(44);
+        expect(utilityNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
+        expect(utilityNav?.allShadowless).toBe(true);
+        expect(utilityNav?.columnGap ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(0.5);
+        expect(utilityNav?.rowSpread ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
       } else {
         expect(secondaryNav?.minHeight ?? 0).toBeGreaterThanOrEqual(64);
         expect(secondaryNav?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
