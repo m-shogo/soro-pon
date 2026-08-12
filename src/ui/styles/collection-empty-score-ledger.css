@@ -1,0 +1,40 @@
+/* Batch 53: an empty high-score panel is status, not content.
+ * In compact Collection only, reduce the empty Top10 paper to one quiet ledger
+ * row and return vertical space to the 25-cell clear board. Ranked records keep
+ * the existing scoreboard layout because this selector requires --empty. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-collection-scoreboard--empty {
+      min-height: 34px;
+      height: 34px;
+      padding: 4px 8px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      border-radius: 2px;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .sp-collection-scoreboard--empty .sp-paper__title {
+      margin: 0;
+      padding: 0 8px 0 0;
+      border-bottom: 0;
+      border-right: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+      font-size: 10px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .sp-collection-scoreboard--empty .sp-collection-empty {
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      font-size: 9px;
+      line-height: 1.1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
