@@ -53,8 +53,9 @@ async function inspectLobbySeats(page: Page) {
   return page.evaluate(() => {
     const center = document.querySelector<HTMLElement>('.sp-match-setup__lobby-center');
     const lobby = center?.closest<HTMLElement>('.sp-match-setup__lobby') ?? null;
-    const seats = [...document.querySelectorAll<HTMLElement>('.sp-match-setup__lobby-seat')];
-    if (lobby === null || center === null || seats.length === 0) return null;
+    if (lobby === null || center === null) return null;
+    const seats = [...lobby.querySelectorAll<HTMLElement>(':scope > .sp-match-setup__lobby-seat')];
+    if (seats.length === 0) return null;
 
     /* The center uses left/top:50% + translate(-50%,-50%). Reconstruct its
      * rendered box from the untransformed layout size and the owning lobby
