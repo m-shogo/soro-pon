@@ -16,9 +16,7 @@ const files = Object.fromEntries(
 const failures = [];
 
 function requireText(fileKey, needle, reason) {
-  if (!files[fileKey].includes(needle)) {
-    failures.push(`${REQUIRED_FILES[fileKey]}: missing ${JSON.stringify(needle)} — ${reason}`);
-  }
+  if (!files[fileKey].includes(needle)) failures.push(`${REQUIRED_FILES[fileKey]}: missing ${JSON.stringify(needle)} — ${reason}`);
 }
 
 requireText('app', "import './ui/styles/match-setup-seat-plaques.css';", 'Batch 52 screen-specific plaque styling must be loaded');
@@ -45,14 +43,10 @@ for (const needle of [
   'height: 16px;',
   'font-size: 8px;',
   'top: 2px;',
-]) {
-  requireText('css', needle, 'MatchSetup seat plaques must stay thin, readable and explicitly clear the center panel');
-}
+]) requireText('css', needle, 'MatchSetup seat plaques must stay thin, readable and explicitly clear the center panel');
 
 for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:', 'position: fixed']) {
-  if (files.css.includes(forbidden)) {
-    failures.push(`${REQUIRED_FILES.css}: forbidden ${JSON.stringify(forbidden)} in Batch 52 plaque styling`);
-  }
+  if (files.css.includes(forbidden)) failures.push(`${REQUIRED_FILES.css}: forbidden ${JSON.stringify(forbidden)} in Batch 52 plaque styling`);
 }
 
 for (const needle of [
@@ -60,9 +54,7 @@ for (const needle of [
   '<PlayerPanel name={name} kind="cpu" handCount={8} discardCount={0} />',
   'data-lobby-seat="self"',
   'data-lobby-seat={position}',
-]) {
-  requireText('screen', needle, 'MatchSetup must keep the same PlayerPanel data and seat semantics');
-}
+]) requireText('screen', needle, 'MatchSetup must keep the same PlayerPanel data and seat semantics');
 
 for (const needle of [
   'role="group"',
@@ -70,11 +62,14 @@ for (const needle of [
   "{...(active ? { 'aria-current': 'true' as const } : {})}",
   '<span className="sp-player-panel__meta">',
   '手牌 {handCount} / 捨て牌 {discardCount}',
-]) {
-  requireText('playerPanel', needle, 'shared PlayerPanel identity and accessibility semantics must remain unchanged');
-}
+]) requireText('playerPanel', needle, 'shared PlayerPanel identity and accessibility semantics must remain unchanged');
 
 for (const needle of [
+  'waitForLobbySeatLayout',
+  'await expect.poll(',
+  ":scope > .sp-match-setup__lobby-seat[data-lobby-seat='top']",
+  "size.label === 'compact' ? 4 : 10",
+  'if (playerCount === 4) await waitForLobbySeatLayout(page, size);',
   'inspectLobbySeats',
   "const lobby = center?.closest<HTMLElement>('.sp-match-setup__lobby') ?? null;",
   "lobby.querySelectorAll<HTMLElement>(':scope > .sp-match-setup__lobby-seat')",
@@ -103,15 +98,9 @@ for (const needle of [
   'expect(seats?.maxSealSize ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(16);',
   'expect(seats?.minHeight ?? 0).toBeGreaterThanOrEqual(32);',
   'expect(seats?.maxHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(40);',
-]) {
-  requireText('visual', needle, 'real MatchSetup evidence must prove plaque geometry within one owning lobby and against its reconstructed center box');
-}
+]) requireText('visual', needle, 'real MatchSetup evidence must wait for seat transition settlement and prove final plaque geometry');
 
-requireText(
-  'packageJson',
-  '"qa:batch52:match-setup-seat-plaques-contract": "node scripts/qa/validate-batch52-match-setup-seat-plaques-contract.mjs"',
-  'Batch 52 contract must be directly runnable',
-);
+requireText('packageJson', '"qa:batch52:match-setup-seat-plaques-contract": "node scripts/qa/validate-batch52-match-setup-seat-plaques-contract.mjs"', 'Batch 52 contract must be directly runnable');
 requireText('workflow', 'pnpm qa:batch52:match-setup-seat-plaques-contract', 'Batch 52 contract must block CI drift');
 
 if (failures.length > 0) {
