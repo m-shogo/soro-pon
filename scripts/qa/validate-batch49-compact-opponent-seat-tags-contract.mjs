@@ -43,9 +43,19 @@ for (const needle of [
   requireText('css', needle, 'compact opponent seats must remain thin, readable and visibly active');
 }
 
-for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:', 'display: none;\n    }\n\n    .sp-table-stage [data-seat-position]:not([data-seat-position=\'self\']) .sp-player-panel']) {
+for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:']) {
   if (files.css.includes(forbidden)) {
     failures.push(`${REQUIRED_FILES.css}: forbidden ${JSON.stringify(forbidden)} in Batch 49 seat-label styling`);
+  }
+}
+
+const panelSelector = ".sp-table-stage [data-seat-position]:not([data-seat-position='self']) .sp-player-panel {";
+const panelStart = files.css.indexOf(panelSelector);
+const panelEnd = panelStart < 0 ? -1 : files.css.indexOf('}', panelStart);
+const panelBlock = panelStart >= 0 && panelEnd > panelStart ? files.css.slice(panelStart, panelEnd + 1) : '';
+for (const forbidden of ['display: none', 'visibility: hidden']) {
+  if (panelBlock.includes(forbidden)) {
+    failures.push(`${REQUIRED_FILES.css}: opponent PlayerPanel shell contains forbidden ${JSON.stringify(forbidden)}`);
   }
 }
 
