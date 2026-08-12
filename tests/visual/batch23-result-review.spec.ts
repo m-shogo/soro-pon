@@ -74,6 +74,76 @@ async function expectViewportContract(page: Page) {
   expect(result.tooSmall).toEqual([]);
 }
 
+async function inspectResultComposition(page: Page) {
+  return page.evaluate(() => {
+    const stage = document.querySelector<HTMLElement>('.sp-result-screen__stage');
+    const main = document.querySelector<HTMLElement>('.sp-result-screen__main');
+    const side = document.querySelector<HTMLElement>('.sp-result-screen__side');
+    const ledger = document.querySelector<HTMLElement>('.sp-result-screen__ledger');
+    const actions = document.querySelector<HTMLElement>('.sp-result-screen__actions');
+    if (!stage || !main || !side || !ledger || !actions) return null;
+
+    const visible = (element: HTMLElement) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+    };
+    const panels = [...ledger.querySelectorAll<HTMLElement>(':scope > .sp-paper-panel')];
+    const skinLayers = [
+      ...ledger.querySelectorAll<HTMLElement>(':scope > .sp-paper-panel > .sp-skin-layer'),
+    ];
+    const buttons = [...actions.querySelectorAll<HTMLButtonElement>('button')].filter(visible);
+    const stageRect = stage.getBoundingClientRect();
+    const mainRect = main.getBoundingClientRect();
+    const sideRect = side.getBoundingClientRect();
+
+    return {
+      stageWidth: stageRect.width,
+      mainWidth: mainRect.width,
+      sideWidth: sideRect.width,
+      sideRightOfMain: sideRect.left >= mainRect.right - 1,
+      sideTopAlignedWithMain: Math.abs(sideRect.top - mainRect.top) <= 2,
+      sideOverflow: side.scrollWidth > side.clientWidth + 1 || side.scrollHeight > side.clientHeight + 1,
+      ledgerOverflow:
+        ledger.scrollWidth > ledger.clientWidth + 1 || ledger.scrollHeight > ledger.clientHeight + 1,
+      actionsOverflow:
+        actions.scrollWidth > actions.clientWidth + 1 || actions.scrollHeight > actions.clientHeight + 1,
+      actionCount: buttons.length,
+      maxPanelRadius:
+        panels.length === 0
+          ? 0
+          : Math.max(
+              ...panels.map((panel) => Number.parseFloat(getComputedStyle(panel).borderTopLeftRadius) || 0),
+            ),
+      panelsShadowless: panels.every((panel) => getComputedStyle(panel).boxShadow === 'none'),
+      visibleSkinLayerCount: skinLayers.filter(visible).length,
+    };
+  });
+}
+
+async function expectResultComposition(page: Page, size: CaptureSize) {
+  const geometry = await inspectResultComposition(page);
+  expect(geometry).not.toBeNull();
+  expect(geometry?.sideRightOfMain).toBe(true);
+  expect(geometry?.sideOverflow).toBe(false);
+  expect(geometry?.ledgerOverflow).toBe(false);
+  expect(geometry?.actionsOverflow).toBe(false);
+  expect(geometry?.actionCount).toBe(3);
+
+  if (size.label === 'compact') {
+    expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(160);
+    expect(geometry?.sideWidth ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(174);
+    expect((geometry?.mainWidth ?? 0) / (geometry?.stageWidth ?? 1)).toBeGreaterThanOrEqual(0.76);
+    expect(geometry?.maxPanelRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
+    expect(geometry?.panelsShadowless).toBe(true);
+    expect(geometry?.visibleSkinLayerCount).toBe(0);
+  } else {
+    expect(geometry?.sideTopAlignedWithMain).toBe(true);
+    expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(214);
+    expect((geometry?.sideWidth ?? 0) / (geometry?.stageWidth ?? 1)).toBeGreaterThanOrEqual(0.2);
+  }
+}
+
 async function waitForReadyAction(page: Page): Promise<ReadyAction> {
   const handle = await page.waitForFunction(() => {
     const isVisible = (element: Element | null): element is HTMLElement => {
@@ -159,6 +229,7 @@ for (const skin of SKINS) {
       await expect(page.getByRole('button', { name: '記憶帳を見る' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'TOPへ' })).toBeVisible();
       await expectViewportContract(page);
+      await expectResultComposition(page, size);
 
       await mkdir(CAPTURE_DIR, { recursive: true });
       await page.screenshot({

@@ -1,0 +1,83 @@
+/* Batch 55: compact Result keeps its vertical budget. Instead of moving the
+ * ledger below the winning hand, compress the existing right column into one
+ * game-scoreboard strip. Ranking/achievements/coins/actions remain intact;
+ * only nested paper-card surfaces are retired in this compact context. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-result-screen__side {
+      width: 166px;
+      min-width: 166px;
+      gap: 3px;
+      padding-left: 4px;
+    }
+
+    .sp-result-screen__ledger {
+      min-width: 0;
+      gap: 0;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      background: var(--sp-surface-overlay);
+      color: var(--sp-text-on-dark);
+      overflow: hidden;
+    }
+
+    .sp-result-screen__ledger > .sp-paper-panel {
+      min-width: 0;
+      padding: 3px 4px;
+      border: 0;
+      border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      color: inherit;
+    }
+
+    .sp-result-screen__ledger > .sp-paper-panel:last-child {
+      border-bottom: 0;
+    }
+
+    .sp-result-screen__ledger > .sp-paper-panel > .sp-skin-layer {
+      display: none;
+    }
+
+    .sp-result-screen__ledger > .sp-paper-panel--selected {
+      padding-left: 5px;
+      border-left: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 72%, transparent);
+      box-shadow: none;
+    }
+
+    .sp-result-screen__ledger .sp-paper-panel__title {
+      margin-bottom: 2px;
+      padding-bottom: 1px;
+      border-bottom-color: color-mix(in srgb, currentColor 14%, transparent);
+      font-size: 8px;
+      line-height: 1.05;
+    }
+
+    .sp-result-screen__ledger .sp-issue-list {
+      gap: 0;
+      color: inherit;
+      font-size: 8px;
+      line-height: 1.1;
+    }
+
+    .sp-result-screen__coin-value {
+      color: inherit;
+      font-size: 17px;
+    }
+
+    .sp-result-screen__coin-note,
+    .sp-result-screen__more-achievements {
+      color: color-mix(in srgb, currentColor 72%, transparent);
+      font-size: 7px;
+    }
+
+    .sp-result-screen__actions {
+      min-width: 0;
+    }
+
+    .sp-result-screen__actions .sp-button {
+      min-width: 0;
+    }
+  }
+}
