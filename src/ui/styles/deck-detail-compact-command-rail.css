@@ -1,0 +1,29 @@
+/* Batch 58: compact DeckDetail utility actions read as one command rail,
+ * not three detached web buttons. Handlers and Button semantics stay shared. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-deck-detail-stage__utility {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      padding-top: 0;
+      overflow: hidden;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    }
+
+    .sp-deck-detail-stage__utility .sp-button {
+      min-width: 0;
+      min-height: 32px;
+      padding: 2px 8px;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      filter: none;
+      font-size: 9px;
+      line-height: 1.1;
+    }
+  }
+}
