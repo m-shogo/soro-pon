@@ -56,6 +56,8 @@ jobs:
         run: pnpm exec playwright test tests/visual/batch23-result-review.spec.ts
       - name: Verify Batch 64 Result total contrast
         run: pnpm exec playwright test tests/visual/batch64-result-total-contrast-review.spec.ts
+      - name: Verify Batch 65 Collection desktop archive ledger
+        run: pnpm exec playwright test tests/visual/batch65-collection-desktop-archive-ledger-review.spec.ts
       - name: Upload visual review artifact
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
