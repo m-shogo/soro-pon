@@ -1,0 +1,8 @@
+/* Batch 64: ScoreBreakdown total is a dark semantic surface. Its text must
+ * follow the skin's on-dark contract instead of a physical cream palette slot.
+ * Result is scoped here so shared score DOM and engine semantics stay intact. */
+@layer screens {
+  .sp-result-screen .sp-score-breakdown__total {
+    color: var(--sp-text-on-dark);
+  }
+}
