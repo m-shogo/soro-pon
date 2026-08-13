@@ -67,6 +67,7 @@
     "qa:batch55:result-compact-scoreboard-strip-contract": "node scripts/qa/validate-batch55-result-compact-scoreboard-strip-contract.mjs",
     "qa:batch56:top-compact-utility-index-contract": "node scripts/qa/validate-batch56-top-compact-utility-index-contract.mjs",
     "qa:batch57:deck-detail-role-ledger-contract": "node scripts/qa/validate-batch57-deck-detail-role-ledger-contract.mjs",
+    "qa:batch58:deck-detail-command-rail-contract": "node scripts/qa/validate-batch58-deck-detail-command-rail-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
