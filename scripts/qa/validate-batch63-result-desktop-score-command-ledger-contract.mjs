@@ -85,8 +85,13 @@ for (const needle of [
   'filter: none;',
   '.sp-result-screen__actions .sp-button:first-child {',
   'border-bottom-width: 2px;',
+  ":root[data-skin='yorunoshirube'] .sp-result-screen__ledger > .sp-paper-panel",
+  ":root[data-skin='yorunoshirube'] .sp-result-screen__actions .sp-button",
+  'color: var(--sp-color-cream);',
+  ":root[data-skin='yorunoshirube'] .sp-result-screen__coin-note",
+  'color: var(--sp-color-cream-dim);',
 ]) {
-  requireText('css', needle, 'desktop Result must remain a connected score ledger plus command rail');
+  requireText('css', needle, 'desktop Result must remain a connected, readable score ledger plus command rail');
 }
 for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:', 'position: fixed']) {
   forbidText('css', forbidden, 'Batch 63 must not add specificity hacks, promo effects, glass, or floating UI');
@@ -96,6 +101,7 @@ for (const needle of [
   'inspectResultComposition',
   'expectResultComposition',
   'playRealMatchToResult',
+  'const colorLuma = (element: HTMLElement) => {',
   "expect(geometry?.ledgerGap).toBe(0);",
   "expect(geometry?.actionGap).toBe(0);",
   'expect(geometry?.maxPanelRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);',
@@ -106,12 +112,15 @@ for (const needle of [
   'expect(geometry?.actionsShadowless).toBe(true);',
   'expect(geometry?.actionsTransparent).toBe(true);',
   'expect(geometry?.rematchAccentWidth ?? 0).toBeGreaterThanOrEqual(2);',
+  "if (geometry?.skinId === 'yorunoshirube') {",
+  'expect(geometry.minLedgerTextLuma).toBeGreaterThanOrEqual(0.45);',
+  'expect(geometry.minActionTextLuma).toBeGreaterThanOrEqual(0.45);',
   'expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(214);',
   'expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(160);',
   'expect(geometry?.sideWidth ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(174);',
   'result-${skin}-${size.label}.png',
 ]) {
-  requireText('visual', needle, 'real-match evidence must measure Batch 63 desktop geometry and retain Batch 55 compact gates');
+  requireText('visual', needle, 'real-match evidence must measure Batch 63 geometry, dark-skin readability, and Batch 55 compact gates');
 }
 for (const forbidden of ['state.result =', "phase: 'result'", 'SHOW_RESULT', 'applyMatchAction(']) {
   forbidText('visual', forbidden, 'Result evidence must not synthesize or inject an end state');
