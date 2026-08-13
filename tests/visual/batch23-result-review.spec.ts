@@ -88,6 +88,15 @@ async function inspectResultComposition(page: Page) {
       const style = getComputedStyle(element);
       return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
     };
+    const radius = (element: HTMLElement) => {
+      const style = getComputedStyle(element);
+      return Math.max(
+        Number.parseFloat(style.borderTopLeftRadius) || 0,
+        Number.parseFloat(style.borderTopRightRadius) || 0,
+        Number.parseFloat(style.borderBottomLeftRadius) || 0,
+        Number.parseFloat(style.borderBottomRightRadius) || 0,
+      );
+    };
     const panels = [...ledger.querySelectorAll<HTMLElement>(':scope > .sp-paper-panel')];
     const skinLayers = [
       ...ledger.querySelectorAll<HTMLElement>(':scope > .sp-paper-panel > .sp-skin-layer'),
@@ -108,15 +117,22 @@ async function inspectResultComposition(page: Page) {
         ledger.scrollWidth > ledger.clientWidth + 1 || ledger.scrollHeight > ledger.clientHeight + 1,
       actionsOverflow:
         actions.scrollWidth > actions.clientWidth + 1 || actions.scrollHeight > actions.clientHeight + 1,
+      ledgerGap: Number.parseFloat(getComputedStyle(ledger).rowGap) || 0,
+      actionGap: Number.parseFloat(getComputedStyle(actions).columnGap) || 0,
       actionCount: buttons.length,
-      maxPanelRadius:
-        panels.length === 0
-          ? 0
-          : Math.max(
-              ...panels.map((panel) => Number.parseFloat(getComputedStyle(panel).borderTopLeftRadius) || 0),
-            ),
+      maxPanelRadius: panels.length === 0 ? 0 : Math.max(...panels.map(radius)),
       panelsShadowless: panels.every((panel) => getComputedStyle(panel).boxShadow === 'none'),
+      panelsTransparent: panels.every(
+        (panel) => getComputedStyle(panel).backgroundColor === 'rgba(0, 0, 0, 0)',
+      ),
       visibleSkinLayerCount: skinLayers.filter(visible).length,
+      maxActionRadius: buttons.length === 0 ? 0 : Math.max(...buttons.map(radius)),
+      actionsShadowless: buttons.every((button) => getComputedStyle(button).boxShadow === 'none'),
+      actionsTransparent: buttons.every(
+        (button) => getComputedStyle(button).backgroundColor === 'rgba(0, 0, 0, 0)',
+      ),
+      rematchAccentWidth:
+        buttons.length === 0 ? 0 : Number.parseFloat(getComputedStyle(buttons[0]).borderBottomWidth) || 0,
     };
   });
 }
@@ -141,6 +157,16 @@ async function expectResultComposition(page: Page, size: CaptureSize) {
     expect(geometry?.sideTopAlignedWithMain).toBe(true);
     expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(214);
     expect((geometry?.sideWidth ?? 0) / (geometry?.stageWidth ?? 1)).toBeGreaterThanOrEqual(0.2);
+    expect(geometry?.ledgerGap).toBe(0);
+    expect(geometry?.actionGap).toBe(0);
+    expect(geometry?.maxPanelRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
+    expect(geometry?.panelsShadowless).toBe(true);
+    expect(geometry?.panelsTransparent).toBe(true);
+    expect(geometry?.visibleSkinLayerCount).toBe(0);
+    expect(geometry?.maxActionRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
+    expect(geometry?.actionsShadowless).toBe(true);
+    expect(geometry?.actionsTransparent).toBe(true);
+    expect(geometry?.rematchAccentWidth ?? 0).toBeGreaterThanOrEqual(2);
   }
 }
 
