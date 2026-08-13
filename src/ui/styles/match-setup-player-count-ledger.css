@@ -1,0 +1,44 @@
+/* Batch 66: player-count selection is one connected selector ledger instead
+ * of two detached web buttons. Button DOM/aria state and lobby behavior stay
+ * shared; only MatchSetup presentation is flattened here. */
+@layer screens {
+  .sp-match-setup__count-options {
+    gap: 0;
+    overflow: hidden;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+  }
+
+  .sp-match-setup__count-options .sp-button {
+    min-width: 0;
+    min-height: 40px;
+    padding: 4px 8px;
+    border: 0;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    filter: none;
+  }
+
+  .sp-match-setup__count-options .sp-button > .sp-skin-layer {
+    display: none;
+  }
+
+  .sp-match-setup__count-options .sp-button[aria-pressed='true'] {
+    border-bottom-color: color-mix(in srgb, var(--sp-color-lantern-0) 82%, transparent);
+    border-bottom-width: 2px;
+    color: var(--sp-color-cream);
+    font-weight: var(--sp-weight-strong);
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-match-setup__count-options .sp-button {
+      min-height: 32px;
+      padding: 2px 5px;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+  }
+}
