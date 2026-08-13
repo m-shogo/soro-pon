@@ -5,6 +5,7 @@ const REQUIRED_FILES = {
   screen: 'src/ui/screens/CollectionScreen.tsx',
   authoredCss: 'src/ui/styles/collection-authored.css',
   stageCss: 'src/ui/styles/collection-ledger-stage.css',
+  emptyCss: 'src/ui/styles/collection-empty-score-ledger.css',
   css: 'src/ui/styles/collection-desktop-archive-ledger.css',
   visual: 'tests/visual/batch65-collection-desktop-archive-ledger-review.spec.ts',
   batch22Visual: 'tests/visual/batch22-collection-review.spec.ts',
@@ -52,7 +53,7 @@ for (const needle of [
   '@media (max-width: 899px), (max-height: 430px)',
   'border-radius: 4px;',
 ]) {
-  requireText('authoredCss', needle, 'summary, paper surface, and compact card shell ownership must remain intact');
+  requireText('authoredCss', needle, 'summary, paper surface, and compact non-empty card shell ownership must remain intact');
 }
 for (const needle of [
   'width: min(1180px, 100%);',
@@ -63,6 +64,14 @@ for (const needle of [
   'max-height: 58px;',
 ]) {
   requireText('stageCss', needle, 'Batch 22 desktop stage and compact chronology geometry must remain intact');
+}
+for (const needle of [
+  'Batch 53: an empty high-score panel is status, not content.',
+  '.sp-collection-scoreboard--empty {',
+  'border-radius: 2px;',
+  'height: 34px;',
+]) {
+  requireText('emptyCss', needle, 'Batch 53 compact empty-score shell must remain a deliberate 2px-radius status row');
 }
 
 for (const needle of [
@@ -104,13 +113,15 @@ for (const needle of [
   'expect(geometry?.firstAccentWidth ?? 0).toBeGreaterThanOrEqual(2);',
   'expect(geometry?.recentRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);',
   'expect(geometry?.visibleDirectSkinLayers).toBe(0);',
-  'expect(geometry?.minMainPanelRadius ?? 0).toBeGreaterThanOrEqual(3.5);',
+  'expect(geometry?.emptyScoreboardRadius ?? 0).toBeGreaterThanOrEqual(1.5);',
+  'expect(geometry?.emptyScoreboardRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2.5);',
+  'expect(geometry?.minNonEmptyMainPanelRadius ?? 0).toBeGreaterThanOrEqual(3.5);',
   'expect(geometry?.recentRadius ?? 0).toBeGreaterThanOrEqual(3.5);',
   'expect(geometry?.recentHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(64);',
   'expect(geometry?.emptyScoreboardHeight ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(38);',
   'collection-archive-ledger-${skin}-${size.label}.png',
 ]) {
-  requireText('visual', needle, 'Batch 65 evidence must prove desktop flattening and compact non-regression on both skins');
+  requireText('visual', needle, 'Batch 65 evidence must prove desktop flattening and preserve Batch 53/22 compact shell distinctions');
 }
 
 for (const needle of [
