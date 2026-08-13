@@ -1,0 +1,44 @@
+/* Batch 60: desktop DeckDetail categories read as one taxonomy ledger instead
+ * of a cloud of generic pills. CategoryChip DOM/semantics stay shared; only
+ * the DeckDetail desktop inspection stage retires chip chrome. */
+@layer screens {
+  @media (min-width: 900px) and (min-height: 431px) {
+    .sp-deck-detail-stage__categories {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      overflow: hidden;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+    }
+
+    .sp-deck-detail-stage__categories .sp-category-chip {
+      width: 100%;
+      min-width: 0;
+      min-height: 30px;
+      justify-content: flex-start;
+      gap: 6px;
+      padding: 5px 7px;
+      overflow: hidden;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      border-radius: 0;
+      background: transparent;
+      color: var(--sp-color-cream);
+      box-shadow: none;
+      font-size: 10px;
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sp-deck-detail-stage__categories .sp-category-chip__dot {
+      width: 6px;
+      height: 16px;
+      flex: none;
+      border: 0;
+      border-radius: 1px;
+    }
+  }
+}
