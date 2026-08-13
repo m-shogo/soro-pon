@@ -37,9 +37,9 @@ requireText(
 
 for (const needle of [
   'className="sp-deck-detail-stage__utility"',
-  '>書き出す<',
-  '>削除<',
-  '>もどる<',
+  '書き出す',
+  '削除',
+  'もどる',
   'onClick={onExport}',
   'onClick={() => setDeleteConfirmOpen(true)}',
   'onClick={onBack}',
