@@ -109,6 +109,7 @@ for (const needle of [
   'expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(214);',
   'expect(geometry?.sideWidth ?? 0).toBeGreaterThanOrEqual(160);',
   'expect(geometry?.sideWidth ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(174);',
+  'result-${skin}-${size.label}.png',
 ]) {
   requireText('visual', needle, 'real-match evidence must measure Batch 63 desktop geometry and retain Batch 55 compact gates');
 }
@@ -122,6 +123,16 @@ requireText(
   'canonical Batch 14 review capture must continue to include real-match Result evidence',
 );
 requireText('visualWorkflow', 'pnpm qa:batch14:review-capture', 'Visual Review must run the canonical real-match Result capture');
+requireText(
+  'visualWorkflow',
+  '- name: Verify Batch 63 Result desktop score command ledger',
+  'Batch 63 must leave a named final Result proof step before artifact upload',
+);
+requireText(
+  'visualWorkflow',
+  'pnpm exec playwright test tests/visual/batch23-result-review.spec.ts',
+  'Batch 63 final Visual Review step must retain Result screenshots in the uploaded artifact',
+);
 requireText(
   'packageJson',
   '"qa:batch63:result-desktop-score-command-ledger-contract": "node scripts/qa/validate-batch63-result-desktop-score-command-ledger-contract.mjs"',
