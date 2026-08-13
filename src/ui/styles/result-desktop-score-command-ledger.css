@@ -57,5 +57,16 @@
       color: var(--sp-color-cream);
       font-weight: var(--sp-weight-strong);
     }
+
+    :root[data-skin='yorunoshirube'] .sp-result-screen__ledger > .sp-paper-panel,
+    :root[data-skin='yorunoshirube'] .sp-result-screen__ledger .sp-paper-panel__title,
+    :root[data-skin='yorunoshirube'] .sp-result-screen__actions .sp-button {
+      color: var(--sp-color-cream);
+    }
+
+    :root[data-skin='yorunoshirube'] .sp-result-screen__more-achievements,
+    :root[data-skin='yorunoshirube'] .sp-result-screen__coin-note {
+      color: var(--sp-color-cream-dim);
+    }
   }
 }
