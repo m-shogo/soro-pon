@@ -35,8 +35,9 @@ async function inspectCollectionShells(page: Page) {
     if (!body || !main || !recent || !emptyScoreboard) return null;
 
     const mainPanels = [...main.querySelectorAll<HTMLElement>(':scope > .sp-paper-panel')];
+    const nonEmptyMainPanels = mainPanels.filter((panel) => !panel.classList.contains('sp-collection-scoreboard--empty'));
     const recentPanel = recent.querySelector<HTMLElement>(':scope > .sp-paper-panel');
-    if (mainPanels.length === 0 || !recentPanel) return null;
+    if (mainPanels.length === 0 || nonEmptyMainPanels.length === 0 || !recentPanel) return null;
 
     const radius = (element: HTMLElement) => {
       const style = getComputedStyle(element);
@@ -64,7 +65,8 @@ async function inspectCollectionShells(page: Page) {
       mainPanelCount: mainPanels.length,
       mainGap: Number.parseFloat(getComputedStyle(main).rowGap) || 0,
       maxMainPanelRadius: Math.max(...mainPanels.map(radius)),
-      minMainPanelRadius: Math.min(...mainPanels.map(radius)),
+      minNonEmptyMainPanelRadius: Math.min(...nonEmptyMainPanels.map(radius)),
+      emptyScoreboardRadius: radius(emptyScoreboard),
       allMainPanelsShadowless: mainPanels.every((panel) => getComputedStyle(panel).boxShadow === 'none'),
       firstAccentWidth: Number.parseFloat(getComputedStyle(mainPanels[0]).borderTopWidth) || 0,
       recentRadius: radius(recentPanel),
@@ -109,7 +111,9 @@ for (const skin of SKINS) {
         expect(geometry?.recentWidth ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(270);
       } else {
         expect(geometry?.mainGap ?? 0).toBeGreaterThan(0);
-        expect(geometry?.minMainPanelRadius ?? 0).toBeGreaterThanOrEqual(3.5);
+        expect(geometry?.emptyScoreboardRadius ?? 0).toBeGreaterThanOrEqual(1.5);
+        expect(geometry?.emptyScoreboardRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2.5);
+        expect(geometry?.minNonEmptyMainPanelRadius ?? 0).toBeGreaterThanOrEqual(3.5);
         expect(geometry?.recentRadius ?? 0).toBeGreaterThanOrEqual(3.5);
         expect(geometry?.mainWidthRatio ?? 0).toBeGreaterThanOrEqual(0.95);
         expect(geometry?.recentWidthRatio ?? 0).toBeGreaterThanOrEqual(0.95);
