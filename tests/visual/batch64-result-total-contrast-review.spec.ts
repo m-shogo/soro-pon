@@ -90,7 +90,8 @@ async function inspectTotalContrast(page: Page) {
   return page.evaluate(() => {
     const total = document.querySelector<HTMLElement>('.sp-score-breakdown__total');
     const value = document.querySelector<HTMLElement>('.sp-score-breakdown__total-points');
-    if (!total || !value) return null;
+    const resultScreen = document.querySelector<HTMLElement>('.sp-result-screen');
+    if (!total || !value || !resultScreen) return null;
 
     const parseRgb = (input: string) => {
       const match = input.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
@@ -114,11 +115,14 @@ async function inspectTotalContrast(page: Page) {
     const background = parseRgb(totalStyle.backgroundColor);
 
     const semanticProbe = document.createElement('span');
-    semanticProbe.style.color = 'var(--sp-text-on-dark)';
+    semanticProbe.style.color = 'var(--sp-result-total-text)';
+    semanticProbe.style.backgroundColor = 'var(--sp-result-total-surface)';
     semanticProbe.style.position = 'fixed';
     semanticProbe.style.visibility = 'hidden';
-    document.body.append(semanticProbe);
-    const semanticColor = getComputedStyle(semanticProbe).color;
+    resultScreen.append(semanticProbe);
+    const semanticStyle = getComputedStyle(semanticProbe);
+    const semanticTextColor = semanticStyle.color;
+    const semanticSurfaceColor = semanticStyle.backgroundColor;
     semanticProbe.remove();
 
     const rect = total.getBoundingClientRect();
@@ -128,7 +132,8 @@ async function inspectTotalContrast(page: Page) {
       value: value.textContent?.trim() ?? '',
       foreground: totalStyle.color,
       background: totalStyle.backgroundColor,
-      semanticColor,
+      semanticTextColor,
+      semanticSurfaceColor,
       contrast: foreground && background ? contrastRatio(foreground, background) : 0,
       totalVisible: rect.width > 0 && rect.height > 0,
       valueVisible: valueRect.width > 0 && valueRect.height > 0,
@@ -153,7 +158,8 @@ for (const skin of SKINS) {
       expect(total?.totalVisible).toBe(true);
       expect(total?.valueVisible).toBe(true);
       expect(total?.overflow).toBe(false);
-      expect(total?.foreground).toBe(total?.semanticColor);
+      expect(total?.foreground).toBe(total?.semanticTextColor);
+      expect(total?.background).toBe(total?.semanticSurfaceColor);
       expect(total?.contrast ?? 0).toBeGreaterThanOrEqual(4.5);
 
       await mkdir(CAPTURE_DIR, { recursive: true });
