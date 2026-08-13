@@ -70,6 +70,7 @@
     "qa:batch58:deck-detail-command-rail-contract": "node scripts/qa/validate-batch58-deck-detail-command-rail-contract.mjs",
     "qa:batch59:deck-detail-desktop-role-ledger-contract": "node scripts/qa/validate-batch59-deck-detail-desktop-role-ledger-contract.mjs",
     "qa:batch60:deck-detail-taxonomy-ledger-contract": "node scripts/qa/validate-batch60-deck-detail-taxonomy-ledger-contract.mjs",
+    "qa:batch61:deck-detail-desktop-command-ledger-contract": "node scripts/qa/validate-batch61-deck-detail-desktop-command-ledger-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",

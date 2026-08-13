@@ -101,9 +101,6 @@ for (const skin of SKINS) {
         expect(geometry?.minTargetHeight ?? 0).toBeGreaterThanOrEqual(32);
         expect(geometry?.maxRadius ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(1);
         expect(geometry?.allShadowless).toBe(true);
-      } else {
-        expect(geometry?.gap ?? 0).toBeGreaterThan(0);
-        expect(geometry?.maxRadius ?? 0).toBeGreaterThan(1);
       }
 
       await mkdir(CAPTURE_DIR, { recursive: true });

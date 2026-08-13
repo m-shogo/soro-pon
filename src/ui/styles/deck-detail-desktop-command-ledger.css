@@ -1,0 +1,29 @@
+/* Batch 61: desktop DeckDetail utility actions read as one command ledger,
+ * not three detached web buttons. Shared Button DOM/handlers stay untouched. */
+@layer screens {
+  @media (min-width: 900px) and (min-height: 431px) {
+    .sp-deck-detail-stage__utility {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      padding-top: 0;
+      overflow: hidden;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+    }
+
+    .sp-deck-detail-stage__utility .sp-button {
+      min-width: 0;
+      min-height: 36px;
+      padding: 4px 7px;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      filter: none;
+      font-size: 10px;
+      line-height: 1.15;
+    }
+  }
+}

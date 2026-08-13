@@ -5,6 +5,7 @@ const REQUIRED_FILES = {
   screen: 'src/ui/screens/DeckDetailScreen.tsx',
   deckDetail: 'src/ui/styles/deck-detail-stage.css',
   compactCss: 'src/ui/styles/deck-detail-compact-command-rail.css',
+  desktopCommandCss: 'src/ui/styles/deck-detail-desktop-command-ledger.css',
   roleCss: 'src/ui/styles/deck-detail-compact-role-ledger.css',
   visual: 'tests/visual/batch58-deck-detail-command-rail-review.spec.ts',
   visualWorkflow: '.github/workflows/batch14-visual-review.yml',
@@ -32,7 +33,12 @@ function forbidText(fileKey, needle, reason) {
 requireText(
   'app',
   "import './ui/styles/deck-detail-compact-command-rail.css';",
-  'Batch 58 compact command rail override must be loaded after DeckDetail styles',
+  'Batch 58 compact command rail override must remain loaded',
+);
+requireText(
+  'app',
+  "import './ui/styles/deck-detail-desktop-command-ledger.css';",
+  'Batch 61 now owns the intentionally superseded desktop utility presentation',
 );
 
 for (const needle of [
@@ -50,11 +56,9 @@ for (const needle of [
 for (const needle of [
   '.sp-deck-detail-stage__utility {',
   'grid-template-columns: repeat(3, minmax(0, 1fr));',
-  'gap: 4px;',
   '.sp-deck-detail-stage__utility .sp-button {',
-  'border-radius: 4px;',
 ]) {
-  requireText('deckDetail', needle, 'desktop DeckDetail utility composition must remain the existing detached three-button layout');
+  requireText('deckDetail', needle, 'base DeckDetail utility structure must remain a three-command grid');
 }
 
 for (const needle of [
@@ -70,11 +74,23 @@ for (const needle of [
   'background: transparent;',
   'box-shadow: none;',
 ]) {
-  requireText('compactCss', needle, 'compact utility must remain one shallow three-command rail without web-button chrome');
+  requireText('compactCss', needle, 'Batch 58 compact utility must remain one shallow three-command rail without web-button chrome');
 }
 
 for (const forbidden of ['!important', 'linear-gradient(', 'radial-gradient(', 'backdrop-filter:', 'position: fixed']) {
   forbidText('compactCss', forbidden, 'Batch 58 must not introduce specificity hacks, decorative gradients/glass, or floating UI');
+}
+
+for (const needle of [
+  'Batch 61: desktop DeckDetail utility actions read as one command ledger',
+  '@media (min-width: 900px) and (min-height: 431px)',
+  'grid-template-columns: repeat(3, minmax(0, 1fr));',
+  'gap: 0;',
+  'border-radius: 0;',
+  'background: transparent;',
+  'box-shadow: none;',
+]) {
+  requireText('desktopCommandCss', needle, 'Batch 61 must explicitly own the newer desktop utility presentation instead of invalidating Batch 58 compact behavior');
 }
 
 requireText(
@@ -98,7 +114,13 @@ for (const needle of [
   "expect(geometry?.allShadowless).toBe(true);",
   'deck-detail-command-rail-${skin}-${size.label}.png',
 ]) {
-  requireText('visual', needle, 'Batch 58 evidence must cover both skins, compact command geometry, and surrounding DeckDetail non-regression');
+  requireText('visual', needle, 'Batch 58 evidence must continue to prove compact command geometry plus cross-viewport structural non-regression');
+}
+for (const staleAssertion of [
+  'expect(geometry?.gap ?? 0).toBeGreaterThan(0);',
+  'expect(geometry?.maxRadius ?? 0).toBeGreaterThan(1);',
+]) {
+  forbidText('visual', staleAssertion, 'Batch 61 intentionally supersedes the old Batch 58 desktop chrome assumption; desktop styling is now verified by the Batch 61 spec');
 }
 
 requireText('visualWorkflow', 'pnpm qa:batch14:review-capture', 'canonical Batch 14 capture command must remain intact');
@@ -110,17 +132,22 @@ requireText(
 requireText(
   'visualWorkflow',
   'pnpm exec playwright test tests/visual/batch58-deck-detail-command-rail-review.spec.ts',
-  'Batch 58 geometry proof must run as an additional Visual Review step',
+  'Batch 58 compact geometry proof must remain in Visual Review',
+);
+requireText(
+  'visualWorkflow',
+  'pnpm exec playwright test tests/visual/batch61-deck-detail-desktop-command-ledger-review.spec.ts',
+  'Batch 61 must separately verify the newer desktop command ledger geometry',
 );
 requireText(
   'packageJson',
   '"qa:batch58:deck-detail-command-rail-contract": "node scripts/qa/validate-batch58-deck-detail-command-rail-contract.mjs"',
-  'Batch 58 contract must be runnable',
+  'Batch 58 contract must remain runnable',
 );
 requireText(
   'workflow',
   'pnpm qa:batch58:deck-detail-command-rail-contract',
-  'Batch 58 contract must block CI drift',
+  'Batch 58 contract must continue blocking compact drift',
 );
 
 if (failures.length > 0) {
