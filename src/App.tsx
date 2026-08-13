@@ -44,6 +44,7 @@ import './ui/styles/deck-basic-ledger.css';
 import './ui/styles/collection-ledger-stage.css';
 import './ui/styles/collection-stamp-index.css';
 import './ui/styles/collection-empty-score-ledger.css';
+import './ui/styles/collection-desktop-archive-ledger.css';
 import './ui/styles/result-compact-scoreboard-strip.css';
 import './ui/styles/result-desktop-score-command-ledger.css';
 import './ui/styles/score-breakdown-semantic-contrast.css';
