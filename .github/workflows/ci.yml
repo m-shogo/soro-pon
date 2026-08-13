@@ -123,6 +123,8 @@ jobs:
         run: pnpm qa:batch55:result-compact-scoreboard-strip-contract
       - name: Batch 56 TOP compact utility index contract
         run: pnpm qa:batch56:top-compact-utility-index-contract
+      - name: Batch 57 DeckDetail role ledger contract
+        run: pnpm qa:batch57:deck-detail-role-ledger-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
