@@ -127,6 +127,8 @@ jobs:
         run: pnpm qa:batch57:deck-detail-role-ledger-contract
       - name: Batch 58 DeckDetail command rail contract
         run: pnpm qa:batch58:deck-detail-command-rail-contract
+      - name: Batch 59 DeckDetail desktop role ledger contract
+        run: pnpm qa:batch59:deck-detail-desktop-role-ledger-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

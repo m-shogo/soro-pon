@@ -31,6 +31,7 @@ import './ui/styles/top-compact-utility-index.css';
 import './ui/styles/deck-detail-stage.css';
 import './ui/styles/deck-detail-compact-role-ledger.css';
 import './ui/styles/deck-detail-compact-command-rail.css';
+import './ui/styles/deck-detail-desktop-role-ledger.css';
 import './ui/styles/deck-tile-workbench.css';
 import './ui/styles/deck-category-workbench.css';
 import './ui/styles/deck-bonus-workbench.css';
