@@ -1,0 +1,14 @@
+/* Batch 64: Result total owns a semantic surface/text pair derived from each
+ * skin's existing primary contrast contract. Shared score DOM, count-up and
+ * engine semantics stay intact; no skin-specific color is hard-coded here. */
+@layer screens {
+  .sp-result-screen {
+    --sp-result-total-surface: var(--sp-color-crimson);
+    --sp-result-total-text: var(--sp-text-on-primary);
+  }
+
+  .sp-result-screen .sp-score-breakdown__total {
+    background: var(--sp-result-total-surface);
+    color: var(--sp-result-total-text);
+  }
+}
