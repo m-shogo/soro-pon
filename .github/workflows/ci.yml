@@ -133,6 +133,8 @@ jobs:
         run: pnpm qa:batch60:deck-detail-taxonomy-ledger-contract
       - name: Batch 61 DeckDetail desktop command ledger contract
         run: pnpm qa:batch61:deck-detail-desktop-command-ledger-contract
+      - name: Batch 62 DeckList header ledger contract
+        run: pnpm qa:batch62:deck-list-header-ledger-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
