@@ -141,6 +141,8 @@ jobs:
         run: pnpm qa:batch64:result-total-contrast-contract
       - name: Batch 65 Collection desktop archive ledger contract
         run: pnpm qa:batch65:collection-desktop-archive-ledger-contract
+      - name: Batch 66 MatchSetup player-count ledger contract
+        run: pnpm qa:batch66:match-setup-player-count-ledger-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
