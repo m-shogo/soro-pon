@@ -23,14 +23,10 @@ type ResultSignature = {
 async function boot(page: Page, skin: SkinId, size: CaptureSize) {
   await page.setViewportSize({ width: size.width, height: size.height });
   await page.addInitScript(({ skinId, nowMs }) => {
-    // Keep the production seed/session path deterministic. No MatchState or
-    // Result state is injected; AppRoot still creates the match seed itself.
     Date.now = () => nowMs;
     window.localStorage.clear();
     window.localStorage.setItem('soro-pon.skin.v1', skinId);
 
-    // Match progression uses timeouts only to pace CPU/flow presentation. Cap
-    // those waits so evidence runs stay fast without bypassing engine actions.
     const nativeSetTimeout = window.setTimeout.bind(window);
     window.setTimeout = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) =>
       nativeSetTimeout(handler, Math.min(Number(timeout ?? 0), 8), ...args)) as typeof window.setTimeout;
@@ -97,16 +93,30 @@ async function inspectResultComposition(page: Page) {
         Number.parseFloat(style.borderBottomRightRadius) || 0,
       );
     };
+    const colorLuma = (element: HTMLElement) => {
+      const match = getComputedStyle(element).color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (!match) return 0;
+      const r = Number(match[1]) / 255;
+      const g = Number(match[2]) / 255;
+      const b = Number(match[3]) / 255;
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
     const panels = [...ledger.querySelectorAll<HTMLElement>(':scope > .sp-paper-panel')];
     const skinLayers = [
       ...ledger.querySelectorAll<HTMLElement>(':scope > .sp-paper-panel > .sp-skin-layer'),
     ];
     const buttons = [...actions.querySelectorAll<HTMLButtonElement>('button')].filter(visible);
+    const readableLedgerText = [
+      ...ledger.querySelectorAll<HTMLElement>(
+        '.sp-paper-panel__title, .sp-issue-list, .sp-result-screen__more-achievements, .sp-result-screen__coin-value, .sp-result-screen__coin-note',
+      ),
+    ].filter(visible);
     const stageRect = stage.getBoundingClientRect();
     const mainRect = main.getBoundingClientRect();
     const sideRect = side.getBoundingClientRect();
 
     return {
+      skinId: document.documentElement.dataset.skin ?? '',
       stageWidth: stageRect.width,
       mainWidth: mainRect.width,
       sideWidth: sideRect.width,
@@ -133,6 +143,9 @@ async function inspectResultComposition(page: Page) {
       ),
       rematchAccentWidth:
         buttons.length === 0 ? 0 : Number.parseFloat(getComputedStyle(buttons[0]).borderBottomWidth) || 0,
+      minLedgerTextLuma:
+        readableLedgerText.length === 0 ? 1 : Math.min(...readableLedgerText.map(colorLuma)),
+      minActionTextLuma: buttons.length === 0 ? 1 : Math.min(...buttons.map(colorLuma)),
     };
   });
 }
@@ -167,6 +180,10 @@ async function expectResultComposition(page: Page, size: CaptureSize) {
     expect(geometry?.actionsShadowless).toBe(true);
     expect(geometry?.actionsTransparent).toBe(true);
     expect(geometry?.rematchAccentWidth ?? 0).toBeGreaterThanOrEqual(2);
+    if (geometry?.skinId === 'yorunoshirube') {
+      expect(geometry.minLedgerTextLuma).toBeGreaterThanOrEqual(0.45);
+      expect(geometry.minActionTextLuma).toBeGreaterThanOrEqual(0.45);
+    }
   }
 }
 
@@ -230,8 +247,6 @@ async function playRealMatchToResult(page: Page) {
 }
 
 async function readResultSignature(page: Page): Promise<ResultSignature> {
-  // TotalPoints is a presentational count-up; wait for it to settle before
-  // comparing semantic Result output between two identical production runs.
   await page.waitForTimeout(700);
   const title = (await page.locator('.sp-result-frame .sp-paper-panel__title').innerText()).trim();
   const scoreRoleLocator = page.locator('.sp-score-breakdown__row').first();
@@ -277,8 +292,6 @@ test('fixed seed repeats the same semantic Result through real UI actions', asyn
   await playRealMatchToResult(page);
   const first = await readResultSignature(page);
 
-  // Re-run from a fresh app/storage state while keeping the exact same upstream
-  // Date.now seed input and the same action-ready UI policy.
   await boot(page, skin, size);
   await playRealMatchToResult(page);
   const second = await readResultSignature(page);
