@@ -1,0 +1,72 @@
+/* Batch 63: desktop Result side information reads as one score ledger plus one
+ * command rail. Result data, PaperPanel/Button semantics and the compact Batch
+ * 55 scoreboard strip stay shared and untouched. */
+@layer screens {
+  @media (min-width: 900px) and (min-height: 431px) {
+    .sp-result-screen__ledger {
+      gap: 0;
+      overflow: hidden;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+    }
+
+    .sp-result-screen__ledger > .sp-paper-panel {
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .sp-result-screen__ledger > .sp-paper-panel > .sp-skin-layer {
+      display: none;
+    }
+
+    .sp-result-screen__ledger > .sp-paper-panel--selected {
+      border-left: 2px solid color-mix(in srgb, var(--sp-color-lantern-0) 70%, transparent);
+      box-shadow: none;
+    }
+
+    .sp-result-screen__actions {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      overflow: hidden;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    }
+
+    .sp-result-screen__actions .sp-button {
+      min-width: 0;
+      min-height: 40px;
+      padding: 4px 6px;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      filter: none;
+      font-size: 10px;
+      line-height: 1.15;
+    }
+
+    .sp-result-screen__actions .sp-button:first-child {
+      border-bottom-color: color-mix(in srgb, var(--sp-color-lantern-0) 82%, transparent);
+      border-bottom-width: 2px;
+      color: var(--sp-color-cream);
+      font-weight: var(--sp-weight-strong);
+    }
+
+    :root[data-skin='yorunoshirube'] .sp-result-screen__ledger > .sp-paper-panel,
+    :root[data-skin='yorunoshirube'] .sp-result-screen__ledger .sp-paper-panel__title,
+    :root[data-skin='yorunoshirube'] .sp-result-screen__actions .sp-button {
+      color: var(--sp-color-cream);
+    }
+
+    :root[data-skin='yorunoshirube'] .sp-result-screen__more-achievements,
+    :root[data-skin='yorunoshirube'] .sp-result-screen__coin-note {
+      color: var(--sp-color-cream-dim);
+    }
+  }
+}
