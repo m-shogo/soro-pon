@@ -50,6 +50,8 @@ jobs:
         run: pnpm exec playwright test tests/visual/batch60-deck-detail-taxonomy-ledger-review.spec.ts
       - name: Verify Batch 61 DeckDetail desktop command ledger
         run: pnpm exec playwright test tests/visual/batch61-deck-detail-desktop-command-ledger-review.spec.ts
+      - name: Verify Batch 62 DeckList header ledger
+        run: pnpm exec playwright test tests/visual/batch62-deck-list-header-ledger-review.spec.ts
       - name: Upload visual review artifact
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
