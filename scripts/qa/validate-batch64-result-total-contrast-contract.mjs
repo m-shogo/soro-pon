@@ -38,24 +38,28 @@ for (const needle of [
 ]) {
   requireText('component', needle, 'ScoreBreakdown DOM, label, total value, and count-up semantics must remain unchanged');
 }
-requireText(
-  'baseCss',
+for (const needle of [
   '.sp-score-breakdown__total {',
-  'the shared total surface remains the canonical ScoreBreakdown dark surface',
-);
-requireText(
-  'baseCss',
   'background: var(--sp-color-ink);',
-  'Batch 64 changes text semantics only and must not silently redesign the total surface',
-);
+]) {
+  requireText(
+    'baseCss',
+    needle,
+    'shared ScoreBreakdown fallback remains unchanged; Batch 64 owns only the Result-context semantic pair',
+  );
+}
 
 for (const needle of [
-  'Batch 64: ScoreBreakdown total is a dark semantic surface',
+  'Batch 64: Result total owns a semantic surface/text pair',
   '@layer screens {',
+  '.sp-result-screen {',
+  '--sp-result-total-surface: var(--sp-color-crimson);',
+  '--sp-result-total-text: var(--sp-text-on-primary);',
   '.sp-result-screen .sp-score-breakdown__total {',
-  'color: var(--sp-text-on-dark);',
+  'background: var(--sp-result-total-surface);',
+  'color: var(--sp-result-total-text);',
 ]) {
-  requireText('css', needle, 'Result total text must use the skin semantic on-dark token');
+  requireText('css', needle, 'Result total must use one skin-neutral semantic surface/text pair');
 }
 for (const forbidden of [
   '#',
@@ -67,7 +71,7 @@ for (const forbidden of [
   'linear-gradient(',
   'radial-gradient(',
 ]) {
-  forbidText('css', forbidden, 'Batch 64 must be semantic-token driven, skin-neutral, and free of specificity/decorative hacks');
+  forbidText('css', forbidden, 'Batch 64 must be token-driven, skin-neutral, and free of specificity/decorative hacks');
 }
 
 for (const needle of [
@@ -75,15 +79,17 @@ for (const needle of [
   "{ width: 844, height: 390, label: 'compact' }",
   "{ width: 1440, height: 900, label: 'desktop' }",
   'playRealMatchToResult',
-  "semanticProbe.style.color = 'var(--sp-text-on-dark)';",
+  "semanticProbe.style.color = 'var(--sp-result-total-text)';",
+  "semanticProbe.style.backgroundColor = 'var(--sp-result-total-surface)';",
   'contrastRatio',
   "expect(total?.label).toBe('合計得点');",
   'expect(Number(total?.value ?? 0)).toBeGreaterThan(0);',
-  'expect(total?.foreground).toBe(total?.semanticColor);',
+  'expect(total?.foreground).toBe(total?.semanticTextColor);',
+  'expect(total?.background).toBe(total?.semanticSurfaceColor);',
   'expect(total?.contrast ?? 0).toBeGreaterThanOrEqual(4.5);',
   'result-total-contrast-${skin}-${size.label}.png',
 ]) {
-  requireText('visual', needle, 'Batch 64 evidence must prove semantic-token equality and WCAG contrast on real Result UI for both skins/sizes');
+  requireText('visual', needle, 'Batch 64 evidence must prove semantic surface/text equality and WCAG contrast on real Result UI for both skins/sizes');
 }
 for (const forbidden of ['state.result =', "phase: 'result'", 'SHOW_RESULT', 'applyMatchAction(']) {
   forbidText('visual', forbidden, 'Batch 64 contrast evidence must reach Result through real UI actions, not injected state');
