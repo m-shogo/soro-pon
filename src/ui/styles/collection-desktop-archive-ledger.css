@@ -1,0 +1,28 @@
+/* Batch 65: desktop Collection sections read as one archive ledger instead of
+ * detached rounded cards. Section surfaces and all compact ownership remain
+ * intact so paper/ink text contrast does not change with this shell cleanup. */
+@layer screens {
+  @media (min-width: 900px) and (min-height: 431px) {
+    .sp-collection-screen__main {
+      gap: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+    }
+
+    .sp-collection-screen__main > .sp-paper-panel {
+      border-radius: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      box-shadow: none;
+    }
+
+    .sp-collection-screen__main > .sp-paper-panel > .sp-skin-layer,
+    .sp-collection-screen__recent > .sp-paper-panel > .sp-skin-layer {
+      display: none;
+    }
+
+    .sp-collection-screen__recent > .sp-paper-panel {
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+}
