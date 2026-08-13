@@ -1,0 +1,88 @@
+/* Batch 62: DeckList header reads as a catalog index plus one management
+ * command rail, not status pills beside detached web buttons. Deck data,
+ * Button semantics, handlers and the Batch 40 loadout card remain shared. */
+@layer screens {
+  .sp-deck-select__header {
+    border-radius: 2px;
+    box-shadow: none;
+  }
+
+  .sp-deck-select__summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+  }
+
+  .sp-deck-select__summary span {
+    min-width: 0;
+    min-height: 30px;
+    justify-content: center;
+    padding: 3px 8px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .sp-deck-select__summary span + span {
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+  }
+
+  .sp-deck-select__actions {
+    width: min(500px, 44vw);
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.35fr) minmax(0, 0.7fr);
+    gap: 0;
+    overflow: hidden;
+    border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+  }
+
+  .sp-deck-select__actions .sp-button {
+    min-width: 0;
+    min-height: 38px;
+    padding: 4px 10px;
+    border: 0;
+    border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--sp-color-cream) 12%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    filter: none;
+  }
+
+  .sp-deck-select__actions .sp-button:first-child {
+    border-bottom-color: color-mix(in srgb, var(--sp-color-lantern-0) 78%, transparent);
+    border-bottom-width: 2px;
+    color: var(--sp-color-cream);
+    font-weight: var(--sp-weight-strong);
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-deck-select__header {
+      border-radius: 1px;
+    }
+
+    .sp-deck-select__summary {
+      min-width: 112px;
+    }
+
+    .sp-deck-select__summary span {
+      min-height: 28px;
+      padding: 2px 4px;
+    }
+
+    .sp-deck-select__actions {
+      width: min(310px, 45vw);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .sp-deck-select__actions .sp-button {
+      min-height: 32px;
+      padding: 2px 5px;
+      font-size: 9px;
+      line-height: 1.1;
+    }
+  }
+}
