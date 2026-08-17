@@ -48,6 +48,7 @@ async function setInspectorState(page: Page, state: InspectorState) {
     await expect(status).toContainText('注意あり');
   } else {
     await expect(status).toContainText('要修正');
+    await expect(page.locator('.sp-deck-editor-inspector__validation')).toHaveJSProperty('open', true);
   }
 }
 
