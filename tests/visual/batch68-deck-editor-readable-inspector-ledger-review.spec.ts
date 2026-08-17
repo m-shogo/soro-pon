@@ -143,8 +143,9 @@ function expectState(geometry: Awaited<ReturnType<typeof inspectLedger>>, state:
   if (!geometry) return;
 
   if (state === 'clean') {
+    // Playable decks may still carry informational notes (for example unused categories).
+    // Clean here means no blocking errors or warnings, not zero informational issues.
     expect(geometry.statusText).toContain('対局可');
-    expect(geometry.validationText).toContain('問題なし');
     expect(geometry.issueValues[0]).toBe(0);
     expect(geometry.issueValues[1]).toBe(0);
   } else if (state === 'warning') {
