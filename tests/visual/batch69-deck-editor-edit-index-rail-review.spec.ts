@@ -54,6 +54,12 @@ async function expectKeyboardNavigation(page: Page) {
   await bonuses.press('Home');
   await expect(basic).toBeFocused();
   await expect(basic).toHaveAttribute('aria-selected', 'true');
+
+  // The global unlayered focus halo is an accessibility contract and must not
+  // be mistaken for a decorative tab shadow.
+  const focusShadow = await basic.evaluate((element) => getComputedStyle(element).boxShadow);
+  expect(focusShadow).not.toBe('none');
+  await basic.evaluate((element) => element.blur());
 }
 
 async function inspectIndex(page: Page) {
@@ -131,6 +137,8 @@ for (const skin of SKINS) {
         await expect(page.getByRole('tabpanel')).toHaveAttribute('id', `sp-tabpanel-${tab.id}`);
         await expect(page.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', `sp-tab-${tab.id}`);
 
+        // Measure the resting surface separately from the intentional focus halo.
+        await target.evaluate((element) => element.blur());
         const geometry = await inspectIndex(page);
         expect(geometry).not.toBeNull();
         expect(geometry?.display).toBe('grid');
