@@ -147,6 +147,8 @@ jobs:
         run: pnpm qa:batch67:deck-editor-header-command-ledger-contract
       - name: Batch 68 DeckEditor readable inspector ledger contract
         run: pnpm qa:batch68:deck-editor-readable-inspector-ledger-contract
+      - name: Batch 69 DeckEditor edit index rail contract
+        run: pnpm qa:batch69:deck-editor-edit-index-rail-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
