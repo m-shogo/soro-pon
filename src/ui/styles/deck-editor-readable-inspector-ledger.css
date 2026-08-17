@@ -1,0 +1,170 @@
+/* Batch 68: compact DeckEditor inspector keeps the Batch 54 shallow rail,
+ * but redistributes the same information across two readable rows.
+ * Desktop ownership, validation state, and inspector DOM stay unchanged. */
+@layer screens {
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-deck-editor-inspector {
+      grid-template-columns: auto auto minmax(0, 1fr) minmax(96px, 124px);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      column-gap: 6px;
+      row-gap: 0;
+      align-items: stretch;
+    }
+
+    .sp-deck-editor-inspector > .sp-paper-panel {
+      display: contents;
+    }
+
+    .sp-deck-editor-inspector > .sp-paper-panel > .sp-skin-layer {
+      display: none;
+    }
+
+    .sp-deck-editor-inspector > .sp-paper-panel > .sp-paper-panel__title {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      margin: 0;
+      padding: 0 6px 0 0;
+      border: 0;
+      border-right: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      color: var(--sp-color-cream-dim);
+      font-size: 9px;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__status {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
+      justify-content: flex-start;
+      gap: 4px;
+      margin: 0;
+      font-size: 9px;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__status .sp-badge {
+      padding: 1px 4px;
+      font-size: 9px;
+      line-height: 1.15;
+    }
+
+    .sp-deck-editor-inspector__summary {
+      grid-column: 3;
+      grid-row: 1;
+      align-self: stretch;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 0;
+      border: 0;
+    }
+
+    .sp-deck-editor-inspector__summary > div {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 3px;
+      padding: 0 5px;
+      border: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__summary dt {
+      font-size: 9px;
+      line-height: 1.15;
+    }
+
+    .sp-deck-editor-inspector__summary dd {
+      justify-content: flex-start;
+      gap: 2px;
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.1;
+    }
+
+    .sp-deck-editor-inspector__summary small {
+      font-size: 9px;
+      line-height: 1.1;
+    }
+
+    .sp-deck-editor-inspector__issue-counts {
+      grid-column: 1 / 4;
+      grid-row: 2;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 0;
+      margin: 0;
+      border: 0;
+      border-top: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__issue-counts span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-width: 0;
+      padding: 0 5px;
+      border: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 8%, transparent);
+      font-size: 9px;
+      line-height: 1.15;
+    }
+
+    .sp-deck-editor-inspector__issue-counts strong {
+      display: inline;
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.1;
+    }
+
+    .sp-deck-editor-inspector__validation,
+    .sp-deck-editor-inspector__validation-clear {
+      grid-column: 4;
+      grid-row: 1 / 3;
+      min-width: 96px;
+      max-width: 124px;
+      height: 100%;
+      margin: 0;
+      padding: 0 6px;
+      border: 0;
+      border-left: 1px solid color-mix(in srgb, var(--sp-color-cream) 10%, transparent);
+      color: var(--sp-color-cream-dim);
+      font-size: 9px;
+      line-height: 1.15;
+    }
+
+    .sp-deck-editor-inspector__validation-clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .sp-deck-editor-inspector__validation {
+      overflow: hidden auto;
+    }
+
+    .sp-deck-editor-inspector__validation summary {
+      min-height: 24px;
+      height: 24px;
+      padding: 0;
+      font-size: 9px;
+      line-height: 1.15;
+    }
+
+    .sp-deck-editor-inspector__validation-body {
+      padding: 0 0 2px;
+      font-size: 9px;
+      line-height: 1.15;
+    }
+  }
+}

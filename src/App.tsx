@@ -41,6 +41,7 @@ import './ui/styles/deck-category-workbench.css';
 import './ui/styles/deck-bonus-workbench.css';
 import './ui/styles/deck-editor-adaptive-inspector.css';
 import './ui/styles/deck-editor-compact-inspector-rail.css';
+import './ui/styles/deck-editor-readable-inspector-ledger.css';
 import './ui/styles/deck-editor-header-command-ledger.css';
 import './ui/styles/deck-basic-ledger.css';
 import './ui/styles/collection-ledger-stage.css';

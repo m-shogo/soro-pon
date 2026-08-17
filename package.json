@@ -77,6 +77,7 @@
     "qa:batch65:collection-desktop-archive-ledger-contract": "node scripts/qa/validate-batch65-collection-desktop-archive-ledger-contract.mjs",
     "qa:batch66:match-setup-player-count-ledger-contract": "node scripts/qa/validate-batch66-match-setup-player-count-ledger-contract.mjs",
     "qa:batch67:deck-editor-header-command-ledger-contract": "node scripts/qa/validate-batch67-deck-editor-header-command-ledger-contract.mjs",
+    "qa:batch68:deck-editor-readable-inspector-ledger-contract": "node scripts/qa/validate-batch68-deck-editor-readable-inspector-ledger-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",
