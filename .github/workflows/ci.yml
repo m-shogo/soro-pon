@@ -145,6 +145,8 @@ jobs:
         run: pnpm qa:batch66:match-setup-player-count-ledger-contract
       - name: Batch 67 DeckEditor header command ledger contract
         run: pnpm qa:batch67:deck-editor-header-command-ledger-contract
+      - name: Batch 68 DeckEditor readable inspector ledger contract
+        run: pnpm qa:batch68:deck-editor-readable-inspector-ledger-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
