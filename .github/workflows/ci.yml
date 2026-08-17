@@ -143,6 +143,8 @@ jobs:
         run: pnpm qa:batch65:collection-desktop-archive-ledger-contract
       - name: Batch 66 MatchSetup player-count ledger contract
         run: pnpm qa:batch66:match-setup-player-count-ledger-contract
+      - name: Batch 67 DeckEditor header command ledger contract
+        run: pnpm qa:batch67:deck-editor-header-command-ledger-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

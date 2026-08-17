@@ -1,0 +1,67 @@
+/* Batch 67: DeckEditor save/back actions form one state-aware command ledger.
+ * Button DOM, dirty/save semantics, leave confirmation, and shared Button
+ * ownership stay unchanged; only the editor header presentation is flattened. */
+@layer screens {
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header {
+    gap: 0;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-screen__title {
+    margin-right: var(--sp-space-12);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-badge {
+    margin-right: var(--sp-space-12);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button--primary,
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button--ghost {
+    min-width: 108px;
+    min-height: 40px;
+    margin: 0;
+    padding: 4px 10px;
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 14%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    filter: none;
+    font-size: var(--sp-font-sm);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button--ghost {
+    border-left: 0;
+    color: var(--sp-color-cream-dim);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button > .sp-skin-layer {
+    display: none;
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button--primary:not(:disabled) {
+    border-bottom-width: 2px;
+    border-bottom-color: var(--sp-color-lantern-0);
+    color: var(--sp-color-cream);
+    font-weight: var(--sp-weight-strong);
+  }
+
+  .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button--primary:disabled {
+    color: var(--sp-color-cream-dim);
+    opacity: 0.42;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header .sp-screen__title,
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-badge {
+      margin-right: var(--sp-space-8);
+    }
+
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button--primary,
+    .sp-screen:has([id^='sp-tabpanel-']) > .sp-screen__header > .sp-button--ghost {
+      min-width: 82px;
+      min-height: 32px;
+      padding: 2px 7px;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+  }
+}
