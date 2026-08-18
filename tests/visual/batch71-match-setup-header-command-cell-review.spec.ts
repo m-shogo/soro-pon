@@ -77,6 +77,9 @@ for (const skin of SKINS) {
       // The unlayered global focus halo is an accessibility contract. Measure
       // it while focused, then inspect decorative resting state after blur.
       await back.focus();
+      await page.keyboard.press('Tab');
+      await page.keyboard.press('Shift+Tab');
+      await expect(back).toBeFocused();
       const focusShadow = await back.evaluate((element) => getComputedStyle(element).boxShadow);
       expect(focusShadow).not.toBe('none');
       await back.evaluate((element) => element.blur());
