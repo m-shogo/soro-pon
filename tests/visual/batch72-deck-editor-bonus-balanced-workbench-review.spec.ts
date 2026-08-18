@@ -81,6 +81,17 @@ for (const skin of SKINS) {
     test(`${skin} ${size.label} Bonus workspace uses the pane without compact drift`, async ({ page }) => {
       await bootBonusEditor(page, skin, size);
       const geometry = await inspectBonusWorkspace(page);
+
+      // Capture every state before assertions so a failed geometry proof still
+      // leaves a current-head visual artifact for diagnosis and direct review.
+      await mkdir(CAPTURE_DIR, { recursive: true });
+      await page.screenshot({
+        path: join(CAPTURE_DIR, `deck-editor-bonus-balanced-${skin}-${size.label}.png`),
+        fullPage: false,
+        animations: 'disabled',
+        caret: 'hide',
+      });
+
       expect(geometry).not.toBeNull();
       expect(geometry?.panelOverflowX).toBe(false);
       expect(geometry?.viewportOverflow).toBe(false);
@@ -104,14 +115,6 @@ for (const skin of SKINS) {
         // switch its two-column body from the existing start-aligned geometry.
         expect(geometry?.bodyAlignItems).toBe('start');
       }
-
-      await mkdir(CAPTURE_DIR, { recursive: true });
-      await page.screenshot({
-        path: join(CAPTURE_DIR, `deck-editor-bonus-balanced-${skin}-${size.label}.png`),
-        fullPage: false,
-        animations: 'disabled',
-        caret: 'hide',
-      });
     });
   }
 }
