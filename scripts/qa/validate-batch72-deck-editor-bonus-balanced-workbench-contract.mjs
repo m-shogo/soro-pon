@@ -95,6 +95,15 @@ for (const forbidden of [
   forbidText('css', forbidden, 'Batch 72 must stay desktop-only, skin-neutral, and free of decorative/specificity escape hatches');
 }
 
+const screensLayerPattern = /@layer\s+screens\s*\{/;
+const baseUsesScreensLayer = screensLayerPattern.test(files.baseCss);
+const overrideUsesScreensLayer = screensLayerPattern.test(files.css);
+if (baseUsesScreensLayer !== overrideUsesScreensLayer) {
+  failures.push(
+    `${REQUIRED_FILES.css}: cascade-layer ownership must match ${REQUIRED_FILES.baseCss}; layering only one side lets an unlayered canonical declaration outrank the desktop override`,
+  );
+}
+
 for (const needle of [
   "const SKINS = ['yorunoshirube', 'cute-pop'] as const;",
   "{ width: 844, height: 390, label: 'compact' }",
