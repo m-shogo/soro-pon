@@ -82,7 +82,7 @@ for (const needle of [
   "await page.keyboard.press('Shift+Tab');",
   'await expect(back).toBeFocused();',
   "expect(focusShadow).not.toBe('none');",
-  'await back.evaluate((element) => element.blur());',
+  'Measure decorative resting state before keyboard focus',
   "expect(geometry?.label).toBe('もどる');",
   'expect(geometry?.enabled).toBe(true);',
   "expect(geometry?.shadow).toBe('none');",

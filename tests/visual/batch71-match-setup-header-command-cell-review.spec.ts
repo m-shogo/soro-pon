@@ -74,16 +74,8 @@ for (const skin of SKINS) {
       const back = page.getByRole('button', { name: 'もどる', exact: true });
       await expect(back).toBeEnabled();
 
-      // The unlayered global focus halo is an accessibility contract. Measure
-      // it while focused, then inspect decorative resting state after blur.
-      await back.focus();
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Shift+Tab');
-      await expect(back).toBeFocused();
-      const focusShadow = await back.evaluate((element) => getComputedStyle(element).boxShadow);
-      expect(focusShadow).not.toBe('none');
-      await back.evaluate((element) => element.blur());
-
+      // Measure decorative resting state before keyboard focus so the global
+      // accessibility halo cannot be misclassified as a component shadow.
       const geometry = await inspectBackCommand(page);
       expect(geometry).not.toBeNull();
       expect(geometry?.label).toBe('もどる');
@@ -104,6 +96,15 @@ for (const skin of SKINS) {
         animations: 'disabled',
         caret: 'hide',
       });
+
+      // The unlayered global focus halo is an accessibility contract. Enter
+      // keyboard modality through the real focus order before measuring it.
+      await back.focus();
+      await page.keyboard.press('Tab');
+      await page.keyboard.press('Shift+Tab');
+      await expect(back).toBeFocused();
+      const focusShadow = await back.evaluate((element) => getComputedStyle(element).boxShadow);
+      expect(focusShadow).not.toBe('none');
     });
   }
 }
