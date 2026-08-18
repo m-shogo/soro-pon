@@ -40,6 +40,7 @@ import './ui/styles/deck-detail-desktop-command-ledger.css';
 import './ui/styles/deck-tile-workbench.css';
 import './ui/styles/deck-category-workbench.css';
 import './ui/styles/deck-bonus-workbench.css';
+import './ui/styles/deck-bonus-desktop-balanced-workbench.css';
 import './ui/styles/deck-editor-adaptive-inspector.css';
 import './ui/styles/deck-editor-compact-inspector-rail.css';
 import './ui/styles/deck-editor-readable-inspector-ledger.css';
