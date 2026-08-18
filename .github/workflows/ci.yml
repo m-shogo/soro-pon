@@ -64,95 +64,97 @@ jobs:
       - name: Batch 26 midgame evidence contract
         run: pnpm qa:batch26:midgame-evidence-contract
       - name: Batch 27 desktop table density contract
-        run: pnpm qa:batch27:desktop-table-density-contract
+        run: pnpm qa:batch27-desktop-table-density-contract
       - name: Batch 28 match coach contract
-        run: pnpm qa:batch28:match-coach-contract
+        run: pnpm qa:batch28-match-coach-contract
       - name: Batch 29 match setup lobby contract
-        run: pnpm qa:batch29:match-setup-lobby-contract
+        run: pnpm qa:batch29-match-setup-lobby-contract
       - name: Batch 30 result outcome board contract
-        run: pnpm qa:batch30:result-outcome-board-contract
+        run: pnpm qa:batch30-result-outcome-board-contract
       - name: Batch 31 featured deck selection contract
-        run: pnpm qa:batch31:featured-deck-select-contract
+        run: pnpm qa:batch31-featured-deck-select-contract
       - name: Batch 32 desktop TOP stage contract
-        run: pnpm qa:batch32:desktop-top-stage-contract
+        run: pnpm qa:batch32-desktop-top-stage-contract
       - name: Batch 33 collection stamp index contract
-        run: pnpm qa:batch33:collection-stamp-index-contract
+        run: pnpm qa:batch33-collection-stamp-index-contract
       - name: Batch 34 basic deck ledger contract
-        run: pnpm qa:batch34:basic-deck-ledger-contract
+        run: pnpm qa:batch34-basic-deck-ledger-contract
       - name: Batch 35 bonus recipe shelf contract
-        run: pnpm qa:batch35:bonus-recipe-shelf-contract
+        run: pnpm qa:batch35-bonus-recipe-shelf-contract
       - name: Batch 36 role recipe density contract
-        run: pnpm qa:batch36:role-recipe-density-contract
+        run: pnpm qa:batch36-role-recipe-density-contract
       - name: Batch 37 match setup deck face contract
-        run: pnpm qa:batch37:match-setup-deck-face-contract
+        run: pnpm qa:batch37-match-setup-deck-face-contract
       - name: Batch 38 result group row contract
-        run: pnpm qa:batch38:result-group-row-contract
+        run: pnpm qa:batch38-result-group-row-contract
       - name: Batch 39 deck detail compact rail contract
-        run: pnpm qa:batch39:deck-detail-compact-rail-contract
+        run: pnpm qa:batch39-deck-detail-compact-rail-contract
       - name: Batch 40 deck list loadout strip contract
-        run: pnpm qa:batch40:deck-list-loadout-strip-contract
+        run: pnpm qa:batch40-deck-list-loadout-strip-contract
       - name: Batch 41 collection bottom rail contract
-        run: pnpm qa:batch41:collection-bottom-rail-contract
+        run: pnpm qa:batch41-collection-bottom-rail-contract
       - name: Batch 42 clean TOP tile rack contract
-        run: pnpm qa:batch42:top-clean-tile-rack-contract
+        run: pnpm qa:batch42-top-clean-tile-rack-contract
       - name: Batch 43 Yorunoshirube primary fallback contract
-        run: pnpm qa:batch43:yorunoshirube-primary-fallback-contract
+        run: pnpm qa:batch43-yorunoshirube-primary-fallback-contract
       - name: Batch 44 clean MatchSetup rack contract
-        run: pnpm qa:batch44:match-setup-clean-rack-contract
+        run: pnpm qa:batch44-match-setup-clean-rack-contract
       - name: Batch 45 match taxonomy marker contract
-        run: pnpm qa:batch45:match-taxonomy-marker-contract
+        run: pnpm qa:batch45-match-taxonomy-marker-contract
       - name: Batch 46 selected tile feedback contract
-        run: pnpm qa:batch46:selected-tile-feedback-contract
+        run: pnpm qa:batch46-selected-tile-feedback-contract
       - name: Batch 47 compact self strip contract
-        run: pnpm qa:batch47:compact-self-strip-contract
+        run: pnpm qa:batch47-compact-self-strip-contract
       - name: Batch 48 desktop coach clearance contract
-        run: pnpm qa:batch48:desktop-coach-clearance-contract
+        run: pnpm qa:batch48-desktop-coach-clearance-contract
       - name: Batch 49 compact opponent seat tags contract
-        run: pnpm qa:batch49:compact-opponent-seat-tags-contract
+        run: pnpm qa:batch49-compact-opponent-seat-tags-contract
       - name: Batch 50 TOP menu rail contract
-        run: pnpm qa:batch50:top-menu-rail-contract
+        run: pnpm qa:batch50-top-menu-rail-contract
       - name: Batch 51 desktop TOP index contract
-        run: pnpm qa:batch51:desktop-top-index-contract
+        run: pnpm qa:batch51-desktop-top-index-contract
       - name: Batch 52 MatchSetup seat plaques contract
-        run: pnpm qa:batch52:match-setup-seat-plaques-contract
+        run: pnpm qa:batch52-match-setup-seat-plaques-contract
       - name: Batch 53 Collection empty score ledger contract
-        run: pnpm qa:batch53:collection-empty-score-ledger-contract
+        run: pnpm qa:batch53-collection-empty-score-ledger-contract
       - name: Batch 54 editor compact inspector rail contract
-        run: pnpm qa:batch54:editor-compact-inspector-rail-contract
+        run: pnpm qa:batch54-editor-compact-inspector-rail-contract
       - name: Batch 55 Result compact scoreboard strip contract
-        run: pnpm qa:batch55:result-compact-scoreboard-strip-contract
+        run: pnpm qa:batch55-result-compact-scoreboard-strip-contract
       - name: Batch 56 TOP compact utility index contract
-        run: pnpm qa:batch56:top-compact-utility-index-contract
+        run: pnpm qa:batch56-top-compact-utility-index-contract
       - name: Batch 57 DeckDetail role ledger contract
-        run: pnpm qa:batch57:deck-detail-role-ledger-contract
+        run: pnpm qa:batch57-deck-detail-role-ledger-contract
       - name: Batch 58 DeckDetail command rail contract
-        run: pnpm qa:batch58:deck-detail-command-rail-contract
+        run: pnpm qa:batch58-deck-detail-command-rail-contract
       - name: Batch 59 DeckDetail desktop role ledger contract
-        run: pnpm qa:batch59:deck-detail-desktop-role-ledger-contract
+        run: pnpm qa:batch59-deck-detail-desktop-role-ledger-contract
       - name: Batch 60 DeckDetail taxonomy ledger contract
-        run: pnpm qa:batch60:deck-detail-taxonomy-ledger-contract
+        run: pnpm qa:batch60-deck-detail-taxonomy-ledger-contract
       - name: Batch 61 DeckDetail desktop command ledger contract
-        run: pnpm qa:batch61:deck-detail-desktop-command-ledger-contract
+        run: pnpm qa:batch61-deck-detail-desktop-command-ledger-contract
       - name: Batch 62 DeckList header ledger contract
-        run: pnpm qa:batch62:deck-list-header-ledger-contract
+        run: pnpm qa:batch62-deck-list-header-ledger-contract
       - name: Batch 63 Result desktop score command ledger contract
-        run: pnpm qa:batch63:result-desktop-score-command-ledger-contract
+        run: pnpm qa:batch63-result-desktop-score-command-ledger-contract
       - name: Batch 64 Result total contrast contract
-        run: pnpm qa:batch64:result-total-contrast-contract
+        run: pnpm qa:batch64-result-total-contrast-contract
       - name: Batch 65 Collection desktop archive ledger contract
-        run: pnpm qa:batch65:collection-desktop-archive-ledger-contract
+        run: pnpm qa:batch65-collection-desktop-archive-ledger-contract
       - name: Batch 66 MatchSetup player-count ledger contract
-        run: pnpm qa:batch66:match-setup-player-count-ledger-contract
+        run: pnpm qa:batch66-match-setup-player-count-ledger-contract
       - name: Batch 67 DeckEditor header command ledger contract
-        run: pnpm qa:batch67:deck-editor-header-command-ledger-contract
+        run: pnpm qa:batch67-deck-editor-header-command-ledger-contract
       - name: Batch 68 DeckEditor readable inspector ledger contract
-        run: pnpm qa:batch68:deck-editor-readable-inspector-ledger-contract
+        run: pnpm qa:batch68-deck-editor-readable-inspector-ledger-contract
       - name: Batch 69 DeckEditor edit index rail contract
-        run: pnpm qa:batch69:deck-editor-edit-index-rail-contract
+        run: pnpm qa:batch69-deck-editor-edit-index-rail-contract
       - name: Batch 70 DeckBasicLedger long-name containment contract
-        run: pnpm qa:batch70:deck-basic-long-name-containment-contract
+        run: pnpm qa:batch70-deck-basic-long-name-containment-contract
       - name: Batch 71 MatchSetup header command cell contract
-        run: pnpm qa:batch71:match-setup-header-command-cell-contract
+        run: pnpm qa:batch71-match-setup-header-command-cell-contract
+      - name: Batch 72 DeckEditor Bonus balanced workbench contract
+        run: pnpm qa:batch72:deck-editor-bonus-balanced-workbench-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
