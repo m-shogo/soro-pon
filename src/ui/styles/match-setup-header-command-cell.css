@@ -1,0 +1,32 @@
+/* Batch 71: MatchSetup leave navigation is a flat header command cell rather
+ * than a detached rounded web button. Button DOM, onBack, focus semantics, and
+ * shared Button ownership stay unchanged; only this screen presentation is flattened. */
+@layer screens {
+  .sp-match-setup > .sp-screen__header > .sp-button--ghost {
+    min-width: 104px;
+    min-height: 40px;
+    margin: 0;
+    padding: 4px 10px;
+    border: 1px solid color-mix(in srgb, var(--sp-color-cream) 14%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    filter: none;
+    color: var(--sp-color-cream-dim);
+    font-size: var(--sp-font-sm);
+  }
+
+  .sp-match-setup > .sp-screen__header > .sp-button--ghost > .sp-skin-layer {
+    display: none;
+  }
+
+  @media (max-width: 899px), (max-height: 430px) {
+    .sp-match-setup > .sp-screen__header > .sp-button--ghost {
+      min-width: 76px;
+      min-height: 32px;
+      padding: 2px 7px;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+  }
+}
