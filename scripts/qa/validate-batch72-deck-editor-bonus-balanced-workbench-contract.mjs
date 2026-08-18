@@ -31,7 +31,7 @@ requireText(
 );
 
 for (const needle of [
-  "{ id: 'bonuses',",
+  "id: 'bonuses',",
   'label: `ボーナス (${bonusCount})`',
   'tab === \'bonuses\' && activeVariant',
   '<DeckBonusWorkbench',
