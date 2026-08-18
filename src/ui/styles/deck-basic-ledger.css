@@ -25,25 +25,31 @@
   }
 
   .sp-deck-basic-ledger__identity-head {
+    min-width: 0;
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
     padding-bottom: 7px;
+    overflow: hidden;
     border-bottom: 1px solid color-mix(in srgb, var(--sp-color-ink) 13%, transparent);
   }
 
   .sp-deck-basic-ledger__identity-head > span {
+    flex: 0 0 auto;
+    white-space: nowrap;
     color: var(--sp-color-ink-soft);
     font-size: 9px;
     letter-spacing: 0.16em;
   }
 
   .sp-deck-basic-ledger__identity-head > strong {
+    flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: end;
     color: var(--sp-color-ink);
     font-size: clamp(15px, 1.5vw, 21px);
   }
