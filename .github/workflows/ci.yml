@@ -153,6 +153,8 @@ jobs:
         run: pnpm qa:batch70:deck-basic-long-name-containment-contract
       - name: Batch 71 MatchSetup header command cell contract
         run: pnpm qa:batch71:match-setup-header-command-cell-contract
+      - name: Batch 72 DeckEditor Bonus balanced workbench contract
+        run: pnpm qa:batch72:deck-editor-bonus-balanced-workbench-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck

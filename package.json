@@ -81,6 +81,7 @@
     "qa:batch69:deck-editor-edit-index-rail-contract": "node scripts/qa/validate-batch69-deck-editor-edit-index-rail-contract.mjs",
     "qa:batch70:deck-basic-long-name-containment-contract": "node scripts/qa/validate-batch70-deck-basic-long-name-containment-contract.mjs",
     "qa:batch71:match-setup-header-command-cell-contract": "node scripts/qa/validate-batch71-match-setup-header-command-cell-contract.mjs",
+    "qa:batch72:deck-editor-bonus-balanced-workbench-contract": "node scripts/qa/validate-batch72-deck-editor-bonus-balanced-workbench-contract.mjs",
     "qa:interaction-ux": "node scripts/qa/validate-interaction-ux-contract.mjs",
     "asset:image:prepare": "tools/asset-factory/soro-pon-ui/scripts/asset-image-prepare.sh",
     "asset:image:test": "tools/asset-factory/soro-pon-ui/scripts/run-python-tests.sh",

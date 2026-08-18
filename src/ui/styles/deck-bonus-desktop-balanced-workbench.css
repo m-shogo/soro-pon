@@ -1,0 +1,33 @@
+/* Batch 72: desktop Bonus editing should occupy the available editor pane
+ * instead of ending in a top-heavy content stack with a large inert lower area.
+ * DOM/actions stay owned by DeckBonusWorkbench; this layer only redistributes
+ * the existing header / preset shelf / list-editor body vertically on desktop.
+ *
+ * Keep this stylesheet unlayered while the canonical Batch 19 Bonus stylesheet
+ * is also unlayered. Putting only this override in @layer screens would lose to
+ * the canonical unlayered align-items declaration by cascade-layer precedence. */
+@media (min-width: 901px) and (min-height: 501px) {
+  #sp-tabpanel-bonuses > .sp-bonus-workbench {
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  #sp-tabpanel-bonuses .sp-bonus-workbench__body {
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  #sp-tabpanel-bonuses .sp-bonus-workbench__list,
+  #sp-tabpanel-bonuses .sp-bonus-workbench__editor {
+    min-height: 100%;
+  }
+
+  #sp-tabpanel-bonuses .sp-bonus-workbench__list {
+    align-content: start;
+  }
+
+  #sp-tabpanel-bonuses .sp-bonus-workbench__editor {
+    align-content: start;
+  }
+}
