@@ -92,8 +92,12 @@ for (const skin of SKINS) {
         expect(geometry?.bodyHeight ?? 0).toBeGreaterThanOrEqual(300);
         expect(geometry?.bodyBottomGap ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
         expect(geometry?.columnBottomSpread ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(2);
-        expect(geometry?.listHeight ?? 0).toBeGreaterThanOrEqual(geometry?.bodyHeight ?? Number.POSITIVE_INFINITY - 2);
-        expect(geometry?.editorHeight ?? 0).toBeGreaterThanOrEqual(geometry?.bodyHeight ?? Number.POSITIVE_INFINITY - 2);
+        expect(geometry?.listHeight ?? 0).toBeGreaterThanOrEqual(
+          (geometry?.bodyHeight ?? Number.POSITIVE_INFINITY) - 2,
+        );
+        expect(geometry?.editorHeight ?? 0).toBeGreaterThanOrEqual(
+          (geometry?.bodyHeight ?? Number.POSITIVE_INFINITY) - 2,
+        );
         expect(geometry?.bodyOverflow).toBe(false);
       } else {
         // Batch 35 compact workbench owns this viewport; Batch 72 must not
