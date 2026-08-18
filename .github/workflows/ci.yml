@@ -151,6 +151,8 @@ jobs:
         run: pnpm qa:batch69:deck-editor-edit-index-rail-contract
       - name: Batch 70 DeckBasicLedger long-name containment contract
         run: pnpm qa:batch70:deck-basic-long-name-containment-contract
+      - name: Batch 71 MatchSetup header command cell contract
+        run: pnpm qa:batch71:match-setup-header-command-cell-contract
       - name: Interaction UX contract
         run: pnpm qa:interaction-ux
       - run: pnpm typecheck
